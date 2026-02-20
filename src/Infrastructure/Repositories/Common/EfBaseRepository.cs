@@ -26,8 +26,7 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
         Expression<Func<T, object>>[]? includes = null)
     {
         IQueryable<T> query = _dbSet.AsNoTracking();
-
-        // Gắn Tag để dễ debug trong Log của Postgres
+      
         query = query.TagWith($"GetList: {typeof(T).Name}");
 
         if (includes is { Length: > 0 })
@@ -39,45 +38,6 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
         if (predicate != null) query = query.Where(predicate);
 
         return await query.ToListAsync();
-    }
-
-    public virtual async Task UpsertRangeAsync(IEnumerable<T> entities)
-    {
-        var entityList = entities.ToList();
-        if (!entityList.Any()) return;
-
-        var keyName = GetPrimaryKeyName();
-
-        var inputKeys = entityList
-            .Select(e => _context.Entry(e).Property(keyName).CurrentValue)
-            .Where(v => v != null)
-            .ToList();
-
-        var existingKeys = await _dbSet.AsNoTracking()
-            .TagWith($"Bulk Upsert Check: {typeof(T).Name}")
-            .Where(e => inputKeys.Contains(EF.Property<object>(e, keyName)))
-            .Select(e => EF.Property<object>(e, keyName))
-            .ToListAsync();
-
-        var toAdd = new List<T>();
-        var toUpdate = new List<T>();
-
-        foreach (var entity in entityList)
-        {
-            var keyValue = _context.Entry(entity).Property(keyName).CurrentValue;
-
-            if (existingKeys.Contains(keyValue))
-            {
-                toUpdate.Add(entity);
-            }
-            else
-            {
-                toAdd.Add(entity);
-            }
-        }
-        if (toAdd.Any()) await _dbSet.AddRangeAsync(toAdd);
-        if (toUpdate.Any()) _dbSet.UpdateRange(toUpdate);
-        await _context.SaveChangesAsync();
     }
 
     public virtual async Task DeleteAsync(Guid id)
@@ -105,5 +65,50 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
         var key = _context.Model.FindEntityType(typeof(T))?.FindPrimaryKey();
         return key?.Properties.Select(x => x.Name).FirstOrDefault()
                ?? throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a primary key defined.");
+    }
+
+    public Task<IEnumerable<T>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddAsync(T entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Update(T entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateRangeAsync(IEnumerable<T> entities)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddRangeAsync(IEnumerable<T> entities)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Delete(T entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteRangeAsync(IEnumerable<T> entities)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IQueryable<T>> GetQuery(Expression<Func<T, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IQueryable<T> Get(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string includeProperties = "")
+    {
+        throw new NotImplementedException();
     }
 }

@@ -1,97 +1,56 @@
-using System.Data;
 using Application.Common.Repositories;
+using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using ErrorOr;
+using System;
+using System.Data;
 
 namespace Infrastructure.Repositories.Common;
 
-internal sealed class UnitOfWork(DbContext context, IServiceProvider provider) : IUnitOfWork
+public class UnitOfWork : IUnitOfWork
 {
-    private IDbContextTransaction? _transaction;
+    private readonly AppDbContext _context;
+    private readonly Dictionary<Type, object> _repository = new();
 
-    // Giữ nguyên cách dùng 'field' keyword (C# 13) như bạn đã viết
-    public IUserRepository Users => field ??= provider.GetRequiredService<IUserRepository>();
-    public IRoleRepository Roles => field ??= provider.GetRequiredService<IRoleRepository>();
-    public IDepartmentRepository Departments => field ??= provider.GetRequiredService<IDepartmentRepository>();
-    public IPositionRepository Positions => field ??= provider.GetRequiredService<IPositionRepository>();
-    public IFileRepository Files => field ??= provider.GetRequiredService<IFileRepository>();
-    public IFunctionRepository Functions => field ??= provider.GetRequiredService<IFunctionRepository>();
-    public IMailRepository Mails => field ??= provider.GetRequiredService<IMailRepository>();
-    public IOtpRepository Otps => field ??= provider.GetRequiredService<IOtpRepository>();
-
-    // Bắt đầu Transaction
-    public void Begin(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+    public UnitOfWork(AppDbContext context)
     {
-        _transaction = context.Database.BeginTransaction(isolationLevel);
+        _context = context;
     }
 
-    public async Task BeginAsync(IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
+    public AppDbContext ContextDb => _context;
+
+    public async Task BeginTransactionAsync()
     {
-        _transaction = await context.Database.BeginTransactionAsync(isolationLevel);
+        await ContextDb.Database.BeginTransactionAsync();
     }
 
-    // Xác nhận mọi thay đổi
-    public void Commit()
+    public async Task CommitTransactionAsync()
     {
-        try
+        await ContextDb.Database.CommitTransactionAsync();
+    }
+
+    public IGenericRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
+    {
+        if (!_repository.ContainsKey(typeof(TEntity)))
         {
-            _transaction?.Commit();
+            _repository[typeof(TEntity)] = new GenericRepository<TEntity>(ContextDb);
         }
-        finally
-        {
-            _transaction?.Dispose();
-            _transaction = null;
-        }
+        return (GenericRepository<TEntity>)_repository[typeof(TEntity)];
     }
 
-    public async Task CommitAsync()
+    public async Task RollbackTransactionAsync()
     {
-        try
-        {
-            if (_transaction != null) await _transaction.CommitAsync();
-        }
-        finally
-        {
-            if (_transaction != null) await _transaction.DisposeAsync();
-            _transaction = null;
-        }
+        await ContextDb.Database.RollbackTransactionAsync();
     }
 
-    // Hủy bỏ thay đổi
-    public void Rollback()
+    public async Task<int> SaveChangeAsync(CancellationToken cancellationToken = default)
     {
-        _transaction?.Rollback();
-        _transaction?.Dispose();
-        _transaction = null;
+        return await ContextDb.SaveChangesAsync();
     }
 
-    public ErrorOr<T> Rollback<T>(List<Error> errors)
+    public int SaveChanges()
     {
-        Rollback();
-        return errors;
-    }
-
-    public async Task RollbackAsync()
-    {
-        if (_transaction != null)
-        {
-            await _transaction.RollbackAsync();
-            await _transaction.DisposeAsync();
-            _transaction = null;
-        }
-    }
-
-    public async Task<ErrorOr<T>> RollbackAsync<T>(List<Error> errors)
-    {
-        await RollbackAsync();
-        return errors;
-    }
-
-    public void Dispose()
-    {
-        _transaction?.Dispose();
-        context.Dispose();
+        return ContextDb.SaveChanges();
     }
 }

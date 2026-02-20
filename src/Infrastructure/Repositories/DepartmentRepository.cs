@@ -7,7 +7,6 @@ namespace Infrastructure.Repositories;
 
 internal class DepartmentRepository : EfBaseRepository<Department>, IDepartmentRepository
 {
-    
     public DepartmentRepository(DbContext context) : base(context)
     {
     }
