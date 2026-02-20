@@ -1,0 +1,14 @@
+﻿using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Domain.CORS;
+
+public interface ICommand : ICommand<Unit>
+{
+}
+
+public interface ICommand<out TResponse> : IRequest<TResponse>
+{
+}
