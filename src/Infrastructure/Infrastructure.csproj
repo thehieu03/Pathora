@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -9,8 +9,9 @@
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" />
         <PackageReference Include="MailKit" />
-        <PackageReference Include="Marten" />
+        <!-- <PackageReference Include="Marten" /> -->
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,6 +27,12 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Mails/Templates/*.html" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Logs\**" />
+      <EmbeddedResource Remove="Logs\**" />
+      <None Remove="Logs\**" />
     </ItemGroup>
 
     <ItemGroup>
