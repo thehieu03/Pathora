@@ -1,0 +1,40 @@
+using Infrastructure.Files;
+using Infrastructure.Identity;
+using Infrastructure.Mails;
+using Infrastructure.Repositories.Common;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Serialization.SystemTextJson;
+
+namespace Infrastructure;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddInfrastructureServices(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        return services
+            .AddIdentityServices(configuration)
+            .AddMailService(configuration)
+            .AddFileService(configuration)
+            .AddCacheService(configuration)
+            .AddRepositories(configuration);
+    }
+
+    private static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddFusionCache()
+            .WithDefaultEntryOptions(new FusionCacheEntryOptions
+            {
+                Duration = TimeSpan.FromMinutes(5)
+            })
+            .WithSerializer(new FusionCacheSystemTextJsonSerializer())
+            .WithRegisteredDistributedCache();
+
+        services.AddStackExchangeRedisCache(options => options.Configuration = configuration["Redis:ConnectionString"]);
+
+        return services;
+    }
+}

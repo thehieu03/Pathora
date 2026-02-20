@@ -1,0 +1,33 @@
+services:
+  - name: docker:dind
+
+stages:
+  - build
+  - deploy
+
+build:
+  image: docker:cli
+  stage: build
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - docker login https://registry.h2qsolution.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+  script:
+    - docker build -t registry.h2qsolution.com/localservice-be/localservice-be:latest .
+    - docker push registry.h2qsolution.com/localservice-be/localservice-be:latest
+  only:
+    - main
+  tags:
+    - hhsk_be
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl rollout restart deployment/localservice-be-deployment -n localservice-be
+    - kubectl rollout status deployment/localservice-be-deployment -n localservice-be
+  only:
+    - main
+  tags:
+    - hhsk_be

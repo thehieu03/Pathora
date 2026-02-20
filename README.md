@@ -1,4 +1,4 @@
-# Panthora_BE
+# local_services_be
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.com/fpt_study/panthora_be.git
+git remote add origin https://gitlab.com/h2qsolutiongit/local_services_be.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-* [Set up project integrations](https://gitlab.com/fpt_study/panthora_be/-/settings/integrations)
+* [Set up project integrations](https://gitlab.com/h2qsolutiongit/local_services_be/-/settings/integrations)
 
 ## Collaborate with your team
 

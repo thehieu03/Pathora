@@ -1,0 +1,31 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
+
+namespace Domain.Mails;
+
+public static class MailExtensions
+{
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
+    public static Mail ToMail<T>(this T model, string to, string? from = null)
+    {
+        var type = typeof(T);
+        var attr = type
+            .GetCustomAttributes(typeof(MailAttribute), true)
+            .FirstOrDefault() as MailAttribute;
+
+        if (attr == null)
+            throw new InvalidOperationException($"Missing MailTemplateAttribute on type {typeof(T).Name}");
+
+        return new Mail
+        {
+            To = to,
+            Subject = attr.Subject,
+            Body = JsonSerializer.Serialize(model, JsonSerializerOptions),
+            Template = type.Name
+        };
+    }
+}
