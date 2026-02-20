@@ -2,6 +2,7 @@
   <Folder Name="/SolutionItems/">
     <File Path=".dockerignore" />
     <File Path=".gitlab-ci.yml" />
+    <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="Dockerfile" />
     <File Path="nuget.config" />
