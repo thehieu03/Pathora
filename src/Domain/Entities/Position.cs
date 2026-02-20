@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Entities;
 
-public sealed class Position : AuditableEntity<Guid>
+public sealed class Position : Aggregate<Guid>
 {
     public Position()
     {

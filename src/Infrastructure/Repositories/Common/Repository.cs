@@ -1,18 +1,28 @@
-using System.Linq.Expressions;
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories.Common;
 
-public class EfBaseRepository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : class
 {
     protected readonly DbContext _context;
     protected readonly DbSet<T> _dbSet;
 
-    public EfBaseRepository(DbContext context)
+    public Repository(DbContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();
+    }
+
+    public virtual T? GetById(int id)
+    {
+        return _dbSet.Find(id);
+    }
+
+    public virtual async Task<T?> GetByIdAsync(int id)
+    {
+        return await _dbSet.FindAsync(id);
     }
 
     public virtual async Task<T?> GetByIdAsync(Guid id)
@@ -67,6 +77,11 @@ public class EfBaseRepository<T> : IRepository<T> where T : class
                ?? throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a primary key defined.");
     }
 
+    public virtual IEnumerable<T> GetAll()
+    {
+        return _dbSet.ToList();
+    }
+
     public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
         return await _dbSet.ToListAsync();
@@ -96,6 +111,15 @@ public class EfBaseRepository<T> : IRepository<T> where T : class
         await _context.SaveChangesAsync();
     }
 
+    public virtual void Delete(int id)
+    {
+        var entity = GetById(id);
+        if (entity != null)
+        {
+            Delete(entity);
+        }
+    }
+
     public virtual void Delete(T entity)
     {
         _dbSet.Remove(entity);
@@ -106,6 +130,11 @@ public class EfBaseRepository<T> : IRepository<T> where T : class
     {
         _dbSet.RemoveRange(entities);
         _context.SaveChanges();
+    }
+
+    public virtual IQueryable<T> GetQuery()
+    {
+        return _dbSet;
     }
 
     public virtual Task<IQueryable<T>> GetQuery(Expression<Func<T, bool>> predicate)

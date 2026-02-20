@@ -1,7 +1,6 @@
-using Domain.Common.Repositories;
 using Domain.Entities;
 
-namespace Application.Common.Repositories;
+namespace Domain.Common.Repositories;
 
 public interface IDepartmentRepository : IRepository<Department>
 {

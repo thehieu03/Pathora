@@ -1,12 +1,13 @@
 using Application.Common.Contracts;
 using Application.Common.Interfaces;
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using Application.Contracts.Role;
 using Domain.Constant;
 using Domain.Entities;
 using Domain.Enums;
 using ErrorOr;
 using Result = ErrorOr.Result;
+using Domain.UnitOfWork;
 
 namespace Application.Services;
 

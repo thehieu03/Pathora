@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using MediatR;
 
-namespace Domain.CORS
+namespace Domain.CORS;
+
+public interface IQuery<TResponse> : IRequest<TResponse>
 {
-    internal class IQuery
-    {
-    }
 }

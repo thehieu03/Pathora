@@ -62,7 +62,7 @@ internal sealed class TokenManager : ITokenManager
         {
             UserId = user.Id,
             Token = refreshToken,
-            ExpiresOnUtc = DateTime.UtcNow.AddHours(TokenTimeoutInHour)
+            ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(TokenTimeoutInHour)
         });
         if (result.IsError) return result.Errors;
 

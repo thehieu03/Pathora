@@ -1,12 +1,7 @@
-﻿using Application.Common;
-using Application.Common.Interfaces;
-using Application.Common.Repositories;
+﻿using Application.Common.Interfaces;
 using Application.Contracts.Identity;
-using Domain.Constant;
-using Domain.Entities;
+using Domain.UnitOfWork;
 using ErrorOr;
-using Domain.Mails;
-using Result = ErrorOr.Result;
 
 namespace Application.Services;
 

@@ -1,4 +1,5 @@
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
+using Domain.UnitOfWork;
 
 namespace Infrastructure.Repositories.Common;
 
@@ -29,14 +30,6 @@ public class UnitOfWork : IUnitOfWork
         _context.Dispose();
     }
 
-    public IRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
-    {
-        if (!_repositories.ContainsKey(typeof(TEntity)))
-        {
-            _repositories[typeof(TEntity)] = new EfBaseRepository<TEntity>(ContextDb);
-        }
-        return (IRepository<TEntity>)_repositories[typeof(TEntity)];
-    }
 
     public async Task RollbackTransactionAsync()
     {
@@ -51,5 +44,18 @@ public class UnitOfWork : IUnitOfWork
     public int SaveChanges()
     {
         return ContextDb.SaveChanges();
+    }
+
+    public IRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
+    {
+        var type = typeof(TEntity);
+        if (_repositories.TryGetValue(type, out var repository))
+        {
+            return (IRepository<TEntity>)repository;
+        }
+
+        var newRepository = new Repository<TEntity>(_context);
+        _repositories[type] = newRepository;
+        return newRepository;
     }
 }

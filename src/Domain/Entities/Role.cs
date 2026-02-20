@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Entities;
 
-public sealed class Role : AuditableEntity<Guid>
+public sealed class Role : Aggregate<Guid>
 {
     public Role()
     {

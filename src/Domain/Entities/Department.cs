@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Entities;
 
-public sealed class Department : AuditableEntity<Guid>
+public sealed class Department : Aggregate<Guid>
 {
     public Department()
     {

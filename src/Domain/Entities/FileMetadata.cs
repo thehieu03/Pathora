@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Entities;
 
-public sealed class FileMetadata : AuditableEntity<Guid>
+public sealed class FileMetadata : Aggregate<Guid>
 {
     public FileMetadata()
     {

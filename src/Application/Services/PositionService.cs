@@ -1,6 +1,6 @@
 using Application.Common.Contracts;
 using Application.Common.Interfaces;
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using Application.Contracts.Position;
 using Domain.Constant;
 using Domain.Entities;

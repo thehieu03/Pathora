@@ -1,6 +1,8 @@
+using Domain.Abstractions;
+
 namespace Domain.Mails;
 
-public class Mail : Entity<Guid>
+public class Mail : Aggregate<Guid>
 {
     public Mail()
     {

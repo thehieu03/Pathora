@@ -1,7 +1,7 @@
-using System.Data;
+﻿using Domain.Common.Repositories;
 using ErrorOr;
 
-namespace Application.Common.Repositories;
+namespace Domain.UnitOfWork;
 
 public interface IUnitOfWork : IDisposable
 {
