@@ -1,17 +1,11 @@
 using Application.Common.Repositories;
-using ErrorOr;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Data;
 
 namespace Infrastructure.Repositories.Common;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _context;
-    private readonly Dictionary<Type, object> _repository = new();
+    private readonly Dictionary<Type, object> _repositories = new();
 
     public UnitOfWork(AppDbContext context)
     {
@@ -30,13 +24,18 @@ public class UnitOfWork : IUnitOfWork
         await ContextDb.Database.CommitTransactionAsync();
     }
 
-    public IGenericRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
+    public void Dispose()
     {
-        if (!_repository.ContainsKey(typeof(TEntity)))
+        _context.Dispose();
+    }
+
+    public IRepository<TEntity> GenericRepository<TEntity>() where TEntity : class
+    {
+        if (!_repositories.ContainsKey(typeof(TEntity)))
         {
-            _repository[typeof(TEntity)] = new GenericRepository<TEntity>(ContextDb);
+            _repositories[typeof(TEntity)] = new EfBaseRepository<TEntity>(ContextDb);
         }
-        return (GenericRepository<TEntity>)_repository[typeof(TEntity)];
+        return (IRepository<TEntity>)_repositories[typeof(TEntity)];
     }
 
     public async Task RollbackTransactionAsync()
@@ -46,7 +45,7 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task<int> SaveChangeAsync(CancellationToken cancellationToken = default)
     {
-        return await ContextDb.SaveChangesAsync();
+        return await ContextDb.SaveChangesAsync(cancellationToken);
     }
 
     public int SaveChanges()

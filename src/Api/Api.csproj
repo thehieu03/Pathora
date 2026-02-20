@@ -7,6 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Controllers\**" />
+      <Compile Remove="Extensions\**" />
+      <Content Remove="Controllers\**" />
+      <Content Remove="Extensions\**" />
+      <EmbeddedResource Remove="Controllers\**" />
+      <EmbeddedResource Remove="Extensions\**" />
+      <None Remove="Controllers\**" />
+      <None Remove="Extensions\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
         <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
@@ -22,10 +33,5 @@
     <ItemGroup>
         <ProjectReference Include="..\Application\Application.csproj" />
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Controllers\" />
-      <Folder Include="Extensions\" />
     </ItemGroup>
 </Project>

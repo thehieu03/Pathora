@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Application.Common.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories.Common;
 
-public abstract class EfBaseRepository<T> : IRepository<T> where T : class
+public class EfBaseRepository<T> : IRepository<T> where T : class
 {
     protected readonly DbContext _context;
     protected readonly DbSet<T> _dbSet;
 
-    protected EfBaseRepository(DbContext context)
+    public EfBaseRepository(DbContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();
@@ -17,7 +18,7 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
     public virtual async Task<T?> GetByIdAsync(Guid id)
     {
         return await _dbSet
-            .TagWith($"GetById: {typeof(T).Name}") // Thêm comment vào SQL
+            .TagWith($"GetById: {typeof(T).Name}")
             .FirstOrDefaultAsync(e => EF.Property<Guid>(e, GetPrimaryKeyName()) == id);
     }
 
@@ -26,7 +27,7 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
         Expression<Func<T, object>>[]? includes = null)
     {
         IQueryable<T> query = _dbSet.AsNoTracking();
-      
+       
         query = query.TagWith($"GetList: {typeof(T).Name}");
 
         if (includes is { Length: > 0 })
@@ -47,12 +48,10 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
 
         if (entity != null)
         {
-            // Kiểm tra xem class T có thuộc tính "IsDeleted" hay không
             var property = _context.Entry(entity).Metadata.FindProperty("IsDeleted");
 
             if (property != null)
             {
-                // Nếu có thì set true (Xóa mềm)
                 _context.Entry(entity).Property("IsDeleted").CurrentValue = true;
                 _dbSet.Update(entity);
             }
@@ -60,6 +59,7 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
             await _context.SaveChangesAsync();
         }
     }
+
     private string GetPrimaryKeyName()
     {
         var key = _context.Model.FindEntityType(typeof(T))?.FindPrimaryKey();
@@ -67,48 +67,65 @@ public abstract class EfBaseRepository<T> : IRepository<T> where T : class
                ?? throw new InvalidOperationException($"Entity {typeof(T).Name} does not have a primary key defined.");
     }
 
-    public Task<IEnumerable<T>> GetAllAsync()
+    public virtual async Task<IEnumerable<T>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _dbSet.ToListAsync();
     }
 
-    public Task AddAsync(T entity)
+    public virtual async Task AddAsync(T entity)
     {
-        throw new NotImplementedException();
+        await _dbSet.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
-    public void Update(T entity)
+    public virtual void Update(T entity)
     {
-        throw new NotImplementedException();
+        _dbSet.Update(entity);
+        _context.SaveChanges();
     }
 
-    public void UpdateRangeAsync(IEnumerable<T> entities)
+    public virtual void UpdateRangeAsync(IEnumerable<T> entities)
     {
-        throw new NotImplementedException();
+        _dbSet.UpdateRange(entities);
+        _context.SaveChanges();
     }
 
-    public void AddRangeAsync(IEnumerable<T> entities)
+    public virtual async void AddRangeAsync(IEnumerable<T> entities)
     {
-        throw new NotImplementedException();
+        await _dbSet.AddRangeAsync(entities);
+        await _context.SaveChangesAsync();
     }
 
-    public void Delete(T entity)
+    public virtual void Delete(T entity)
     {
-        throw new NotImplementedException();
+        _dbSet.Remove(entity);
+        _context.SaveChanges();
     }
 
-    public void DeleteRangeAsync(IEnumerable<T> entities)
+    public virtual void DeleteRangeAsync(IEnumerable<T> entities)
     {
-        throw new NotImplementedException();
+        _dbSet.RemoveRange(entities);
+        _context.SaveChanges();
     }
 
-    public Task<IQueryable<T>> GetQuery(Expression<Func<T, bool>> predicate)
+    public virtual Task<IQueryable<T>> GetQuery(Expression<Func<T, bool>> predicate)
     {
-        throw new NotImplementedException();
+        return Task.FromResult(_dbSet.Where(predicate));
     }
 
-    public IQueryable<T> Get(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string includeProperties = "")
+    public virtual IQueryable<T> Get(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string includeProperties = "")
     {
-        throw new NotImplementedException();
+        IQueryable<T> query = _dbSet;
+
+        if (filter != null)
+            query = query.Where(filter);
+
+        foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            query = query.Include(includeProperty);
+
+        if (orderBy != null)
+            return orderBy(query);
+
+        return query;
     }
 }
