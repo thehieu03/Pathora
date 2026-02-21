@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Application.Common;
 using Application.Common.Interfaces;
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using Domain.Entities;
 using ErrorOr;
 using Microsoft.Extensions.Options;
@@ -58,40 +58,45 @@ internal sealed class TokenManager : ITokenManager
 
         // Generate refresh token & persist to database 
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-        var result = await _userRepository.UpsertRefreshToken(new RefreshToken
-        {
-            UserId = user.Id,
-            Token = refreshToken,
-            ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(TokenTimeoutInHour)
-        });
-        if (result.IsError) return result.Errors;
+        //var result = await _userRepository.UpsertRefreshToken(new RefreshToken
+        //{
+        //    UserId = user.Id,
+        //    Token = refreshToken,
+        //    ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(TokenTimeoutInHour)
+        //});
+        //if (result.IsError) return result.Errors;
 
         return (accessToken, refreshToken);
     }
 
  
 
-    public async Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)
-    {
-        var jti = _token.Id;
-        var exp = _token.Expire;
-        if (!string.IsNullOrEmpty(jti) && long.TryParse(exp, out var expEpoch))
-        {
-            var diff = expEpoch - DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-            if (diff > 0)
-            {
-                await _fusionCache.SetAsync($"{CacheKey.AccessToken}:blacklisted:{jti}", jti,
-                    new FusionCacheEntryOptions
-                    {
-                        Duration = TimeSpan.FromSeconds(diff)
-                    });
-            }
-        }
+    //public async Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)
+    //{
+    //    var jti = _token.Id;
+    //    var exp = _token.Expire;
+    //    if (!string.IsNullOrEmpty(jti) && long.TryParse(exp, out var expEpoch))
+    //    {
+    //        var diff = expEpoch - DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    //        if (diff > 0)
+    //        {
+    //            await _fusionCache.SetAsync($"{CacheKey.AccessToken}:blacklisted:{jti}", jti,
+    //                new FusionCacheEntryOptions
+    //                {
+    //                    Duration = TimeSpan.FromSeconds(diff)
+    //                });
+    //        }
+    //    }
 
-        return await _userRepository.InvalidateToken(refreshToken);
-    }
+    //    return await _userRepository.InvalidateToken(refreshToken);
+    //}
 
     public Task<ErrorOr<(string, string)>> RefreshToken(string token)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)
     {
         throw new NotImplementedException();
     }

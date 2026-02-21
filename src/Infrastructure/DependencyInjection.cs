@@ -2,6 +2,7 @@ using Infrastructure.Files;
 using Infrastructure.Identity;
 using Infrastructure.Mails;
 using Infrastructure.Repositories.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ZiggyCreatures.Caching.Fusion;
@@ -16,6 +17,11 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         return services
+           .AddDbContext<AppDbContext>(options =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString("Default"));
+                // hoặc MySQL, PostgreSQL...
+            })
             .AddIdentityServices(configuration)
             .AddMailService(configuration)
             .AddFileService(configuration)
