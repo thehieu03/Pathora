@@ -19,6 +19,10 @@ public class AppDbContext : DbContext
     public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
     public DbSet<Domain.Constant.Function> Functions => Set<Domain.Constant.Function>();
     public DbSet<Domain.Constant.SystemKey> SystemKeys => Set<Domain.Constant.SystemKey>();
+    public DbSet<TourEntity> Tours => Set<TourEntity>();
+    public DbSet<TourClassificationEntity> TourClassifications => Set<TourClassificationEntity>();
+    public DbSet<TourDayEntity> TourDays => Set<TourDayEntity>();
+    public DbSet<TourDayActivityEntity> TourDayActivities => Set<TourDayActivityEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

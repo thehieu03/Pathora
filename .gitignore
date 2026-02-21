@@ -272,6 +272,12 @@ Serilog*.txt
 
 # Agent/IDE specific
 AGENTS.md
+CLAUDE.md
 *.ai.*
+*.cursorrules
+.cursor/
+.windsurf/
+.github/copilot-instructions.md
+.vscode/mcp.json
 
 src/Api/logs/
