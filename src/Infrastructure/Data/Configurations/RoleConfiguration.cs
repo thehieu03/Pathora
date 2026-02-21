@@ -33,7 +33,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
         builder.Property(r => r.IsDeleted)
             .HasDefaultValue(false);
 
-        builder.HasMany<UserRole>()
+        builder.HasMany<UserRoleEntity>()
             .WithOne()
             .HasForeignKey(ur => ur.RoleId)
             .OnDelete(DeleteBehavior.Cascade);

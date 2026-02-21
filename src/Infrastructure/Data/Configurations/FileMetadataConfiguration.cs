@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
-public class FileMetadataConfiguration : IEntityTypeConfiguration<FileMetadata>
+public class FileMetadataConfiguration : IEntityTypeConfiguration<FileMetadataEntity>
 {
-    public void Configure(EntityTypeBuilder<FileMetadata> builder)
+    public void Configure(EntityTypeBuilder<FileMetadataEntity> builder)
     {
         builder.ToTable("FileMetadatas");
 

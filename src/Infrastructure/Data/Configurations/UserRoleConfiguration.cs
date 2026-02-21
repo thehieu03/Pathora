@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
-public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
+public class UserRoleConfiguration : IEntityTypeConfiguration<UserRoleEntity>
 {
-    public void Configure(EntityTypeBuilder<UserRole> builder)
+    public void Configure(EntityTypeBuilder<UserRoleEntity> builder)
     {
         builder.ToTable("UserRoles");
 
         builder.HasKey(ur => new { ur.UserId, ur.RoleId });
 
-        builder.HasOne<User>()
+        builder.HasOne<UserEntity>()
             .WithMany()
             .HasForeignKey(ur => ur.UserId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -34,7 +34,7 @@ internal sealed class TokenManager : ITokenManager
     }
 
 
-    public async Task<ErrorOr<(string, string)>> GenerateToken(User user)
+    public async Task<ErrorOr<(string, string)>> GenerateToken(UserEntity user)
     {
         // Generate access token
         var key = Encoding.UTF8.GetBytes(_jwtOptions.Value.Secret);
@@ -58,7 +58,7 @@ internal sealed class TokenManager : ITokenManager
 
         // Generate refresh token & persist to database 
         var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-        var result = await _userRepository.UpsertRefreshToken(new RefreshToken
+        var result = await _userRepository.UpsertRefreshToken(new RefreshTokenEntity
         {
             UserId = user.Id,
             Token = refreshToken,

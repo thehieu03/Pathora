@@ -9,12 +9,12 @@ public interface IFileManager
         string fileName,
         CancellationToken cancellationToken = default);
 
-    public Task<IEnumerable<FileMetadata>> UploadMultipleFilesAsync(
+    public Task<IEnumerable<FileMetadataEntity>> UploadMultipleFilesAsync(
         Guid entityId,
         (Stream Stream, string FileName, string ContentType, long Length)[] files,
         CancellationToken cancellationToken = default);
 
-    public Task<Dictionary<Guid, FileMetadata[]>> FindFiles(string[] entityIds);
+    public Task<Dictionary<Guid, FileMetadataEntity[]>> FindFiles(string[] entityIds);
 
     public Task DeleteMultipleFilesAsync(
         List<Guid> ids,

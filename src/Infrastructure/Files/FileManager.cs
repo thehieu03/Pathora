@@ -31,7 +31,7 @@ public class FileManager : IFileManager
         return $"{assign.PublicUrl}/{assign.Fid}";
     }
 
-    public async Task<IEnumerable<FileMetadata>> UploadMultipleFilesAsync(
+    public async Task<IEnumerable<FileMetadataEntity>> UploadMultipleFilesAsync(
         Guid entityId,
         (Stream Stream, string FileName, string ContentType, long Length)[] files,
         CancellationToken cancellationToken = default)
@@ -39,7 +39,7 @@ public class FileManager : IFileManager
         var assign = await _seaweedClient.AssignAsync(count: files.Length, collection: "QLMM",
             cancellationToken: cancellationToken);
 
-        var fileMetadataList = new FileMetadata[files.Length];
+        var fileMetadataList = new FileMetadataEntity[files.Length];
         var uploadTasks = new Task<UploadResponse>[files.Length];
 
         for (var i = 0; i < files.Length; i++)
@@ -47,7 +47,7 @@ public class FileManager : IFileManager
             var fId = i == 0 ? assign.Fid : $"{assign.Fid}_{i}";
             var extension = Path.GetExtension(files[i].FileName);
 
-            fileMetadataList[i] = new FileMetadata
+            fileMetadataList[i] = new FileMetadataEntity
             {
                 LinkedEntityId = entityId,
                 OriginalFileName = files[i].FileName,
@@ -71,7 +71,7 @@ public class FileManager : IFileManager
         return fileMetadataList;
     }
 
-    public async Task<Dictionary<Guid, FileMetadata[]>> FindFiles(string[] entityIds)
+    public async Task<Dictionary<Guid, FileMetadataEntity[]>> FindFiles(string[] entityIds)
     {
         var fileMetadatas = await _fileRepository.FindByLinkedEntityIds(entityIds);
         if (fileMetadatas.IsError) throw new Exception(fileMetadatas.FirstError.Description);
