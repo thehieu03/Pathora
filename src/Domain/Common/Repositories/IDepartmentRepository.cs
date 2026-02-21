@@ -2,6 +2,6 @@ using Domain.Entities;
 
 namespace Domain.Common.Repositories;
 
-public interface IDepartmentRepository : IRepository<Department>
+public interface IDepartmentRepository : IRepository<DepartmentEntity>
 {
 }

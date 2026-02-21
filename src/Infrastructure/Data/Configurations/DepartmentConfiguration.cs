@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
-public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
+public class DepartmentConfiguration : IEntityTypeConfiguration<DepartmentEntity>
 {
-    public void Configure(EntityTypeBuilder<Department> builder)
+    public void Configure(EntityTypeBuilder<DepartmentEntity> builder)
     {
         builder.ToTable("Departments");
 
@@ -22,7 +22,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(d => d.IsDeleted)
             .HasDefaultValue(false);
 
-        builder.HasOne<Department>()
+        builder.HasOne<DepartmentEntity>()
             .WithMany()
             .HasForeignKey(d => d.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
