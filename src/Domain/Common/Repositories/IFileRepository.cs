@@ -1,7 +1,10 @@
-using Domain.Entities;
+﻿using Domain.Entities;
 using ErrorOr;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Application.Common.Repositories;
+namespace Domain.Common.Repositories;
 
 public interface IFileRepository
 {

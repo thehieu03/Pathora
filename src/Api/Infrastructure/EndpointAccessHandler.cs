@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using Domain.Constant;
 using Microsoft.AspNetCore.Authorization;
 

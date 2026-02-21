@@ -1,4 +1,4 @@
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using FluentValidation;
 
 namespace Application.Contracts.Role;

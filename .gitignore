@@ -281,3 +281,5 @@ CLAUDE.md
 .vscode/mcp.json
 
 src/Api/logs/
+
+src/Application/Common/Repositories/

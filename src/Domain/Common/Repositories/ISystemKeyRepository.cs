@@ -1,7 +1,7 @@
-using Domain.Constant;
+﻿using Domain.Constant;
 using ErrorOr;
 
-namespace Application.Common.Repositories;
+namespace Domain.Common.Repositories;
 
 public interface ISystemKeyRepository
 {

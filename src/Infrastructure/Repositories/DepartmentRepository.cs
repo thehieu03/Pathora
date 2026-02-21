@@ -1,13 +1,13 @@
-﻿using Domain.Common.Repositories;
+using Domain.Common.Repositories;
 using Domain.Entities;
+using Infrastructure.Data;
 using Infrastructure.Repositories.Common;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-internal class DepartmentRepository : Repository<DepartmentEntity>, IDepartmentRepository
+public class DepartmentRepository : Repository<DepartmentEntity>, IDepartmentRepository
 {
-    public DepartmentRepository(DbContext context) : base(context)
+    public DepartmentRepository(AppDbContext context) : base(context)
     {
     }
 }

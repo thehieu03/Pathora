@@ -1,4 +1,4 @@
-using Application.Common.Repositories;
+using Domain.Common.Repositories;
 using Domain.Constant;
 using ErrorOr;
 
