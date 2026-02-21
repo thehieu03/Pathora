@@ -2,9 +2,9 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class RefreshToken : Aggregate<Guid>
+public sealed class RefreshTokenEntity : Aggregate<Guid>
 {
-    public RefreshToken()
+    public RefreshTokenEntity()
     {
         Id = Guid.CreateVersion7();
     }

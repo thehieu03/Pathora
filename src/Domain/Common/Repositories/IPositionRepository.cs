@@ -5,7 +5,7 @@ namespace Domain.Common.Repositories;
 
 public interface IPositionRepository
 {
-    Task<ErrorOr<Success>> Upsert(Position position);
-    Task<ErrorOr<List<Position>>> FindAll();
-    Task<ErrorOr<Position?>> FindById(Guid id);
+    Task<ErrorOr<Success>> Upsert(PositionEntity position);
+    Task<ErrorOr<List<PositionEntity>>> FindAll();
+    Task<ErrorOr<PositionEntity?>> FindById(Guid id);
 }

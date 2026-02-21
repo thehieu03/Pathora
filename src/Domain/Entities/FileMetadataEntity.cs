@@ -2,9 +2,9 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class FileMetadata : Aggregate<Guid>
+public sealed class FileMetadataEntity : Aggregate<Guid>
 {
-    public FileMetadata()
+    public FileMetadataEntity()
     {
         Id = Guid.CreateVersion7();
     }

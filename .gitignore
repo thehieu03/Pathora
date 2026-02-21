@@ -275,3 +275,5 @@ AGENTS.md
 *.ai.*
 
 src/Api/logs/
+
+src/Application/Common/Repositories/

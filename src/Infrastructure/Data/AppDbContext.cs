@@ -10,13 +10,13 @@ public class AppDbContext : DbContext
     {
     }
 
-    public DbSet<User> Users => Set<User>();
+    public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<RoleEntity> Roles => Set<RoleEntity>();
-    public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<UserRoleEntity> UserRoles => Set<UserRoleEntity>();
     public DbSet<DepartmentEntity> Departments => Set<DepartmentEntity>();
-    public DbSet<Position> Positions => Set<Position>();
-    public DbSet<FileMetadata> FileMetadatas => Set<FileMetadata>();
-    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<PositionEntity> Positions => Set<PositionEntity>();
+    public DbSet<FileMetadataEntity> FileMetadatas => Set<FileMetadataEntity>();
+    public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
     public DbSet<Domain.Constant.Function> Functions => Set<Domain.Constant.Function>();
     public DbSet<Domain.Constant.SystemKey> SystemKeys => Set<Domain.Constant.SystemKey>();
 

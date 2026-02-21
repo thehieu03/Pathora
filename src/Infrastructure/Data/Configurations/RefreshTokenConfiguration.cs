@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
-public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshTokenEntity>
 {
-    public void Configure(EntityTypeBuilder<RefreshToken> builder)
+    public void Configure(EntityTypeBuilder<RefreshTokenEntity> builder)
     {
         builder.ToTable("RefreshTokens");
 
@@ -22,7 +22,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(rt => rt.ExpiresOnUtc)
             .IsRequired();
 
-        builder.HasOne<User>()
+        builder.HasOne<UserEntity>()
             .WithMany()
             .HasForeignKey(rt => rt.UserId)
             .OnDelete(DeleteBehavior.Cascade);

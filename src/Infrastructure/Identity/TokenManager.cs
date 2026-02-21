@@ -34,7 +34,7 @@ internal sealed class TokenManager : ITokenManager
     }
 
 
-    public async Task<ErrorOr<(string, string)>> GenerateToken(User user)
+    public async Task<ErrorOr<(string, string)>> GenerateToken(UserEntity user)
     {
         // Generate access token
         var key = Encoding.UTF8.GetBytes(_jwtOptions.Value.Secret);

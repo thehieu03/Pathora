@@ -1,10 +1,8 @@
-using Domain.Abstractions;
-
 namespace Domain.Entities;
 
-public sealed class Department : Aggregate<Guid>
+public sealed class DepartmentEntity : Aggregate<Guid>
 {
-    public Department()
+    public DepartmentEntity()
     {
         Id = Guid.CreateVersion7();
     }

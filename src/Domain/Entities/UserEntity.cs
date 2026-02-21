@@ -2,9 +2,9 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class User : Aggregate<Guid>
+public sealed class UserEntity : Aggregate<Guid>
 {
-    public User()
+    public UserEntity()
     {
         Id = Guid.CreateVersion7();
     }
