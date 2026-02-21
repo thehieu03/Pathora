@@ -13,17 +13,17 @@ public class PositionRepository : IPositionRepository
         _context = context;
     }
 
-    public Task<ErrorOr<List<Position>>> FindAll()
+    public Task<ErrorOr<List<PositionEntity>>> FindAll()
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Position?>> FindById(Guid id)
+    public Task<ErrorOr<PositionEntity?>> FindById(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Success>> Upsert(Position position)
+    public Task<ErrorOr<Success>> Upsert(PositionEntity position)
     {
         throw new NotImplementedException();
     }

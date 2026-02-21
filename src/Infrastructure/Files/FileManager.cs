@@ -15,7 +15,7 @@ public class FileManager : IFileManager
         throw new NotImplementedException();
     }
 
-    public Task<Dictionary<Guid, FileMetadata[]>> FindFiles(string[] entityIds)
+    public Task<Dictionary<Guid, FileMetadataEntity[]>> FindFiles(string[] entityIds)
     {
         throw new NotImplementedException();
     }
@@ -25,7 +25,7 @@ public class FileManager : IFileManager
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<FileMetadata>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<FileMetadataEntity>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

@@ -24,7 +24,7 @@ public class RoleRepository : IRoleRepository
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Success>> Create(Role role)
+    public Task<ErrorOr<Success>> Create(RoleEntity role)
     {
         throw new NotImplementedException();
     }
@@ -34,7 +34,7 @@ public class RoleRepository : IRoleRepository
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<List<Role>>> FindAll(string? roleName = null, RoleStatus status = RoleStatus.Active, int pageNumber = 0, int pageSize = 0)
+    public Task<ErrorOr<List<RoleEntity>>> FindAll(string? roleName = null, RoleStatus status = RoleStatus.Active, int pageNumber = 0, int pageSize = 0)
     {
         throw new NotImplementedException();
     }
@@ -44,22 +44,22 @@ public class RoleRepository : IRoleRepository
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Role?>> FindById(string roleId)
+    public Task<ErrorOr<RoleEntity?>> FindById(string roleId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<List<Role>>> FindByUserId(string userId)
+    public Task<ErrorOr<List<RoleEntity>>> FindByUserId(string userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<List<Role>>> GetAll()
+    public Task<ErrorOr<List<RoleEntity>>> GetAll()
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Success>> Update(Role role)
+    public Task<ErrorOr<Success>> Update(RoleEntity role)
     {
         throw new NotImplementedException();
     }

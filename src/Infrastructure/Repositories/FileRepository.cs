@@ -1,33 +1,35 @@
 // làm riêng
 
 using Application.Common.Interfaces;
+using Domain.Common.Repositories;
 using Domain.Entities;
+using ErrorOr;
 
 namespace Infrastructure.Repositories;
 
-public class FileRepository : IFileManager
+public class FileRepository : IFileRepository
 {
-    public Task DeleteMultipleFilesAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    public Task<ErrorOr<Success>> AddRange(FileMetadataEntity[] fileMetadatas)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
+    public Task<ErrorOr<Success>> DeleteByLinkedEntityId(Guid id)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Dictionary<Guid, FileMetadata[]>> FindFiles(string[] entityIds)
+    public Task<ErrorOr<Success>> DeleteRange(List<Guid> ids)
     {
         throw new NotImplementedException();
     }
 
-    public Task<string> UploadFileAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
+    public Task<ErrorOr<List<FileMetadataEntity>>> FindByIds(IEnumerable<Guid> ids)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<FileMetadata>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
+    public Task<ErrorOr<List<FileMetadataEntity>>> FindByLinkedEntityIds(IEnumerable<string> ids)
     {
         throw new NotImplementedException();
     }

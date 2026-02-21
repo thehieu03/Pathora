@@ -6,12 +6,12 @@ namespace Infrastructure.Repositories;
 // làm riêng
 public class OtpRepository : IOtpRepository
 {
-    public Task<ErrorOr<Otp?>> FindByEmail(string email)
+    public Task<ErrorOr<Success>> Upsert(OtpEntity otp)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Success>> Upsert(Otp otp)
+    Task<ErrorOr<OtpEntity?>> IOtpRepository.FindByEmail(string email)
     {
         throw new NotImplementedException();
     }

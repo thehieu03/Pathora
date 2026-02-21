@@ -18,7 +18,7 @@ internal static class DependencyInjection
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IPositionRepository, PositionRepository>();
 
-        services.AddScoped<IFileManager, FileRepository>();
+        services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<IMailRepository, MailRepository>();
 
         services.AddKeyedScoped<ISystemKeyRepository, SystemKeyRepository>("original");
