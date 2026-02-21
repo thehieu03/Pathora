@@ -6,17 +6,17 @@ namespace Domain.Common.Repositories;
 
 public interface IRoleRepository
 {
-    Task<ErrorOr<Success>> Create(Role role);
-    Task<ErrorOr<Success>> Update(Role role);
+    Task<ErrorOr<Success>> Create(RoleEntity role);
+    Task<ErrorOr<Success>> Update(RoleEntity role);
 
     Task<ErrorOr<Success>> AddUser(Guid userId, List<Guid> roleIds);
     Task<ErrorOr<Success>> DeleteUser(Guid userId);
     Task<ErrorOr<List<(Guid UserId, Guid RoleId)>>> FindAllUserRoles();
-    Task<ErrorOr<List<Role>>> GetAll();
-    Task<ErrorOr<Role?>> FindById(string roleId);
-    Task<ErrorOr<List<Role>>> FindByUserId(string userId);
+    Task<ErrorOr<List<RoleEntity>>> GetAll();
+    Task<ErrorOr<RoleEntity?>> FindById(string roleId);
+    Task<ErrorOr<List<RoleEntity>>> FindByUserId(string userId);
 
-    Task<ErrorOr<List<Role>>> FindAll(
+    Task<ErrorOr<List<RoleEntity>>> FindAll(
         string? roleName = null,
         RoleStatus status = RoleStatus.Active,
         int pageNumber = 0,

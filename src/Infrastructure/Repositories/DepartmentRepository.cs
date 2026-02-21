@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-internal class DepartmentRepository : Repository<Department>, IDepartmentRepository
+internal class DepartmentRepository : Repository<DepartmentEntity>, IDepartmentRepository
 {
     public DepartmentRepository(DbContext context) : base(context)
     {

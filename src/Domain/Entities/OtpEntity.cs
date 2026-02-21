@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public sealed class Otp
+public sealed class OtpEntity
 {
     public required string Email { get; set; }
     public required string Code { get; set; }

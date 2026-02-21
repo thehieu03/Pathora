@@ -11,9 +11,9 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<User> Users => Set<User>();
-    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<RoleEntity> Roles => Set<RoleEntity>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
-    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<DepartmentEntity> Departments => Set<DepartmentEntity>();
     public DbSet<Position> Positions => Set<Position>();
     public DbSet<FileMetadata> FileMetadatas => Set<FileMetadata>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();

@@ -1,9 +1,7 @@
 using Application.Common.Contracts;
 using Application.Common.Interfaces;
-using Domain.Common.Repositories;
 using Application.Contracts.Department;
-using Domain.Constant;
-using Domain.Entities;
+using Domain.Common.Repositories;
 using ErrorOr;
 
 namespace Application.Services;

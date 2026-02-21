@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
-public class OtpConfiguration : IEntityTypeConfiguration<Otp>
+public class OtpConfiguration : IEntityTypeConfiguration<OtpEntity>
 {
-    public void Configure(EntityTypeBuilder<Otp> builder)
+    public void Configure(EntityTypeBuilder<OtpEntity> builder)
     {
         builder.ToTable("Otps");
 
