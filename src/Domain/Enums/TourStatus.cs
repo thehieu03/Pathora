@@ -4,12 +4,12 @@ namespace Domain.Enums;
 
 public enum TourStatus
 {
-    [Description("Đang hoạt động")]
+    [Description("Active")]
     Active = 1,
-    [Description("Đã ngừng hoạt động")]
+    [Description("Inactive")]
     Inactive = 2,
-    [Description("Đang chờ duyệt")]
+    [Description("Pending")]
     Pending = 3,
-     [Description("Đã bị từ chối")]
-     Rejected = 4
+    [Description("Rejected")]
+    Rejected = 4
 }

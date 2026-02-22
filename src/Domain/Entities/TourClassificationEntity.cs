@@ -2,7 +2,7 @@
 
 public sealed class TourClassificationEntity : Aggregate<Guid>
 {
-    public Guid TourId { get; set; }
+    public Guid TourClassificationId { get; set; }
     public TourEntity Tour { get; set; } = null!;
     public string Name { get; set; } = null!;
     public decimal Price { get; set; }
@@ -10,4 +10,5 @@ public sealed class TourClassificationEntity : Aggregate<Guid>
     public string Description { get; set; } = null!;
     public int DurationDays { get; set; }
     public List<TourDayEntity> Plans { get; set; } = [];
+    public List<TourInsuranceEntity> Insurances { get; set; } = [];
 }
