@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="ErrorOr" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
-    <PackageReference Include="MediatR" />
+<PackageReference Include="MediatR" />
     <PackageReference Include="ZiggyCreatures.FusionCache" />
   </ItemGroup>
 

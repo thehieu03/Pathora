@@ -5,6 +5,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="MongoDB.Driver" />
     <PackageReference Include="Serilog" />
   </ItemGroup>
 
