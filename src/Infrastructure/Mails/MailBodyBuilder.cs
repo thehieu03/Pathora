@@ -22,7 +22,7 @@ public class MailBodyBuilder : IMailBodyBuilder
 
     public MailBodyBuilder()
     {
-        _bodyBuilders = typeof(Mail)
+        _bodyBuilders = typeof(MailEntity)
             .Assembly
             .GetTypes()
             .Where(t =>

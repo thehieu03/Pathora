@@ -2,13 +2,8 @@ using Domain.Abstractions;
 
 namespace Domain.Mails;
 
-public class Mail : Aggregate<Guid>
+public class MailEntity : Aggregate<Guid>
 {
-    public Mail()
-    {
-        Id = Guid.CreateVersion7();
-    }
-
     public string To { get; set; } = null!;
     public string Subject { get; set; } = null!;
     public string Body { get; set; } = null!;

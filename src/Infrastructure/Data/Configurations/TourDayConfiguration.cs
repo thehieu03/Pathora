@@ -12,7 +12,7 @@ public class TourDayConfiguration : IEntityTypeConfiguration<TourDayEntity>
 
         builder.HasKey(d => d.Id);
 
-        builder.Property(d => d.ClassificationId)
+        builder.Property(d => d.TourDayId)
             .IsRequired();
 
         builder.Property(d => d.DayNumber)
@@ -23,13 +23,7 @@ public class TourDayConfiguration : IEntityTypeConfiguration<TourDayEntity>
             .HasMaxLength(300);
 
         builder.Property(d => d.Description)
-            .IsRequired();
-
-        builder.Property(d => d.AccommodationName)
-            .HasMaxLength(300);
-
-        builder.Property(d => d.AccommodationNote)
-            .HasMaxLength(500);
+            .HasMaxLength(2000);
 
         builder.HasMany(d => d.Activities)
             .WithOne(a => a.TourDay)

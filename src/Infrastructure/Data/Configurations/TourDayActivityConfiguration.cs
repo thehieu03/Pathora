@@ -18,22 +18,32 @@ public class TourDayActivityConfiguration : IEntityTypeConfiguration<TourDayActi
         builder.Property(a => a.Order)
             .IsRequired();
 
-        builder.Property(a => a.Destination)
-            .IsRequired()
-            .HasMaxLength(300);
-
-        builder.Property(a => a.DestinationNote)
-            .HasMaxLength(500);
-
-        builder.Property(a => a.TransportationType)
+        builder.Property(a => a.ActivityType)
             .HasConversion<string>()
             .HasMaxLength(50);
 
-        builder.Property(a => a.TransportationNote)
+        builder.Property(a => a.Title)
+            .IsRequired()
             .HasMaxLength(300);
 
         builder.Property(a => a.Description)
+            .HasMaxLength(2000);
+
+        builder.Property(a => a.Note)
             .HasMaxLength(1000);
 
+        builder.Property(a => a.StartTime);
+
+        builder.Property(a => a.EndTime);
+
+        builder.HasMany(a => a.Routes)
+            .WithOne(r => r.TourDayActivity)
+            .HasForeignKey("TourDayActivityId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(a => a.Accommodation)
+            .WithOne(acc => acc.TourDayActivity)
+            .HasForeignKey<TourPlanAccommodationEntity>("TourDayActivityId")
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

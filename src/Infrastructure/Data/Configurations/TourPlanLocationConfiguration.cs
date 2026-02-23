@@ -1,0 +1,49 @@
+using Domain.Entities;
+using Domain.Enums;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Infrastructure.Data.Configurations;
+
+public class TourPlanLocationConfiguration : IEntityTypeConfiguration<TourPlanLocationEntity>
+{
+    public void Configure(EntityTypeBuilder<TourPlanLocationEntity> builder)
+    {
+        builder.ToTable("TourPlanLocations");
+
+        builder.HasKey(l => l.Id);
+
+        builder.Property(l => l.LocationName)
+            .IsRequired()
+            .HasMaxLength(300);
+
+        builder.Property(l => l.LocationDescription)
+            .IsRequired()
+            .HasMaxLength(2000);
+
+        builder.Property(l => l.LocationType)
+            .HasConversion<string>()
+            .HasMaxLength(50);
+
+        builder.Property(l => l.Address)
+            .HasMaxLength(500);
+
+        builder.Property(l => l.City)
+            .HasMaxLength(200);
+
+        builder.Property(l => l.Country)
+            .HasMaxLength(200);
+
+        builder.Property(l => l.Latitude)
+            .HasColumnType("numeric(10,7)");
+
+        builder.Property(l => l.Longitude)
+            .HasColumnType("numeric(10,7)");
+
+        builder.Property(l => l.EntranceFee)
+            .HasColumnType("numeric(18,2)");
+
+        builder.Property(l => l.Note)
+            .HasMaxLength(1000);
+    }
+}

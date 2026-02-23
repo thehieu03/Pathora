@@ -26,27 +26,26 @@ public class CustomExceptionHandler : IExceptionHandler
             return true;
         }
 
-        httpContext.Response.StatusCode = StatusCodes.Status200OK;
-        //await httpContext.Response.WriteAsJsonAsync(
-        //    Log.ProcessError($"""
-        //                      {exception.Message}
-        //                      {exception.StackTrace}
-        //                      """)
-        //        .ToResultError(),
-        //    cancellationToken);
-        return true;
+        return false;
     }
 
-    private async Task HandleValidationException(
+    private static async Task HandleValidationException(
         HttpContext httpContext,
         Exception ex,
         CancellationToken cancellationToken)
     {
         var exception = (ValidationException)ex;
-        httpContext.Response.StatusCode = StatusCodes.Status200OK;
-        //await httpContext.Response.WriteAsJsonAsync(
-        //    exception.Errors.ToValidationErrorResult(),
-        //    cancellationToken: cancellationToken
-        //);
+
+        httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+        await httpContext.Response.WriteAsJsonAsync(new
+        {
+            Title = "Validation Failed",
+            Status = StatusCodes.Status400BadRequest,
+            Errors = exception.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray())
+        }, cancellationToken);
     }
 }

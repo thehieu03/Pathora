@@ -10,7 +10,7 @@ public static class MailExtensions
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
-    public static Mail ToMail<T>(this T model, string to, string? from = null)
+    public static MailEntity ToMail<T>(this T model, string to, string? from = null)
     {
         var type = typeof(T);
         var attr = type
@@ -20,7 +20,7 @@ public static class MailExtensions
         if (attr == null)
             throw new InvalidOperationException($"Missing MailTemplateAttribute on type {typeof(T).Name}");
 
-        return new Mail
+        return new MailEntity
         {
             To = to,
             Subject = attr.Subject,

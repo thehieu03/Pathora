@@ -35,7 +35,7 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
 
         builder.HasMany(c => c.Plans)
             .WithOne(d => d.Classification)
-            .HasForeignKey(d => d.ClassificationId)
+            .HasForeignKey(d => d.TourDayId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Mails;
 using Infrastructure.Data.Configurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +24,11 @@ public class AppDbContext : DbContext
     public DbSet<TourClassificationEntity> TourClassifications => Set<TourClassificationEntity>();
     public DbSet<TourDayEntity> TourDays => Set<TourDayEntity>();
     public DbSet<TourDayActivityEntity> TourDayActivities => Set<TourDayActivityEntity>();
+    public DbSet<TourInsuranceEntity> TourInsurances => Set<TourInsuranceEntity>();
+    public DbSet<TourPlanAccommodationEntity> TourPlanAccommodations => Set<TourPlanAccommodationEntity>();
+    public DbSet<TourPlanLocationEntity> TourPlanLocations => Set<TourPlanLocationEntity>();
+    public DbSet<TourPlanRouteEntity> TourPlanRoutes => Set<TourPlanRouteEntity>();
+    public DbSet<MailEntity> Mails => Set<MailEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

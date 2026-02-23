@@ -70,7 +70,7 @@ public sealed class MailProcessor : BackgroundService
         }
     }
 
-    private async Task SendAsync(IMailRepository mailRepository, IMailClient mailClient, Mail record)
+    private async Task SendAsync(IMailRepository mailRepository, IMailClient mailClient, MailEntity record)
     {
         var pipeline = _pipelineProvider.GetPipeline("mail-pipeline");
 
@@ -92,7 +92,7 @@ public sealed class MailProcessor : BackgroundService
         }
     }
 
-    private Task SendCoreAsync(IMailClient client, Mail record, CancellationToken token)
+    private Task SendCoreAsync(IMailClient client, MailEntity record, CancellationToken token)
     {
         var message = new MimeMessage();
 

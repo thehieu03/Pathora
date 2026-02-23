@@ -7,17 +7,17 @@ namespace Infrastructure.Repositories;
 
 public class MailRepository : IMailRepository
 {
-    public Task<ErrorOr<Success>> Add(Mail record)
+    public Task<ErrorOr<Success>> Add(MailEntity record)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<Success>> AddRange(List<Mail> records)
+    public Task<ErrorOr<Success>> AddRange(List<MailEntity> records)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ErrorOr<List<Mail>>> FindPending()
+    public Task<ErrorOr<List<MailEntity>>> FindPending()
     {
         throw new NotImplementedException();
     }
