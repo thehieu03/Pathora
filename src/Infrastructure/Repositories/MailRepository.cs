@@ -1,29 +1,46 @@
 using Domain.Common.Repositories;
 using Domain.Mails;
 using ErrorOr;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
-// làm riêng
 
-public class MailRepository : IMailRepository
+public class MailRepository(AppDbContext context) : IMailRepository
 {
-    public Task<ErrorOr<Success>> Add(MailEntity record)
+    private readonly AppDbContext _context = context;
+
+    public async Task<ErrorOr<Success>> Add(MailEntity record)
     {
-        throw new NotImplementedException();
+        await _context.Mails.AddAsync(record);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> AddRange(List<MailEntity> records)
+    public async Task<ErrorOr<Success>> AddRange(List<MailEntity> records)
     {
-        throw new NotImplementedException();
+        await _context.Mails.AddRangeAsync(records);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<List<MailEntity>>> FindPending()
+    public async Task<ErrorOr<List<MailEntity>>> FindPending()
     {
-        throw new NotImplementedException();
+        return await _context.Mails
+            .Where(m => m.Status == MailStatus.Pending)
+            .ToListAsync();
     }
 
-    public Task<ErrorOr<Success>> UpdateStatus(List<Guid> mailIds, MailStatus status)
+    public async Task<ErrorOr<Success>> UpdateStatus(List<Guid> mailIds, MailStatus status)
     {
-        throw new NotImplementedException();
+        var mails = await _context.Mails.Where(m => mailIds.Contains(m.Id)).ToListAsync();
+        foreach (var mail in mails)
+        {
+            mail.Status = status;
+            if (status == MailStatus.Sent)
+                mail.SentAt = DateTime.UtcNow;
+        }
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 }

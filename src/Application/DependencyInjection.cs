@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<ISystemKeyService, SystemKeyService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ITourService, TourService>();
 
         return services;
     }

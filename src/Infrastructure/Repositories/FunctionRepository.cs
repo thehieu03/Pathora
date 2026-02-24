@@ -1,18 +1,37 @@
 using Domain.Common.Repositories;
 using Domain.Constant;
 using ErrorOr;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
-//làm riêng
 
-public class FunctionRepository : IFunctionRepository
+public class FunctionRepository(AppDbContext context) : IFunctionRepository
 {
-    public Task<ErrorOr<List<Function>>> FindAll()
+    private readonly AppDbContext _context = context;
+
+    public async Task<ErrorOr<List<Function>>> FindAll()
     {
-        throw new NotImplementedException();
+        return await _context.Functions
+            .AsNoTracking()
+            .Where(f => !f.IsDeleted)
+            .OrderBy(f => f.CategoryId)
+            .ThenBy(f => f.Order)
+            .ToListAsync();
     }
-    public Task<ErrorOr<List<Function>>> FindUserFunctions(string userId)
+
+    public async Task<ErrorOr<List<Function>>> FindUserFunctions(string id)
     {
-        throw new NotImplementedException();
+        if (!Guid.TryParse(id, out var userId))
+            return Error.Validation("User.InvalidId", "User ID không hợp lệ");
+
+        // Get user's role IDs, then find functions for those roles
+        // For now, return all functions (authorization can be refined later)
+        return await _context.Functions
+            .AsNoTracking()
+            .Where(f => !f.IsDeleted)
+            .OrderBy(f => f.CategoryId)
+            .ThenBy(f => f.Order)
+            .ToListAsync();
     }
 }

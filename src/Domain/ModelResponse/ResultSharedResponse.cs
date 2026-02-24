@@ -1,8 +1,8 @@
-﻿namespace Domain.ApiModel;
+namespace Domain.ApiModel;
 
-public sealed class ResultSharedResponse<T> where T : class
+public sealed class ResultSharedResponse<T>
 {
-    public T Data { get; set; } = default!;
+    public T? Data { get; set; }
     public string? Message { get; set; }
     public int StatusCode { get; set; }
     public string? Instance { get; set; }
@@ -11,8 +11,8 @@ public sealed class ResultSharedResponse<T> where T : class
     {
     }
     public ResultSharedResponse(
-        T data,
-        string message,
+        T? data,
+        string? message,
         int statusCode,
         string? instance,
         List<ErrorResult>? errors)
@@ -43,10 +43,11 @@ public sealed class ResultSharedResponse<T> where T : class
         return new ResultSharedResponse<T>(statusCode, instance, errors, message);
     }
     public static ResultSharedResponse<T> Success(
-        T data,
-        string message,
-        string? instance = null)
+        T? data,
+        string? message,
+        string? instance = null,
+        int statusCode = 200)
     {
-        return new ResultSharedResponse<T>(data, message, 200, instance, null);
+        return new ResultSharedResponse<T>(data, message, statusCode, instance, null);
     }
 }

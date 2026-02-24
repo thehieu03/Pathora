@@ -2,6 +2,7 @@ using Application.Common.Contracts;
 using Application.Common.Interfaces;
 using Application.Contracts.Department;
 using Domain.Common.Repositories;
+using Domain.Entities;
 using ErrorOr;
 
 namespace Application.Services;
@@ -25,28 +26,82 @@ public class DepartmentService(
     private readonly IRoleService _roleService = roleService;
     private readonly IDepartmentRepository _departmentRepository = departmentRepository;
 
-    public Task<ErrorOr<Guid>> Create(CreateDepartmentRequest request)
+    public async Task<ErrorOr<Guid>> Create(CreateDepartmentRequest request)
     {
-        throw new NotImplementedException();
+        var department = new DepartmentEntity
+        {
+            ParentId = request.DepartmentParentId,
+            Name = request.DepartmentName,
+            Level = 1,
+            CreatedOnUtc = DateTimeOffset.UtcNow
+        };
+
+        if (request.DepartmentParentId.HasValue)
+        {
+            var parent = await _departmentRepository.GetByIdAsync(request.DepartmentParentId.Value);
+            if (parent is not null)
+            {
+                department.Level = parent.Level + 1;
+            }
+        }
+
+        await _departmentRepository.AddAsync(department);
+        return department.Id;
     }
 
-    public Task<ErrorOr<Success>> Delete(Guid id)
+    public async Task<ErrorOr<Success>> Delete(Guid id)
     {
-        throw new NotImplementedException();
+        await _departmentRepository.DeleteAsync(id);
+        return Result.Success;
     }
 
-    public Task<ErrorOr<PaginatedListWithPermissions<DepartmentVm>>> GetAll()
+    public async Task<ErrorOr<PaginatedListWithPermissions<DepartmentVm>>> GetAll()
     {
-        throw new NotImplementedException();
+        var departments = await _departmentRepository.GetListAsync(d =>
+            !(bool)((object)d.GetType().GetProperty("IsDeleted")!.GetValue(d)! ?? false));
+
+        // Use a simpler approach - get all and filter
+        var allDepartments = await _departmentRepository.GetAllAsync();
+        var activeDepartments = allDepartments
+            .Where(d => !d.IsDeleted)
+            .Select(d => new DepartmentVm(d.Id, d.ParentId, d.Name, d.Level))
+            .ToList();
+
+        return new PaginatedListWithPermissions<DepartmentVm>(
+            activeDepartments.Count, activeDepartments, new Dictionary<string, bool>());
     }
 
-    public Task<ErrorOr<List<DepartmentComboBoxVm>>> GetAllForComboBox()
+    public async Task<ErrorOr<List<DepartmentComboBoxVm>>> GetAllForComboBox()
     {
-        throw new NotImplementedException();
+        var allDepartments = await _departmentRepository.GetAllAsync();
+        return allDepartments
+            .Where(d => !d.IsDeleted)
+            .Select(d => new DepartmentComboBoxVm(d.Id, d.ParentId, d.Level, d.Name))
+            .ToList();
     }
 
-    public Task<ErrorOr<Success>> Update(UpdateDepartmentRequest request)
+    public async Task<ErrorOr<Success>> Update(UpdateDepartmentRequest request)
     {
-        throw new NotImplementedException();
+        var department = await _departmentRepository.GetByIdAsync(request.DepartmentId);
+        if (department is null)
+            return Error.NotFound("Department.NotFound", "Phòng ban không tồn tại");
+
+        department.Name = request.DepartmentName;
+        department.ParentId = request.DepartmentParentId;
+        department.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+
+        if (request.DepartmentParentId.HasValue)
+        {
+            var parent = await _departmentRepository.GetByIdAsync(request.DepartmentParentId.Value);
+            if (parent is not null)
+                department.Level = parent.Level + 1;
+        }
+        else
+        {
+            department.Level = 1;
+        }
+
+        _departmentRepository.Update(department);
+        return Result.Success;
     }
 }

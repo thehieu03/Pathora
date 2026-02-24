@@ -1,10 +1,22 @@
-﻿namespace Domain.Specs;
+﻿using Domain.ApiModel;
 
-public class TestSpec
+namespace Domain.Specs;
+
+public sealed class TestSpec
 {
     [Fact]
-    public void Write_Your_Test_Here()
+    public void Success_WithCustomStatusCode_ShouldUseProvidedCode()
     {
-        Assert.True(true);
+        var response = ResultSharedResponse<string>.Success(
+            data: "payload",
+            message: "Created",
+            instance: "/api/resources",
+            statusCode: 201);
+
+        Assert.Equal(201, response.StatusCode);
+        Assert.Equal("payload", response.Data);
+        Assert.Equal("Created", response.Message);
+        Assert.Equal("/api/resources", response.Instance);
+        Assert.Null(response.Errors);
     }
 }

@@ -24,28 +24,84 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
     private readonly IRoleService _roleService = roleService;
     private readonly IUser _user = user;
 
-    public Task<ErrorOr<Success>> CreateAsync(CreatePositionRequest request)
+    public async Task<ErrorOr<Success>> CreateAsync(CreatePositionRequest request)
     {
-        throw new NotImplementedException();
+        var position = new PositionEntity
+        {
+            Name = request.Name,
+            Level = request.Level,
+            Note = request.Note,
+            Type = request.Type,
+            CreatedOnUtc = DateTimeOffset.UtcNow
+        };
+
+        var result = await _positionRepository.Upsert(position);
+        if (result.IsError) return result.Errors;
+
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> DeleteAsync(Guid id)
+    public async Task<ErrorOr<Success>> DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var positionResult = await _positionRepository.FindById(id);
+        if (positionResult.IsError) return positionResult.Errors;
+        if (positionResult.Value is null)
+            return Error.NotFound("Position.NotFound", "Chức vụ không tồn tại");
+
+        var position = positionResult.Value;
+        position.IsDeleted = true;
+        position.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+
+        return await _positionRepository.Upsert(position);
     }
 
-    public Task<ErrorOr<PaginatedListWithPermissions<PositionVm>>> GetAllAsync(GetAllPositionRequest request)
+    public async Task<ErrorOr<PaginatedListWithPermissions<PositionVm>>> GetAllAsync(GetAllPositionRequest request)
     {
-        throw new NotImplementedException();
+        var positionsResult = await _positionRepository.FindAll();
+        if (positionsResult.IsError) return positionsResult.Errors;
+
+        var positions = positionsResult.Value.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(request.SearchText))
+        {
+            var search = request.SearchText.ToLower();
+            positions = positions.Where(p => p.Name.ToLower().Contains(search));
+        }
+
+        var total = positions.Count();
+        var paged = positions
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(p => new PositionVm(p.Id, p.Name, p.Level, p.Note, p.Type))
+            .ToList();
+
+        return new PaginatedListWithPermissions<PositionVm>(total, paged, new Dictionary<string, bool>());
     }
 
-    public Task<ErrorOr<List<LookupVm>>> GetComboboxAsync()
+    public async Task<ErrorOr<List<LookupVm>>> GetComboboxAsync()
     {
-        throw new NotImplementedException();
+        var positionsResult = await _positionRepository.FindAll();
+        if (positionsResult.IsError) return positionsResult.Errors;
+
+        return positionsResult.Value
+            .Select(p => new LookupVm(p.Id.ToString(), p.Name))
+            .ToList();
     }
 
-    public Task<ErrorOr<Success>> UpdateAsync(UpdatePositionRequest request)
+    public async Task<ErrorOr<Success>> UpdateAsync(UpdatePositionRequest request)
     {
-        throw new NotImplementedException();
+        var positionResult = await _positionRepository.FindById(request.Id);
+        if (positionResult.IsError) return positionResult.Errors;
+        if (positionResult.Value is null)
+            return Error.NotFound("Position.NotFound", "Chức vụ không tồn tại");
+
+        var position = positionResult.Value;
+        position.Name = request.Name;
+        position.Level = request.Level;
+        position.Note = request.Note;
+        position.Type = request.Type;
+        position.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+
+        return await _positionRepository.Upsert(position);
     }
 }

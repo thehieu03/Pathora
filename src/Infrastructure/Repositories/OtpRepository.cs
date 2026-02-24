@@ -1,18 +1,37 @@
 using Domain.Common.Repositories;
 using Domain.Entities;
 using ErrorOr;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
-// làm riêng
-public class OtpRepository : IOtpRepository
+
+public class OtpRepository(AppDbContext context) : IOtpRepository
 {
-    public Task<ErrorOr<Success>> Upsert(OtpEntity otp)
+    private readonly AppDbContext _context = context;
+
+    public async Task<ErrorOr<Success>> Upsert(OtpEntity otp)
     {
-        throw new NotImplementedException();
+        var existing = await _context.Set<OtpEntity>().FirstOrDefaultAsync(o => o.Email == otp.Email);
+        if (existing is null)
+        {
+            await _context.Set<OtpEntity>().AddAsync(otp);
+        }
+        else
+        {
+            existing.Code = otp.Code;
+            existing.ExpiryDate = otp.ExpiryDate;
+            existing.IsDeleted = false;
+        }
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    Task<ErrorOr<OtpEntity?>> IOtpRepository.FindByEmail(string email)
+    public async Task<ErrorOr<OtpEntity?>> FindByEmail(string email)
     {
-        throw new NotImplementedException();
+        var otp = await _context.Set<OtpEntity>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.Email == email && !o.IsDeleted);
+        return otp;
     }
 }
