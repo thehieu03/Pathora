@@ -1,5 +1,6 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+import { Button, Card, Icon } from "@/components/ui";
+import { SectionContainer } from "./shared";
 
 const CTA_BG =
   "https://www.figma.com/api/mcp/asset/c0b4ba20-2e30-407e-b2b2-0efd16039d3a";
@@ -37,82 +38,83 @@ const BRANDS = [
 ];
 
 export const CTASection = () => (
-  <section className="relative w-full h-[420px] overflow-hidden">
+  <section className="relative w-full h-[450px] overflow-hidden">
     <img
       src={CTA_BG}
-      alt="Mountain"
+      alt="Mountain landscape"
       className="absolute inset-0 w-full h-full object-cover"
     />
-    <div className="absolute inset-0 bg-black/50" />
+    <div className="absolute inset-0 bg-landing-heading/60" />
     <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-6">
-      <h2 className="text-[48px] font-bold mb-4">Keep things flexible</h2>
-      <p className="text-lg text-white/80 max-w-xl mb-8">
+      <h2 className="text-3xl md:text-[44px] font-bold mb-4 leading-tight">
+        Keep things flexible
+      </h2>
+      <p className="text-base md:text-lg text-white/80 max-w-xl mb-8 leading-relaxed">
         Go ahead and take that trip — we know how important it is to travel on
         your schedule.
       </p>
-      <Link
-        href="/tours"
-        className="inline-flex items-center gap-2 bg-[#FA8B02] text-white font-semibold px-10 py-4 rounded-full hover:bg-[#e07a00] transition-colors text-lg">
-        Explore Now
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </Link>
+      <Button
+        link="/tours"
+        text="Explore Now"
+        icon="heroicons-outline:chevron-right"
+        iconPosition="right"
+        iconClass="text-[16px]"
+        className="inline-flex items-center gap-2 bg-landing-accent text-white font-semibold px-8 py-3.5 rounded-full hover:bg-landing-accent-hover transition-colors text-base"
+      />
     </div>
   </section>
 );
 
 export const WhyChooseSection = () => (
-  <section className="w-full bg-[#f8fafc] py-16">
-    <div className="max-w-[1320px] mx-auto px-[15px]">
-      <div className="text-center mb-12">
-        <h2 className="text-[30px] font-bold text-[#05073c]">
+  <section className="w-full bg-[#f8fafc] py-16 md:py-20">
+    <SectionContainer>
+      <div className="text-center mb-14">
+        <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
           Why choose Tour
         </h2>
-        <p className="text-[#717171] text-base mt-2">
+        <p className="text-landing-body text-base mt-2">
           We offer the best travel experience every time
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
         {FEATURES.map((feat, idx) => (
-          <div key={idx} className="flex flex-col items-start gap-4">
-            <div className="w-14 h-14 bg-[#FA8B02]/10 rounded-xl flex items-center justify-center">
+          <Card
+            key={idx}
+            className="!bg-transparent !shadow-none border-none flex flex-col items-center text-center"
+            bodyClass="p-0 flex flex-col items-center text-center gap-4"
+          >
+            <div className="w-[70px] h-[70px] bg-landing-accent/10 rounded-full flex items-center justify-center">
               <img src={feat.icon} alt="" className="w-8 h-8" />
             </div>
-            <h3 className="font-semibold text-[#05073c] text-base leading-snug">
+            <h3 className="font-semibold text-landing-heading text-base leading-snug">
               {feat.title}
             </h3>
-            <p className="text-[#717171] text-sm leading-relaxed">
+            <p className="text-landing-body text-sm leading-relaxed max-w-[250px]">
               {feat.desc}
             </p>
-          </div>
+          </Card>
         ))}
       </div>
-    </div>
+    </SectionContainer>
   </section>
 );
 
 export const TrustedBrandsSection = () => (
-  <section className="w-full bg-white py-12 border-t border-[#e7e6e6]">
-    <div className="max-w-[1320px] mx-auto px-[15px]">
-      <p className="text-center text-[#717171] font-medium text-sm uppercase tracking-widest mb-8">
+  <section className="w-full bg-white py-12 border-t border-landing-border">
+    <SectionContainer>
+      <p className="text-center text-landing-body font-medium text-sm uppercase tracking-widest mb-8">
         Trusted by all the largest travel brands
       </p>
-      <div className="flex flex-wrap items-center justify-center gap-10">
+      <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
         {BRANDS.map((src, idx) => (
           <img
             key={idx}
             src={src}
             alt="Brand"
-            className="h-8 object-contain opacity-60 hover:opacity-100 transition-opacity"
+            className="h-6 md:h-8 object-contain opacity-60 hover:opacity-100 transition-opacity"
           />
         ))}
       </div>
-    </div>
+    </SectionContainer>
   </section>
 );

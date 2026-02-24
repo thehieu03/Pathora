@@ -1,12 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui";
+import { SectionContainer, StarRating } from "./shared";
 
 const AVATAR =
   "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7";
-const LEFT_ARROW =
-  "https://www.figma.com/api/mcp/asset/1c608644-cb94-4804-9cff-4e782edccc08";
-const RIGHT_ARROW =
-  "https://www.figma.com/api/mcp/asset/407121e3-8fab-4a67-afc4-550ca02fe4f7";
 
 const REVIEWS = [
   {
@@ -32,17 +30,22 @@ const REVIEWS = [
   },
 ];
 
-const StarRating = ({ count }: { count: number }) => (
-  <div className="flex items-center gap-0.5" role="img" aria-label={`${count} out of 5 stars`}>
-    {Array.from({ length: count }).map((_, i) => (
-      <span key={i} className="text-[#FA8B02] text-base" aria-hidden="true">
-        ★
-      </span>
-    ))}
-  </div>
+const QuoteIcon = () => (
+  <svg
+    width="42"
+    height="36"
+    viewBox="0 0 42 36"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="mx-auto mb-6">
+    <path
+      d="M0 36V22.5C0 19.1 0.55 15.85 1.65 12.75C2.8 9.6 4.4 6.75 6.45 4.2C8.55 1.6 10.95 0 13.65 0L16.8 5.4C14.6 6.6 12.7 8.4 11.1 10.8C9.55 13.15 8.65 15.7 8.4 18.45H16.8V36H0ZM25.2 36V22.5C25.2 19.1 25.75 15.85 26.85 12.75C28 9.6 29.6 6.75 31.65 4.2C33.75 1.6 36.15 0 38.85 0L42 5.4C39.8 6.6 37.9 8.4 36.3 10.8C34.75 13.15 33.85 15.7 33.6 18.45H42V36H25.2Z"
+      className="fill-landing-accent"
+    />
+  </svg>
 );
 
-const ReviewsSection = () => {
+export const ReviewsSection = () => {
   const [current, setCurrent] = useState(0);
 
   const prev = () => setCurrent((c) => (c === 0 ? REVIEWS.length - 1 : c - 1));
@@ -50,80 +53,80 @@ const ReviewsSection = () => {
   const review = REVIEWS[current];
 
   return (
-    <section className="w-full bg-white py-12 md:py-16" aria-labelledby="reviews-heading">
-      <div className="max-w-[1320px] mx-auto px-4 md:px-[15px]">
-        <div className="text-center mb-10 md:mb-12">
-          <h2 id="reviews-heading" className="text-2xl md:text-[30px] font-bold text-[#05073c]">
+    <section
+      className="w-full bg-white py-16 md:py-20"
+      aria-labelledby="reviews-heading">
+      <SectionContainer>
+        <div className="text-center mb-12">
+          <h2
+            id="reviews-heading"
+            className="text-2xl md:text-[30px] font-bold text-landing-heading">
             Customer Reviews
           </h2>
-          <p className="text-[#717171] text-base mt-2">
+          <p className="text-landing-body text-base mt-2">
             What our travellers say
           </p>
         </div>
 
         <div className="relative flex items-center justify-center">
-          <button
+          <Button
             onClick={prev}
-            className="absolute left-0 w-10 h-10 rounded-full border border-[#e7e6e6] flex items-center justify-center hover:bg-[#FA8B02] hover:border-[#FA8B02] transition-colors group z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FA8B02]"
-            aria-label="Previous review"
-          >
-            <img
-              src={LEFT_ARROW}
-              alt=""
-              className="w-5 h-5 group-hover:brightness-0 group-hover:invert"
-            />
-          </button>
+            className="hidden md:flex absolute left-0 md:left-4 lg:left-16 w-[45px] h-[45px] rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
+            icon="heroicons-outline:chevron-left"
+            iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
+            ariaLabel="Previous review"
+          />
 
-          <div className="max-w-2xl mx-auto text-center px-12 md:px-16">
+          <div className="max-w-[650px] mx-auto text-center px-4 md:px-16 lg:px-20">
+            <QuoteIcon />
+
+            <p className="text-landing-body text-base md:text-lg leading-relaxed mb-8">
+              {review.text}
+            </p>
+
             <div className="flex justify-center mb-4">
               <img
                 src={review.avatar}
                 alt={`${review.name}'s avatar`}
-                className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover"
+                className="w-[60px] h-[60px] rounded-full object-cover"
               />
             </div>
-            <blockquote className="text-[#717171] text-base leading-relaxed mb-6 italic">
-              &ldquo;{review.text}&rdquo;
-            </blockquote>
+
             <div className="flex justify-center mb-2">
-              <StarRating count={review.stars} />
+              <StarRating count={review.stars} size="md" />
             </div>
-            <p className="font-semibold text-[#05073c] text-base">
+
+            <p className="font-semibold text-landing-heading text-base">
               {review.name}
             </p>
-            <p className="text-[#717171] text-sm">{review.role}</p>
+            <p className="text-landing-body text-sm">{review.role}</p>
           </div>
 
-          <button
+          <Button
             onClick={next}
-            className="absolute right-0 w-10 h-10 rounded-full border border-[#e7e6e6] flex items-center justify-center hover:bg-[#FA8B02] hover:border-[#FA8B02] transition-colors group z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FA8B02]"
-            aria-label="Next review"
-          >
-            <img
-              src={RIGHT_ARROW}
-              alt=""
-              className="w-5 h-5 group-hover:brightness-0 group-hover:invert"
-            />
-          </button>
+            className="hidden md:flex absolute right-0 md:right-4 lg:right-16 w-[45px] h-[45px] rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
+            icon="heroicons-outline:chevron-right"
+            iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
+            ariaLabel="Next review"
+          />
         </div>
 
-        <div className="flex justify-center gap-2 mt-8" role="tablist" aria-label="Review slides">
+        <div
+          className="flex justify-center gap-2 mt-10"
+          role="tablist"
+          aria-label="Review slides">
           {REVIEWS.map((_, i) => (
-            <button
+            <Button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`h-2 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FA8B02] ${
-                i === current ? "bg-[#FA8B02] w-6" : "bg-[#e7e6e6] w-2"
+              className={`h-2.5 rounded-full transition-all ${
+                i === current ? "bg-landing-accent w-7" : "bg-landing-border w-2.5"
               }`}
-              role="tab"
-              aria-selected={i === current}
-              aria-label={`Go to review ${i + 1}`}
+              ariaLabel={`Go to review ${i + 1}`}
             />
           ))}
         </div>
-      </div>
+      </SectionContainer>
     </section>
   );
 };
-
-export default ReviewsSection;

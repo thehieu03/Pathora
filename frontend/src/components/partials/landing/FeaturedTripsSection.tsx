@@ -1,10 +1,8 @@
+"use client";
 import React from "react";
 import Link from "next/link";
-
-const LEFT_ARROW =
-  "https://www.figma.com/api/mcp/asset/1c608644-cb94-4804-9cff-4e782edccc08";
-const RIGHT_ARROW =
-  "https://www.figma.com/api/mcp/asset/407121e3-8fab-4a67-afc4-550ca02fe4f7";
+import { Badge, Icon } from "@/components/ui";
+import { NavArrows, SectionContainer, StarRating } from "./shared";
 
 const TRIPS = [
   {
@@ -45,16 +43,6 @@ const TRIPS = [
   },
 ];
 
-const StarRating = ({ count }: { count: number }) => (
-  <div className="flex items-center gap-0.5">
-    {Array.from({ length: count }).map((_, i) => (
-      <span key={i} className="text-[#e2ad64] text-[10px]">
-        ★
-      </span>
-    ))}
-  </div>
-);
-
 const TripCard = ({
   image,
   location,
@@ -65,8 +53,7 @@ const TripCard = ({
 }: (typeof TRIPS)[0]) => (
   <Link
     href="/tours"
-    className="group bg-white border border-[#e7e6e6] rounded-xl overflow-hidden w-[300px] shrink-0 flex flex-col hover:shadow-lg transition-shadow duration-300">
-    {/* Image */}
+    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full md:w-[300px] shrink-0 flex flex-col hover:shadow-lg transition-shadow duration-300">
     <div className="h-[215px] overflow-hidden">
       <img
         src={image}
@@ -75,41 +62,27 @@ const TripCard = ({
       />
     </div>
 
-    {/* Body */}
     <div className="p-5 flex flex-col gap-2 flex-1">
-      <div className="flex items-center gap-1 text-[#717171] text-base">
-        <svg
-          className="w-4 h-4 shrink-0"
-          viewBox="0 0 24 24"
-          fill="currentColor">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-        </svg>
-        <span className="text-sm">{location}</span>
-      </div>
-      <h3 className="text-[#05073c] font-medium text-[15px] leading-snug">
+      <Badge
+        icon="heroicons-solid:map-pin"
+        label={location}
+        className="bg-transparent text-landing-body text-sm px-0 py-0 inline-flex items-center gap-1 w-fit"
+      />
+      <h3 className="text-landing-heading font-medium text-[15px] leading-snug">
         {title}
       </h3>
       <StarRating count={rating} />
     </div>
 
-    {/* Footer */}
-    <div className="px-5 pb-4 border-t border-[#e7e6e6] pt-2.5 flex items-center justify-between">
-      <div className="flex items-center gap-1 text-[#05073c] text-xs">
-        <svg
+    <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
+      <div className="flex items-center gap-1 text-landing-heading text-xs">
+        <Icon
+          icon="heroicons-outline:calendar"
           className="w-4 h-4 text-gray-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={1.5}>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
+        />
         <span>{days} days</span>
       </div>
-      <div className="text-[#05073c] text-sm">
+      <div className="text-landing-heading text-sm">
         <span className="text-gray-500 text-xs font-normal">From </span>
         <span className="font-medium text-[15px]">{price}</span>
       </div>
@@ -117,38 +90,23 @@ const TripCard = ({
   </Link>
 );
 
-const FeaturedTripsSection = () => {
+export const FeaturedTripsSection = () => {
   return (
-    <section className="w-full max-w-[1320px] mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8 px-[15px]">
-        <h2 className="text-[30px] font-bold text-[#05073c]">Featured Trips</h2>
-        <div className="flex items-center gap-3">
-          <button className="w-10 h-10 rounded-full border border-[#e7e6e6] flex items-center justify-center hover:bg-[#FA8B02] hover:border-[#FA8B02] transition-colors group">
-            <img
-              src={LEFT_ARROW}
-              alt="Previous"
-              className="w-5 h-5 group-hover:brightness-0 group-hover:invert"
-            />
-          </button>
-          <button className="w-10 h-10 rounded-full border border-[#e7e6e6] flex items-center justify-center hover:bg-[#FA8B02] hover:border-[#FA8B02] transition-colors group">
-            <img
-              src={RIGHT_ARROW}
-              alt="Next"
-              className="w-5 h-5 group-hover:brightness-0 group-hover:invert"
-            />
-          </button>
+    <SectionContainer>
+      <section className="w-full">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+            Featured Trips
+          </h2>
+          <NavArrows />
         </div>
-      </div>
 
-      {/* Cards */}
-      <div className="flex gap-8 px-[15px] overflow-x-auto pb-2">
-        {TRIPS.map((trip, idx) => (
-          <TripCard key={idx} {...trip} />
-        ))}
-      </div>
-    </section>
+        <div className="flex flex-col md:flex-row gap-4 md:gap-8 overflow-x-auto pb-2">
+          {TRIPS.map((trip, idx) => (
+            <TripCard key={idx} {...trip} />
+          ))}
+        </div>
+      </section>
+    </SectionContainer>
   );
 };
-
-export default FeaturedTripsSection;

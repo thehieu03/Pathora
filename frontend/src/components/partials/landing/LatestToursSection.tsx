@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui";
+import { SectionContainer } from "./shared";
 
 const TOURS = [
   {
@@ -36,58 +39,62 @@ const TOURS = [
   },
 ];
 
-const LatestToursSection = () => {
+export const LatestToursSection = () => {
   return (
-    <section className="w-full max-w-[1320px] mx-auto">
-      {/* Section header */}
-      <div className="flex items-center justify-between mb-6 px-[15px]">
-        <h2 className="text-[30px] font-bold text-[#05073c]">
-          Our Latest Tours
-        </h2>
-        <Link
-          href="/tours"
-          className="text-[#05073c] text-sm hover:text-[#FA8B02] transition-colors flex items-center gap-1">
-          See all
-          <span className="text-base">›</span>
-        </Link>
-      </div>
+    <SectionContainer>
+      <section className="w-full">
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+            Our Latest Tours
+          </h2>
+          <Button
+            link="/tours"
+            text="See all"
+            icon="heroicons-outline:chevron-right"
+            iconPosition="right"
+            iconClass="text-[14px]"
+            className="text-landing-heading text-sm hover:text-landing-accent transition-colors bg-transparent"
+          />
+        </div>
 
-      {/* Tours row */}
-      <div className="flex items-center gap-8 px-[15px] overflow-x-auto pb-2">
-        {TOURS.map((tour, idx) => (
-          <Link
-            key={idx}
-            href="/tours"
-            className="flex flex-col items-center gap-3 shrink-0 group">
-            <div className="relative">
-              {tour.avatar && (
-                <div className="absolute -inset-1 rounded-full">
+        {/* Tours row */}
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 overflow-x-auto pb-2">
+          {TOURS.map((tour, idx) => (
+            <Link
+              key={idx}
+              href="/tours"
+              className="flex flex-row md:flex-col items-center gap-3 md:gap-3 shrink-0 group w-full md:w-auto">
+              <div className="relative shrink-0">
+                {tour.avatar && (
+                  <div className="absolute -inset-1 rounded-full hidden md:block">
+                    <img
+                      src={tour.avatar}
+                      alt=""
+                      className="w-[108px] h-[108px] rounded-full object-cover"
+                    />
+                  </div>
+                )}
+                <div className="relative w-[60px] h-[60px] md:w-[100px] md:h-[100px] rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
                   <img
-                    src={tour.avatar}
-                    alt=""
-                    className="w-[108px] h-[108px] rounded-full object-cover"
+                    src={tour.image}
+                    alt={tour.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
-              )}
-              <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-                <img
-                  src={tour.image}
-                  alt={tour.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
               </div>
-            </div>
-            <div className="text-center max-w-[130px]">
-              <p className="text-[#eb662b] text-sm font-normal">{tour.date}</p>
-              <p className="text-[#05073c] text-sm font-medium leading-snug mt-0.5">
-                {tour.title}
-              </p>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
+              <div className="text-left md:text-center max-w-full md:max-w-[130px] flex-1">
+                <p className="text-[#eb662b] text-[10px] md:text-sm font-normal">
+                  {tour.date}
+                </p>
+                <p className="text-landing-heading text-xs md:text-sm font-medium leading-snug mt-0.5">
+                  {tour.title}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </SectionContainer>
   );
 };
-
-export default LatestToursSection;
