@@ -1,9 +1,9 @@
 using Api;
+using Api.Swagger.Extensions;
 using Application;
 using Infrastructure;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
 using Serilog;
 
 // Ai hiểu cho 10k
@@ -35,11 +35,8 @@ app.UseAuthorization();
 
 app.UseSerilogRequestLogging();
 
-app.MapOpenApi();
-app.MapScalarApiReference();
+app.UseSwaggerApi();
 app.MapControllers();
-
-app.MapGet("/", () => Results.Redirect("/scalar", true));
 
 app.Run();
 
