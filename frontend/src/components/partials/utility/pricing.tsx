@@ -114,7 +114,7 @@ const PricingPage = () => {
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
             {tables.map((item, i) => (
               <div
-                className={` ${item.bg} price-table relative z-1 overflow-hidden rounded-[6px] p-6 text-slate-900 dark:text-white`}
+                className={` ${item.bg} price-table relative z-1 overflow-hidden rounded-md p-6 text-slate-900 dark:text-white`}
                 key={i}
               >
                 <div className="overlay absolute top-0 right-0 z-[-1] h-full w-full">
@@ -165,7 +165,7 @@ const PricingPage = () => {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
           {tables2.map((item, i) => (
             <div
-              className={`${item.bg} price-table shadow-base relative z-1 overflow-hidden rounded-[6px] p-6 text-slate-900 dark:bg-slate-800 dark:text-white`}
+              className={`${item.bg} price-table shadow-base relative z-1 overflow-hidden rounded-md p-6 text-slate-900 dark:bg-slate-800 dark:text-white`}
               key={i}
             >
               {item.ribon && (

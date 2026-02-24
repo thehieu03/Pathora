@@ -4,7 +4,10 @@ import SimpleBar from "simplebar-react";
 import { useSelector, useDispatch } from "react-redux";
 import { motion, useCycle } from "framer-motion";
 import Button from "@/components/ui/Button";
-import { removeFromCart, updateQuantity } from "@/store/api/shop/cartSlice";
+import {
+  removeFromCart,
+  updateQuantity,
+} from "@/store/infrastructure/cartSlice";
 import CartItem from "./cart-item";
 import NoItem from "./no-item";
 import clsx from "clsx";
@@ -73,7 +76,7 @@ const CartPanel = ({ open, close }: { open: boolean; close: () => void }) => {
   return (
     <div>
       <motion.div
-        className={`setting-wrapper shadow-base2 dark:shadow-base3 fixed top-0 z-9999 h-screen w-75 border border-slate-200 bg-white md:w-100 ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${open ? "ml-0" : "ml-[-400px]"} `}
+        className={`setting-wrapper shadow-base2 dark:shadow-base3 fixed top-0 z-9999 h-screen w-75 border border-slate-200 bg-white md:w-100 ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${open ? "ml-0" : "-ml-100"} `}
         animate={open ? "open" : "closed"}
         variants={variants}
       >

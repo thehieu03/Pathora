@@ -1,7 +1,7 @@
 import React from "react";
 import Icon from "@/components/ui/Icon";
 import { useDispatch, useSelector } from "react-redux";
-import { updateQuantity } from "@/store/api/shop/cartSlice";
+import { updateQuantity } from "@/store/infrastructure/cartSlice";
 import { RootState } from "@/lib/store";
 
 const CounterButton = ({ product }: { product: { id: string } }) => {
@@ -27,7 +27,7 @@ const CounterButton = ({ product }: { product: { id: string } }) => {
 
   return (
     <div className="flex items-center space-x-4 rtl:space-x-reverse">
-      <div className="flex h-8 flex-1 divide-x-[1px] divide-slate-900 rounded-sm border-1 border-slate-900 text-sm font-normal delay-150 ease-in-out rtl:divide-x-reverse dark:divide-slate-600! dark:border-slate-600!">
+      <div className="flex h-8 flex-1 divide-x divide-slate-900 rounded-sm border-1 border-slate-900 text-sm font-normal delay-150 ease-in-out rtl:divide-x-reverse dark:divide-slate-600! dark:border-slate-600!">
         <button
           onClick={handleDecreaseQuantity}
           disabled={!cartItem || cartItem.quantity <= 1}

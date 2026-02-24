@@ -60,7 +60,7 @@ const COLUMNS = [
       return (
         <span className="block w-full">
           <span
-            className={`mx-auto inline-block min-w-22.5 rounded-[999px] px-3 py-1 text-center ${
+            className={`mx-auto inline-block min-w-22.5 rounded-full px-3 py-1 text-center ${
               row?.cell?.value === "paid"
                 ? "text-success-500 bg-success-500/25"
                 : ""

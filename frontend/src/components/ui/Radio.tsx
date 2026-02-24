@@ -54,7 +54,7 @@ const Radio = ({
           className={`relative inline-flex flex-none rounded-full border bg-white transition-all duration-150 ltr:mr-3 rtl:ml-3 dark:bg-slate-500 ${className} ${
             checked
               ? activeClass +
-                " border-slate-700 ring-[6px] ring-offset-2 ring-inset dark:ring-offset-4 dark:ring-offset-slate-600"
+                " border-slate-700 ring-6 ring-offset-2 ring-inset dark:ring-offset-4 dark:ring-offset-slate-600"
               : "border-slate-400 dark:border-slate-600 dark:ring-slate-700"
           } `}
         ></span>

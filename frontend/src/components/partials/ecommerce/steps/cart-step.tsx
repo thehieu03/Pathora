@@ -4,7 +4,10 @@ import Icon from "@/components/ui/Icon";
 import products1 from "@/assets/images/e-commerce/product-card/classical-black-tshirt.png";
 
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCart, updateQuantity } from "@/store/api/shop/cartSlice";
+import {
+  removeFromCart,
+  updateQuantity,
+} from "@/store/infrastructure/cartSlice";
 import { RootState } from "@/lib/store";
 
 const CartStep = () => {
@@ -79,7 +82,7 @@ const CartStep = () => {
                       </td>
                       <td className="table-td pb-3">${item.price}</td>
                       <td className="table-td pb-3">
-                        <div className="flex h-8 min-w-23.75 flex-1 divide-x-[1px] divide-slate-900 rounded-sm border border-1 border-slate-900 text-sm font-normal delay-150 ease-in-out md:min-w-28 rtl:divide-x-reverse dark:divide-slate-600 dark:border-slate-600">
+                        <div className="flex h-8 min-w-23.75 flex-1 divide-x divide-slate-900 rounded-sm border border-1 border-slate-900 text-sm font-normal delay-150 ease-in-out md:min-w-28 rtl:divide-x-reverse dark:divide-slate-600 dark:border-slate-600">
                           <button
                             className="px-2 disabled:cursor-not-allowed md:px-3"
                             onClick={() => handleDecreaseQuantity(item.id)}

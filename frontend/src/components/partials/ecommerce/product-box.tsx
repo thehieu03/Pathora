@@ -7,7 +7,7 @@ import { current } from "@reduxjs/toolkit";
 import CounterButton from "@/components/partials/ecommerce/counter-button";
 import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart, updateQuantity } from "@/store/api/shop/cartSlice";
+import { addToCart, updateQuantity } from "@/store/infrastructure/cartSlice";
 import Link from "next/link";
 import { RootState } from "@/lib/store";
 

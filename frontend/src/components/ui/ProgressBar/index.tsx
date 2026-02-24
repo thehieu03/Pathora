@@ -5,7 +5,7 @@ const ProgressBar = ({
   title,
   children,
   value,
-  backClass = "rounded-[999px]",
+  backClass = "rounded-full",
   className = "bg-slate-900",
   titleClass = "text-base font-normal",
   striped,

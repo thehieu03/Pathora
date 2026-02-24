@@ -85,7 +85,7 @@ const FaqPage = () => {
                   <Tab key={i} as={Fragment}>
                     {({ selected }) => (
                       <button
-                        className={`focus:ring-0 focus:outline-hidden space-x-2 text-sm flex items-center w-full transition duration-150 px-3 py-4 rounded-[6px] rtl:space-x-reverse
+                        className={`focus:ring-0 focus:outline-hidden space-x-2 text-sm flex items-center w-full transition duration-150 px-3 py-4 rounded-md rtl:space-x-reverse
                             ${
                               selected
                                 ? "bg-slate-100 dark:bg-slate-900 dark:text-white"

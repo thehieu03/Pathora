@@ -8,7 +8,7 @@ const MobileFooter = () => {
   const pathname = usePathname();
 
   return (
-    <div className="custom-dropshadow footer-bg fixed bottom-0 left-0 z-9999 flex w-full items-center justify-around bg-white bg-no-repeat px-4 py-3 backdrop-blur-[40px] backdrop-filter dark:bg-slate-700">
+    <div className="custom-dropshadow footer-bg fixed bottom-0 left-0 z-9999 flex w-full items-center justify-around bg-white bg-no-repeat px-4 py-3 backdrop-blur-2xl backdrop-filter dark:bg-slate-700">
       <Link href="/chat">
         <div>
           <span
@@ -32,7 +32,7 @@ const MobileFooter = () => {
       </Link>
       <Link
         href="/profile"
-        className="footer-bg relative z-[-1] -mt-10 flex h-16.25 w-16.25 items-center justify-center rounded-full bg-white bg-no-repeat backdrop-blur-[40px] backdrop-filter dark:bg-slate-700"
+        className="footer-bg relative z-[-1] -mt-10 flex h-16.25 w-16.25 items-center justify-center rounded-full bg-white bg-no-repeat backdrop-blur-2xl backdrop-filter dark:bg-slate-700"
       >
         <div className="custom-dropshadow relative top-0 left-0 h-12.5 w-12.5 rounded-full">
           <img

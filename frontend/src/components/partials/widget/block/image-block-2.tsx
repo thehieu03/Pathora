@@ -3,7 +3,7 @@ import Image2 from "@/assets/images/all-img/widget-bg-2.png";
 const ImageBlock2 = () => {
   return (
     <div
-      className="bg-no-repeat bg-cover bg-center p-5 rounded-[6px] relative"
+      className="bg-no-repeat bg-cover bg-center p-5 rounded-md relative"
       style={{
         backgroundImage: `url(${Image2})`,
       }}

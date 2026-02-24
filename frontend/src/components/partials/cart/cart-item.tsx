@@ -1,14 +1,9 @@
 import React from "react";
 import Icon from "@/components/ui/Icon";
+import type { CartItem as CartDomainItem } from "@/store/domain/cart";
 
 type CartItemProps = {
-  item: {
-    id: string | number;
-    img: string;
-    name: string;
-    price: number;
-    quantity: number;
-  };
+  item: CartDomainItem;
   handleDecreaseQuantity: (id: string | number) => void;
   handleIncreaseQuantity: (id: string | number) => void;
   handleRemoveFromCart: (id: string | number) => void;
@@ -25,7 +20,10 @@ function CartItem({
       <div className="shrink-0">
         <div className="w-14 h-14 md:w-20 md:h-20 bg-slate-200 rounded-sm overflow-hidden">
           <img
-            src={item.img}
+            src={
+              item.img ??
+              "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+            }
             alt={item.name}
             className="w-full h-full object-cover p-3"
           />

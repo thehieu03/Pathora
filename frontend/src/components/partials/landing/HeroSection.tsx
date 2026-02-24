@@ -348,7 +348,7 @@ export const HeroSection = () => {
           ref={searchRef}
           className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl"
         >
-          <div className="flex mb-[-1px]">
+          <div className="flex -mb-px">
             <Button
               onClick={() => setTourType("public")}
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tl-xl transition-colors ${
