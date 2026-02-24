@@ -4,8 +4,8 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
-import { toast, ToastPosition } from "react-toastify";
-import i18n from "@/i18n/config";
+import { ToastPosition } from "react-toastify";
+import { showErrorToast } from "./showErrorToast";
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_GATEWAY || "not_config";
@@ -50,20 +50,6 @@ const getCookie = (name: string): string | null => {
     return parts.pop()?.split(";").shift() || null;
   }
   return null;
-};
-
-const showErrorToast = (errorKey: string, details?: string): void => {
-  const translationKey = `error_response.${errorKey}`;
-  const defaultKey = "error_response.DEFAULT_ERROR";
-
-  const translatedMessage = i18n.exists(translationKey)
-    ? i18n.t(translationKey)
-    : i18n.t(defaultKey);
-
-  const message = details
-    ? `${translatedMessage}: ${details}`
-    : translatedMessage;
-  toast.error(message, toastConfig);
 };
 
 const handleStatusError = (status: number): void => {

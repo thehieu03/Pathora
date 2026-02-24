@@ -31,7 +31,7 @@ type SelectProps = {
 
 const Select = ({
   label,
-  placeholder = "Select Option",
+  placeholder = "Select option…",
   classLabel = "form-label",
   className = "",
   classGroup = "",
@@ -60,7 +60,7 @@ const Select = ({
     <div
       className={`fromGroup ${error ? "has-error" : ""} ${
         horizontal ? "flex" : ""
-      } ${validate ? "is-valid" : ""} `}
+      } ${validate ? "is-valid" : ""}`}
     >
       {label && (
         <label
@@ -79,14 +79,16 @@ const Select = ({
           {...(register && name ? register(name) : {})}
           {...rest}
           name={name}
-          className={`${
-            error ? "has-error" : " "
-          } form-control appearance-none py-2 ${className} `}
+          className={`form-control appearance-none py-2 ${
+            error ? "has-error" : ""
+          } ${className} bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-200`}
           disabled={disabled}
           id={id}
           value={value}
           size={size}
           defaultValue={defaultValue}
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={error ? `${id}-error` : undefined}
         >
           <option value="" disabled>
             {placeholder}
@@ -105,9 +107,8 @@ const Select = ({
           ))}
         </select>
 
-        {/* icon */}
-        <div className="absolute top-1/2 flex -translate-y-1/2 space-x-1 text-xl ltr:right-[14px] rtl:left-[14px] rtl:space-x-reverse">
-          <span className="pointer-events-none relative -right-2 inline-block text-slate-900 dark:text-slate-300">
+        <div className="pointer-events-none absolute top-1/2 flex -translate-y-1/2 space-x-1 text-xl ltr:right-[14px] rtl:left-[14px] rtl:space-x-reverse">
+          <span className="relative -right-2 inline-block text-slate-900 dark:text-slate-300">
             <Icon icon="heroicons:chevron-down" />
           </span>
           {error && (
@@ -122,9 +123,12 @@ const Select = ({
           )}
         </div>
       </div>
-      {/* error and success message*/}
+
       {error && (
         <div
+          id={`${id}-error`}
+          role="alert"
+          aria-live="polite"
           className={`mt-2 ${
             msgTooltip
               ? "bg-danger-500 inline-block rounded-sm px-2 py-1 text-[10px] text-white"
@@ -134,7 +138,7 @@ const Select = ({
           {error.message}
         </div>
       )}
-      {/* validated and success message*/}
+      
       {validate && (
         <div
           className={`mt-2 ${
@@ -146,7 +150,7 @@ const Select = ({
           {validate}
         </div>
       )}
-      {/* only description */}
+      
       {description && <span className="input-description">{description}</span>}
     </div>
   );

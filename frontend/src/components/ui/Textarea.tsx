@@ -55,7 +55,7 @@ const Textarea = ({
     <div
       className={`fromGroup ${error ? "has-error" : ""} ${
         horizontal ? "flex" : ""
-      } ${validate ? "is-valid" : ""} `}
+      } ${validate ? "is-valid" : ""}`}
     >
       {label && (
         <label
@@ -72,9 +72,7 @@ const Textarea = ({
           {...(register && name ? register(name) : {})}
           {...rest}
           name={name}
-          className={`${
-            error ? "has-error" : " "
-          } form-control py-2 ${className} `}
+          className={`form-control py-2 ${error ? "has-error" : ""} ${className}`}
           placeholder={placeholder}
           readOnly={readonly}
           disabled={disabled}
@@ -84,9 +82,10 @@ const Textarea = ({
           value={value}
           onChange={onChange}
           onBlur={onBlur}
-        ></textarea>
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={error ? `${id}-error` : undefined}
+        />
 
-        {/* icon */}
         <div className="absolute top-1/2 flex -translate-y-1/2 space-x-1 text-xl ltr:right-[14px] rtl:left-[14px] rtl:space-x-reverse">
           {error && (
             <span className="text-danger-500">
@@ -100,9 +99,12 @@ const Textarea = ({
           )}
         </div>
       </div>
-      {/* error and success message*/}
+
       {error && (
         <div
+          id={`${id}-error`}
+          role="alert"
+          aria-live="polite"
           className={`mt-2 ${
             msgTooltip
               ? "bg-danger-500 inline-block rounded-sm px-2 py-1 text-[10px] text-white"
@@ -112,7 +114,7 @@ const Textarea = ({
           {error.message}
         </div>
       )}
-      {/* validated and success message*/}
+      
       {validate && (
         <div
           className={`mt-2 ${
@@ -124,7 +126,7 @@ const Textarea = ({
           {validate}
         </div>
       )}
-      {/* only description */}
+      
       {description && <span className="input-description">{description}</span>}
     </div>
   );

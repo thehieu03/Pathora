@@ -3,6 +3,15 @@
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
 
+type AlertProps = {
+  children?: React.ReactNode;
+  className?: string;
+  icon?: string;
+  toggle?: () => void;
+  dismissible?: boolean;
+  label?: string;
+};
+
 const Alert = ({
   children,
   className = "alert-dark",
@@ -10,41 +19,44 @@ const Alert = ({
   toggle,
   dismissible,
   label,
-}) => {
+}: AlertProps) => {
   const [isShow, setIsShow] = useState(true);
 
-  const handleDestroy = () => {
-    setIsShow(false);
-  };
+  const handleDestroy = () => setIsShow(false);
+
+  if (!isShow) return null;
 
   return (
-    <>
-      {isShow ? (
-        <div className={`alert  ${className}`}>
-          <div className="flex items-start space-x-3 rtl:space-x-reverse">
-            {icon && (
-              <div className="flex-0 text-[22px]">
-                <Icon icon={icon} />
-              </div>
-            )}
-            <div className="flex-1">{children ? children : label}</div>
-            {dismissible && (
-              <div
-                className="flex-0 text-2xl cursor-pointer"
-                onClick={handleDestroy}
-              >
-                <Icon icon="heroicons-outline:x" />
-              </div>
-            )}
-            {toggle && (
-              <div className="flex-0 text-2xl cursor-pointer" onClick={toggle}>
-                <Icon icon="heroicons-outline:x" />
-              </div>
-            )}
+    <div className={`alert ${className}`} role="alert">
+      <div className="flex items-start gap-3 rtl:space-x-reverse">
+        {icon && (
+          <div className="flex-0 text-[22px]" aria-hidden="true">
+            <Icon icon={icon} />
           </div>
-        </div>
-      ) : null}
-    </>
+        )}
+        <div className="flex-1">{children ?? label}</div>
+        {dismissible && (
+          <button
+            type="button"
+            className="flex-0 cursor-pointer text-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+            onClick={handleDestroy}
+            aria-label="Dismiss alert"
+          >
+            <Icon icon="heroicons-outline:x" />
+          </button>
+        )}
+        {toggle && (
+          <button
+            type="button"
+            className="flex-0 cursor-pointer text-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+            onClick={toggle}
+            aria-label="Close alert"
+          >
+            <Icon icon="heroicons-outline:x" />
+          </button>
+        )}
+      </div>
+    </div>
   );
 };
 

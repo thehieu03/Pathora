@@ -49,30 +49,31 @@ const TaskLists = () => {
     },
   ]);
 
-  const deleteItem = (id) => {
+  const deleteItem = (id: number) => {
     setLists(lists.filter((item) => item.id !== id));
+  };
+
+  const toggleDone = (id: number) => {
+    setLists(
+      lists.map((list) =>
+        list.id === id ? { ...list, isDone: !list.isDone } : list
+      )
+    );
   };
 
   return (
     <div>
-      <ul className="-mx-6 -mb-6 divide-y divide-slate-100 dark:divide-slate-700!">
+      <ul className="-mx-6 -mb-6 divide-y divide-slate-100 dark:divide-slate-700">
         {lists.map((item) => (
           <li
-            className="flex items-center space-x-4 px-6 py-4 rtl:space-x-reverse"
+            className="flex items-center gap-4 px-6 py-4"
             key={item.id}
           >
-            <div className="flex flex-none items-center space-x-2 rtl:space-x-reverse">
+            <div className="flex items-center gap-2 shrink-0">
               <Checkbox
                 value={item.isDone}
-                onChange={() => {
-                  setLists(
-                    lists.map((list) =>
-                      list.id === item.id
-                        ? { ...list, isDone: !list.isDone }
-                        : list,
-                    ),
-                  );
-                }}
+                onChange={() => toggleDone(item.id)}
+                aria-label={`Mark ${item.title} as ${item.isDone ? "incomplete" : "complete"}`}
               />
               <div
                 className={`${
@@ -86,28 +87,33 @@ const TaskLists = () => {
                 />
               </div>
             </div>
-            <div
-              className={`flex flex-1 ${
-                item.isDone ? "line-through dark:text-white" : ""
-              }`}
-            >
-              <span className="flex-1 text-sm text-slate-600 dark:text-slate-300">
-                {item.title.slice(0, 20) + "..."}
+            <div className="flex flex-1 items-center min-w-0">
+              <span
+                className={`flex-1 text-sm text-slate-600 dark:text-slate-300 truncate ${
+                  item.isDone ? "line-through" : ""
+                }`}
+              >
+                {item.title}
               </span>
-              <span className="text-secondary-500 flex-none space-x-2 text-base rtl:space-x-reverse">
-                {item.isDone === false && (
-                  <button type="button">
+              <div className="flex items-center gap-2 shrink-0 ml-2">
+                {!item.isDone && (
+                  <button
+                    type="button"
+                    className="text-secondary-500 hover:text-primary-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+                    aria-label={`Edit ${item.title}`}
+                  >
                     <Icon icon="heroicons-outline:pencil-alt" />
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => deleteItem(item.id)}
-                  className="hover:text-danger-500 transition duration-150"
+                  className="text-secondary-500 hover:text-danger-500 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-danger-500 rounded"
+                  aria-label={`Delete ${item.title}`}
                 >
                   <Icon icon="heroicons-outline:trash" />
                 </button>
-              </span>
+              </div>
             </div>
           </li>
         ))}

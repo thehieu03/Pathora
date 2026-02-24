@@ -7,29 +7,37 @@ import useDarkMode from "@/hooks/useDarkMode";
 import LogoWhite from "@/assets/images/logo/logo-white.svg";
 import Logo from "@/assets/images/logo/logo.png";
 import Illustration from "@/assets/images/auth/ils1.svg";
+
 const ForgotPassPage = () => {
   const [isDark] = useDarkMode();
+
   return (
     <div className="loginwrapper">
       <div className="lg-inner-column">
         <div className="left-column relative z-1">
           <div className="max-w-[520px] pt-20 ltr:pl-20 rtl:pr-20">
             <Link href="/">
-              <img src={isDark ? LogoWhite : Logo} alt="" className="mb-10" />
+              <img
+                src={isDark ? LogoWhite : Logo}
+                alt="Pathora logo"
+                className="mb-10"
+              />
             </Link>
 
-            <h4>
+            <h1 className="text-4xl font-semibold">
               Unlock your Project
               <span className="text-slate-800 dark:text-slate-400 font-bold">
+                {" "}
                 performance
               </span>
-            </h4>
+            </h1>
           </div>
           <div className="absolute left-0 bottom-[-130px] h-full w-full z-[-1]">
             <img
               src={Illustration}
               alt=""
               className="h-full w-full object-contain"
+              aria-hidden="true"
             />
           </div>
         </div>
@@ -40,16 +48,16 @@ const ForgotPassPage = () => {
                 <Link href="/">
                   <img
                     src={isDark ? LogoWhite : Logo}
-                    alt=""
+                    alt="Pathora logo"
                     className="mx-auto"
                   />
                 </Link>
               </div>
               <div className="text-center 2xl:mb-10 mb-5">
-                <h4 className="font-medium mb-4">Forgot Your Password?</h4>
-                <div className="text-slate-500 dark:text-slate-400 text-base">
-                  Reset Password with progcoder.
-                </div>
+                <h2 className="font-medium text-2xl mb-4">Forgot Your Password?</h2>
+                <p className="text-slate-500 dark:text-slate-400 text-base">
+                  Reset Password with Pathora.
+                </p>
               </div>
               <div className="font-normal text-base text-slate-500 dark:text-slate-400 text-center px-2 bg-slate-100 dark:bg-slate-600 rounded-sm py-3 mb-4 mt-10">
                 Enter your Email and instructions will be sent to you!
@@ -57,17 +65,18 @@ const ForgotPassPage = () => {
 
               <ForgotPass />
               <div className="md:max-w-[345px] mx-auto font-normal text-slate-500 dark:text-slate-400 2xl:mt-12 mt-8 uppercase text-sm">
-                Forget It,
+                Forget It,{" "}
                 <Link
-                  href="/"
-                  className="text-slate-900 dark:text-white font-medium hover:underline">
+                  href="/login"
+                  className="text-slate-900 dark:text-white font-medium hover:underline"
+                >
                   Send me Back
-                </Link>
+                </Link>{" "}
                 to The Sign In
               </div>
             </div>
             <div className="auth-footer text-center">
-              Copyright 2021, progcoder All Rights Reserved.
+              Copyright {new Date().getFullYear()}, Pathora All Rights Reserved.
             </div>
           </div>
         </div>

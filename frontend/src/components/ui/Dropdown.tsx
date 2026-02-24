@@ -16,6 +16,7 @@ interface DropdownItem {
   link?: string;
   icon?: string;
   hasDivider?: boolean;
+  onClick?: () => void;
 }
 
 const Dropdown = ({
@@ -23,7 +24,7 @@ const Dropdown = ({
   wrapperClass = "inline-block",
   labelClass = "",
   children,
-  anchor = "bottom start",
+  anchor = "bottom start" as const,
   classMenuItems = "mt-2 w-[200px]",
   items = [
     { label: "Action", link: "#" },
@@ -38,11 +39,12 @@ const Dropdown = ({
       document.documentElement.style.paddingRight = "0px";
     }
   };
+
   return (
     <div className={`relative ${wrapperClass}`}>
       <Menu>
         <MenuButton
-          className={`block w-full ${labelClass}`}
+          className={`block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded ${labelClass}`}
           onClick={handleOpenDropdown}
         >
           {label}
@@ -58,7 +60,8 @@ const Dropdown = ({
           leaveTo="transform opacity-0 scale-95"
         >
           <MenuItems
-            className={`absolute z-9999 origin-top-right rounded border border-slate-100 bg-white shadow-sm focus-visible:outline-none ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${classMenuItems} `}
+            anchor={anchor}
+            className={`absolute z-9999 origin-top-right rounded border border-slate-100 bg-white shadow-sm focus:outline-none dark:border-slate-700 dark:bg-slate-800 ${classMenuItems}`}
           >
             <div>
               {children
@@ -80,42 +83,40 @@ const Dropdown = ({
                           {item.link ? (
                             <Link
                               href={item.link}
-                              className={`block ${classItem}`}
+                              className={`block focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${classItem}`}
                             >
                               {item.icon ? (
-                                <div className="flex items-center">
-                                  <span className="block text-xl ltr:mr-3 rtl:ml-3">
-                                    <Icon icon={item.icon} />
-                                  </span>
-                                  <span className="block text-sm">
-                                    {item.label}
-                                  </span>
-                                </div>
-                              ) : (
-                                <span className="block text-sm">
-                                  {item.label}
+                                <span className="flex items-center">
+                                  <Icon
+                                    icon={item.icon}
+                                    className="block text-xl ltr:mr-3 rtl:ml-3"
+                                    aria-hidden="true"
+                                  />
+                                  <span className="block text-sm">{item.label}</span>
                                 </span>
+                              ) : (
+                                <span className="block text-sm">{item.label}</span>
                               )}
                             </Link>
                           ) : (
-                            <div
-                              className={`block cursor-pointer ${classItem}`}
+                            <button
+                              type="button"
+                              onClick={item.onClick}
+                              className={`block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${classItem}`}
                             >
                               {item.icon ? (
-                                <div className="flex items-center">
-                                  <span className="block text-xl ltr:mr-3 rtl:ml-3">
-                                    <Icon icon={item.icon} />
-                                  </span>
-                                  <span className="block text-sm">
-                                    {item.label}
-                                  </span>
-                                </div>
-                              ) : (
-                                <span className="block text-sm">
-                                  {item.label}
+                                <span className="flex items-center">
+                                  <Icon
+                                    icon={item.icon}
+                                    className="block text-xl ltr:mr-3 rtl:ml-3"
+                                    aria-hidden="true"
+                                  />
+                                  <span className="block text-sm">{item.label}</span>
                                 </span>
+                              ) : (
+                                <span className="block text-sm">{item.label}</span>
                               )}
-                            </div>
+                            </button>
                           )}
                         </div>
                       )}

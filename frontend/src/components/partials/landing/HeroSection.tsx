@@ -20,19 +20,23 @@ const SEARCH_ICON =
 const CHEVRON_DOWN =
   "https://www.figma.com/api/mcp/asset/7dbdd798-a19c-4215-8b35-2b2d09839ec2";
 
+type SelectFieldProps = {
+  icon: string;
+  label: string;
+  placeholder: string;
+  rounded?: string;
+};
+
 const SelectField = ({
   icon,
   label,
   placeholder,
   rounded,
-}: {
-  icon: string;
-  label: string;
-  placeholder: string;
-  rounded?: string;
-}) => (
-  <div
-    className={`flex items-start gap-2 px-4 py-4 bg-white ${rounded ?? ""} min-w-[170px]`}>
+}: SelectFieldProps) => (
+  <button
+    type="button"
+    className={`flex items-start gap-2 px-4 py-4 bg-white min-w-[170px] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${rounded ?? ""}`}
+  >
     <img src={icon} alt="" className="w-6 h-6 shrink-0 mt-0.5" />
     <div className="flex flex-col gap-1.5">
       <span className="text-[#333] font-semibold text-base leading-none">
@@ -45,7 +49,7 @@ const SelectField = ({
         <img src={CHEVRON_DOWN} alt="" className="w-5 h-5 shrink-0" />
       </div>
     </div>
-  </div>
+  </button>
 );
 
 type TourType = "public" | "private";
@@ -54,98 +58,93 @@ const HeroSection = () => {
   const [tourType, setTourType] = useState<TourType>("public");
 
   return (
-    <section className="relative w-full h-[759px] overflow-hidden">
-      {/* Background Image */}
+    <section className="relative w-full min-h-[600px] md:h-[759px] overflow-hidden">
       <img
         src={HERO_BG}
-        alt="Travel destination"
+        alt="Travel destination with beautiful scenery"
         className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
       />
       <div className="absolute inset-0 bg-black/20" />
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center pt-[207px] gap-[60px]">
-        {/* Title */}
+      <div className="relative z-10 flex flex-col items-center pt-[100px] md:pt-[207px] gap-[40px] md:gap-[60px] px-4">
         <div className="flex flex-col items-center gap-4 text-white text-center">
-          <h1 className="text-[72px] font-normal leading-tight font-serif">
+          <h1 className="text-4xl md:text-[72px] font-normal leading-tight font-serif">
             Enjoy in the best way!
           </h1>
-          <p className="text-2xl font-bold">
+          <p className="text-lg md:text-2xl font-bold">
             Enjoy our services for your trip anytime
           </p>
         </div>
 
-        {/* Search Box */}
-        <div className="bg-white/20 rounded-xl px-5 pt-5 pb-5 flex flex-col items-start justify-center">
-          {/* Tour Type Tabs */}
+        <div className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl">
           <div className="flex mb-[-1px]">
             <button
               onClick={() => setTourType("public")}
-              className={`flex items-center gap-2.5 px-4 py-4 rounded-tl-xl transition-colors ${
+              className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tl-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
                 tourType === "public" ? "bg-white" : "bg-white/40"
-              }`}>
-              <img src={PUBLIC_ICON} alt="" className="w-6 h-6" />
+              }`}
+              aria-pressed={tourType === "public"}
+            >
+              <img src={PUBLIC_ICON} alt="" className="w-5 md:w-6 h-5 md:h-6" />
               <span
-                className={`font-semibold text-lg ${
+                className={`font-semibold text-base md:text-lg ${
                   tourType === "public" ? "text-[#FA8B02]" : "text-white"
-                }`}>
+                }`}
+              >
                 Public Tours
               </span>
             </button>
             <button
               onClick={() => setTourType("private")}
-              className={`flex items-center gap-2.5 px-4 py-4 rounded-tr-xl transition-colors ${
+              className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tr-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
                 tourType === "private" ? "bg-white" : "bg-white/40"
-              }`}>
-              <img src={PRIVATE_ICON} alt="" className="w-6 h-6" />
+              }`}
+              aria-pressed={tourType === "private"}
+            >
+              <img src={PRIVATE_ICON} alt="" className="w-5 md:w-6 h-5 md:h-6" />
               <span
-                className={`font-semibold text-lg ${
+                className={`font-semibold text-base md:text-lg ${
                   tourType === "private" ? "text-[#FA8B02]" : "text-white"
-                }`}>
+                }`}
+              >
                 Private Tours
               </span>
             </button>
           </div>
 
-          {/* Search Fields */}
-          <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex items-center gap-3 p-3">
+          <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-3 p-2 md:p-3 w-full">
             <SelectField
               icon={PEOPLE_ICON}
               label="Number of people"
               placeholder="Choose number"
               rounded="rounded-bl-xl"
             />
-
-            {/* Divider */}
-            <div className="w-px h-[50px] bg-gray-200 shrink-0" />
-
+            <div className="hidden md:block w-px h-[50px] bg-gray-200 shrink-0" />
             <SelectField
               icon={DATE_ICON}
               label="Date"
               placeholder="Choose Date"
             />
-
-            {/* Divider */}
-            <div className="w-px h-[50px] bg-gray-200 shrink-0" />
-
+            <div className="hidden md:block w-px h-[50px] bg-gray-200 shrink-0" />
             <SelectField
               icon={DEST_ICON}
               label="Destination"
               placeholder="Select Location"
             />
-
-            {/* Divider */}
-            <div className="w-px h-[50px] bg-gray-200 shrink-0" />
-
+            <div className="hidden md:block w-px h-[50px] bg-gray-200 shrink-0" />
             <SelectField
               icon={CLASS_ICON}
               label="Classification"
               placeholder="Select Classification"
             />
 
-            {/* Search Button */}
-            <button className="bg-[#FA8B02] rounded-xl p-6 hover:bg-[#e07a00] transition-colors shrink-0">
-              <img src={SEARCH_ICON} alt="Search" className="w-8 h-8" />
+            <button
+              type="button"
+              className="bg-[#FA8B02] rounded-xl p-4 md:p-6 hover:bg-[#e07a00] transition-colors shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FA8B02] focus-visible:ring-offset-2 self-center md:self-auto"
+              aria-label="Search tours"
+            >
+              <img src={SEARCH_ICON} alt="Search" className="w-6 md:w-8 h-6 md:h-8" />
             </button>
           </div>
         </div>

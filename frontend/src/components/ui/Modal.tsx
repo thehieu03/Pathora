@@ -44,165 +44,109 @@ const Modal = ({
 }: ModalProps) => {
   const [showModal, setShowModal] = useState(false);
 
-  const closeModal = () => {
-    setShowModal(false);
-  };
+  const closeModal = () => setShowModal(false);
+  const openModal = () => setShowModal(!showModal);
 
-  const openModal = () => {
-    setShowModal(!showModal);
-  };
-  const returnNull = () => {
-    return null;
-  };
+  const transitionClasses = noFade
+    ? { enter: "", enterFrom: "", enterTo: "", leave: "", leaveFrom: "", leaveTo: "" }
+    : {
+        enter: "duration-300 ease-out",
+        enterFrom: "opacity-0",
+        enterTo: "opacity-100",
+        leave: "duration-200 ease-in",
+        leaveFrom: "opacity-100",
+        leaveTo: "opacity-0",
+      };
 
-  return (
-    <>
-      {uncontrol ? (
-        <>
-          <button
-            type="button"
-            onClick={openModal}
-            className={`btn ${labelClass}`}
+  const contentTransitionClasses = noFade
+    ? { enter: "", enterFrom: "", enterTo: "", leave: "", leaveFrom: "", leaveTo: "" }
+    : {
+        enter: "duration-300 ease-out",
+        enterFrom: "opacity-0 scale-95",
+        enterTo: "opacity-100 scale-100",
+        leave: "duration-200 ease-in",
+        leaveFrom: "opacity-100 scale-100",
+        leaveTo: "opacity-0 scale-95",
+      };
+
+  const renderModal = (isOpen: boolean, closeFn: () => void) => (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog
+        as="div"
+        className="relative z-99999"
+        onClose={!disableBackdrop ? closeFn : () => {}}
+      >
+        {!disableBackdrop && (
+          <TransitionChild as={Fragment} {...transitionClasses}>
+            <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs backdrop-filter" />
+          </TransitionChild>
+        )}
+
+        <div className="fixed inset-0 overflow-y-auto">
+          <div
+            className={`flex min-h-full justify-center p-6 text-center ${
+              centered ? "items-center" : "items-start"
+            }`}
           >
-            {label}
-          </button>
-          <Transition appear show={showModal} as={Fragment}>
-            <Dialog
-              as="div"
-              className="relative z-99999"
-              onClose={!disableBackdrop ? closeModal : returnNull}
-            >
-              {!disableBackdrop && (
-                <TransitionChild
-                  as={Fragment}
-                  enter={noFade ? "" : "duration-300 ease-out"}
-                  enterFrom={noFade ? "" : "opacity-0"}
-                  enterTo={noFade ? "" : "opacity-100"}
-                  leave={noFade ? "" : "duration-200 ease-in"}
-                  leaveFrom={noFade ? "" : "opacity-100"}
-                  leaveTo={noFade ? "" : "opacity-0"}
-                >
-                  <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs backdrop-filter" />
-                </TransitionChild>
-              )}
-
-              <div className="fixed inset-0 overflow-y-auto">
-                <div
-                  className={`flex min-h-full justify-center p-6 text-center ${
-                    centered ? "items-center" : "items-start"
-                  }`}
-                >
-                  <TransitionChild
-                    as={Fragment}
-                    enter={noFade ? "" : "duration-300  ease-out"}
-                    enterFrom={noFade ? "" : "opacity-0 scale-95"}
-                    enterTo={noFade ? "" : "opacity-100 scale-100"}
-                    leave={noFade ? "" : "duration-200 ease-in"}
-                    leaveFrom={noFade ? "" : "opacity-100 scale-100"}
-                    leaveTo={noFade ? "" : "opacity-0 scale-95"}
-                  >
-                    <DialogPanel
-                      className={`transition-alll w-full transform overflow-hidden rounded-md bg-white text-left align-middle shadow-xl dark:bg-slate-800 ${className}`}
-                    >
-                      <div
-                        className={`relative flex justify-between overflow-hidden px-5 py-4 text-white ${themeClass}`}
-                      >
-                        <h2 className="text-base leading-6 font-medium tracking-wider text-white capitalize">
-                          {title}
-                        </h2>
-                        <button onClick={closeModal} className="text-[22px]">
-                          <Icon icon="heroicons-outline:x" />
-                        </button>
-                      </div>
-                      <div
-                        className={`px-6 py-8 ${
-                          scrollContent ? "max-h-[400px] overflow-y-auto" : ""
-                        }`}
-                      >
-                        {children}
-                      </div>
-                      {footerContent && (
-                        <div className="flex justify-end space-x-3 border-t border-slate-100 px-4 py-3 dark:border-slate-700">
-                          {footerContent}
-                        </div>
-                      )}
-                    </DialogPanel>
-                  </TransitionChild>
-                </div>
-              </div>
-            </Dialog>
-          </Transition>
-        </>
-      ) : (
-        <Transition appear show={activeModal} as={Fragment}>
-          <Dialog
-            as="div"
-            className="relative z-99999"
-            onClose={onClose || (() => {})}
-          >
-            <TransitionChild
-              as={Fragment}
-              enter={noFade ? "" : "duration-300 ease-out"}
-              enterFrom={noFade ? "" : "opacity-0"}
-              enterTo={noFade ? "" : "opacity-100"}
-              leave={noFade ? "" : "duration-200 ease-in"}
-              leaveFrom={noFade ? "" : "opacity-100"}
-              leaveTo={noFade ? "" : "opacity-0"}
-            >
-              {!disableBackdrop && (
-                <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs backdrop-filter" />
-              )}
-            </TransitionChild>
-
-            <div className="fixed inset-0 overflow-y-auto">
-              <div
-                className={`flex min-h-full justify-center p-6 text-center ${
-                  centered ? "items-center" : "items-start"
+            <TransitionChild as={Fragment} {...contentTransitionClasses}>
+              <DialogPanel
+                className={`w-full transform overflow-hidden rounded-md bg-white text-left align-middle shadow-xl transition-all dark:bg-slate-800 ${className} ${
+                  scrollContent ? "overscroll-contain" : ""
                 }`}
               >
-                <TransitionChild
-                  as={Fragment}
-                  enter={noFade ? "" : "duration-300  ease-out"}
-                  enterFrom={noFade ? "" : "opacity-0 scale-95"}
-                  enterTo={noFade ? "" : "opacity-100 scale-100"}
-                  leave={noFade ? "" : "duration-200 ease-in"}
-                  leaveFrom={noFade ? "" : "opacity-100 scale-100"}
-                  leaveTo={noFade ? "" : "opacity-0 scale-95"}
+                <div
+                  className={`relative flex justify-between overflow-hidden px-5 py-4 text-white ${themeClass}`}
                 >
-                  <DialogPanel
-                    className={`transition-alll w-full transform overflow-hidden rounded-md bg-white text-left align-middle shadow-xl dark:bg-slate-800 ${className}`}
+                  <Dialog.Title
+                    as="h2"
+                    className="text-base font-medium leading-6 tracking-wider text-white capitalize"
                   >
-                    <div
-                      className={`relative flex justify-between overflow-hidden px-5 py-4 text-white ${themeClass}`}
-                    >
-                      <h2 className="text-base leading-6 font-medium tracking-wider text-white capitalize">
-                        {title}
-                      </h2>
-                      <button onClick={onClose} className="text-[22px]">
-                        <Icon icon="heroicons-outline:x" />
-                      </button>
-                    </div>
-                    <div
-                      className={`px-6 py-8 ${
-                        scrollContent ? "max-h-[400px] overflow-y-auto" : ""
-                      }`}
-                    >
-                      {children}
-                    </div>
-                    {footerContent && (
-                      <div className="flex justify-end space-x-3 border-t border-slate-100 px-4 py-3 dark:border-slate-700">
-                        {footerContent}
-                      </div>
-                    )}
-                  </DialogPanel>
-                </TransitionChild>
-              </div>
-            </div>
-          </Dialog>
-        </Transition>
-      )}
-    </>
+                    {title}
+                  </Dialog.Title>
+                  <button
+                    onClick={closeFn}
+                    className="text-[22px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                    aria-label="Close modal"
+                  >
+                    <Icon icon="heroicons-outline:x" />
+                  </button>
+                </div>
+                <div
+                  className={`px-6 py-8 ${
+                    scrollContent ? "max-h-[400px] overflow-y-auto overscroll-contain" : ""
+                  }`}
+                >
+                  {children}
+                </div>
+                {footerContent && (
+                  <div className="flex justify-end space-x-3 border-t border-slate-100 px-4 py-3 dark:border-slate-700">
+                    {footerContent}
+                  </div>
+                )}
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
   );
+
+  if (uncontrol) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={openModal}
+          className={`btn ${labelClass}`}
+        >
+          {label}
+        </button>
+        {renderModal(showModal, closeModal)}
+      </>
+    );
+  }
+
+  return renderModal(activeModal ?? false, onClose ?? (() => {}));
 };
 
 export default Modal;

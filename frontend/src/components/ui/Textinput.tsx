@@ -26,6 +26,7 @@ type TextinputProps = {
   msgTooltip?: boolean;
   description?: string;
   hasicon?: boolean;
+  autocomplete?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   options?: any;
@@ -37,7 +38,7 @@ type TextinputProps = {
 const Textinput = ({
   type,
   label,
-  placeholder = "Add placeholder",
+  placeholder,
   classLabel = "form-label",
   className = "",
   classGroup = "",
@@ -55,6 +56,7 @@ const Textinput = ({
   msgTooltip,
   description,
   hasicon,
+  autocomplete,
   onChange,
   onBlur,
   options,
@@ -63,15 +65,68 @@ const Textinput = ({
   ...rest
 }: TextinputProps) => {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => {
-    setOpen(!open);
+  const inputType = type === "password" && open ? "text" : type;
+
+  const getAutocomplete = () => {
+    if (autocomplete) return autocomplete;
+    if (type === "email") return "email";
+    if (type === "password") return "current-password";
+    if (name === "username") return "username";
+    return "off";
+  };
+
+  const renderInput = () => {
+    const inputClasses = `form-control py-2 ${error ? "has-error" : ""} ${className}`;
+
+    if (isMask) {
+      return (
+        <Cleave
+          {...(register && name ? register(name) : {})}
+          {...rest}
+          name={name}
+          placeholder={placeholder}
+          options={options}
+          className={inputClasses}
+          onFocus={onFocus}
+          id={id}
+          readOnly={readonly}
+          disabled={disabled}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={error ? `${id}-error` : undefined}
+        />
+      );
+    }
+
+    return (
+      <input
+        type={inputType}
+        {...(register && name ? register(name) : {})}
+        {...rest}
+        name={name}
+        className={inputClasses}
+        placeholder={placeholder}
+        readOnly={readonly}
+        defaultValue={defaultValue}
+        disabled={disabled}
+        id={id}
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        autoComplete={getAutocomplete()}
+        aria-invalid={error ? "true" : "false"}
+        aria-describedby={error ? `${id}-error` : undefined}
+      />
+    );
   };
 
   return (
     <div
       className={`fromGroup ${error ? "has-error" : ""} ${
         horizontal ? "flex" : ""
-      } ${validate ? "is-valid" : ""} `}
+      } ${validate ? "is-valid" : ""}`}
     >
       {label && (
         <label
@@ -84,75 +139,38 @@ const Textinput = ({
         </label>
       )}
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
-        {!isMask && (
-          <input
-            type={type === "password" && open === true ? "text" : type}
-            {...(register && name ? register(name) : {})}
-            {...rest}
-            name={name}
-            className={`${
-              error ? "has-error" : " "
-            } form-control py-2 ${className} `}
-            placeholder={placeholder}
-            readOnly={readonly}
-            defaultValue={defaultValue}
-            disabled={disabled}
-            id={id}
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-          />
-        )}
-        {isMask && (
-          <Cleave
-            {...(register && name ? register(name) : {})}
-            {...rest}
-            name={name}
-            placeholder={placeholder}
-            options={options}
-            className={`${
-              error ? "has-error" : " "
-            } form-control py-2 ${className} `}
-            onFocus={onFocus}
-            id={id}
-            readOnly={readonly}
-            disabled={disabled}
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-          />
-        )}
-        {/* icon */}
+        {renderInput()}
+
         <div className="absolute top-1/2 flex -translate-y-1/2 space-x-1 text-xl ltr:right-[14px] rtl:left-[14px] rtl:space-x-reverse">
-          {hasicon && (
-            <span
-              className="text-secondary-500 cursor-pointer"
-              onClick={handleOpen}
+          {hasicon && type === "password" && (
+            <button
+              type="button"
+              className="text-secondary-500 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+              onClick={() => setOpen(!open)}
+              aria-label={open ? "Hide password" : "Show password"}
             >
-              {open && type === "password" && (
-                <Icon icon="heroicons-outline:eye" />
-              )}
-              {!open && type === "password" && (
-                <Icon icon="heroicons-outline:eye-off" />
-              )}
-            </span>
+              <Icon icon={open ? "heroicons-outline:eye" : "heroicons-outline:eye-off"} />
+            </button>
           )}
 
           {error && (
-            <span className="text-danger-500">
+            <span className="text-danger-500" aria-hidden="true">
               <Icon icon="heroicons-outline:information-circle" />
             </span>
           )}
           {validate && (
-            <span className="text-success-500">
+            <span className="text-success-500" aria-hidden="true">
               <Icon icon="bi:check-lg" />
             </span>
           )}
         </div>
       </div>
-      {/* error and success message*/}
+
       {error && (
         <div
+          id={`${id}-error`}
+          role="alert"
+          aria-live="polite"
           className={`mt-2 ${
             msgTooltip
               ? "bg-danger-500 inline-block rounded-sm px-2 py-1 text-[10px] text-white"
@@ -162,7 +180,7 @@ const Textinput = ({
           {error.message}
         </div>
       )}
-      {/* validated and success message*/}
+      
       {validate && (
         <div
           className={`mt-2 ${
@@ -174,8 +192,10 @@ const Textinput = ({
           {validate}
         </div>
       )}
-      {/* only description */}
-      {description && <span className="input-description">{description}</span>}
+      
+      {description && (
+        <span className="input-description">{description}</span>
+      )}
     </div>
   );
 };

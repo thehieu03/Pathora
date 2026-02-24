@@ -1,6 +1,18 @@
 import React from "react";
 import { Icon as IconifyIcon } from "@iconify/react";
 
+type IconProps = {
+  icon: string;
+  className?: string;
+  width?: number;
+  rotate?: number;
+  hFlip?: boolean;
+  vFlip?: boolean;
+  ariaHidden?: boolean;
+  ariaLabel?: string;
+  [key: string]: any;
+};
+
 const Icon = ({
   icon,
   className,
@@ -8,28 +20,22 @@ const Icon = ({
   rotate,
   hFlip,
   vFlip,
+  ariaHidden = true,
+  ariaLabel,
   ...props
-}: {
-  icon: string;
-  className?: string;
-  width?: number;
-  rotate?: number;
-  hFlip?: boolean;
-  vFlip?: boolean;
-  [key: string]: any;
-}) => {
+}: IconProps) => {
   return (
-    <>
-      <IconifyIcon
-        width={width}
-        rotate={rotate}
-        hFlip={hFlip}
-        icon={icon}
-        className={className}
-        vFlip={vFlip}
-        {...props}
-      />
-    </>
+    <IconifyIcon
+      width={width}
+      rotate={rotate}
+      hFlip={hFlip}
+      icon={icon}
+      className={className}
+      vFlip={vFlip}
+      aria-hidden={ariaHidden}
+      aria-label={ariaLabel}
+      {...props}
+    />
   );
 };
 

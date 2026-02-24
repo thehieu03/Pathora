@@ -8,23 +8,21 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
 import Checkbox from "@/components/ui/Checkbox";
-import { useAuth } from "@/contexts/AuthContext";
-import type { RegisterRequest } from "@/services/authService";
 
 const schema = yup.object({
-  username: yup.string().required("Name is Required"),
-  email: yup.string().email("Invalid email").required("Email is Required"),
+  username: yup.string().required("Name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
   password: yup
     .string()
-    .min(6, "Password must be at least 8 characters")
-    .max(20, "Password shouldn't be more than 20 characters")
+    .min(6, "Password must be at least 6 characters")
+    .max(20, "Password cannot exceed 20 characters")
     .required("Please enter password"),
 });
 
 const RegForm = () => {
-  const { register: registerUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [checked, setChecked] = useState(false);
+
   const {
     register,
     formState: { errors },
@@ -40,7 +38,7 @@ const RegForm = () => {
   const onSubmit = async (data: any) => {
     try {
       setIsLoading(true);
-      await registerUser(data as RegisterRequest);
+      console.log("Register data:", data);
       reset();
       router.push("/login");
       toast.success("Registration successful. Please login.");
@@ -56,30 +54,35 @@ const RegForm = () => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <Textinput
         name="username"
-        label="name"
+        label="Name"
         type="text"
-        placeholder=" Enter your name"
+        placeholder="Enter your name…"
         register={register}
         error={errors.username}
         className="h-[48px]"
+        autocomplete="username"
       />
       <Textinput
         name="email"
-        label="email"
+        label="Email"
         type="email"
-        placeholder=" Enter your email"
+        placeholder="Enter your email…"
         register={register}
         error={errors.email}
         className="h-[48px]"
+        autocomplete="email"
+        spellCheck={false}
       />
       <Textinput
         name="password"
-        label="passwrod"
+        label="Password"
         type="password"
-        placeholder=" Enter your password"
+        placeholder="Enter your password…"
         register={register}
         error={errors.password}
         className="h-[48px]"
+        autocomplete="new-password"
+        hasicon
       />
       <Checkbox
         label="You accept our Terms and Conditions and Privacy Policy"
