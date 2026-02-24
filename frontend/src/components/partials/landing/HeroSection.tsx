@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Button, Icon } from "@/components/ui";
+import { useTranslation } from "react-i18next";
 
 const HERO_BG =
   "https://www.figma.com/api/mcp/asset/e4c27cca-3e11-49a0-bb16-22b1bdf0f4cc";
@@ -17,25 +18,8 @@ const DEST_ICON =
   "https://www.figma.com/api/mcp/asset/bf2d5a5d-a72b-46e7-9c41-a78011b2ea6c";
 const CLASS_ICON =
   "https://www.figma.com/api/mcp/asset/b067c485-6c91-4a06-98d2-87ac97fb3ae5";
-const SEARCH_ICON =
-  "https://www.figma.com/api/mcp/asset/c9b4683c-0ccd-4eed-bcd8-b21f304a2f34";
 
 /* ── Calendar helpers ──────────────────────────────────────── */
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -46,7 +30,7 @@ function getFirstDayOfMonth(year: number, month: number) {
 }
 
 /* ── Destination / Classification data ─────────────────────── */
-const DESTINATIONS = [
+const DEFAULT_DESTINATIONS = [
   "Ho Chi Minh City",
   "Ha Noi",
   "Da Nang",
@@ -54,16 +38,25 @@ const DESTINATIONS = [
   "New York",
   "California",
 ];
-const CLASSIFICATIONS = ["Standard", "VIP", "Luxury"];
+const DEFAULT_CLASSIFICATIONS = ["Standard", "VIP", "Luxury"];
+const DEFAULT_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const PEOPLE_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
 
 /* ── Calendar Dropdown ─────────────────────────────────────── */
 const CalendarDropdown = ({
   value,
   onChange,
+  locale,
+  weekdayLabels,
+  previousMonthLabel,
+  nextMonthLabel,
 }: {
   value: Date | null;
   onChange: (d: Date) => void;
+  locale: string;
+  weekdayLabels: string[];
+  previousMonthLabel: string;
+  nextMonthLabel: string;
 }) => {
   const today = new Date();
   const [viewYear, setViewYear] = useState(
@@ -94,6 +87,11 @@ const CalendarDropdown = ({
     value.getDate() === day &&
     value.getMonth() === viewMonth &&
     value.getFullYear() === viewYear;
+  const monthLabel = new Intl.DateTimeFormat(locale, { month: "long" }).format(
+    new Date(viewYear, viewMonth, 1),
+  );
+  const resolvedWeekdayLabels =
+    weekdayLabels.length === 7 ? weekdayLabels : DEFAULT_WEEKDAYS;
 
   return (
     <div className="p-4 w-80 max-w-[calc(100vw-2rem)]">
@@ -102,7 +100,7 @@ const CalendarDropdown = ({
         <button
           type="button"
           onClick={prevMonth}
-          aria-label="Previous month"
+          aria-label={previousMonthLabel}
           className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100"
         >
           <Icon
@@ -111,12 +109,12 @@ const CalendarDropdown = ({
           />
         </button>
         <span className="text-sm font-semibold text-gray-900">
-          {MONTHS[viewMonth]} {viewYear}
+          {monthLabel} {viewYear}
         </span>
         <button
           type="button"
           onClick={nextMonth}
-          aria-label="Next month"
+          aria-label={nextMonthLabel}
           className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100"
         >
           <Icon
@@ -128,7 +126,7 @@ const CalendarDropdown = ({
 
       {/* Weekday headers */}
       <div className="grid grid-cols-7 mb-1">
-        {WEEKDAYS.map((wd) => (
+        {resolvedWeekdayLabels.map((wd) => (
           <span
             key={wd}
             className="text-[11px] text-center text-gray-400 font-medium"
@@ -194,9 +192,13 @@ const ListDropdown = ({
 const NumberDropdown = ({
   value,
   onChange,
+  singleLabel,
+  pluralLabel,
 }: {
   value: number | null;
   onChange: (v: number) => void;
+  singleLabel: string;
+  pluralLabel: string;
 }) => (
   <div className="py-2 min-w-45 max-h-60 overflow-y-auto">
     {PEOPLE_OPTIONS.map((num) => (
@@ -210,7 +212,7 @@ const NumberDropdown = ({
             : "text-gray-700 hover:bg-gray-50"
         }`}
       >
-        {num} {num === 1 ? "person" : "people"}
+        {num} {num === 1 ? singleLabel : pluralLabel}
       </button>
     ))}
   </div>
@@ -238,7 +240,7 @@ const SelectField = ({
   displayValue,
   children,
 }: SelectFieldProps) => (
-  <div className="relative w-full md:w-auto">
+  <div className="relative w-full md:flex-1 md:min-w-0">
     <button
       type="button"
       onClick={onToggle}
@@ -286,6 +288,7 @@ type TourType = "public" | "private";
 type FieldName = "people" | "date" | "destination" | "classification";
 
 export const HeroSection = () => {
+  const { t, i18n } = useTranslation();
   const [tourType, setTourType] = useState<TourType>("public");
   const [openField, setOpenField] = useState<FieldName | null>(null);
 
@@ -312,10 +315,33 @@ export const HeroSection = () => {
 
   const toggleField = (name: FieldName) =>
     setOpenField((prev) => (prev === name ? null : name));
+  const locale = (i18n.resolvedLanguage || i18n.language || "en").toLowerCase();
+  const translatedDestinations = t("landing.hero.destinations", {
+    returnObjects: true,
+  }) as string[];
+  const translatedClassifications = t("landing.hero.classifications", {
+    returnObjects: true,
+  }) as string[];
+  const translatedWeekdays = t("landing.hero.weekdays", {
+    returnObjects: true,
+  }) as string[];
+  const destinations =
+    Array.isArray(translatedDestinations) && translatedDestinations.length > 0
+      ? translatedDestinations
+      : DEFAULT_DESTINATIONS;
+  const classifications =
+    Array.isArray(translatedClassifications) &&
+    translatedClassifications.length > 0
+      ? translatedClassifications
+      : DEFAULT_CLASSIFICATIONS;
+  const weekdays =
+    Array.isArray(translatedWeekdays) && translatedWeekdays.length === 7
+      ? translatedWeekdays
+      : DEFAULT_WEEKDAYS;
 
   const formatDate = (d: Date | null) =>
     d
-      ? d.toLocaleDateString("en-US", {
+      ? d.toLocaleDateString(locale, {
           month: "short",
           day: "numeric",
           year: "numeric",
@@ -326,7 +352,7 @@ export const HeroSection = () => {
     <section className="relative w-full min-h-150 md:h-189.75 overflow-hidden">
       <Image
         src={HERO_BG}
-        alt="Travel destination with beautiful scenery"
+        alt={t("landing.hero.backgroundAlt")}
         fill
         priority
         sizes="100vw"
@@ -337,10 +363,10 @@ export const HeroSection = () => {
       <div className="relative z-10 flex flex-col items-center pt-25 md:pt-51.75 gap-10 md:gap-15 px-4">
         <div className="flex flex-col items-center gap-4 text-white text-center">
           <h1 className="text-4xl md:text-[72px] font-normal leading-tight font-serif">
-            Enjoy in the best way!
+            {t("landing.hero.title")}
           </h1>
           <p className="text-lg md:text-2xl font-bold">
-            Enjoy our services for your trip anytime
+            {t("landing.hero.subtitle")}
           </p>
         </div>
 
@@ -367,7 +393,7 @@ export const HeroSection = () => {
                   tourType === "public" ? "text-landing-accent" : "text-white"
                 }`}
               >
-                Public Tours
+                {t("landing.hero.publicTours")}
               </span>
             </Button>
             <Button
@@ -388,21 +414,27 @@ export const HeroSection = () => {
                   tourType === "private" ? "text-landing-accent" : "text-white"
                 }`}
               >
-                Private Tours
+                {t("landing.hero.privateTours")}
               </span>
             </Button>
           </div>
 
-          <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 md:gap-3 p-0 md:p-3 w-full overflow-hidden md:overflow-visible">
+          <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 w-full overflow-hidden">
             <SelectField
               icon={PEOPLE_ICON}
-              label="Number of people"
-              placeholder="Choose number"
+              label={t("landing.hero.fields.people.label")}
+              placeholder={t("landing.hero.fields.people.placeholder")}
               rounded="rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
               isOpen={openField === "people"}
               onToggle={() => toggleField("people")}
               displayValue={
-                people ? `${people} ${people === 1 ? "person" : "people"}` : ""
+                people
+                  ? `${people} ${
+                      people === 1
+                        ? t("landing.hero.fields.people.single")
+                        : t("landing.hero.fields.people.plural")
+                    }`
+                  : ""
               }
             >
               <NumberDropdown
@@ -411,6 +443,8 @@ export const HeroSection = () => {
                   setPeople(v);
                   setOpenField(null);
                 }}
+                singleLabel={t("landing.hero.fields.people.single")}
+                pluralLabel={t("landing.hero.fields.people.plural")}
               />
             </SelectField>
 
@@ -418,8 +452,8 @@ export const HeroSection = () => {
 
             <SelectField
               icon={DATE_ICON}
-              label="Date"
-              placeholder="Choose Date"
+              label={t("landing.hero.fields.date.label")}
+              placeholder={t("landing.hero.fields.date.placeholder")}
               isOpen={openField === "date"}
               onToggle={() => toggleField("date")}
               displayValue={formatDate(date)}
@@ -430,6 +464,10 @@ export const HeroSection = () => {
                   setDate(d);
                   setOpenField(null);
                 }}
+                locale={locale}
+                weekdayLabels={weekdays}
+                previousMonthLabel={t("landing.hero.calendar.previousMonth")}
+                nextMonthLabel={t("landing.hero.calendar.nextMonth")}
               />
             </SelectField>
 
@@ -437,14 +475,14 @@ export const HeroSection = () => {
 
             <SelectField
               icon={DEST_ICON}
-              label="Destination"
-              placeholder="Select Location"
+              label={t("landing.hero.fields.destination.label")}
+              placeholder={t("landing.hero.fields.destination.placeholder")}
               isOpen={openField === "destination"}
               onToggle={() => toggleField("destination")}
               displayValue={destination}
             >
               <ListDropdown
-                items={DESTINATIONS}
+                items={destinations}
                 value={destination}
                 onChange={(v) => {
                   setDestination(v);
@@ -457,14 +495,14 @@ export const HeroSection = () => {
 
             <SelectField
               icon={CLASS_ICON}
-              label="Classification"
-              placeholder="Select Classification"
+              label={t("landing.hero.fields.classification.label")}
+              placeholder={t("landing.hero.fields.classification.placeholder")}
               isOpen={openField === "classification"}
               onToggle={() => toggleField("classification")}
               displayValue={classification}
             >
               <ListDropdown
-                items={CLASSIFICATIONS}
+                items={classifications}
                 value={classification}
                 onChange={(v) => {
                   setClassification(v);
@@ -473,20 +511,18 @@ export const HeroSection = () => {
               />
             </SelectField>
 
-            <div className="p-3 md:p-0 w-full md:w-auto flex justify-center">
+            <div className="p-3 md:p-0 md:pl-2 w-full md:w-auto md:shrink-0 flex justify-center">
               <Button
-                className="bg-landing-accent rounded-xl py-3 px-6 md:py-4 md:px-8 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:w-auto flex items-center justify-center gap-2"
-                ariaLabel="Search tours"
+                className="bg-landing-accent rounded-lg md:rounded-xl h-11 md:h-12 px-5 md:px-6 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:min-w-47.5 md:w-auto flex items-center justify-center gap-2"
+                ariaLabel={t("landing.hero.searchAria")}
               >
                 <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">
-                  Explore Our Tours
+                  {t("landing.hero.exploreTours")}
                 </span>
-                <Image
-                  src={SEARCH_ICON}
-                  alt="Search"
-                  width={20}
-                  height={20}
-                  className="w-4 h-4 md:w-5 md:h-5"
+                <Icon
+                  icon="heroicons-outline:search"
+                  className="w-4 h-4 md:w-5 md:h-5 text-white"
+                  aria-hidden="true"
                 />
               </Button>
             </div>

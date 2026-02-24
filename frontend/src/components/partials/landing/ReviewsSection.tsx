@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
+import { useTranslation } from "react-i18next";
 
 const AVATAR =
   "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7";
@@ -10,22 +11,22 @@ const REVIEWS = [
   {
     avatar: AVATAR,
     name: "Jonathan Samuel",
-    role: "Traveller",
-    text: "The trip was absolutely amazing! The knowledge of destinations was impressive and made the journey doubly enjoyable. I'll definitely book again with Pathora.",
+    roleKey: "landing.reviews.items.0.role",
+    textKey: "landing.reviews.items.0.text",
     stars: 5,
   },
   {
     avatar: AVATAR,
     name: "Joe Wild",
-    role: "Adventure Traveller",
-    text: "Outstanding service from start to finish. The personalized attention and expertise were exceptional. I've never had such a seamless travel experience.",
+    roleKey: "landing.reviews.items.1.role",
+    textKey: "landing.reviews.items.1.text",
     stars: 5,
   },
   {
     avatar: AVATAR,
     name: "Maria Chen",
-    role: "Family Traveler",
-    text: "Pathora made our family vacation unforgettable. Every detail was perfectly planned and our guide was knowledgeable and friendly.",
+    roleKey: "landing.reviews.items.2.role",
+    textKey: "landing.reviews.items.2.text",
     stars: 5,
   },
 ];
@@ -47,6 +48,7 @@ const QuoteIcon = () => (
 );
 
 export const ReviewsSection = () => {
+  const { t } = useTranslation();
   const [current, setCurrent] = useState(0);
 
   const prev = () => setCurrent((c) => (c === 0 ? REVIEWS.length - 1 : c - 1));
@@ -64,10 +66,10 @@ export const ReviewsSection = () => {
             id="reviews-heading"
             className="text-2xl md:text-[30px] font-bold text-landing-heading"
           >
-            Customer Reviews
+            {t("landing.reviews.title")}
           </h2>
           <p className="text-landing-body text-base mt-2">
-            What our travellers say
+            {t("landing.reviews.subtitle")}
           </p>
         </div>
 
@@ -77,14 +79,14 @@ export const ReviewsSection = () => {
             className="hidden md:flex absolute left-0 md:left-4 lg:left-16 w-11.25 h-11.25 rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
             icon="heroicons-outline:chevron-left"
             iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
-            ariaLabel="Previous review"
+            ariaLabel={t("landing.reviews.previousReview")}
           />
 
           <div className="max-w-162.5 mx-auto text-center px-4 md:px-16 lg:px-20">
             <QuoteIcon />
 
             <p className="text-landing-body text-base md:text-lg leading-relaxed mb-8">
-              {review.text}
+              {t(review.textKey)}
             </p>
 
             <div className="flex justify-center mb-4">
@@ -102,7 +104,7 @@ export const ReviewsSection = () => {
             <p className="font-semibold text-landing-heading text-base">
               {review.name}
             </p>
-            <p className="text-landing-body text-sm">{review.role}</p>
+            <p className="text-landing-body text-sm">{t(review.roleKey)}</p>
           </div>
 
           <Button
@@ -110,13 +112,13 @@ export const ReviewsSection = () => {
             className="hidden md:flex absolute right-0 md:right-4 lg:right-16 w-11.25 h-11.25 rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
             icon="heroicons-outline:chevron-right"
             iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
-            ariaLabel="Next review"
+            ariaLabel={t("landing.reviews.nextReview")}
           />
         </div>
 
         <div
           className="flex justify-center gap-1 mt-10"
-          aria-label="Review slides"
+          aria-label={t("landing.reviews.reviewSlides")}
         >
           {REVIEWS.map((_, i) => (
             <button
@@ -124,7 +126,7 @@ export const ReviewsSection = () => {
               key={i}
               onClick={() => setCurrent(i)}
               className="w-11 h-11 flex items-center justify-center rounded-full"
-              aria-label={`Go to review ${i + 1}`}
+              aria-label={t("landing.reviews.goToReview", { number: i + 1 })}
               aria-current={i === current ? "true" : undefined}
             >
               <span

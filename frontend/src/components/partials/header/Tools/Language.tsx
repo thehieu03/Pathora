@@ -16,20 +16,30 @@ const languages = [
   { code: "vi", name: "Tiếng Việt", image: Vi },
 ];
 
+const normalizeLanguageCode = (value?: string) =>
+  (value || "en").toLowerCase().split("-")[0];
+
 const Language = () => {
   const { i18n } = useTranslation();
+  const currentLanguage = normalizeLanguageCode(
+    i18n.resolvedLanguage || i18n.language,
+  );
   const [selected, setSelected] = useState(
-    languages.find((lang) => lang.code === i18n.language) || languages[0],
+    languages.find((lang) => lang.code === currentLanguage) || languages[0],
   );
 
   useEffect(() => {
-    const currentLang = languages.find((lang) => lang.code === i18n.language);
+    const currentLang = languages.find(
+      (lang) =>
+        lang.code ===
+        normalizeLanguageCode(i18n.resolvedLanguage || i18n.language),
+    );
     if (currentLang) {
       setSelected(currentLang);
     }
-  }, [i18n.language]);
+  }, [i18n.language, i18n.resolvedLanguage]);
 
-  const handleChange = (lang) => {
+  const handleChange = (lang: (typeof languages)[number]) => {
     setSelected(lang);
     i18n.changeLanguage(lang.code);
   };

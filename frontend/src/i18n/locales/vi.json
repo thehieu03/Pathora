@@ -977,6 +977,258 @@
     "PRODUCTS_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Sản phẩm không tồn tại hoặc không còn trong kho",
     "PRODUCT_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Sản phẩm không tồn tại hoặc không còn trong kho"
   },
+  "landing": {
+    "nav": {
+      "home": "Trang chủ",
+      "aboutUs": "Về chúng tôi",
+      "tourPackages": "Gói tour",
+      "ourPolicies": "Chính sách"
+    },
+    "hero": {
+      "title": "Tận hưởng theo cách tuyệt vời nhất!",
+      "subtitle": "Tận hưởng dịch vụ của chúng tôi cho chuyến đi của bạn bất cứ lúc nào",
+      "publicTours": "Tour công khai",
+      "privateTours": "Tour riêng",
+      "backgroundAlt": "Điểm đến du lịch với phong cảnh đẹp",
+      "searchAria": "Tìm kiếm tour",
+      "searchAlt": "Tìm kiếm",
+      "exploreTours": "Khám phá tour",
+      "weekdays": ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+      "destinations": [
+        "TP. Hồ Chí Minh",
+        "Hà Nội",
+        "Đà Nẵng",
+        "Moscow",
+        "New York",
+        "California"
+      ],
+      "classifications": ["Tiêu chuẩn", "VIP", "Cao cấp"],
+      "calendar": {
+        "previousMonth": "Tháng trước",
+        "nextMonth": "Tháng sau"
+      },
+      "fields": {
+        "people": {
+          "label": "Số lượng người",
+          "placeholder": "Chọn số lượng",
+          "single": "người",
+          "plural": "người"
+        },
+        "date": {
+          "label": "Ngày",
+          "placeholder": "Chọn ngày"
+        },
+        "destination": {
+          "label": "Điểm đến",
+          "placeholder": "Chọn địa điểm"
+        },
+        "classification": {
+          "label": "Phân loại",
+          "placeholder": "Chọn phân loại"
+        }
+      }
+    },
+    "auth": {
+      "closeModal": "Đóng hộp thoại",
+      "close": "Đóng",
+      "createAccount": "Tạo tài khoản",
+      "login": "Đăng nhập",
+      "nameAndSurname": "Họ và tên",
+      "enterNameAndSurname": "Nhập họ và tên của bạn",
+      "emailAddress": "Địa chỉ email",
+      "enterEmailAddress": "Nhập địa chỉ email của bạn",
+      "password": "Mật khẩu",
+      "enterPassword": "Nhập mật khẩu của bạn",
+      "showPassword": "Hiện mật khẩu",
+      "hidePassword": "Ẩn mật khẩu",
+      "agreeWith": "Tôi đồng ý với",
+      "terms": "Điều khoản",
+      "and": "và",
+      "privacy": "Quyền riêng tư",
+      "or": "hoặc",
+      "google": "Google",
+      "signUpWithGoogle": "Đăng ký với Google",
+      "signInWithGoogle": "Đăng nhập với Google",
+      "alreadyHaveAccount": "Đã có tài khoản?",
+      "dontHaveAccount": "Chưa có tài khoản?",
+      "logIn": "Đăng nhập",
+      "forgotYourPassword": "Quên mật khẩu?",
+      "forgotPassword": "Quên mật khẩu",
+      "forgotPasswordHelp": "Đừng lo, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu.",
+      "resetPassword": "Đặt lại mật khẩu",
+      "checkYourEmail": "Kiểm tra email của bạn",
+      "resetLinkSentTo": "Chúng tôi đã gửi liên kết đặt lại mật khẩu đến",
+      "backToLogin": "Quay lại đăng nhập"
+    },
+    "featured": {
+      "title": "Tour nổi bật",
+      "days": "{{count}} ngày",
+      "from": "Từ"
+    },
+    "destinations": {
+      "trendingTitle": "Điểm đến thịnh hành",
+      "topAttractionsTitle": "Điểm tham quan hàng đầu",
+      "tours": "{{count}} tour"
+    },
+    "latestTours": {
+      "title": "Tour mới nhất",
+      "seeAll": "Xem tất cả",
+      "avatarAlt": "Ảnh đại diện tour",
+      "items": [
+        {
+          "date": "Ngày cuối là 13 tháng 3!",
+          "title": "Hành trình nổi bật châu Âu cổ điển."
+        },
+        {
+          "date": "Ngày cuối là 13 tháng 3!",
+          "title": "Những điểm nhấn của thành phố."
+        },
+        {
+          "date": "Ngày cuối là 13 tháng 3!",
+          "title": "Nghỉ ngắn ngày tại khách sạn gần thành phố!"
+        },
+        {
+          "date": "Ngày cuối là 13 tháng 3!",
+          "title": "Khám phá tour chèo kayak Iceland"
+        },
+        {
+          "date": "Ngày cuối là 13 tháng 3!",
+          "title": "Phiêu lưu safari Tanzania"
+        }
+      ]
+    },
+    "reviews": {
+      "title": "Đánh giá khách hàng",
+      "subtitle": "Khách du lịch nói gì về chúng tôi",
+      "previousReview": "Đánh giá trước",
+      "nextReview": "Đánh giá tiếp theo",
+      "reviewSlides": "Danh sách đánh giá",
+      "goToReview": "Đi tới đánh giá {{number}}",
+      "items": [
+        {
+          "role": "Khách du lịch",
+          "text": "Chuyến đi thực sự tuyệt vời! Kiến thức về điểm đến rất ấn tượng và khiến hành trình thú vị hơn nhiều. Tôi chắc chắn sẽ đặt lại với Pathora."
+        },
+        {
+          "role": "Khách thích khám phá",
+          "text": "Dịch vụ xuất sắc từ đầu đến cuối. Sự tận tâm và chuyên môn rất vượt trội. Tôi chưa từng có trải nghiệm du lịch liền mạch như vậy."
+        },
+        {
+          "role": "Du lịch gia đình",
+          "text": "Pathora đã làm kỳ nghỉ gia đình của chúng tôi trở nên khó quên. Mọi chi tiết đều được chuẩn bị hoàn hảo và hướng dẫn viên rất thân thiện, hiểu biết."
+        }
+      ]
+    },
+    "stats": {
+      "titleLine1": "Chúng tôi giúp",
+      "titleLine2": "du lịch thế giới dễ dàng",
+      "description": "Du lịch theo cách của bạn - khám phá điểm đến mới, chọn tour phù hợp phong cách của bạn và để Pathora lo mọi chi tiết từ đặt chỗ đến giấy tờ và hỗ trợ visa.",
+      "exploreImageAlt": "Du lịch",
+      "backgroundImageAlt": "Nền du lịch",
+      "items": {
+        "totalTravellers": "Tổng khách du lịch",
+        "totalTours": "Tổng số tour",
+        "milesCovered": "Quãng đường đã đi"
+      }
+    },
+    "cta": {
+      "title": "Giữ mọi thứ linh hoạt",
+      "description": "Hãy mạnh dạn lên đường - chúng tôi hiểu việc du lịch đúng lịch trình của bạn quan trọng thế nào.",
+      "exploreNow": "Khám phá ngay",
+      "backgroundAlt": "Phong cảnh núi"
+    },
+    "whyChoose": {
+      "title": "Vì sao chọn Tour",
+      "subtitle": "Chúng tôi mang đến trải nghiệm du lịch tốt nhất mỗi lần",
+      "features": [
+        {
+          "title": "Giá minh bạch, thư giãn và rõ ràng",
+          "desc": "Chúng tôi cung cấp mức giá minh bạch không phí ẩn để bạn an tâm du lịch."
+        },
+        {
+          "title": "Đặt tour dễ dàng và nhiều ưu đãi",
+          "desc": "Đặt tour với giá ưu đãi thông qua quy trình đặt chỗ đơn giản, không áp lực."
+        },
+        {
+          "title": "Thanh toán đầy đủ và hỗ trợ visa",
+          "desc": "Chúng tôi xử lý toàn bộ thanh toán và hỗ trợ visa đầy đủ cho hành trình của bạn."
+        },
+        {
+          "title": "Dịch vụ hàng đầu đáng tin cậy",
+          "desc": "Đội ngũ giàu kinh nghiệm của chúng tôi đảm bảo dịch vụ chất lượng cao trong suốt chuyến đi."
+        }
+      ]
+    },
+    "trustedBrands": {
+      "title": "Được tin dùng bởi các thương hiệu du lịch lớn",
+      "brandAlt": "Thương hiệu"
+    },
+    "sidebar": {
+      "dashboard": "Bảng điều khiển",
+      "user": "Người dùng",
+      "userProfile": "Hồ sơ người dùng",
+      "profile": "Hồ sơ",
+      "bookingHistory": "Lịch sử đặt tour",
+      "tourDiscovery": "Khám phá tour"
+    },
+    "footer": {
+      "backgroundAlt": "Nền chân trang",
+      "speakToExpert": "Trao đổi với chuyên gia của chúng tôi tại",
+      "followUs": "Theo dõi chúng tôi",
+      "contact": {
+        "title": "Liên hệ",
+        "address": "328 Queensberry Street, North Melbourne VIC 3051, Australia."
+      },
+      "company": {
+        "title": "Công ty"
+      },
+      "support": {
+        "title": "Hỗ trợ"
+      },
+      "newsletter": {
+        "title": "Bản tin",
+        "description": "Đăng ký bản tin miễn phí để luôn cập nhật thông tin mới nhất",
+        "placeholder": "Địa chỉ email của bạn",
+        "send": "Gửi"
+      },
+      "mobileApps": {
+        "title": "Ứng dụng di động",
+        "ios": "Ứng dụng iOS",
+        "android": "Ứng dụng Android"
+      },
+      "links": {
+        "company": {
+          "aboutUs": "Về chúng tôi",
+          "reviews": "Đánh giá Tourz",
+          "contactUs": "Liên hệ",
+          "travelGuides": "Cẩm nang du lịch",
+          "dataPolicy": "Chính sách dữ liệu",
+          "cookiePolicy": "Chính sách cookie",
+          "legal": "Pháp lý",
+          "sitemap": "Sơ đồ trang"
+        },
+        "support": {
+          "getInTouch": "Liên hệ",
+          "helpCenter": "Trung tâm trợ giúp",
+          "liveChat": "Chat trực tuyến",
+          "howItWorks": "Cách hoạt động"
+        }
+      },
+      "copyright": "© {{year}} Pathora. Đã đăng ký bản quyền."
+    },
+    "common": {
+      "starsAria": "{{count}} trên 5 sao"
+    },
+    "language": {
+      "title": "Ngôn ngữ"
+    },
+    "a11y": {
+      "openMenu": "Mở menu",
+      "closeMenu": "Đóng menu",
+      "changeLanguage": "Đổi ngôn ngữ",
+      "closeNavigationMenu": "Đóng menu điều hướng"
+    }
+  },
   "notification": {
     "title": "Thông báo",
     "viewAll": "Xem tất cả",

@@ -3,6 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
 import { SectionContainer } from "./shared";
+import { useTranslation } from "react-i18next";
 
 const DESTINATIONS = [
   {
@@ -10,42 +11,42 @@ const DESTINATIONS = [
       "https://www.figma.com/api/mcp/asset/dfe68e43-da11-41a8-b647-e0bdcc2720c4",
     city: "Paris",
     country: "France",
-    tours: "12 Tours",
+    toursCount: 12,
   },
   {
     image:
       "https://www.figma.com/api/mcp/asset/5389dbb9-c81c-4796-b57d-b521bbbe8de1",
     city: "Singapore",
     country: "Singapore",
-    tours: "8 Tours",
+    toursCount: 8,
   },
   {
     image:
       "https://www.figma.com/api/mcp/asset/c51cdf1f-a737-41bc-adf9-7cba8f4be0c3",
     city: "Rome",
     country: "Italy",
-    tours: "15 Tours",
+    toursCount: 15,
   },
   {
     image:
       "https://www.figma.com/api/mcp/asset/2c81a72e-438c-43a1-a5e4-9dfdbe595748",
     city: "Bangkok",
     country: "Thailand",
-    tours: "10 Tours",
+    toursCount: 10,
   },
   {
     image:
       "https://www.figma.com/api/mcp/asset/8d79382c-bc93-46a0-a421-d3b11f7366ed",
     city: "Bali",
     country: "Indonesia",
-    tours: "9 Tours",
+    toursCount: 9,
   },
   {
     image:
       "https://www.figma.com/api/mcp/asset/daf96572-083c-4601-9e01-4d98b0cf1add",
     city: "Phuket",
     country: "Thailand",
-    tours: "7 Tours",
+    toursCount: 7,
   },
 ];
 
@@ -101,12 +102,14 @@ const ATTRACTIONS = [
 ];
 
 export const TrendingDestinationsSection = () => {
+  const { t } = useTranslation();
+
   return (
     <SectionContainer>
       <section className="w-full">
         <div className="mb-8">
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
-            Trending Destination
+            {t("landing.destinations.trendingTitle")}
           </h2>
         </div>
 
@@ -127,7 +130,9 @@ export const TrendingDestinationsSection = () => {
                 <p className="font-bold text-base leading-tight">{dest.city}</p>
                 <p className="text-xs text-white/80">{dest.country}</p>
                 <Badge
-                  label={dest.tours}
+                  label={t("landing.destinations.tours", {
+                    count: dest.toursCount,
+                  })}
                   className="bg-white/20 text-white text-xs rounded-full px-2 py-0.5 mt-1 inline-block"
                 />
               </div>
@@ -140,12 +145,14 @@ export const TrendingDestinationsSection = () => {
 };
 
 export const TopAttractionsSection = () => {
+  const { t } = useTranslation();
+
   return (
     <SectionContainer>
       <section className="w-full">
         <div className="mb-8">
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
-            Top Attractions
+            {t("landing.destinations.topAttractionsTitle")}
           </h2>
         </div>
 

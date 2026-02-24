@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { Button, Icon } from "@/components/ui";
+import { useTranslation } from "react-i18next";
 
 const GOOGLE_ICON =
   "https://www.figma.com/api/mcp/asset/6af47520-666a-4e1d-bb47-97db509f8848";
@@ -20,11 +21,13 @@ const ModalShell = ({
   children,
   onClose,
   ariaLabel,
+  closeLabel,
   dialogRef,
 }: {
   children: React.ReactNode;
   onClose: () => void;
   ariaLabel: string;
+  closeLabel: string;
   dialogRef?: React.RefObject<HTMLDivElement | null>;
 }) => (
   <div className="fixed inset-0 z-[200] flex items-center justify-center">
@@ -32,7 +35,7 @@ const ModalShell = ({
       type="button"
       className="absolute inset-0 bg-[#333]/80"
       onClick={onClose}
-      aria-label="Close modal"
+      aria-label={closeLabel}
     />
     <div
       ref={dialogRef}
@@ -98,6 +101,7 @@ const SignUpView = ({
   onClose: () => void;
   goToLogin: () => void;
 }) => {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
@@ -116,13 +120,13 @@ const SignUpView = ({
       {/* Header */}
       <div className="flex items-center justify-between w-full">
         <h2 className="text-[#333] font-bold text-2xl sm:text-[32px] leading-normal">
-          Create Account
+          {t("landing.auth.createAccount")}
         </h2>
         <button
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label="Close"
+          aria-label={t("landing.auth.close")}
         >
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </button>
@@ -132,35 +136,39 @@ const SignUpView = ({
       <div className="flex flex-col gap-5 w-full">
         <InputField
           id="signup-name"
-          label="Name and Surname"
+          label={t("landing.auth.nameAndSurname")}
           name="name"
           value={form.name}
           onChange={handleChange}
-          placeholder="Enter your name and surname"
+          placeholder={t("landing.auth.enterNameAndSurname")}
         />
         <InputField
           id="signup-email"
-          label="Email Address"
+          label={t("landing.auth.emailAddress")}
           type="email"
           name="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="Enter your email address"
+          placeholder={t("landing.auth.enterEmailAddress")}
         />
         <InputField
           id="signup-password"
-          label="Password"
+          label={t("landing.auth.password")}
           type={showPassword ? "text" : "password"}
           name="password"
           value={form.password}
           onChange={handleChange}
-          placeholder="Enter your password"
+          placeholder={t("landing.auth.enterPassword")}
           trailing={
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333]/40 hover:text-[#333]/70 transition-colors"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={
+                showPassword
+                  ? t("landing.auth.hidePassword")
+                  : t("landing.auth.showPassword")
+              }
             >
               <Icon
                 icon={
@@ -183,13 +191,13 @@ const SignUpView = ({
             className="mt-0.5 w-4.5 h-4.5 rounded border border-[#333]/20 accent-landing-accent shrink-0"
           />
           <span className="text-sm text-[#333]/60 leading-normal">
-            I agree with{" "}
+            {t("landing.auth.agreeWith")}{" "}
             <a href="/terms" className="text-landing-accent hover:underline">
-              Terms
+              {t("landing.auth.terms")}
             </a>{" "}
-            and{" "}
+            {t("landing.auth.and")}{" "}
             <a href="/privacy" className="text-landing-accent hover:underline">
-              Privacy
+              {t("landing.auth.privacy")}
             </a>
           </span>
         </label>
@@ -199,30 +207,37 @@ const SignUpView = ({
       <div className="flex flex-col gap-1.5 items-center w-full">
         <Button
           type="submit"
-          text="Sign Up"
+          text={t("common.signUp")}
           className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors"
         />
-        <span className="text-[#333]/40 text-base text-center">or</span>
+        <span className="text-[#333]/40 text-base text-center">
+          {t("landing.auth.or")}
+        </span>
         <button
           type="button"
           className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors"
         >
-          <Image src={GOOGLE_ICON} alt="Google" width={24} height={24} />
+          <Image
+            src={GOOGLE_ICON}
+            alt={t("landing.auth.google")}
+            width={24}
+            height={24}
+          />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
-            Sign Up with Google
+            {t("landing.auth.signUpWithGoogle")}
           </span>
         </button>
       </div>
 
       {/* Footer */}
       <p className="text-base text-[#333] text-center">
-        Already have an account?{" "}
+        {t("landing.auth.alreadyHaveAccount")}{" "}
         <button
           type="button"
           className="font-semibold text-landing-accent hover:underline"
           onClick={goToLogin}
         >
-          Log In
+          {t("landing.auth.logIn")}
         </button>
       </p>
     </form>
@@ -239,6 +254,7 @@ const LoginView = ({
   goToSignUp: () => void;
   goToForgot: () => void;
 }) => {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
 
@@ -256,13 +272,13 @@ const LoginView = ({
       {/* Header */}
       <div className="flex items-center justify-between w-full">
         <h2 className="text-[#333] font-bold text-2xl sm:text-[32px] leading-normal">
-          Login
+          {t("landing.auth.login")}
         </h2>
         <button
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label="Close"
+          aria-label={t("landing.auth.close")}
         >
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </button>
@@ -272,28 +288,32 @@ const LoginView = ({
       <div className="flex flex-col gap-5 w-full">
         <InputField
           id="login-email"
-          label="Email Address"
+          label={t("landing.auth.emailAddress")}
           type="email"
           name="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="Enter your email address"
+          placeholder={t("landing.auth.enterEmailAddress")}
         />
         <div className="flex flex-col gap-1">
           <InputField
             id="login-password"
-            label="Password"
+            label={t("landing.auth.password")}
             type={showPassword ? "text" : "password"}
             name="password"
             value={form.password}
             onChange={handleChange}
-            placeholder="Enter your password"
+            placeholder={t("landing.auth.enterPassword")}
             trailing={
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333]/40 hover:text-[#333]/70 transition-colors"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-label={
+                  showPassword
+                    ? t("landing.auth.hidePassword")
+                    : t("landing.auth.showPassword")
+                }
               >
                 <Icon
                   icon={
@@ -311,7 +331,7 @@ const LoginView = ({
             onClick={goToForgot}
             className="self-end text-sm text-[#333]/60 hover:text-[#333] transition-colors mt-1"
           >
-            Forgot your password?
+            {t("landing.auth.forgotYourPassword")}
           </button>
         </div>
       </div>
@@ -320,30 +340,37 @@ const LoginView = ({
       <div className="flex flex-col gap-1.5 items-center w-full">
         <Button
           type="submit"
-          text="Sign In"
+          text={t("common.signIn")}
           className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors"
         />
-        <span className="text-[#333]/40 text-base text-center">or</span>
+        <span className="text-[#333]/40 text-base text-center">
+          {t("landing.auth.or")}
+        </span>
         <button
           type="button"
           className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors"
         >
-          <Image src={GOOGLE_ICON} alt="Google" width={24} height={24} />
+          <Image
+            src={GOOGLE_ICON}
+            alt={t("landing.auth.google")}
+            width={24}
+            height={24}
+          />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
-            Sign In with Google
+            {t("landing.auth.signInWithGoogle")}
           </span>
         </button>
       </div>
 
       {/* Footer */}
       <p className="text-base text-[#333] text-center">
-        {"Don't have an account ? "}
+        {t("landing.auth.dontHaveAccount")}{" "}
         <button
           type="button"
           className="font-semibold text-landing-accent hover:underline"
           onClick={goToSignUp}
         >
-          Sign Up
+          {t("common.signUp")}
         </button>
       </p>
     </form>
@@ -352,6 +379,7 @@ const LoginView = ({
 
 /* ── Forgot Password View ──────────────────────────────────── */
 const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -373,10 +401,10 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
           />
         </div>
         <h2 className="text-[#333] font-bold text-2xl sm:text-[32px] leading-normal">
-          Check your email
+          {t("landing.auth.checkYourEmail")}
         </h2>
         <p className="text-[#333]/60 text-base leading-relaxed">
-          We sent a password reset link to{" "}
+          {t("landing.auth.resetLinkSentTo")}{" "}
           <span className="font-semibold text-[#333]">{email}</span>
         </p>
         <button
@@ -385,7 +413,7 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
           className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm"
         >
           <Icon icon="heroicons-outline:arrow-left" className="w-4 h-4" />
-          Back to Login
+          {t("landing.auth.backToLogin")}
         </button>
       </div>
     );
@@ -402,28 +430,28 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
       </div>
 
       <h2 className="text-[#333] font-bold text-2xl sm:text-[32px] leading-normal">
-        Forgot Password
+        {t("landing.auth.forgotPassword")}
       </h2>
       <p className="text-[#333]/60 text-base text-center leading-relaxed -mt-2">
-        {"No worries, we'll send you reset instructions."}
+        {t("landing.auth.forgotPasswordHelp")}
       </p>
 
       {/* Email field */}
       <div className="w-full">
         <InputField
           id="forgot-email"
-          label="Email Address"
+          label={t("landing.auth.emailAddress")}
           type="email"
           name="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email address"
+          placeholder={t("landing.auth.enterEmailAddress")}
         />
       </div>
 
       <Button
         type="submit"
-        text="Reset Password"
+        text={t("landing.auth.resetPassword")}
         className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors"
       />
 
@@ -433,7 +461,7 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
         className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm"
       >
         <Icon icon="heroicons-outline:arrow-left" className="w-4 h-4" />
-        Back to Login
+        {t("landing.auth.backToLogin")}
       </button>
     </form>
   );
@@ -445,6 +473,7 @@ export const AuthModal = ({
   onClose,
   initialView = "signup",
 }: AuthModalProps) => {
+  const { t } = useTranslation();
   const [view, setView] = useState<AuthView>(initialView);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -504,15 +533,16 @@ export const AuthModal = ({
   if (!open) return null;
 
   const ariaLabels: Record<AuthView, string> = {
-    signup: "Create Account",
-    login: "Login",
-    forgot: "Forgot Password",
+    signup: t("landing.auth.createAccount"),
+    login: t("landing.auth.login"),
+    forgot: t("landing.auth.forgotPassword"),
   };
 
   return (
     <ModalShell
       onClose={handleClose}
       ariaLabel={ariaLabels[view]}
+      closeLabel={t("landing.auth.closeModal")}
       dialogRef={dialogRef}
     >
       {view === "signup" && (

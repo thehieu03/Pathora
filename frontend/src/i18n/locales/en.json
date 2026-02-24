@@ -977,6 +977,258 @@
     "PRODUCTS_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Products do not exist or are not in stock",
     "PRODUCT_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Product does not exist or is not in stock"
   },
+  "landing": {
+    "nav": {
+      "home": "Home",
+      "aboutUs": "About Us",
+      "tourPackages": "Tour Packages",
+      "ourPolicies": "Our Policies"
+    },
+    "hero": {
+      "title": "Enjoy in the best way!",
+      "subtitle": "Enjoy our services for your trip anytime",
+      "publicTours": "Public Tours",
+      "privateTours": "Private Tours",
+      "backgroundAlt": "Travel destination with beautiful scenery",
+      "searchAria": "Search tours",
+      "searchAlt": "Search",
+      "exploreTours": "Explore Our Tours",
+      "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "destinations": [
+        "Ho Chi Minh City",
+        "Ha Noi",
+        "Da Nang",
+        "Moscow",
+        "New York",
+        "California"
+      ],
+      "classifications": ["Standard", "VIP", "Luxury"],
+      "calendar": {
+        "previousMonth": "Previous month",
+        "nextMonth": "Next month"
+      },
+      "fields": {
+        "people": {
+          "label": "Number of people",
+          "placeholder": "Choose number",
+          "single": "person",
+          "plural": "people"
+        },
+        "date": {
+          "label": "Date",
+          "placeholder": "Choose Date"
+        },
+        "destination": {
+          "label": "Destination",
+          "placeholder": "Select Location"
+        },
+        "classification": {
+          "label": "Classification",
+          "placeholder": "Select Classification"
+        }
+      }
+    },
+    "auth": {
+      "closeModal": "Close modal",
+      "close": "Close",
+      "createAccount": "Create Account",
+      "login": "Login",
+      "nameAndSurname": "Name and Surname",
+      "enterNameAndSurname": "Enter your name and surname",
+      "emailAddress": "Email Address",
+      "enterEmailAddress": "Enter your email address",
+      "password": "Password",
+      "enterPassword": "Enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "agreeWith": "I agree with",
+      "terms": "Terms",
+      "and": "and",
+      "privacy": "Privacy",
+      "or": "or",
+      "google": "Google",
+      "signUpWithGoogle": "Sign Up with Google",
+      "signInWithGoogle": "Sign In with Google",
+      "alreadyHaveAccount": "Already have an account?",
+      "dontHaveAccount": "Don't have an account?",
+      "logIn": "Log In",
+      "forgotYourPassword": "Forgot your password?",
+      "forgotPassword": "Forgot Password",
+      "forgotPasswordHelp": "No worries, we'll send you reset instructions.",
+      "resetPassword": "Reset Password",
+      "checkYourEmail": "Check your email",
+      "resetLinkSentTo": "We sent a password reset link to",
+      "backToLogin": "Back to Login"
+    },
+    "featured": {
+      "title": "Featured Trips",
+      "days": "{{count}} days",
+      "from": "From"
+    },
+    "destinations": {
+      "trendingTitle": "Trending Destination",
+      "topAttractionsTitle": "Top Attractions",
+      "tours": "{{count}} Tours"
+    },
+    "latestTours": {
+      "title": "Our Latest Tours",
+      "seeAll": "See all",
+      "avatarAlt": "Tour avatar",
+      "items": [
+        {
+          "date": "Last Day is March 13!",
+          "title": "A classic European highlights itinerary."
+        },
+        {
+          "date": "Last Day is March 13!",
+          "title": "Signature city highlights."
+        },
+        {
+          "date": "Last Day is March 13!",
+          "title": "In Hotels Near Cities A Short Break!"
+        },
+        {
+          "date": "Last Day is March 13!",
+          "title": "Discover Iceland Kayaking Tours"
+        },
+        {
+          "date": "Last Day is March 13!",
+          "title": "Safari Adventure Tanzania"
+        }
+      ]
+    },
+    "reviews": {
+      "title": "Customer Reviews",
+      "subtitle": "What our travellers say",
+      "previousReview": "Previous review",
+      "nextReview": "Next review",
+      "reviewSlides": "Review slides",
+      "goToReview": "Go to review {{number}}",
+      "items": [
+        {
+          "role": "Traveller",
+          "text": "The trip was absolutely amazing! The knowledge of destinations was impressive and made the journey doubly enjoyable. I'll definitely book again with Pathora."
+        },
+        {
+          "role": "Adventure Traveller",
+          "text": "Outstanding service from start to finish. The personalized attention and expertise were exceptional. I've never had such a seamless travel experience."
+        },
+        {
+          "role": "Family Traveler",
+          "text": "Pathora made our family vacation unforgettable. Every detail was perfectly planned and our guide was knowledgeable and friendly."
+        }
+      ]
+    },
+    "stats": {
+      "titleLine1": "We Make",
+      "titleLine2": "World Travel Easy",
+      "description": "Travel your way—discover new destinations, choose the tour that fits your style, and let Pathora handle the details from booking to documents and visa support.",
+      "exploreImageAlt": "Travel",
+      "backgroundImageAlt": "Travel background",
+      "items": {
+        "totalTravellers": "Total Travellers",
+        "totalTours": "Total Tours",
+        "milesCovered": "Miles Covered"
+      }
+    },
+    "cta": {
+      "title": "Keep things flexible",
+      "description": "Go ahead and take that trip — we know how important it is to travel on your schedule.",
+      "exploreNow": "Explore Now",
+      "backgroundAlt": "Mountain landscape"
+    },
+    "whyChoose": {
+      "title": "Why choose Tour",
+      "subtitle": "We offer the best travel experience every time",
+      "features": [
+        {
+          "title": "Easy Relaxed & Transparent Pricing",
+          "desc": "We provide transparent pricing with no hidden fees so you can travel worry-free."
+        },
+        {
+          "title": "Stress & Discounted Booking",
+          "desc": "Book your tours at discounted prices with our easy and stress-free booking process."
+        },
+        {
+          "title": "Full Payment & Visa Support",
+          "desc": "We handle all payment processing and provide full visa support for your journey."
+        },
+        {
+          "title": "Reliable Top Services",
+          "desc": "Our experienced team ensures top-notch service throughout your entire travel experience."
+        }
+      ]
+    },
+    "trustedBrands": {
+      "title": "Trusted by all the largest travel brands",
+      "brandAlt": "Brand"
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "user": "User",
+      "userProfile": "User Profile",
+      "profile": "Profile",
+      "bookingHistory": "Booking History",
+      "tourDiscovery": "Tour Discovery"
+    },
+    "footer": {
+      "backgroundAlt": "Footer background",
+      "speakToExpert": "Speak to our expert at",
+      "followUs": "Follow Us",
+      "contact": {
+        "title": "Contact",
+        "address": "328 Queensberry Street, North Melbourne VIC 3051, Australia."
+      },
+      "company": {
+        "title": "Company"
+      },
+      "support": {
+        "title": "Support"
+      },
+      "newsletter": {
+        "title": "Newsletter",
+        "description": "Subscribe to the free newsletter and stay up to date",
+        "placeholder": "Your email address",
+        "send": "Send"
+      },
+      "mobileApps": {
+        "title": "Mobile Apps",
+        "ios": "iOS App",
+        "android": "Android App"
+      },
+      "links": {
+        "company": {
+          "aboutUs": "About Us",
+          "reviews": "Tourz Reviews",
+          "contactUs": "Contact Us",
+          "travelGuides": "Travel Guides",
+          "dataPolicy": "Data Policy",
+          "cookiePolicy": "Cookie Policy",
+          "legal": "Legal",
+          "sitemap": "Sitemap"
+        },
+        "support": {
+          "getInTouch": "Get in Touch",
+          "helpCenter": "Help center",
+          "liveChat": "Live chat",
+          "howItWorks": "How it works"
+        }
+      },
+      "copyright": "© {{year}} Pathora. All rights reserved."
+    },
+    "common": {
+      "starsAria": "{{count}} out of 5 stars"
+    },
+    "language": {
+      "title": "Language"
+    },
+    "a11y": {
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "changeLanguage": "Change language",
+      "closeNavigationMenu": "Close navigation menu"
+    }
+  },
   "notification": {
     "title": "Notifications",
     "viewAll": "View all",

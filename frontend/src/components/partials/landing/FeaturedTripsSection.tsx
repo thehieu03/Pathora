@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
+import { useTranslation } from "react-i18next";
 
 const TRIPS = [
   {
@@ -51,54 +52,80 @@ const TripCard = ({
   days,
   price,
 }: (typeof TRIPS)[0]) => (
-  <Link
-    href="/tours"
-    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-300"
-  >
-    <div className="relative h-53.75 overflow-hidden">
-      <Image
-        src={image}
-        alt={title}
-        fill
-        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-    </div>
-
-    <div className="p-5 flex flex-col gap-2 flex-1">
-      <div className="flex items-center gap-1 text-landing-body text-base">
-        <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
-        <span className="text-sm">{location}</span>
-      </div>
-      <h3 className="text-landing-heading font-medium text-[15px] leading-snug">
-        {title}
-      </h3>
-      <StarRating count={rating} />
-    </div>
-
-    <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
-      <div className="flex items-center gap-1 text-landing-heading text-xs">
-        <Icon
-          icon="heroicons-outline:calendar"
-          className="w-4 h-4 text-gray-500"
-        />
-        <span>{days} days</span>
-      </div>
-      <div className="text-landing-heading text-sm">
-        <span className="text-gray-500 text-xs font-normal">From </span>
-        <span className="font-medium text-[15px]">{price}</span>
-      </div>
-    </div>
-  </Link>
+  <TripCardContent
+    image={image}
+    location={location}
+    title={title}
+    rating={rating}
+    days={days}
+    price={price}
+  />
 );
 
+const TripCardContent = ({
+  image,
+  location,
+  title,
+  rating,
+  days,
+  price,
+}: (typeof TRIPS)[0]) => {
+  const { t } = useTranslation();
+
+  return (
+    <Link
+      href="/tours"
+      className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-300"
+    >
+      <div className="relative h-53.75 overflow-hidden">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+
+      <div className="p-5 flex flex-col gap-2 flex-1">
+        <div className="flex items-center gap-1 text-landing-body text-base">
+          <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
+          <span className="text-sm">{location}</span>
+        </div>
+        <h3 className="text-landing-heading font-medium text-[15px] leading-snug">
+          {title}
+        </h3>
+        <StarRating count={rating} />
+      </div>
+
+      <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-1 text-landing-heading text-xs">
+          <Icon
+            icon="heroicons-outline:calendar"
+            className="w-4 h-4 text-gray-500"
+          />
+          <span>{t("landing.featured.days", { count: days })}</span>
+        </div>
+        <div className="text-landing-heading text-sm">
+          <span className="text-gray-500 text-xs font-normal">
+            {t("landing.featured.from")}{" "}
+          </span>
+          <span className="font-medium text-[15px]">{price}</span>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
 export const FeaturedTripsSection = () => {
+  const { t } = useTranslation();
+
   return (
     <SectionContainer>
       <section className="w-full">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
-            Featured Trips
+            {t("landing.featured.title")}
           </h2>
         </div>
 
