@@ -27,3 +27,4 @@ public sealed record FunctionDetailVm(
     int Order,
     bool IsChecked
 );
+

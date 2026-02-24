@@ -18,3 +18,4 @@ public sealed class UserEntity : Aggregate<Guid>
     public bool ForcePasswordChange { get; set; }
     public bool IsDeleted { get; set; }
 }
+

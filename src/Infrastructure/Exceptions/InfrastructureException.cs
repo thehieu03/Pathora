@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Exceptions;
+namespace Infrastructure.Exceptions;
 
 public class InfrastructureException:Exception
 {
@@ -7,3 +7,4 @@ public class InfrastructureException:Exception
         
     }
 }
+

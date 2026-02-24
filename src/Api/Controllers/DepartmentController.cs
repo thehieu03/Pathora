@@ -1,9 +1,6 @@
 using Api.Endpoint;
-using Application.Features.Department.Commands.CreateDepartment;
-using Application.Features.Department.Commands.DeleteDepartment;
-using Application.Features.Department.Commands.UpdateDepartment;
-using Application.Features.Department.Queries.GetAllDepartments;
-using Application.Features.Department.Queries.GetDepartmentComboBox;
+using Application.Features.Department.Commands;
+using Application.Features.Department.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

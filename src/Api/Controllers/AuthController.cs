@@ -1,10 +1,6 @@
 using Api.Endpoint;
-using Application.Features.Identity.Commands.Login;
-using Application.Features.Identity.Commands.Logout;
-using Application.Features.Identity.Commands.Refresh;
-using Application.Features.Identity.Commands.Register;
-using Application.Features.Identity.Queries.GetTabs;
-using Application.Features.Identity.Queries.GetUserInfo;
+using Application.Features.Identity.Commands;
+using Application.Features.Identity.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

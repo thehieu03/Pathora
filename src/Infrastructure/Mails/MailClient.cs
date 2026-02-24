@@ -48,3 +48,4 @@ public class MailClient : IMailClient
         _logger.LogInformation("Sent mail result: {Result}", result);
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using Api.Exceptions;
+using Api.Exceptions;
 using Domain.ApiModel;
 using Domain.Constant;
 using FluentValidation;
@@ -110,3 +110,4 @@ public sealed class CustomExceptionHandler(
 
     #endregion
 }
+

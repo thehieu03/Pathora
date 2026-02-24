@@ -1,0 +1,33 @@
+using Application.Contracts.Identity;
+using Domain.CORS;
+using ErrorOr;
+using FluentValidation;
+using Application.Services;
+
+namespace Application.Features.Identity.Commands;
+
+public sealed record LoginCommand(string Email, string Password) : ICommand<ErrorOr<LoginResponse>>;
+
+public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
+{
+    public LoginCommandValidator()
+    {
+        RuleFor(x => x.Email)
+            .NotEmpty().WithMessage("Email là bắt buộc")
+            .EmailAddress().WithMessage("Địa chỉ email không hợp lệ");
+
+        RuleFor(x => x.Password)
+            .NotEmpty().WithMessage("Mật khẩu là bắt buộc");
+    }
+}
+
+public sealed class LoginCommandHandler(IIdentityService identityService)
+    : ICommandHandler<LoginCommand, ErrorOr<LoginResponse>>
+{
+    public async Task<ErrorOr<LoginResponse>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    {
+        return await identityService.Login(new LoginRequest(request.Email, request.Password));
+    }
+}
+
+

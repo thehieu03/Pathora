@@ -15,3 +15,4 @@ public class ForgotPasswordRequestValidator : AbstractValidator<ForgotPasswordRe
                 "Mật khẩu phải có tối thiểu tám ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt");
     }
 }
+

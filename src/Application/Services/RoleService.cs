@@ -78,16 +78,13 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
 
     public async Task<ErrorOr<PaginatedListWithPermissions<RoleVm>>> GetAll(GetAllRoleRequest request)
     {
-        var rolesResult = await _roleRepository.FindAll(request.RoleName, request.Status, request.CurrentPage, request.PageSize);
+        var rolesResult = await _roleRepository.GetAll();
         if (rolesResult.IsError) return rolesResult.Errors;
-
-        var countResult = await _roleRepository.CountAll(request.RoleName, request.Status);
-        var total = countResult.IsError ? 0 : countResult.Value;
 
         var roleVms = rolesResult.Value.Select(r => new RoleVm(
             r.Id, r.Name, r.Description, r.Type, r.Status, [])).ToList();
 
-        return new PaginatedListWithPermissions<RoleVm>(total, roleVms, new Dictionary<string, bool>());
+        return new PaginatedListWithPermissions<RoleVm>(roleVms.Count, roleVms, new Dictionary<string, bool>());
     }
 
     public async Task<ErrorOr<List<LookupVm>>> GetAll()

@@ -17,3 +17,4 @@ public class FunctionService(IFunctionRepository functionRepository) : IFunction
         return functionRepository.FindAll();
     }
 }
+

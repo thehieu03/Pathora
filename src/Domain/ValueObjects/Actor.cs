@@ -1,4 +1,4 @@
-﻿namespace Domain.ValueObjects;
+namespace Domain.ValueObjects;
 
 public enum ActorKind { User, System, Job, Worker, Consumer }
 
@@ -21,3 +21,4 @@ public readonly record struct Actor(ActorKind Kind, string Value)
         return $"{Kind.ToString().ToLowerInvariant()}:{Value}";
     }
 }
+

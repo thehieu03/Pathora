@@ -1,10 +1,6 @@
 using Api.Endpoint;
-using Application.Features.User.Commands.ChangePassword;
-using Application.Features.User.Commands.CreateUser;
-using Application.Features.User.Commands.DeleteUser;
-using Application.Features.User.Commands.UpdateUser;
-using Application.Features.User.Queries.GetAllUsers;
-using Application.Features.User.Queries.GetUserDetail;
+using Application.Features.User.Commands;
+using Application.Features.User.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

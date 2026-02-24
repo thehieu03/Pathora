@@ -11,3 +11,4 @@ public interface IMinIOCloudService
         CancellationToken ct = default);
     Task<string> GetShareLinkAsync(string bucketName, string objectName, int expireTime);
 }
+

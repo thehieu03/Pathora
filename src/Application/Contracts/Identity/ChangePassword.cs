@@ -23,3 +23,4 @@ public class ChangePasswordRequestValidator : AbstractValidator<ChangePasswordRe
                 "Mật khẩu phải có tối thiểu tám ký tự, ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt");
     }
 }
+

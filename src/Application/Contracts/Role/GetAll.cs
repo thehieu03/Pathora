@@ -2,7 +2,7 @@ using Domain.Enums;
 
 namespace Application.Contracts.Role;
 
-public sealed record GetAllRoleRequest(string? RoleName, RoleStatus Status, int CurrentPage = 1, int PageSize = 10);
+public sealed record GetAllRoleRequest();
 
 public sealed record RoleVm(
     Guid Id,

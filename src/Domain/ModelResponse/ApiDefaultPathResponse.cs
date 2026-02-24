@@ -1,4 +1,4 @@
-﻿namespace Domain.ApiModel;
+namespace Domain.ApiModel;
 
 public sealed class ApiDefaultPathResponse
 {
@@ -9,3 +9,4 @@ public sealed class ApiDefaultPathResponse
     public Dictionary<string, string> Endpoints { get; set; } = default!;
     public string Message { get; set; } = default!;
 }
+

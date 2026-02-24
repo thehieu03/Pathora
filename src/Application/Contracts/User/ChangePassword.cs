@@ -11,3 +11,4 @@ public sealed class ChangePasswordRequestValidator : AbstractValidator<ChangePas
         RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId không được để trống");
     }
 }
+

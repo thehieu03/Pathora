@@ -1,9 +1,6 @@
 using Api.Endpoint;
-using Application.Features.Tour.Commands.CreateTour;
-using Application.Features.Tour.Commands.DeleteTour;
-using Application.Features.Tour.Commands.UpdateTour;
-using Application.Features.Tour.Queries.GetAllTours;
-using Application.Features.Tour.Queries.GetTourDetail;
+using Application.Features.Tour.Commands;
+using Application.Features.Tour.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

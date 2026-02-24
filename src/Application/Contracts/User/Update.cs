@@ -19,3 +19,4 @@ public sealed class UpdateUserRequestValidator : AbstractValidator<UpdateUserReq
             .When(x => !string.IsNullOrEmpty(x.FullName));
     }
 }
+

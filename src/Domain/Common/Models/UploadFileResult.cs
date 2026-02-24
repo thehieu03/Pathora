@@ -1,4 +1,4 @@
-﻿namespace Domain.Common.Models;
+namespace Domain.Common.Models;
 
 public sealed class UploadFileResult
 {
@@ -10,3 +10,4 @@ public sealed class UploadFileResult
     public string? ContentType { get; set; }
     public string? PublicURL { get; set; }
 }
+

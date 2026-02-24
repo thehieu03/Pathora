@@ -1,4 +1,4 @@
-﻿namespace Domain.ApiModel;
+namespace Domain.ApiModel;
 
 public class ErrorResult
 {
@@ -10,3 +10,4 @@ public class ErrorResult
         Details = details;
     }
 }
+

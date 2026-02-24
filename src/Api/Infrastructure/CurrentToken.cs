@@ -9,3 +9,4 @@ public class CurrentToken(IHttpContextAccessor httpContextAccessor) : IToken
     public string? Token => httpContextAccessor.HttpContext?.Request.Headers["Authorization"];
     public string? Expire => httpContextAccessor.HttpContext?.User.FindFirstValue("exp");
 }
+

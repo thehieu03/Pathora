@@ -1,4 +1,4 @@
-﻿namespace Domain.ApiModel;
+namespace Domain.ApiModel;
 
 public sealed class ApiGetResponse<T>
 {
@@ -9,3 +9,4 @@ public sealed class ApiGetResponse<T>
         Result = result;
     }
 }
+

@@ -7,3 +7,4 @@ public sealed class OtpEntity
     public required DateTimeOffset ExpiryDate { get; set; }
     public bool IsDeleted { get; set; } = false;
 }
+

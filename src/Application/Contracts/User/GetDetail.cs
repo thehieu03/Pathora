@@ -17,3 +17,4 @@ public sealed record UserDepartmentVm(
     string DepartmentName,
     Guid? PositionId,
     string? PositionName);
+

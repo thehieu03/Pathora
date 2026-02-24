@@ -12,3 +12,4 @@ public sealed class DepartmentEntity : Aggregate<Guid>
     public int Level { get; set; } = 1;
     public bool IsDeleted { get; set; }
 }
+

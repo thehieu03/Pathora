@@ -7,3 +7,4 @@ public sealed record UpdatePositionRequest(
     string? Note,
     int? Type
 );
+

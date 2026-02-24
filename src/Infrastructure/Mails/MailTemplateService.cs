@@ -45,3 +45,4 @@ public static partial class MailTemplateService
         return template.Render(model);
     }
 }
+

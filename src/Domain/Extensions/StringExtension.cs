@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace Domain.Extensions;
 
@@ -29,3 +29,4 @@ public static class StringExtension
     }
 
 }
+

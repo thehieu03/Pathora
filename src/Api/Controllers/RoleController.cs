@@ -1,11 +1,6 @@
 using Api.Endpoint;
-using Application.Features.Role.Commands.CreateRole;
-using Application.Features.Role.Commands.DeleteRole;
-using Application.Features.Role.Commands.UpdateRole;
-using Application.Features.Role.Queries.GetAllRoles;
-using Application.Features.Role.Queries.GetRoleDetail;
-using Application.Features.Role.Queries.GetRoleLookup;
-using Domain.Enums;
+using Application.Features.Role.Commands;
+using Application.Features.Role.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,13 +11,9 @@ namespace Api.Controllers;
 public class RoleController : BaseApiController
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-        [FromQuery] string? roleName,
-        [FromQuery] RoleStatus status = RoleStatus.Active,
-        [FromQuery] int currentPage = 1,
-        [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetAll()
     {
-        var result = await Sender.Send(new GetAllRolesQuery(roleName, status, currentPage, pageSize));
+        var result = await Sender.Send(new GetAllRolesQuery());
         return HandleResult(result);
     }
 

@@ -25,3 +25,4 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
             .NotEmpty().WithMessage("Tên người dùng không được để trống");
     }
 }
+

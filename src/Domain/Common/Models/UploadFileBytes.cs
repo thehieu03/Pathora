@@ -1,4 +1,4 @@
-﻿namespace Domain.Common.Models;
+namespace Domain.Common.Models;
 
 public sealed class UploadFileBytes
 {
@@ -6,3 +6,4 @@ public sealed class UploadFileBytes
     public required string ContentType { get; init; }
     public required byte[] Bytes { get; init; }
 }
+

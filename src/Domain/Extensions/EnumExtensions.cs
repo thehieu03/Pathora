@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace Domain.Extensions;
@@ -12,3 +12,4 @@ public static class EnumExtensions
         return attribute?.Description ?? value.ToString();
     }
 }
+

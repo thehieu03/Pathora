@@ -25,3 +25,4 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
             .When(x => !string.IsNullOrEmpty(x.Email));
     }
 }
+

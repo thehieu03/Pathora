@@ -12,3 +12,4 @@ public class MailEntity : Aggregate<Guid>
     public DateTime? SentAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+

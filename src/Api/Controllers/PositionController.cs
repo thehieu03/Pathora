@@ -1,9 +1,6 @@
 using Api.Endpoint;
-using Application.Features.Position.Commands.CreatePosition;
-using Application.Features.Position.Commands.DeletePosition;
-using Application.Features.Position.Commands.UpdatePosition;
-using Application.Features.Position.Queries.GetAllPositions;
-using Application.Features.Position.Queries.GetPositionComboBox;
+using Application.Features.Position.Commands;
+using Application.Features.Position.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

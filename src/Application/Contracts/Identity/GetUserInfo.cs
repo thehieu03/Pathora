@@ -19,3 +19,4 @@ public record UserDepartmentVm(
     Guid? PositionId,
     string? PositionName
 );
+

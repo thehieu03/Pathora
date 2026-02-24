@@ -20,3 +20,4 @@ public sealed class CreatePositionRequestValidator : AbstractValidator<CreatePos
             .MaximumLength(255).WithMessage("Ghi chú không được quá 255 ký tự");
     }
 }
+

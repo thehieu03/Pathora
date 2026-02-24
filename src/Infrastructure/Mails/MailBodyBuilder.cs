@@ -59,3 +59,4 @@ public class MailBodyBuilder : IMailBodyBuilder
         builder.HtmlBody = MailTemplateService.RenderTemplate(modelType.Name, model);
     }
 }
+

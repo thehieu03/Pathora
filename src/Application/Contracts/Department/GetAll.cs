@@ -8,3 +8,4 @@ public sealed record DepartmentVm(
     string DepartmentName,
     int Level
 );
+

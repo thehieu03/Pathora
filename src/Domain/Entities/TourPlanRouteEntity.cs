@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,3 +21,4 @@ public class TourPlanRouteEntity : Aggregate<Guid>
     public TourDayActivityEntity TourDayActivity { get; set; } = null!;
   
 }
+
