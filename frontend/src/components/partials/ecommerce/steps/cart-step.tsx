@@ -66,7 +66,7 @@ const CartStep = () => {
                           />
                         </div>
                         <div>
-                          <p className="w-[150px] truncate pb-1 text-sm font-medium text-slate-900 md:w-[380px] md:pb-2 md:text-base dark:text-slate-300">
+                          <p className="w-37.5 truncate pb-1 text-sm font-medium text-slate-900 md:w-95 md:pb-2 md:text-base dark:text-slate-300">
                             {item.name}
                           </p>
                           <p className="text-sm font-medium text-slate-900 md:text-base dark:text-slate-300">
@@ -79,7 +79,7 @@ const CartStep = () => {
                       </td>
                       <td className="table-td pb-3">${item.price}</td>
                       <td className="table-td pb-3">
-                        <div className="flex h-8 min-w-[95px] flex-1 divide-x-[1px] divide-slate-900 rounded-sm border border-1 border-slate-900 text-sm font-normal delay-150 ease-in-out md:min-w-[112px] rtl:divide-x-reverse dark:divide-slate-600 dark:border-slate-600">
+                        <div className="flex h-8 min-w-23.75 flex-1 divide-x-[1px] divide-slate-900 rounded-sm border border-1 border-slate-900 text-sm font-normal delay-150 ease-in-out md:min-w-28 rtl:divide-x-reverse dark:divide-slate-600 dark:border-slate-600">
                           <button
                             className="px-2 disabled:cursor-not-allowed md:px-3"
                             onClick={() => handleDecreaseQuantity(item.id)}

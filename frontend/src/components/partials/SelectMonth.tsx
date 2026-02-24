@@ -17,7 +17,7 @@ const SelectMonth = () => {
   return (
     <>
       <Dropdown
-        classMenuItems=" w-[140px]"
+        classMenuItems=" w-35"
         label={
           <span className="text-lg inline-flex h-6 w-6 flex-col items-center justify-center border border-slate-200 dark:border-slate-700 rounded-sm dark:text-slate-400">
             <Icon icon="heroicons-outline:dots-horizontal" />

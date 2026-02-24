@@ -16,7 +16,7 @@ const HeaderCart = () => {
     <div>
       <motion.span
         onClick={handleOpenCart}
-        className="relative flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] text-slate-900 lg:h-[32px] lg:w-[32px] lg:bg-slate-100 dark:text-white lg:dark:bg-slate-900"
+        className="relative flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] text-slate-900 lg:h-8 lg:w-8 lg:bg-slate-100 dark:text-white lg:dark:bg-slate-900"
       >
         <Icon icon="heroicons:shopping-cart" />
         <span className="absolute -top-2 -right-2 z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0 lg:right-0">

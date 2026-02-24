@@ -42,7 +42,7 @@ const BlogDetailsPage = () => {
     <div>
       <div className="blog-posts flex-wrap space-y-5 lg:flex lg:space-y-0 lg:space-x-5 rtl:space-x-reverse">
         <div className="flex-none">
-          <div className="lg:max-w-[360px]">
+          <div className="lg:max-w-90">
             <Card>
               <Sidebar />
             </Card>
@@ -51,7 +51,7 @@ const BlogDetailsPage = () => {
         <div className="flex-1">
           <div className="grid grid-cols-1 gap-5">
             <Card>
-              <div className="mb-6 h-[248px] w-full">
+              <div className="mb-6 h-62 w-full">
                 <img
                   src={post1Img.src}
                   alt=""
@@ -169,7 +169,7 @@ const BlogDetailsPage = () => {
                   <li className="block">
                     <div className="flex">
                       <div className="flex-none">
-                        <div className="h-[56px] w-[56px] rounded-full ltr:mr-6 rtl:ml-6">
+                        <div className="h-14 w-14 rounded-full ltr:mr-6 rtl:ml-6">
                           <img
                             src={comment1Img.src}
                             alt=""
@@ -214,7 +214,7 @@ const BlogDetailsPage = () => {
                       <li className="block">
                         <div className="flex">
                           <div className="flex-none">
-                            <div className="h-[56px] w-[56px] rounded-full ltr:mr-6 rtl:ml-6">
+                            <div className="h-14 w-14 rounded-full ltr:mr-6 rtl:ml-6">
                               <img
                                 src={comment2Img.src}
                                 alt=""
@@ -262,7 +262,7 @@ const BlogDetailsPage = () => {
                   <li className="block">
                     <div className="flex">
                       <div className="flex-none">
-                        <div className="h-[56px] w-[56px] rounded-full ltr:mr-6 rtl:ml-6">
+                        <div className="h-14 w-14 rounded-full ltr:mr-6 rtl:ml-6">
                           <img
                             src={comment3Img.src}
                             alt=""

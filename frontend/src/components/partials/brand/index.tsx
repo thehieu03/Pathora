@@ -509,7 +509,7 @@ const BrandPage = () => {
                     pageIdx === pageIndex
                       ? "bg-slate-900 font-medium text-white dark:bg-slate-600 dark:text-slate-200"
                       : "bg-slate-100 font-normal text-slate-900 dark:bg-slate-700 dark:text-slate-400"
-                  } flex h-6 w-6 items-center justify-center rounded text-sm leading-[16px] transition-all duration-150`}
+                  } flex h-6 w-6 items-center justify-center rounded text-sm leading-4 transition-all duration-150`}
                   onClick={() => gotoPage(pageIdx)}
                 >
                   {pageNum + 1}

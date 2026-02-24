@@ -38,7 +38,7 @@ const Language = () => {
     <div>
       <Listbox value={selected} onChange={handleChange}>
         <div className="relative z-22">
-          <ListboxButton className="relative flex w-full cursor-pointer items-center space-x-[6px] rtl:space-x-reverse">
+          <ListboxButton className="relative flex w-full cursor-pointer items-center space-x-1.5 rtl:space-x-reverse">
             <span className="inline-block h-4 w-4 rounded-full md:h-6 md:w-6">
               <img
                 src={selected.image as unknown as string}
@@ -56,7 +56,7 @@ const Language = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <ListboxOptions className="absolute top-[38px] mt-1 max-h-60 w-auto min-w-[100px] overflow-auto rounded-sm border border-slate-200 bg-white md:top-[50px] ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800">
+            <ListboxOptions className="absolute top-9.5 mt-1 max-h-60 w-auto min-w-25 overflow-auto rounded-sm border border-slate-200 bg-white md:top-12.5 ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800">
               {languages.map((item, i) => (
                 <ListboxOption
                   key={i}

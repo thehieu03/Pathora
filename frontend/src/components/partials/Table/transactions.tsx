@@ -94,7 +94,7 @@ const COLUMNS = [
       return (
         <div className="text-center">
           <Dropdown
-            classMenuItems="right-0 w-[140px] top-[110%] "
+            classMenuItems="right-0 w-35 top-[110%] "
             label={
               <span className="block w-full text-center text-xl">
                 <Icon icon="heroicons-outline:dots-vertical" />

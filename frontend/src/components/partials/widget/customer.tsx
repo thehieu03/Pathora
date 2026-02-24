@@ -73,15 +73,15 @@ const Customer = () => {
         {customers.map((item, i) => (
           <div
             key={i}
-            className={`before:bg-opacity-[0.1] relative z-1 rounded-sm p-4 text-center before:absolute before:top-[60px] before:left-0 before:z-[-1] before:h-[calc(100%-60px)] before:w-full before:rounded-sm ${item.bg}`}
+            className={`before:bg-opacity-[0.1] relative z-1 rounded-sm p-4 text-center before:absolute before:top-15 before:left-0 before:z-[-1] before:h-[calc(100%-60px)] before:w-full before:rounded-sm ${item.bg}`}
           >
             <div
               className={`${
                 item.active ? "ring-2 ring-[#FFC155]" : ""
-              } relative mx-auto mb-4 h-[70px] w-[70px] rounded-full`}
+              } relative mx-auto mb-4 h-17.5 w-17.5 rounded-full`}
             >
               {item.active && (
-                <span className="crown absolute -top-[24px] left-1/2 -translate-x-1/2">
+                <span className="crown absolute -top-6 left-1/2 -translate-x-1/2">
                   <img src={customerCrownImage.src} alt="" />
                 </span>
               )}
@@ -90,14 +90,14 @@ const Customer = () => {
                 alt=""
                 className="h-full w-full rounded-full"
               />
-              <span className="absolute right-0 bottom-0 flex h-[27px] w-[27px] flex-col items-center justify-center rounded-full border border-white bg-[#FFC155] text-xs font-medium text-white">
+              <span className="absolute right-0 bottom-0 flex h-6.75 w-6.75 flex-col items-center justify-center rounded-full border border-white bg-[#FFC155] text-xs font-medium text-white">
                 {item.number}
               </span>
             </div>
             <h4 className="mb-4 text-sm font-semibold text-slate-600 dark:text-slate-400">
               {item.title}
             </h4>
-            <div className="inline-block min-w-[60px] rounded-full bg-slate-900 px-[10px] py-[6px] text-xs font-medium text-white">
+            <div className="inline-block min-w-15 rounded-full bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white">
               {item.value}
             </div>
             <div>
@@ -122,7 +122,7 @@ const Customer = () => {
               } relative h-10 w-10 rounded-full`}
             >
               {item.active && (
-                <span className="crown absolute -top-[14px] left-1/2 -translate-x-1/2">
+                <span className="crown absolute -top-3.5 left-1/2 -translate-x-1/2">
                   <img src={customerCrownImage.src} alt="" />
                 </span>
               )}
@@ -138,7 +138,7 @@ const Customer = () => {
             <h4 className="text-sm font-semibold text-slate-600">
               {item.title}
             </h4>
-            <div className="inline-block min-w-[60px] rounded-full bg-slate-900 px-[10px] py-[6px] text-center text-xs font-medium text-white">
+            <div className="inline-block min-w-15 rounded-full bg-slate-900 px-2.5 py-1.5 text-center text-xs font-medium text-white">
               {item.value}
             </div>
             <div className="flex-1">

@@ -51,7 +51,7 @@ const Switch = ({
           aria-label={ariaLabel ?? label}
         />
         <div
-          className={`relative inline-flex h-6 w-[46px] items-center rounded-full transition-colors duration-150 ltr:mr-3 rtl:ml-3 ${
+          className={`relative inline-flex h-6 w-11.5 items-center rounded-full transition-colors duration-150 ltr:mr-3 rtl:ml-3 ${
             value ? activeClass : "bg-secondary-500"
           }`}
           role="switch"
@@ -80,7 +80,7 @@ const Switch = ({
             className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-150 ${
               value
                 ? "ltr:translate-x-6 rtl:-translate-x-6"
-                : "ltr:translate-x-[2px] rtl:-translate-x-[2px]"
+                : "ltr:translate-x-0.5 rtl:-translate-x-0.5"
             }`}
           />
         </div>

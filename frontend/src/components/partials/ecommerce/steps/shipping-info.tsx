@@ -28,7 +28,7 @@ const ShippingInfo = () => {
                 onChange={handleChange}
               />
               <div className="flex -mt-1 space-x-5 rtl:space-x-reverse">
-                <div className="  min-w-[110px] md:text-base text-sm text-slate-500 dark:text-slate-400  space-y-1.5 ">
+                <div className="  min-w-27.5 md:text-base text-sm text-slate-500 dark:text-slate-400  space-y-1.5 ">
                   <p>Address:</p>
                   <p>Postal Code:</p>
                   <p>City:</p>
@@ -56,7 +56,7 @@ const ShippingInfo = () => {
                 onChange={handleChange}
               />
               <div className="flex -mt-1 space-x-5 rtl:space-x-reverse">
-                <div className="min-w-[110px] md:text-base text-sm text-slate-500 dark:text-slate-400  space-y-1.5">
+                <div className="min-w-27.5 md:text-base text-sm text-slate-500 dark:text-slate-400  space-y-1.5">
                   <p>Address:</p>
                   <p>Postal Code:</p>
                   <p>City:</p>

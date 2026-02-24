@@ -43,7 +43,7 @@ function CartItem({
         </div>
 
         <div className="flex items-center gap-4 rtl:space-x-reverse">
-          <div className="flex h-8 md:max-w-[112px] max-w-[95px] border border-slate-900 dark:border-slate-600 divide-x divide-slate-900 dark:divide-slate-600 text-sm font-normal rounded-sm rtl:divide-x-reverse">
+          <div className="flex h-8 md:max-w-28 max-w-23.75 border border-slate-900 dark:border-slate-600 divide-x divide-slate-900 dark:divide-slate-600 text-sm font-normal rounded-sm rtl:divide-x-reverse">
             <button
               type="button"
               className="px-2 md:px-3 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500"
@@ -55,7 +55,7 @@ function CartItem({
             </button>
 
             <span
-              className="flex-1 text-xs text-center flex items-center justify-center min-w-[40px]"
+              className="flex-1 text-xs text-center flex items-center justify-center min-w-10"
               aria-label={`${item.quantity} items`}
             >
               {item.quantity}

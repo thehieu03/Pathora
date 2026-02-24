@@ -16,7 +16,7 @@ const Register = () => {
     <div className="loginwrapper">
       <div className="lg-inner-column">
         <div className="left-column relative z-1">
-          <div className="max-w-[520px] pt-20 ltr:pl-20 rtl:pr-20">
+          <div className="max-w-130 pt-20 ltr:pl-20 rtl:pr-20">
             <Link href="/">
               <img
                 src={isDark ? LogoWhite : Logo}
@@ -66,10 +66,10 @@ const Register = () => {
                   Or continue with
                 </div>
               </div>
-              <div className="max-w-[242px] mx-auto mt-8 w-full">
+              <div className="max-w-60.5 mx-auto mt-8 w-full">
                 <Social />
               </div>
-              <div className="max-w-[215px] mx-auto font-normal text-slate-500 dark:text-slate-400 2xl:mt-12 mt-6 uppercase text-sm">
+              <div className="max-w-53.75 mx-auto font-normal text-slate-500 dark:text-slate-400 2xl:mt-12 mt-6 uppercase text-sm">
                 Already registered?{" "}
                 <Link
                   href="/login"

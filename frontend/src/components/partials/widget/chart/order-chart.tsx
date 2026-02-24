@@ -74,10 +74,10 @@ const OrderChart = ({
   };
   return (
     <div className={className}>
-      <div className="mb-[6px] text-sm text-slate-600 dark:text-slate-300">
+      <div className="mb-1.5 text-sm text-slate-600 dark:text-slate-300">
         Orders
       </div>
-      <div className="mb-[6px] text-lg font-medium text-slate-900 dark:text-white">
+      <div className="mb-1.5 text-lg font-medium text-slate-900 dark:text-white">
         123k
       </div>
       <div className="text-xs font-normal text-slate-600 dark:text-slate-300">

@@ -125,7 +125,7 @@ const Notification = () => {
 
   const notifyLabel = () => {
     return (
-      <span className="relative flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] text-slate-900 lg:h-[32px] lg:w-[32px] lg:bg-slate-100 dark:text-white lg:dark:bg-slate-900">
+      <span className="relative flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] text-slate-900 lg:h-8 lg:w-8 lg:bg-slate-100 dark:text-white lg:dark:bg-slate-900">
         <Icon icon="heroicons-outline:bell" className="animate-tada" />
         {unreadCount > 0 && (
           <span className="absolute -top-2 -right-2 z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0 lg:right-0">
@@ -141,7 +141,7 @@ const Notification = () => {
   }
 
   return (
-    <Dropdown classMenuItems="md:w-[300px] top-[58px]" label={notifyLabel()}>
+    <Dropdown classMenuItems="md:w-75 top-14.5" label={notifyLabel()}>
       <div className="flex justify-between border-b border-slate-100 px-4 py-4 dark:border-slate-600">
         <div className="text-sm leading-6 font-medium text-slate-800 dark:text-slate-200">
           {t("notification.title")}
@@ -219,7 +219,7 @@ const Notification = () => {
                     </div>
                     {!item.isRead && (
                       <div className="flex-0">
-                        <span className="bg-danger-500 inline-block h-[10px] w-[10px] rounded-full border border-white dark:border-slate-400"></span>
+                        <span className="bg-danger-500 inline-block h-2.5 w-2.5 rounded-full border border-white dark:border-slate-400"></span>
                       </div>
                     )}
                   </div>

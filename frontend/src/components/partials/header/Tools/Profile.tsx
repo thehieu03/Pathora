@@ -20,7 +20,7 @@ const Profile = () => {
 
   const profileLabel = () => (
     <div className="flex items-center">
-      <div className="flex-1 ltr:mr-[10px] rtl:ml-[10px]">
+      <div className="flex-1 ltr:mr-2.5 rtl:ml-2.5">
         <div className="h-7 w-7 rounded-full lg:h-8 lg:w-8">
           <img
             src={UserAvatar.src}
@@ -30,10 +30,10 @@ const Profile = () => {
         </div>
       </div>
       <div className="hidden flex-none items-center overflow-hidden text-sm font-normal text-ellipsis whitespace-nowrap text-slate-600 lg:flex dark:text-white">
-        <span className="block w-[85px] overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="block w-21.25 overflow-hidden text-ellipsis whitespace-nowrap">
           {displayName}
         </span>
-        <span className="inline-block text-base ltr:ml-[10px] rtl:mr-[10px]">
+        <span className="inline-block text-base ltr:ml-2.5 rtl:mr-2.5">
           <Icon icon="heroicons-outline:chevron-down" aria-hidden="true" />
         </span>
       </div>
@@ -60,7 +60,7 @@ const Profile = () => {
   ];
 
   return (
-    <Dropdown label={profileLabel()} classMenuItems="w-[180px] top-[58px]">
+    <Dropdown label={profileLabel()} classMenuItems="w-45 top-14.5">
       {profileMenuItems.map((item, index) => (
         <MenuItem key={index}>
           {({ focus }) => (

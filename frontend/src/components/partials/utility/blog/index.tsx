@@ -12,7 +12,7 @@ const BlogPage = () => {
   return (
     <div className="blog-posts flex-wrap space-y-5 lg:flex lg:space-y-0 lg:space-x-5 rtl:space-x-reverse">
       <div className="flex-none">
-        <div className="lg:max-w-[360px]">
+        <div className="lg:max-w-90">
           <Card>
             <Sidebar />
           </Card>
@@ -22,7 +22,7 @@ const BlogPage = () => {
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
           <div className="col-span-1 xl:col-span-2">
             <Card>
-              <div className="mb-6 h-[248px] w-full">
+              <div className="mb-6 h-62 w-full">
                 <img
                   src={post1Img.src}
                   alt=""
@@ -82,7 +82,7 @@ const BlogPage = () => {
             </Card>
           </div>
           <Card bodyClass="p-0">
-            <div className="mb-6 h-[248px] w-full">
+            <div className="mb-6 h-62 w-full">
               <img
                 src={post1Img.src}
                 alt=""
@@ -118,7 +118,7 @@ const BlogPage = () => {
             </div>
           </Card>
           <Card bodyClass="p-0">
-            <div className="h-[248px] w-full">
+            <div className="h-62 w-full">
               <img
                 src={post1Img.src}
                 alt=""
@@ -154,7 +154,7 @@ const BlogPage = () => {
             </div>
           </Card>
           <Card bodyClass="p-0">
-            <div className="mb-6 h-[248px] w-full">
+            <div className="mb-6 h-62 w-full">
               <img
                 src={post1Img.src}
                 alt=""
@@ -190,7 +190,7 @@ const BlogPage = () => {
             </div>
           </Card>
           <Card bodyClass="p-0">
-            <div className="h-[248px] w-full">
+            <div className="h-62 w-full">
               <img
                 src={post1Img.src}
                 alt=""

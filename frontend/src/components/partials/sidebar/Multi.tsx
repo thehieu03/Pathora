@@ -20,7 +20,7 @@ const LockLink = ({ to, children, item }) => {
           <span className="flex-1 flex  space-x-2 rtl:space-x-reverse  truncate">
             <span className=" grow   truncate">{multiTitle}</span>
             <span className="grow-0">
-              <Badge className="bg-slate-900 px-2 py-[3px]  font-normal text-xs rounded-full text-slate-100  capitalize">
+              <Badge className="bg-slate-900 px-2 py-0.75  font-normal text-xs rounded-full text-slate-100  capitalize">
                 {badge}
               </Badge>
             </span>
@@ -36,9 +36,9 @@ const LockLink = ({ to, children, item }) => {
 const Multilevel = ({ activeMultiMenu, j, subItem }) => {
   return (
     <Collapse isOpened={activeMultiMenu === j}>
-      <ul className="space-y-[14px] pl-4">
+      <ul className="space-y-3.5 pl-4">
         {subItem?.multi_menu?.map((item, i) => (
-          <li key={i} className=" first:pt-[14px]">
+          <li key={i} className=" first:pt-3.5">
             <LockLink to={item.multiLink} item={item}>
               {({ isActive }) => (
                 <span

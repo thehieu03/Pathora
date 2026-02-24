@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
 import Link from "next/link";
-import { Badge, Icon } from "@/components/ui";
-import { NavArrows, SectionContainer, StarRating } from "./shared";
+import Image from "next/image";
+import { Icon } from "@/components/ui";
+import { SectionContainer, StarRating } from "./shared";
 
 const TRIPS = [
   {
@@ -53,21 +53,23 @@ const TripCard = ({
 }: (typeof TRIPS)[0]) => (
   <Link
     href="/tours"
-    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full md:w-[300px] shrink-0 flex flex-col hover:shadow-lg transition-shadow duration-300">
-    <div className="h-[215px] overflow-hidden">
-      <img
+    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-300"
+  >
+    <div className="relative h-53.75 overflow-hidden">
+      <Image
         src={image}
         alt={title}
+        fill
+        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
       />
     </div>
 
     <div className="p-5 flex flex-col gap-2 flex-1">
-      <Badge
-        icon="heroicons-solid:map-pin"
-        label={location}
-        className="bg-transparent text-landing-body text-sm px-0 py-0 inline-flex items-center gap-1 w-fit"
-      />
+      <div className="flex items-center gap-1 text-landing-body text-base">
+        <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
+        <span className="text-sm">{location}</span>
+      </div>
       <h3 className="text-landing-heading font-medium text-[15px] leading-snug">
         {title}
       </h3>
@@ -98,10 +100,9 @@ export const FeaturedTripsSection = () => {
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
             Featured Trips
           </h2>
-          <NavArrows />
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8 overflow-x-auto pb-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
           {TRIPS.map((trip, idx) => (
             <TripCard key={idx} {...trip} />
           ))}

@@ -24,7 +24,7 @@ const SplitDropdown = ({
   wrapperClass = "inline-block",
   labelClass = "",
   children,
-  classMenuItems = "mt-2 w-[220px]",
+  classMenuItems = "mt-2 w-55",
   splitIcon = "heroicons-outline:chevron-down",
   items = [
     {

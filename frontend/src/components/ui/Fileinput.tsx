@@ -42,7 +42,7 @@ const Fileinput = ({
             multiple={multiple}
           />
           <div
-            className={`file-control flex h-[40px] w-full items-center ${className}`}
+            className={`file-control flex h-10 w-full items-center ${className}`}
           >
             {!multiple && (
               <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
@@ -84,7 +84,7 @@ const Fileinput = ({
             </span>
           </div>
           {!multiple && preview && selectedFile && (
-            <div className="mx-auto mt-6 h-[200px] w-[200px]">
+            <div className="mx-auto mt-6 h-50 w-50">
               <img
                 src={selectedFile ? URL.createObjectURL(selectedFile) : ""}
                 className="block h-full w-full rounded-sm border border-slate-200 object-contain p-2"

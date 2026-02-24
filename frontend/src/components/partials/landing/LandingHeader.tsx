@@ -1,6 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button, Icon } from "@/components/ui";
 import { AuthModal } from "./AuthModal";
 
@@ -50,6 +51,7 @@ const MobileSidebar = ({
   const [expandedItem, setExpandedItem] = useState<string | null>(
     "User Profile",
   );
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -59,24 +61,69 @@ const MobileSidebar = ({
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open || !panelRef.current) return;
+
+    const panel = panelRef.current;
+    const selectors =
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(
+      panel.querySelectorAll<HTMLElement>(selectors),
+    );
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    first?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || focusables.length === 0) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+        return;
+      }
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
   return (
     <div
       className={`fixed inset-0 z-[100] md:hidden transition-opacity duration-300 ${
         open
           ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none"
-      }`}>
+      }`}
+    >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/40"
+        onClick={onClose}
+        aria-label="Close navigation menu"
+      />
 
       {/* Panel */}
       <div
-        className={`absolute top-0 left-0 bottom-0 w-[300px] max-w-[85vw] bg-white flex flex-col shadow-2xl transition-transform duration-300 ${
+        ref={panelRef}
+        className={`absolute top-0 left-0 bottom-0 w-75 max-w-[85vw] bg-white flex flex-col shadow-2xl transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
         role="dialog"
         aria-modal="true"
-        aria-label="Navigation menu">
+        aria-label="Navigation menu"
+        tabIndex={-1}
+      >
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
           <Button
@@ -115,7 +162,8 @@ const MobileSidebar = ({
                         expandedItem === item.label ? null : item.label,
                       )
                     }
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors bg-transparent">
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors bg-transparent"
+                  >
                     <Icon
                       icon={item.icon}
                       className="w-6 h-6 text-gray-600 shrink-0"
@@ -137,7 +185,8 @@ const MobileSidebar = ({
                           key={child.label}
                           href={child.href}
                           onClick={onClose}
-                          className="block px-4 py-2.5 text-base text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors rounded">
+                          className="block px-4 py-2.5 text-base text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors rounded"
+                        >
                           {child.label}
                         </Link>
                       ))}
@@ -148,7 +197,8 @@ const MobileSidebar = ({
                 <Link
                   href={item.href!}
                   onClick={onClose}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                >
                   <Icon
                     icon={item.icon}
                     className="w-6 h-6 text-gray-600 shrink-0"
@@ -194,12 +244,14 @@ export const LandingHeader = () => {
 
   return (
     <>
-      <header className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-12 py-4 md:py-5 min-h-[70px] md:h-[128px] bg-[rgba(255,255,255,0.2)] backdrop-blur-sm">
+      <header className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-12 py-4 md:py-5 min-h-17.5 md:h-32 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm">
         <Link href="/" className="flex items-center shrink-0">
-          <div className="relative h-12 md:h-[100px] w-28 md:w-[136px]">
-            <img
+          <div className="relative h-12 md:h-25 w-28 md:w-34">
+            <Image
               src={LOGO}
               alt="Pathora logo"
+              fill
+              sizes="(max-width: 768px) 112px, 136px"
               className="h-full w-full object-contain"
             />
           </div>
@@ -208,7 +260,8 @@ export const LandingHeader = () => {
         {/* Desktop / iPad nav — visible from md (768 px) */}
         <nav
           className="hidden md:flex items-center gap-6 lg:gap-10"
-          aria-label="Main navigation">
+          aria-label="Main navigation"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
@@ -216,7 +269,8 @@ export const LandingHeader = () => {
               className={`text-white font-semibold text-base lg:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded ${
                 link.active ? "border-b-2 border-landing-accent" : ""
               }`}
-              aria-current={link.active ? "page" : undefined}>
+              aria-current={link.active ? "page" : undefined}
+            >
               {link.label}
             </Link>
           ))}
@@ -246,7 +300,8 @@ export const LandingHeader = () => {
         <Button
           className="md:hidden text-white bg-transparent p-2"
           onClick={() => setMenuOpen(true)}
-          ariaLabel="Open menu">
+          ariaLabel="Open menu"
+        >
           <Icon icon="heroicons-outline:menu" className="w-7 h-7" />
         </Button>
       </header>

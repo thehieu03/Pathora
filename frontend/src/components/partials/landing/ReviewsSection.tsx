@@ -37,7 +37,8 @@ const QuoteIcon = () => (
     viewBox="0 0 42 36"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="mx-auto mb-6">
+    className="mx-auto mb-6"
+  >
     <path
       d="M0 36V22.5C0 19.1 0.55 15.85 1.65 12.75C2.8 9.6 4.4 6.75 6.45 4.2C8.55 1.6 10.95 0 13.65 0L16.8 5.4C14.6 6.6 12.7 8.4 11.1 10.8C9.55 13.15 8.65 15.7 8.4 18.45H16.8V36H0ZM25.2 36V22.5C25.2 19.1 25.75 15.85 26.85 12.75C28 9.6 29.6 6.75 31.65 4.2C33.75 1.6 36.15 0 38.85 0L42 5.4C39.8 6.6 37.9 8.4 36.3 10.8C34.75 13.15 33.85 15.7 33.6 18.45H42V36H25.2Z"
       className="fill-landing-accent"
@@ -55,12 +56,14 @@ export const ReviewsSection = () => {
   return (
     <section
       className="w-full bg-white py-16 md:py-20"
-      aria-labelledby="reviews-heading">
+      aria-labelledby="reviews-heading"
+    >
       <SectionContainer>
         <div className="text-center mb-12">
           <h2
             id="reviews-heading"
-            className="text-2xl md:text-[30px] font-bold text-landing-heading">
+            className="text-2xl md:text-[30px] font-bold text-landing-heading"
+          >
             Customer Reviews
           </h2>
           <p className="text-landing-body text-base mt-2">
@@ -71,13 +74,13 @@ export const ReviewsSection = () => {
         <div className="relative flex items-center justify-center">
           <Button
             onClick={prev}
-            className="hidden md:flex absolute left-0 md:left-4 lg:left-16 w-[45px] h-[45px] rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
+            className="hidden md:flex absolute left-0 md:left-4 lg:left-16 w-11.25 h-11.25 rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
             icon="heroicons-outline:chevron-left"
             iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
             ariaLabel="Previous review"
           />
 
-          <div className="max-w-[650px] mx-auto text-center px-4 md:px-16 lg:px-20">
+          <div className="max-w-162.5 mx-auto text-center px-4 md:px-16 lg:px-20">
             <QuoteIcon />
 
             <p className="text-landing-body text-base md:text-lg leading-relaxed mb-8">
@@ -88,7 +91,7 @@ export const ReviewsSection = () => {
               <img
                 src={review.avatar}
                 alt={`${review.name}'s avatar`}
-                className="w-[60px] h-[60px] rounded-full object-cover"
+                className="w-15 h-15 rounded-full object-cover"
               />
             </div>
 
@@ -104,7 +107,7 @@ export const ReviewsSection = () => {
 
           <Button
             onClick={next}
-            className="hidden md:flex absolute right-0 md:right-4 lg:right-16 w-[45px] h-[45px] rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
+            className="hidden md:flex absolute right-0 md:right-4 lg:right-16 w-11.25 h-11.25 rounded-full border border-landing-border items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors group z-10 bg-transparent"
             icon="heroicons-outline:chevron-right"
             iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
             ariaLabel="Next review"
@@ -112,18 +115,26 @@ export const ReviewsSection = () => {
         </div>
 
         <div
-          className="flex justify-center gap-2 mt-10"
-          role="tablist"
-          aria-label="Review slides">
+          className="flex justify-center gap-1 mt-10"
+          aria-label="Review slides"
+        >
           {REVIEWS.map((_, i) => (
-            <Button
+            <button
+              type="button"
               key={i}
               onClick={() => setCurrent(i)}
-              className={`h-2.5 rounded-full transition-all ${
-                i === current ? "bg-landing-accent w-7" : "bg-landing-border w-2.5"
-              }`}
-              ariaLabel={`Go to review ${i + 1}`}
-            />
+              className="w-11 h-11 flex items-center justify-center rounded-full"
+              aria-label={`Go to review ${i + 1}`}
+              aria-current={i === current ? "true" : undefined}
+            >
+              <span
+                className={`h-2.5 rounded-full transition-[width,background-color] duration-200 ${
+                  i === current
+                    ? "bg-landing-accent w-7"
+                    : "bg-landing-border w-2.5"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </SectionContainer>

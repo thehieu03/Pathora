@@ -101,7 +101,7 @@ const COLUMNS = [
     accessor: "customer",
     Cell: (row) => {
       return (
-        <span className="flex min-w-[150px] items-center">
+        <span className="flex min-w-37.5 items-center">
           <span className="h-8 w-8 flex-none rounded-full ltr:mr-3 rtl:ml-3">
             <img
               src={row?.cell?.value.image}
@@ -122,17 +122,17 @@ const COLUMNS = [
     accessor: "status",
     Cell: (row) => {
       return (
-        <span className="block min-w-[140px] text-left">
+        <span className="block min-w-35 text-left">
           <span className="mx-auto inline-block py-1 text-center">
             {row?.cell?.value === "progress" && (
               <span className="flex items-center space-x-3 rtl:space-x-reverse">
-                <span className="bg-danger-500 ring-opacity-30 ring-danger-500 inline-block h-[6px] w-[6px] rounded-full ring-4"></span>
+                <span className="bg-danger-500 ring-opacity-30 ring-danger-500 inline-block h-1.5 w-1.5 rounded-full ring-4"></span>
                 <span>In progress</span>
               </span>
             )}
             {row?.cell?.value === "complete" && (
               <span className="flex items-center space-x-3 rtl:space-x-reverse">
-                <span className="bg-success-500 ring-opacity-30 ring-success-500 inline-block h-[6px] w-[6px] rounded-full ring-4"></span>
+                <span className="bg-success-500 ring-opacity-30 ring-success-500 inline-block h-1.5 w-1.5 rounded-full ring-4"></span>
 
                 <span>Complete</span>
               </span>
@@ -167,7 +167,7 @@ const COLUMNS = [
       return (
         <div className="text-center">
           <Dropdown
-            classMenuItems="right-0 w-[140px] top-[110%] "
+            classMenuItems="right-0 w-35 top-[110%] "
             label={
               <span className="block w-full text-center text-xl">
                 <Icon icon="heroicons-outline:dots-vertical" />

@@ -25,7 +25,7 @@ const Dropdown = ({
   labelClass = "",
   children,
   anchor = "bottom start" as const,
-  classMenuItems = "mt-2 w-[200px]",
+  classMenuItems = "mt-2 w-50",
   items = [
     { label: "Action", link: "#" },
     { label: "Another action", link: "#" },

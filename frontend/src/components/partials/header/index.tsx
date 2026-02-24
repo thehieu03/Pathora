@@ -57,7 +57,7 @@ const Header = ({ className = "custom-class" }) => {
   return (
     <header className={className + " " + navbarTypeClass()}>
       <div
-        className={`app-header shadow-base dark:shadow-base3 bg-white px-[15px] md:px-6 dark:bg-slate-800 ${borderSwitchClass()} ${
+        className={`app-header shadow-base dark:shadow-base3 bg-white px-3.75 md:px-6 dark:bg-slate-800 ${borderSwitchClass()} ${
           menuType === "horizontal" && width > breakpoints.xl
             ? "py-1"
             : "py-3 md:py-6"

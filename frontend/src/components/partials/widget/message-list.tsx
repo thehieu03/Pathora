@@ -19,7 +19,7 @@ const MessageList = () => {
                     <span
                       className={`${
                         item.active ? "bg-secondary-500" : "bg-success-500"
-                      } absolute top-0 right-0 inline-block h-[10px] w-[10px] rounded-full border border-white dark:border-slate-700`}
+                      } absolute top-0 right-0 inline-block h-2.5 w-2.5 rounded-full border border-white dark:border-slate-700`}
                     ></span>
                     <img
                       src={

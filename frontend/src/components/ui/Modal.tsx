@@ -113,7 +113,7 @@ const Modal = ({
                 </div>
                 <div
                   className={`px-6 py-8 ${
-                    scrollContent ? "max-h-[400px] overflow-y-auto overscroll-contain" : ""
+                    scrollContent ? "max-h-100 overflow-y-auto overscroll-contain" : ""
                   }`}
                 >
                   {children}

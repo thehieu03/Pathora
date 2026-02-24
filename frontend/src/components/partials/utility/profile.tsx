@@ -19,7 +19,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
+      <div className="flex min-h-100 items-center justify-center">
         <LoaderCircle />
       </div>
     );
@@ -38,12 +38,12 @@ const Profile = () => {
   return (
     <div>
       <div className="profile-page space-y-5">
-        <div className="profiel-wrap relative z-1 items-end justify-between space-y-6 rounded-lg bg-white px-[35px] pt-10 pb-10 md:pt-[84px] lg:flex lg:space-y-0 dark:bg-slate-800">
-          <div className="absolute top-0 left-0 z-[-1] h-[150px] w-full rounded-t-lg bg-slate-900 md:h-1/2 dark:bg-slate-700"></div>
+        <div className="profiel-wrap relative z-1 items-end justify-between space-y-6 rounded-lg bg-white px-8.75 pt-10 pb-10 md:pt-21 lg:flex lg:space-y-0 dark:bg-slate-800">
+          <div className="absolute top-0 left-0 z-[-1] h-37.5 w-full rounded-t-lg bg-slate-900 md:h-1/2 dark:bg-slate-700"></div>
           <div className="profile-box flex-none text-center md:text-start">
             <div className="items-end md:flex md:space-x-6 rtl:space-x-reverse">
               <div className="flex-none">
-                <div className="relative mr-auto mb-4 ml-auto h-[140px] w-[140px] rounded-full ring-4 ring-slate-100 md:mr-0 md:mb-0 md:ml-0 md:h-[186px] md:w-[186px]">
+                <div className="relative mr-auto mb-4 ml-auto h-35 w-35 rounded-full ring-4 ring-slate-100 md:mr-0 md:mb-0 md:ml-0 md:h-46.5 md:w-46.5">
                   <img
                     src={ProfileImage.src}
                     alt=""
@@ -51,14 +51,14 @@ const Profile = () => {
                   />
                   <Link
                     href="#"
-                    className="absolute top-[100px] right-2 flex h-8 w-8 flex-col items-center justify-center rounded-full bg-slate-50 text-slate-600 shadow-xs md:top-[140px]"
+                    className="absolute top-25 right-2 flex h-8 w-8 flex-col items-center justify-center rounded-full bg-slate-50 text-slate-600 shadow-xs md:top-35"
                   >
                     <Icon icon="heroicons:pencil-square" />
                   </Link>
                 </div>
               </div>
               <div className="flex-1">
-                <div className="mb-[3px] text-2xl font-medium text-slate-900 dark:text-slate-200">
+                <div className="mb-0.75 text-2xl font-medium text-slate-900 dark:text-slate-200">
                   {displayName}
                 </div>
                 <div className="text-sm font-light text-slate-600 dark:text-slate-400">
@@ -68,7 +68,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="profile-info-500 max-w-[516px] flex-1 space-y-4 text-center md:flex md:space-y-0 md:text-start">
+          <div className="profile-info-500 max-w-129 flex-1 space-y-4 text-center md:flex md:space-y-0 md:text-start">
             <div className="flex-1">
               <div className="mb-1 text-base font-medium text-slate-900 dark:text-slate-300">
                 $32,400
@@ -106,7 +106,7 @@ const Profile = () => {
                     <Icon icon="heroicons:envelope" />
                   </div>
                   <div className="flex-1">
-                    <div className="mb-1 text-xs leading-[12px] text-slate-500 uppercase dark:text-slate-300">
+                    <div className="mb-1 text-xs leading-3 text-slate-500 uppercase dark:text-slate-300">
                       EMAIL
                     </div>
                     <a
@@ -123,7 +123,7 @@ const Profile = () => {
                     <Icon icon="heroicons:phone-arrow-up-right" />
                   </div>
                   <div className="flex-1">
-                    <div className="mb-1 text-xs leading-[12px] text-slate-500 uppercase dark:text-slate-300">
+                    <div className="mb-1 text-xs leading-3 text-slate-500 uppercase dark:text-slate-300">
                       PHONE
                     </div>
                     <a
@@ -140,7 +140,7 @@ const Profile = () => {
                     <Icon icon="heroicons:map" />
                   </div>
                   <div className="flex-1">
-                    <div className="mb-1 text-xs leading-[12px] text-slate-500 uppercase dark:text-slate-300">
+                    <div className="mb-1 text-xs leading-3 text-slate-500 uppercase dark:text-slate-300">
                       LOCATION
                     </div>
                     <div className="text-base text-slate-600 dark:text-slate-50">

@@ -15,7 +15,7 @@ const ForgotPassPage = () => {
     <div className="loginwrapper">
       <div className="lg-inner-column">
         <div className="left-column relative z-1">
-          <div className="max-w-[520px] pt-20 ltr:pl-20 rtl:pr-20">
+          <div className="max-w-130 pt-20 ltr:pl-20 rtl:pr-20">
             <Link href="/">
               <img
                 src={isDark ? LogoWhite : Logo}
@@ -64,7 +64,7 @@ const ForgotPassPage = () => {
               </div>
 
               <ForgotPass />
-              <div className="md:max-w-[345px] mx-auto font-normal text-slate-500 dark:text-slate-400 2xl:mt-12 mt-8 uppercase text-sm">
+              <div className="md:max-w-86.25 mx-auto font-normal text-slate-500 dark:text-slate-400 2xl:mt-12 mt-8 uppercase text-sm">
                 Forget It,{" "}
                 <Link
                   href="/login"

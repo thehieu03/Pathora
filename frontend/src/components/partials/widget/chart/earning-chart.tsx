@@ -58,10 +58,10 @@ const EarningChart = ({
     <div className={` ${className}`}>
       <div className="flex items-center">
         <div className="flex-none">
-          <div className="mb-[6px] text-sm text-slate-600 dark:text-slate-300">
+          <div className="mb-1.5 text-sm text-slate-600 dark:text-slate-300">
             Earnings
           </div>
-          <div className="mb-[6px] text-lg font-medium text-slate-900 dark:text-white">
+          <div className="mb-1.5 text-lg font-medium text-slate-900 dark:text-white">
             $12,335.00
           </div>
           <div className="text-xs font-normal text-slate-600 dark:text-slate-300">

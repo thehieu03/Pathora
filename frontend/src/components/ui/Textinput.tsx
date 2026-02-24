@@ -132,7 +132,7 @@ const Textinput = ({
         <label
           htmlFor={id}
           className={`block capitalize ${classLabel} ${
-            horizontal ? "mr-6 w-[60px] flex-0 break-words md:w-[100px]" : ""
+            horizontal ? "mr-6 w-15 flex-0 break-words md:w-25" : ""
           }`}
         >
           {label}
@@ -141,7 +141,7 @@ const Textinput = ({
       <div className={`relative ${horizontal ? "flex-1" : ""}`}>
         {renderInput()}
 
-        <div className="absolute top-1/2 flex -translate-y-1/2 space-x-1 text-xl ltr:right-[14px] rtl:left-[14px] rtl:space-x-reverse">
+        <div className="absolute top-1/2 flex -translate-y-1/2 space-x-1 text-xl ltr:right-3.5 rtl:left-3.5 rtl:space-x-reverse">
           {hasicon && type === "password" && (
             <button
               type="button"

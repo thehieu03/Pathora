@@ -23,19 +23,19 @@ const Grid = ({ items, count = 6 }) => {
               </div>
             </header>
             <div className="py-6 space-y-2">
-              <div className="h-[6px] bg-[#C4C4C4] dark:bg-slate-500"></div>
-              <div className="h-[6px] bg-[#C4C4C4] dark:bg-slate-500"></div>
-              <div className="h-[6px] bg-[#C4C4C4] dark:bg-slate-500"></div>
+              <div className="h-1.5 bg-[#C4C4C4] dark:bg-slate-500"></div>
+              <div className="h-1.5 bg-[#C4C4C4] dark:bg-slate-500"></div>
+              <div className="h-1.5 bg-[#C4C4C4] dark:bg-slate-500"></div>
             </div>
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-2">
-                <span className="h-[4px] bg-[#C4C4C4] dark:bg-slate-500 block"></span>
-                <span className="h-[4px] bg-[#C4C4C4] dark:bg-slate-500 block"></span>
+                <span className="h-1 bg-[#C4C4C4] dark:bg-slate-500 block"></span>
+                <span className="h-1 bg-[#C4C4C4] dark:bg-slate-500 block"></span>
               </div>
 
               <div className="space-y-2">
-                <span className="h-[4px] bg-[#C4C4C4] dark:bg-slate-500 block"></span>
-                <span className="h-[4px] bg-[#C4C4C4] dark:bg-slate-500 block"></span>
+                <span className="h-1 bg-[#C4C4C4] dark:bg-slate-500 block"></span>
+                <span className="h-1 bg-[#C4C4C4] dark:bg-slate-500 block"></span>
               </div>
             </div>
 
@@ -46,7 +46,7 @@ const Grid = ({ items, count = 6 }) => {
                 <div className="h-6 w-6 bg-[#C4C4C4] dark:bg-slate-500 rounded-full"></div>
               </div>
               <div>
-                <span className="h-[18px] bg-[#C4C4C4] dark:bg-slate-500 w-[130px] inline-block rounded-full"></span>
+                <span className="h-4.5 bg-[#C4C4C4] dark:bg-slate-500 w-32.5 inline-block rounded-full"></span>
               </div>
             </div>
           </div>

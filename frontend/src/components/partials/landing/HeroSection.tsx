@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { Button, Icon } from "@/components/ui";
 
 const HERO_BG =
@@ -95,13 +96,15 @@ const CalendarDropdown = ({
     value.getFullYear() === viewYear;
 
   return (
-    <div className="p-4 w-[280px]">
+    <div className="p-4 w-80 max-w-[calc(100vw-2rem)]">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-3">
         <button
+          type="button"
           onClick={prevMonth}
           aria-label="Previous month"
-          className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100">
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
           <Icon
             icon="heroicons-outline:chevron-left"
             className="w-4 h-4 text-gray-600"
@@ -111,9 +114,11 @@ const CalendarDropdown = ({
           {MONTHS[viewMonth]} {viewYear}
         </span>
         <button
+          type="button"
           onClick={nextMonth}
           aria-label="Next month"
-          className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100">
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100"
+        >
           <Icon
             icon="heroicons-outline:chevron-right"
             className="w-4 h-4 text-gray-600"
@@ -126,7 +131,8 @@ const CalendarDropdown = ({
         {WEEKDAYS.map((wd) => (
           <span
             key={wd}
-            className="text-[11px] text-center text-gray-400 font-medium">
+            className="text-[11px] text-center text-gray-400 font-medium"
+          >
             {wd}
           </span>
         ))}
@@ -139,13 +145,15 @@ const CalendarDropdown = ({
         ))}
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
           <button
+            type="button"
             key={day}
             onClick={() => onChange(new Date(viewYear, viewMonth, day))}
-            className={`w-8 h-8 mx-auto rounded-full text-sm flex items-center justify-center transition-colors ${
+            className={`w-11 h-11 mx-auto rounded-full text-sm flex items-center justify-center transition-colors ${
               isSelected(day)
                 ? "bg-landing-accent text-white font-bold"
                 : "text-gray-700 hover:bg-gray-100"
-            }`}>
+            }`}
+          >
             {day}
           </button>
         ))}
@@ -164,16 +172,18 @@ const ListDropdown = ({
   value: string;
   onChange: (v: string) => void;
 }) => (
-  <div className="py-2 min-w-[200px] max-h-[240px] overflow-y-auto">
+  <div className="py-2 min-w-50 max-h-60 overflow-y-auto">
     {items.map((item) => (
       <button
+        type="button"
         key={item}
         onClick={() => onChange(item)}
-        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors ${
           value === item
             ? "bg-landing-accent/10 text-landing-accent font-medium"
             : "text-gray-700 hover:bg-gray-50"
-        }`}>
+        }`}
+      >
         {item}
       </button>
     ))}
@@ -188,16 +198,18 @@ const NumberDropdown = ({
   value: number | null;
   onChange: (v: number) => void;
 }) => (
-  <div className="py-2 min-w-[180px] max-h-[240px] overflow-y-auto">
+  <div className="py-2 min-w-45 max-h-60 overflow-y-auto">
     {PEOPLE_OPTIONS.map((num) => (
       <button
+        type="button"
         key={num}
         onClick={() => onChange(num)}
-        className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors ${
           value === num
             ? "bg-landing-accent/10 text-landing-accent font-medium"
             : "text-gray-700 hover:bg-gray-50"
-        }`}>
+        }`}
+      >
         {num} {num === 1 ? "person" : "people"}
       </button>
     ))}
@@ -230,15 +242,14 @@ const SelectField = ({
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-start gap-2 md:gap-3 p-3 md:p-4 bg-white w-full text-left ${rounded ?? ""} ${
+      aria-expanded={isOpen}
+      aria-haspopup={children ? "listbox" : undefined}
+      className={`flex items-start gap-2 md:gap-3 p-3 md:p-4 min-h-11 bg-white w-full text-left ${rounded ?? ""} ${
         isOpen ? "ring-2 ring-landing-accent/30" : ""
-      }`}>
-      <div className="w-4 h-4 md:w-6 md:h-6 shrink-0 mt-0.5 flex items-center justify-center">
-        <img
-          src={icon}
-          alt=""
-          className="max-w-full max-h-full object-contain"
-        />
+      }`}
+    >
+      <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 mt-0.5 flex items-center justify-center">
+        <Image src={icon} alt="" fill sizes="24px" className="object-contain" />
       </div>
       <div className="flex flex-col gap-1 md:gap-1.5">
         <span className="text-[#333] font-semibold text-xs md:text-base leading-none">
@@ -248,7 +259,8 @@ const SelectField = ({
           <span
             className={`text-[10px] md:text-sm font-normal ${
               displayValue ? "text-[#333]" : "text-[#333] opacity-80"
-            }`}>
+            }`}
+          >
             {displayValue || placeholder}
           </span>
           <Icon
@@ -311,16 +323,18 @@ export const HeroSection = () => {
       : "";
 
   return (
-    <section className="relative w-full min-h-[600px] md:h-[759px] overflow-hidden">
-      <img
+    <section className="relative w-full min-h-150 md:h-189.75 overflow-hidden">
+      <Image
         src={HERO_BG}
         alt="Travel destination with beautiful scenery"
+        fill
+        priority
+        sizes="100vw"
         className="absolute inset-0 w-full h-full object-cover"
-        loading="eager"
       />
       <div className="absolute inset-0 bg-black/20" />
 
-      <div className="relative z-10 flex flex-col items-center pt-[100px] md:pt-[207px] gap-[40px] md:gap-[60px] px-4">
+      <div className="relative z-10 flex flex-col items-center pt-25 md:pt-51.75 gap-10 md:gap-15 px-4">
         <div className="flex flex-col items-center gap-4 text-white text-center">
           <h1 className="text-4xl md:text-[72px] font-normal leading-tight font-serif">
             Enjoy in the best way!
@@ -332,18 +346,27 @@ export const HeroSection = () => {
 
         <div
           ref={searchRef}
-          className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl">
+          className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl"
+        >
           <div className="flex mb-[-1px]">
             <Button
               onClick={() => setTourType("public")}
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tl-xl transition-colors ${
                 tourType === "public" ? "bg-white" : "bg-white/40"
-              }`}>
-              <img src={PUBLIC_ICON} alt="" className="w-5 md:w-6 h-5 md:h-6" />
+              }`}
+            >
+              <Image
+                src={PUBLIC_ICON}
+                alt=""
+                width={24}
+                height={24}
+                className="w-5 md:w-6 h-5 md:h-6"
+              />
               <span
                 className={`font-semibold text-base md:text-lg ${
                   tourType === "public" ? "text-landing-accent" : "text-white"
-                }`}>
+                }`}
+              >
                 Public Tours
               </span>
             </Button>
@@ -351,16 +374,20 @@ export const HeroSection = () => {
               onClick={() => setTourType("private")}
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tr-xl transition-colors ${
                 tourType === "private" ? "bg-white" : "bg-white/40"
-              }`}>
-              <img
+              }`}
+            >
+              <Image
                 src={PRIVATE_ICON}
                 alt=""
+                width={24}
+                height={24}
                 className="w-5 md:w-6 h-5 md:h-6"
               />
               <span
                 className={`font-semibold text-base md:text-lg ${
                   tourType === "private" ? "text-landing-accent" : "text-white"
-                }`}>
+                }`}
+              >
                 Private Tours
               </span>
             </Button>
@@ -376,7 +403,8 @@ export const HeroSection = () => {
               onToggle={() => toggleField("people")}
               displayValue={
                 people ? `${people} ${people === 1 ? "person" : "people"}` : ""
-              }>
+              }
+            >
               <NumberDropdown
                 value={people}
                 onChange={(v) => {
@@ -386,7 +414,7 @@ export const HeroSection = () => {
               />
             </SelectField>
 
-            <div className="w-full h-px md:w-px md:h-[50px] bg-gray-200 shrink-0" />
+            <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
             <SelectField
               icon={DATE_ICON}
@@ -394,7 +422,8 @@ export const HeroSection = () => {
               placeholder="Choose Date"
               isOpen={openField === "date"}
               onToggle={() => toggleField("date")}
-              displayValue={formatDate(date)}>
+              displayValue={formatDate(date)}
+            >
               <CalendarDropdown
                 value={date}
                 onChange={(d) => {
@@ -404,7 +433,7 @@ export const HeroSection = () => {
               />
             </SelectField>
 
-            <div className="w-full h-px md:w-px md:h-[50px] bg-gray-200 shrink-0" />
+            <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
             <SelectField
               icon={DEST_ICON}
@@ -412,7 +441,8 @@ export const HeroSection = () => {
               placeholder="Select Location"
               isOpen={openField === "destination"}
               onToggle={() => toggleField("destination")}
-              displayValue={destination}>
+              displayValue={destination}
+            >
               <ListDropdown
                 items={DESTINATIONS}
                 value={destination}
@@ -423,7 +453,7 @@ export const HeroSection = () => {
               />
             </SelectField>
 
-            <div className="w-full h-px md:w-px md:h-[50px] bg-gray-200 shrink-0" />
+            <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
             <SelectField
               icon={CLASS_ICON}
@@ -431,7 +461,8 @@ export const HeroSection = () => {
               placeholder="Select Classification"
               isOpen={openField === "classification"}
               onToggle={() => toggleField("classification")}
-              displayValue={classification}>
+              displayValue={classification}
+            >
               <ListDropdown
                 items={CLASSIFICATIONS}
                 value={classification}
@@ -445,13 +476,16 @@ export const HeroSection = () => {
             <div className="p-3 md:p-0 w-full md:w-auto flex justify-center">
               <Button
                 className="bg-landing-accent rounded-xl py-3 px-6 md:py-4 md:px-8 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:w-auto flex items-center justify-center gap-2"
-                ariaLabel="Search tours">
+                ariaLabel="Search tours"
+              >
                 <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">
                   Explore Our Tours
                 </span>
-                <img
+                <Image
                   src={SEARCH_ICON}
                   alt="Search"
+                  width={20}
+                  height={20}
                   className="w-4 h-4 md:w-5 md:h-5"
                 />
               </Button>

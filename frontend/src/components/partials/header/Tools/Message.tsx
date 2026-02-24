@@ -7,7 +7,7 @@ import { message } from "@/constant/data";
 
 const messagelabel = () => {
   return (
-    <span className="relative flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] text-slate-900 lg:h-[32px] lg:w-[32px] lg:bg-slate-100 dark:text-white lg:dark:bg-slate-900">
+    <span className="relative flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] text-slate-900 lg:h-8 lg:w-8 lg:bg-slate-100 dark:text-white lg:dark:bg-slate-900">
       <Icon icon="heroicons-outline:mail" />
       <span className="absolute -top-2 -right-2 z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0 lg:right-0">
         10
@@ -21,7 +21,7 @@ const newMessage = message.slice(0, 4);
 const Message = () => {
   return (
     <Dropdown
-      classMenuItems="md:w-[335px] w-min top-[58px]"
+      classMenuItems="md:w-83.75 w-min top-14.5"
       label={messagelabel()}
     >
       <div className="flex justify-between border-b border-slate-100 px-4 py-4 dark:border-slate-600">
@@ -46,7 +46,7 @@ const Message = () => {
                     <span
                       className={`${
                         item.active ? "bg-secondary-500" : "bg-green-500"
-                      } absolute top-0 right-0 inline-block h-[10px] w-[10px] rounded-full border border-white dark:border-slate-700`}
+                      } absolute top-0 right-0 inline-block h-2.5 w-2.5 rounded-full border border-white dark:border-slate-700`}
                     ></span>
                     <img
                       src={

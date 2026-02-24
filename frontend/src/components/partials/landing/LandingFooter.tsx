@@ -40,7 +40,7 @@ export const LandingFooter = () => {
       />
       <div className="absolute inset-0 bg-landing-heading/90" />
 
-      <div className="relative z-10 max-w-[1440px] mx-auto px-4 md:px-[75px] py-16">
+      <div className="relative z-10 max-w-360 mx-auto px-4 md:px-18.75 py-16">
         {/* Top bar */}
         <div className="flex flex-col md:flex-row items-center justify-between border-b border-white/15 pb-8 mb-10 gap-4">
           <p className="text-[#eb662b] font-medium">

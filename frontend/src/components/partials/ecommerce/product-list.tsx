@@ -24,8 +24,8 @@ const ProductList = ({ item }: { item: any }) => {
       className="group"
     >
       <Link href={item.id}>
-        <div className="bg-secondary-200 relative mb-3 flex h-[259px] flex-col items-center justify-center rounded-md lg:mb-0 sm:ltr:mr-0 md:ltr:mr-0 lg:ltr:mr-3 sm:rtl:ml-0 md:rtl:ml-0 lg:rtl:ml-3 dark:rounded-sm">
-          <div className="h-[235px] w-[266px] p-12">
+        <div className="bg-secondary-200 relative mb-3 flex h-64.75 flex-col items-center justify-center rounded-md lg:mb-0 sm:ltr:mr-0 md:ltr:mr-0 lg:ltr:mr-3 sm:rtl:ml-0 md:rtl:ml-0 lg:rtl:ml-3 dark:rounded-sm">
+          <div className="h-58.75 w-66.5 p-12">
             <img
               className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
               src={img}
@@ -76,7 +76,7 @@ const ProductList = ({ item }: { item: any }) => {
           </del>
         </p>
         {rating && (
-          <span className="flex items-center space-x-[4px] pb-3 text-xs font-normal text-slate-900 rtl:space-x-reverse dark:text-slate-300">
+          <span className="flex items-center space-x-1 pb-3 text-xs font-normal text-slate-900 rtl:space-x-reverse dark:text-slate-300">
             <Icon icon="ph:star-fill" className="text-yellow-400" />
             <Icon icon="ph:star-fill" className="text-yellow-400" />
             <Icon icon="ph:star-fill" className="text-yellow-400" />
@@ -87,13 +87,13 @@ const ProductList = ({ item }: { item: any }) => {
         <p className="pb-4 text-sm font-normal text-slate-500 dark:text-slate-500">
           {desc}
         </p>
-        <div className="flex max-w-[370px] space-x-4 rtl:space-x-reverse">
+        <div className="flex max-w-92.5 space-x-4 rtl:space-x-reverse">
           <CounterButton product={item} />
 
           <button
             onClick={() => handleAddToCart(item)}
             disabled={cartItems.some((cartItem) => cartItem.id === id)}
-            className="ml-3 flex max-w-[202px] items-center rounded-sm border border-slate-900 px-4 text-sm font-medium hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 rtl:mr-3 dark:border-slate-700 dark:hover:bg-slate-700 dark:hover:text-white"
+            className="ml-3 flex max-w-50.5 items-center rounded-sm border border-slate-900 px-4 text-sm font-medium hover:bg-slate-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 rtl:mr-3 dark:border-slate-700 dark:hover:bg-slate-700 dark:hover:text-white"
           >
             <Icon icon="heroicons:shopping-bag" className="ltr:mr-2 rtl:ml-2" />
             Add to Cart

@@ -38,7 +38,7 @@ const BRANDS = [
 ];
 
 export const CTASection = () => (
-  <section className="relative w-full h-[450px] overflow-hidden">
+  <section className="relative w-full h-112.5 overflow-hidden">
     <img
       src={CTA_BG}
       alt="Mountain landscape"
@@ -83,13 +83,13 @@ export const WhyChooseSection = () => (
             className="!bg-transparent !shadow-none border-none flex flex-col items-center text-center"
             bodyClass="p-0 flex flex-col items-center text-center gap-4"
           >
-            <div className="w-[70px] h-[70px] bg-landing-accent/10 rounded-full flex items-center justify-center">
+            <div className="w-17.5 h-17.5 bg-landing-accent/10 rounded-full flex items-center justify-center">
               <img src={feat.icon} alt="" className="w-8 h-8" />
             </div>
             <h3 className="font-semibold text-landing-heading text-base leading-snug">
               {feat.title}
             </h3>
-            <p className="text-landing-body text-sm leading-relaxed max-w-[250px]">
+            <p className="text-landing-body text-sm leading-relaxed max-w-62.5">
               {feat.desc}
             </p>
           </Card>

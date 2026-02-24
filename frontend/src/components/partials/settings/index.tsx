@@ -43,14 +43,14 @@ const Setings = () => {
       )}
 
       <div
-        className={`setting-wrapper shadow-base2 dark:shadow-base3 fixed top-0 z-9999 h-screen w-[300px] border border-slate-200 bg-white pb-[100px] transition-all duration-150 md:w-[400px] md:pb-6 ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${
+        className={`setting-wrapper shadow-base2 dark:shadow-base3 fixed top-0 z-9999 h-screen w-75 border border-slate-200 bg-white pb-25 transition-all duration-150 md:w-100 md:pb-6 ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${
           isOpen
             ? "visible translate-x-0 opacity-100"
             : "invisible opacity-0 ltr:translate-x-full rtl:-translate-x-full"
         } `}
       >
         <SimpleBar className="h-full px-6">
-          <header className="-mx-6 mb-6 flex items-center justify-between border-b border-slate-100 px-6 py-[15px] dark:border-slate-700">
+          <header className="-mx-6 mb-6 flex items-center justify-between border-b border-slate-100 px-6 py-3.75 dark:border-slate-700">
             <div>
               <span className="block text-xl font-medium text-slate-900 dark:text-[#eee]">
                 Theme customizer

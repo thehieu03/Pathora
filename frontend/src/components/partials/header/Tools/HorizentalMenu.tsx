@@ -24,7 +24,7 @@ const HorizentalMenu = () => {
             {/* Single menu*/}
             {!item.child && !item.megamenu && (
               <Link href={item.link || "#"}>
-                <div className="flex flex-1 items-center space-x-[6px] rtl:space-x-reverse">
+                <div className="flex flex-1 items-center space-x-1.5 rtl:space-x-reverse">
                   <span className="icon-box">
                     <Icon icon={item.icon || ""} />
                   </span>
@@ -35,7 +35,7 @@ const HorizentalMenu = () => {
             {/* has dropdown*/}
             {(item.child || item.megamenu) && (
               <a href="#">
-                <div className="flex flex-1 items-center space-x-[6px] rtl:space-x-reverse">
+                <div className="flex flex-1 items-center space-x-1.5 rtl:space-x-reverse">
                   <span className="icon-box">
                     <Icon icon={item.icon || ""} />
                   </span>
@@ -106,7 +106,7 @@ const HorizentalMenu = () => {
                           <Link href={ms_item.m_childlink || "#"} key={ms_i}>
                             <div className="flex items-center space-x-2 text-[15px] leading-6 rtl:space-x-reverse">
                               <span
-                                className={`inline-block h-[6px] w-[6px] flex-none rounded-full border border-slate-600 dark:border-white ${
+                                className={`inline-block h-1.5 w-1.5 flex-none rounded-full border border-slate-600 dark:border-white ${
                                   isActive ? "bg-slate-900 dark:bg-white" : ""
                                 }`}
                               ></span>

@@ -80,7 +80,7 @@ const TotalTable = () => {
           sint. Velit <br />
           officia consequat duis enim velit mollit.
         </div>
-        <div className="flex-none min-w-[270px] space-y-3">
+        <div className="flex-none min-w-67.5 space-y-3">
           <div className="flex justify-between">
             <span className="font-medium text-slate-600 text-xs dark:text-slate-300 uppercase">
               subtotal:

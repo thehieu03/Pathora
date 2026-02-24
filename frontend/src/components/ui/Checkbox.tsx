@@ -53,7 +53,7 @@ const Checkbox = ({
           <img
             src={CheckImage.src}
             alt=""
-            className="m-auto block h-[10px] w-[10px]"
+            className="m-auto block h-2.5 w-2.5"
           />
         )}
       </span>

@@ -77,7 +77,7 @@ const ThumbSliderCom = ({ product }) => {
             return (
               <SwiperSlide
                 key={i}
-                className="bg-secondary-200 h-[409px] w-[396px] rounded-md px-14 py-11"
+                className="bg-secondary-200 h-102.25 w-99 rounded-md px-14 py-11"
               >
                 <img
                   className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
@@ -88,7 +88,7 @@ const ThumbSliderCom = ({ product }) => {
             );
           })
         ) : (
-          <SwiperSlide className="bg-secondary-200 h-[409px] w-[396px] rounded-md px-14 py-11">
+          <SwiperSlide className="bg-secondary-200 h-102.25 w-99 rounded-md px-14 py-11">
             <div className="flex h-full w-full items-center justify-center text-slate-400">
               No image available
             </div>
@@ -112,7 +112,7 @@ const ThumbSliderCom = ({ product }) => {
               return (
                 <SwiperSlide
                   key={`second_slider_${j}`}
-                  className="bg-secondary-200 h-[90px] w-[90px] rounded-sm px-[17px] py-[14px]"
+                  className="bg-secondary-200 h-22.5 w-22.5 rounded-sm px-4.25 py-3.5"
                 >
                   <img
                     className="h-full w-full object-contain"

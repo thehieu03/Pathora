@@ -59,7 +59,7 @@ const DeliveryInfo = () => {
             Choose Delivery Type
           </p>
           <div className="flex-1 justify-start space-y-3 text-sm md:flex md:space-y-0 md:space-x-5 md:text-base lg:justify-end rtl:space-x-reverse">
-            <label className="inline-flex w-[200px] items-center rounded-sm border border-slate-900 px-5 py-3 md:w-auto lg:px-10 dark:border-slate-700">
+            <label className="inline-flex w-50 items-center rounded-sm border border-slate-900 px-5 py-3 md:w-auto lg:px-10 dark:border-slate-700">
               <Radio
                 name="x"
                 value="A"
@@ -70,7 +70,7 @@ const DeliveryInfo = () => {
                 Home Delivery
               </span>
             </label>
-            <label className="inline-flex w-[200px] items-center rounded-sm border border-slate-900 px-5 py-3 md:w-auto lg:px-10 dark:border-slate-700">
+            <label className="inline-flex w-50 items-center rounded-sm border border-slate-900 px-5 py-3 md:w-auto lg:px-10 dark:border-slate-700">
               <Radio
                 name="x"
                 value="B"

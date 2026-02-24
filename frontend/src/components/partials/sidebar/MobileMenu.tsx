@@ -36,9 +36,9 @@ const MobileMenu = ({ className = "custom-class" }) => {
   const [mobileMenu, setMobileMenu] = useMobileMenu();
   return (
     <div
-      className={`${className} fixed top-0 h-full w-[248px] bg-white shadow-lg dark:bg-slate-800`}
+      className={`${className} fixed top-0 h-full w-62 bg-white shadow-lg dark:bg-slate-800`}
     >
-      <div className="logo-segment z-9 flex h-[85px] items-center justify-between bg-white px-4 dark:bg-slate-800">
+      <div className="logo-segment z-9 flex h-21.25 items-center justify-between bg-white px-4 dark:bg-slate-800">
         <Link href="/dashboard">
           <div className="flex items-center space-x-4">
             <div className="logo-icon">
@@ -73,7 +73,7 @@ const MobileMenu = ({ className = "custom-class" }) => {
       </div>
 
       <div
-        className={`nav-shadow pointer-events-none absolute top-[80px] z-1 h-[60px] w-full transition-all duration-200 ${
+        className={`nav-shadow pointer-events-none absolute top-20 z-1 h-15 w-full transition-all duration-200 ${
           scroll ? "opacity-100" : "opacity-0"
         }`}
       ></div>
@@ -86,9 +86,9 @@ const MobileMenu = ({ className = "custom-class" }) => {
           <img
             src={svgRabitImage.src}
             alt=""
-            className="relative mx-auto -mt-[73px]"
+            className="relative mx-auto -mt-18.25"
           />
-          <div className="mx-auto mt-6 max-w-[160px]">
+          <div className="mx-auto mt-6 max-w-40">
             <div className="widget-title">Unlimited Access</div>
             <div className="text-xs font-light">
               Upgrade your system to business plan

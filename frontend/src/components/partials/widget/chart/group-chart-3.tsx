@@ -76,7 +76,7 @@ const GroupChart3 = () => {
               <Icon icon={item.icon} />
             </div>
             <div className="flex-1 text-sm">
-              <span className={`mb-[2px] block ${item.percentClass} `}>
+              <span className={`mb-0.5 block ${item.percentClass} `}>
                 {item.percent}
               </span>
               <span className="mb-1 block text-slate-600 dark:text-slate-300">

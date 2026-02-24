@@ -8,7 +8,7 @@ export const SectionContainer = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`max-w-[1320px] mx-auto px-4 md:px-[15px] ${className}`}>
+  <div className={`max-w-330 mx-auto px-4 md:px-3.75 ${className}`}>
     {children}
   </div>
 );
@@ -26,7 +26,7 @@ export const NavArrows = ({
   prevLabel?: string;
   nextLabel?: string;
 }) => {
-  const dim = size === 11 ? "w-[45px] h-[45px]" : "w-10 h-10";
+  const dim = size === 11 ? "w-11.25 h-11.25" : "w-10 h-10";
   return (
     <div className="flex items-center gap-3">
       <Button

@@ -62,7 +62,7 @@ const InvoicePreviewPage = () => {
                 <Icon icon="heroicons-outline:phone" />
                 <span>(252) 555-0126,(201) 555-0124</span>
               </div>
-              <div className="mt-[6px] flex space-x-2 leading-none rtl:space-x-reverse">
+              <div className="mt-1.5 flex space-x-2 leading-none rtl:space-x-reverse">
                 <Icon icon="heroicons-outline:mail" />
                 <span>progcoder@example.com</span>
               </div>
@@ -81,13 +81,13 @@ const InvoicePreviewPage = () => {
                 <Icon icon="heroicons-outline:phone" />
                 <span>(252) 555-0126,(201) 555-0124</span>
               </div>
-              <div className="mt-[6px] flex space-x-2 leading-none rtl:space-x-reverse">
+              <div className="mt-1.5 flex space-x-2 leading-none rtl:space-x-reverse">
                 <Icon icon="heroicons-outline:mail" />
                 <span>progcoder@example.com</span>
               </div>
             </div>
           </div>
-          <div className="space-y-[2px]">
+          <div className="space-y-0.5">
             <span className="block text-slate-900 dark:text-slate-300 font-medium leading-5 text-xl mb-4">
               Invoice:
             </span>
@@ -105,7 +105,7 @@ const InvoicePreviewPage = () => {
             </div>
           </div>
         </div>
-        <div className="max-w-[980px] mx-auto shadow-base dark:shadow-none my-8 rounded-md overflow-x-auto">
+        <div className="max-w-245 mx-auto shadow-base dark:shadow-none my-8 rounded-md overflow-x-auto">
           <TotalTable />
         </div>
         <div className="py-10 text-center md:text-2xl text-xl font-normal text-slate-600 dark:text-slate-300">

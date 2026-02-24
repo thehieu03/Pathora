@@ -38,7 +38,7 @@ const Sidebar = () => {
     <div className={isSemiDark ? "dark" : ""}>
       <div
         className={`sidebar-wrapper bg-white dark:bg-slate-800 ${
-          collapsed ? "close_sidebar w-[72px]" : "w-[248px]"
+          collapsed ? "close_sidebar w-18" : "w-62"
         } ${menuHover ? "sidebar-hovered" : ""} ${
           skin === "bordered"
             ? "border-r border-slate-200 dark:border-slate-700"
@@ -53,7 +53,7 @@ const Sidebar = () => {
       >
         <SidebarLogo menuHover={menuHover} />
         <div
-          className={`nav-shadow pointer-events-none absolute top-[80px] z-1 h-[60px] w-full transition-all duration-200 ${
+          className={`nav-shadow pointer-events-none absolute top-20 z-1 h-15 w-full transition-all duration-200 ${
             scroll ? "opacity-100" : "opacity-0"
           }`}
         ></div>

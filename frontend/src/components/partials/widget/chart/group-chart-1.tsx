@@ -227,7 +227,7 @@ const GroupChart1 = () => {
   return (
     <>
       {statistics.map((item, i) => (
-        <div className={`rounded-[6px] px-4 py-[18px] ${item.bg}`} key={i}>
+        <div className={`rounded-[6px] px-4 py-4.5 ${item.bg}`} key={i}>
           <div className="flex items-center space-x-6 rtl:space-x-reverse">
             <div className="flex-none">
               <Chart

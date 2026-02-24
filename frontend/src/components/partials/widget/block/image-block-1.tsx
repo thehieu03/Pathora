@@ -9,7 +9,7 @@ const ImageBlock1 = () => {
         backgroundImage: `url(${image1})`,
       }}
     >
-      <div className="max-w-[169px]">
+      <div className="max-w-42.25">
         <div className="text-xl font-medium text-slate-900 mb-2">
           Upgrade your progcoder
         </div>

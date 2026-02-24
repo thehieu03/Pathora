@@ -8,14 +8,14 @@ const MobileFooter = () => {
   const pathname = usePathname();
 
   return (
-    <div className="custom-dropshadow footer-bg fixed bottom-0 left-0 z-9999 flex w-full items-center justify-around bg-white bg-no-repeat px-4 py-[12px] backdrop-blur-[40px] backdrop-filter dark:bg-slate-700">
+    <div className="custom-dropshadow footer-bg fixed bottom-0 left-0 z-9999 flex w-full items-center justify-around bg-white bg-no-repeat px-4 py-3 backdrop-blur-[40px] backdrop-filter dark:bg-slate-700">
       <Link href="/chat">
         <div>
           <span
             className={`relative mb-1 flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] ${pathname === "/chat" ? "text-primary-500" : "text-slate-900 dark:text-white"} `}
           >
             <Icon icon="heroicons-outline:mail" />
-            <span className="absolute -top-2 right-[5px] z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0">
+            <span className="absolute -top-2 right-1.25 z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0">
               10
             </span>
           </span>
@@ -32,9 +32,9 @@ const MobileFooter = () => {
       </Link>
       <Link
         href="/profile"
-        className="footer-bg relative z-[-1] -mt-[40px] flex h-[65px] w-[65px] items-center justify-center rounded-full bg-white bg-no-repeat backdrop-blur-[40px] backdrop-filter dark:bg-slate-700"
+        className="footer-bg relative z-[-1] -mt-10 flex h-16.25 w-16.25 items-center justify-center rounded-full bg-white bg-no-repeat backdrop-blur-[40px] backdrop-filter dark:bg-slate-700"
       >
-        <div className="custom-dropshadow relative top-[0px] left-[0px] h-[50px] w-[50px] rounded-full">
+        <div className="custom-dropshadow relative top-0 left-0 h-12.5 w-12.5 rounded-full">
           <img
             src={FooterAvatar as unknown as string}
             alt=""
@@ -52,7 +52,7 @@ const MobileFooter = () => {
             className={`relative mb-1 flex cursor-pointer flex-col items-center justify-center rounded-full text-[20px] ${pathname === "/notifications" ? "text-primary-500" : "text-slate-900 dark:text-white"} `}
           >
             <Icon icon="heroicons-outline:bell" />
-            <span className="absolute -top-2 right-[17px] z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0">
+            <span className="absolute -top-2 right-4.25 z-99 flex h-4 w-4 flex-col items-center justify-center rounded-full bg-red-500 text-[8px] font-semibold text-white lg:top-0">
               2
             </span>
           </span>

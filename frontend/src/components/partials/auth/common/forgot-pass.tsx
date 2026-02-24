@@ -41,7 +41,7 @@ const ForgotPass = () => {
         placeholder="Enter your email…"
         register={register}
         error={errors.email}
-        className="h-[48px]"
+        className="h-12"
         autocomplete="email"
         spellCheck={false}
       />

@@ -71,11 +71,11 @@ export const LatestToursSection = () => {
                     <img
                       src={tour.avatar}
                       alt=""
-                      className="w-[108px] h-[108px] rounded-full object-cover"
+                      className="w-27 h-27 rounded-full object-cover"
                     />
                   </div>
                 )}
-                <div className="relative w-[60px] h-[60px] md:w-[100px] md:h-[100px] rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
+                <div className="relative w-15 h-15 md:w-25 md:h-25 rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
                   <img
                     src={tour.image}
                     alt={tour.title}
@@ -83,7 +83,7 @@ export const LatestToursSection = () => {
                   />
                 </div>
               </div>
-              <div className="text-left md:text-center max-w-full md:max-w-[130px] flex-1">
+              <div className="text-left md:text-center max-w-full md:max-w-32.5 flex-1">
                 <p className="text-[#eb662b] text-[10px] md:text-sm font-normal">
                   {tour.date}
                 </p>

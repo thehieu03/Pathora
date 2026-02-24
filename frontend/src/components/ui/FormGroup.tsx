@@ -23,7 +23,7 @@ const FormGroup = ({
         <label
           htmlFor={id}
           className={`block capitalize ${classLabel}  ${
-            horizontal ? "flex-0 mr-6 md:w-[100px] w-[60px] break-words" : ""
+            horizontal ? "flex-0 mr-6 md:w-25 w-15 break-words" : ""
           }`}
         >
           {label}
@@ -34,7 +34,7 @@ const FormGroup = ({
 
         {/* icon */}
 
-        <div className="flex text-xl absolute ltr:right-[14px] rtl:left-[14px] top-1/2 -translate-y-1/2  space-x-1 rtl:space-x-reverse">
+        <div className="flex text-xl absolute ltr:right-3.5 rtl:left-3.5 top-1/2 -translate-y-1/2  space-x-1 rtl:space-x-reverse">
           {error && (
             <span className="text-danger-500">
               <Icon icon="heroicons-outline:information-circle" />

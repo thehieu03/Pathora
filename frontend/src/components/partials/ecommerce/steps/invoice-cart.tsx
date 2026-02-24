@@ -25,13 +25,13 @@ const InvoiceCart = () => {
         <div className="space-y-3 md:flex md:space-x-3 lg:space-x-5">
           <div className="flex-1">
             <div className="flex space-x-2 lg:space-x-12 rtl:space-x-reverse">
-              <div className="min-w-[110px] space-y-3 text-xs font-medium text-slate-900 md:text-sm dark:text-slate-300">
+              <div className="min-w-27.5 space-y-3 text-xs font-medium text-slate-900 md:text-sm dark:text-slate-300">
                 <p>Order Date:</p>
                 <p>Name:</p>
                 <p>Email:</p>
                 <p>Shipping address:</p>
               </div>
-              <div className="min-w-[110px] space-y-3 text-xs font-normal text-slate-900 md:text-sm dark:text-slate-300">
+              <div className="min-w-27.5 space-y-3 text-xs font-normal text-slate-900 md:text-sm dark:text-slate-300">
                 <p>23-07-2023 09:53 AM</p>
                 <p>Prantik Chakraborty</p>
                 <p>customer.example@gmail.com</p>
@@ -44,13 +44,13 @@ const InvoiceCart = () => {
           </div>
           <div className="flex-1">
             <div className="flex space-x-2 lg:space-x-12 rtl:space-x-reverse">
-              <div className="min-w-[110px] space-y-3 text-xs font-medium text-slate-900 md:text-sm dark:text-slate-300">
+              <div className="min-w-27.5 space-y-3 text-xs font-medium text-slate-900 md:text-sm dark:text-slate-300">
                 <p>Order Status:</p>
                 <p>Total order amount:</p>
                 <p>Shipping:</p>
                 <p>Payment method:</p>
               </div>
-              <div className="min-w-[110px] space-y-3 text-xs font-normal text-slate-900 md:text-sm dark:text-slate-300">
+              <div className="min-w-27.5 space-y-3 text-xs font-normal text-slate-900 md:text-sm dark:text-slate-300">
                 <p>Pending</p>
                 <p>$350.00</p>
                 <p>Flat shipping rate</p>
@@ -115,7 +115,7 @@ const InvoiceCart = () => {
                             />
                           </div>
                           <div>
-                            <p className="w-[150px] truncate pb-1 text-sm font-normal text-slate-900 md:pb-2 lg:w-[380px] lg:text-base dark:text-slate-300">
+                            <p className="w-37.5 truncate pb-1 text-sm font-normal text-slate-900 md:pb-2 lg:w-95 lg:text-base dark:text-slate-300">
                               {item.name}
                             </p>
                           </div>
@@ -134,7 +134,7 @@ const InvoiceCart = () => {
                   </tbody>
                 </table>
                 <div className="mt-3 items-center justify-end border-t py-3 md:flex lg:py-6 dark:border-slate-700">
-                  <div className="min-w-[270px] flex-none space-y-3">
+                  <div className="min-w-67.5 flex-none space-y-3">
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-xs font-medium text-slate-900 lg:text-sm dark:text-slate-300">

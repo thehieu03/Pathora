@@ -73,12 +73,12 @@ const CartPanel = ({ open, close }: { open: boolean; close: () => void }) => {
   return (
     <div>
       <motion.div
-        className={`setting-wrapper shadow-base2 dark:shadow-base3 fixed top-0 z-9999 h-screen w-[300px] border border-slate-200 bg-white md:w-[400px] ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${open ? "ml-0" : "ml-[-400px]"} `}
+        className={`setting-wrapper shadow-base2 dark:shadow-base3 fixed top-0 z-9999 h-screen w-75 border border-slate-200 bg-white md:w-100 ltr:right-0 rtl:left-0 dark:border-slate-700 dark:bg-slate-800 ${open ? "ml-0" : "ml-[-400px]"} `}
         animate={open ? "open" : "closed"}
         variants={variants}
       >
         <div className="flex h-full flex-col overflow-y-auto px-6">
-          <header className="sticky top-0 -mx-5 mb-6 flex flex-none items-center justify-between border-b border-slate-100 bg-white px-6 py-[15px] dark:border-slate-700 dark:bg-slate-800">
+          <header className="sticky top-0 -mx-5 mb-6 flex flex-none items-center justify-between border-b border-slate-100 bg-white px-6 py-3.75 dark:border-slate-700 dark:bg-slate-800">
             <div>
               <span className="block text-xl font-medium text-slate-900 dark:text-[#eee]">
                 Cart

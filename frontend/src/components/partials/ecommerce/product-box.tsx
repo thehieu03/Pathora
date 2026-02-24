@@ -34,8 +34,8 @@ const ProductBox = ({ item, wish }: { item: any; wish?: boolean }) => {
   return (
     <Card bodyClass="p-4 rounded-md" className="group">
       <Link href={item.id}>
-        <div className="bg-secondary-200 relative mb-3 flex h-[191px] flex-col items-center justify-center rounded-md dark:rounded-sm">
-          <div className="h-[146px]">
+        <div className="bg-secondary-200 relative mb-3 flex h-47.75 flex-col items-center justify-center rounded-md dark:rounded-sm">
+          <div className="h-36.5">
             <img
               className="h-full w-full object-contain transition-all duration-300 group-hover:scale-105"
               src={img}

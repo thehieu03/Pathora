@@ -96,7 +96,7 @@ const PricingPage = () => {
                   check
                     ? "bg-slate-900 text-white dark:bg-slate-900"
                     : "dark:text-slate-300"
-                } rounded px-[18px] py-1 transition duration-100`}
+                } rounded px-4.5 py-1 transition duration-100`}
               >
                 Yearly
               </span>
@@ -105,7 +105,7 @@ const PricingPage = () => {
                   !check
                     ? "bg-slate-900 text-white dark:bg-slate-900"
                     : "dark:text-slate-300"
-                } rounded px-[18px] py-1 transition duration-100`}
+                } rounded px-4.5 py-1 transition duration-100`}
               >
                 Monthly
               </span>
@@ -121,7 +121,7 @@ const PricingPage = () => {
                   <img src={item.img.src} alt="" className="ml-auto block" />
                 </div>
                 {item.ribon && (
-                  <div className="absolute top-6 transform bg-slate-900 px-10 py-2 text-center text-sm font-medium text-white ltr:-right-[43px] ltr:rotate-[45deg] rtl:-left-[43px] rtl:-rotate-45 dark:bg-slate-900">
+                  <div className="absolute top-6 transform bg-slate-900 px-10 py-2 text-center text-sm font-medium text-white ltr:-right-10.75 ltr:rotate-[45deg] rtl:-left-10.75 rtl:-rotate-45 dark:bg-slate-900">
                     {item.ribon}
                   </div>
                 )}
@@ -169,7 +169,7 @@ const PricingPage = () => {
               key={i}
             >
               {item.ribon && (
-                <div className="absolute top-6 transform bg-white px-10 py-2 text-center text-sm font-medium text-slate-900 ltr:-right-[43px] ltr:rotate-[45deg] rtl:-left-[43px] rtl:-rotate-45 dark:bg-slate-700 dark:text-slate-300">
+                <div className="absolute top-6 transform bg-white px-10 py-2 text-center text-sm font-medium text-slate-900 ltr:-right-10.75 ltr:rotate-[45deg] rtl:-left-10.75 rtl:-rotate-45 dark:bg-slate-700 dark:text-slate-300">
                   {item.ribon}
                 </div>
               )}

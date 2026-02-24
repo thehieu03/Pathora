@@ -59,7 +59,7 @@ const RegForm = () => {
         placeholder="Enter your name…"
         register={register}
         error={errors.username}
-        className="h-[48px]"
+        className="h-12"
         autocomplete="username"
       />
       <Textinput
@@ -69,7 +69,7 @@ const RegForm = () => {
         placeholder="Enter your email…"
         register={register}
         error={errors.email}
-        className="h-[48px]"
+        className="h-12"
         autocomplete="email"
         spellCheck={false}
       />
@@ -80,7 +80,7 @@ const RegForm = () => {
         placeholder="Enter your password…"
         register={register}
         error={errors.password}
-        className="h-[48px]"
+        className="h-12"
         autocomplete="new-password"
         hasicon
       />

@@ -37,7 +37,7 @@ const CounterButton = ({ product }: { product: { id: string } }) => {
           <Icon icon="eva:minus-fill" />
         </button>
 
-        <div className="flex w-[62px] flex-1 items-center justify-center text-center">
+        <div className="flex w-15.5 flex-1 items-center justify-center text-center">
           {cartItem ? cartItem.quantity : 0}
         </div>
         <button

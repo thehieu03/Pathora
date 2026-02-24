@@ -27,7 +27,7 @@ const Radio = ({
   wrapperClass = " ",
   labelClass = "text-slate-500 dark:text-slate-400 text-sm leading-6",
   checked,
-  className = "h-[18px] w-[18px]",
+  className = "h-4.5 w-4.5",
 }: RadioProps) => {
   return (
     <div>

@@ -52,7 +52,7 @@ export const StatsSection = () => {
               {stats.map((stat, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-4 bg-white shadow-sm md:shadow-none rounded-lg p-3 md:p-0 min-w-[100px] md:min-w-0 shrink-0">
+                  className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-4 bg-white shadow-sm md:shadow-none rounded-lg p-3 md:p-0 min-w-25 md:min-w-0 shrink-0">
                   <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0">
                     <img
                       src={stat.icon}
@@ -83,16 +83,16 @@ export const StatsSection = () => {
             />
           </div>
 
-          <div className="flex-1 relative h-[200px] md:h-[400px] w-full lg:block">
+          <div className="flex-1 relative h-50 md:h-100 w-full lg:block">
             <img
               src={EXPLORE_IMG}
               alt="Travel"
-              className="absolute right-0 top-0 w-[60%] md:w-[300px] h-[90%] md:h-[380px] object-cover rounded-xl md:rounded-2xl shadow-xl"
+              className="absolute right-0 top-0 w-[60%] md:w-75 h-[90%] md:h-95 object-cover rounded-xl md:rounded-2xl shadow-xl"
             />
             <img
               src={BG_IMG}
               alt="Travel background"
-              className="absolute left-0 bottom-0 w-[50%] md:w-[260px] h-[80%] md:h-[320px] object-cover rounded-xl md:rounded-2xl shadow-lg"
+              className="absolute left-0 bottom-0 w-[50%] md:w-65 h-[80%] md:h-80 object-cover rounded-xl md:rounded-2xl shadow-lg"
             />
           </div>
         </div>

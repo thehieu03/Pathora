@@ -39,23 +39,23 @@ const MostSales = ({ filterMap }) => {
   return (
     <div className="md:flex items-center">
       <div className="flex-none">
-        <h4 className="text-slate-600 dark:text-slate-200 text-sm font-normal mb-[6px]">
+        <h4 className="text-slate-600 dark:text-slate-200 text-sm font-normal mb-1.5">
           Total earnings
         </h4>
         {filterMap === "usa" && (
-          <div className="text-lg font-medium mb-[6px] dark:text-white text-slate-900">
+          <div className="text-lg font-medium mb-1.5 dark:text-white text-slate-900">
             $12,65,64787.00
           </div>
         )}
         {filterMap === "global" && (
-          <div className="text-lg font-medium mb-[6px] dark:text-white text-slate-900">
+          <div className="text-lg font-medium mb-1.5 dark:text-white text-slate-900">
             $12,65.00
           </div>
         )}
         <div className="text-xs font-light dark:text-slate-200">
           <span className="text-primary-500">+08%</span> From last month
         </div>
-        <ul className="bg-slate-50 dark:bg-slate-900 rounded-sm p-4 min-w-[184px] space-y-5 mt-4">
+        <ul className="bg-slate-50 dark:bg-slate-900 rounded-sm p-4 min-w-46 space-y-5 mt-4">
           {slaes.map((item, i) => (
             <li
               key={i}
@@ -63,7 +63,7 @@ const MostSales = ({ filterMap }) => {
             >
               <span className="flex space-x-2 rtl:space-x-reverse items-center">
                 <span
-                  className={` inline-flex h-[6px] w-[6px] bg-primary-500 ring-opacity-25 rounded-full ring-4
+                  className={` inline-flex h-1.5 w-1.5 bg-primary-500 ring-opacity-25 rounded-full ring-4
                         ${item.cls}
                         `}
                 ></span>

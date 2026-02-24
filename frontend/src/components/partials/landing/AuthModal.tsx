@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { Button, Icon } from "@/components/ui";
 
 const GOOGLE_ICON =
@@ -19,22 +20,27 @@ const ModalShell = ({
   children,
   onClose,
   ariaLabel,
+  dialogRef,
 }: {
   children: React.ReactNode;
   onClose: () => void;
   ariaLabel: string;
+  dialogRef?: React.RefObject<HTMLDivElement | null>;
 }) => (
   <div className="fixed inset-0 z-[200] flex items-center justify-center">
-    <div
+    <button
+      type="button"
       className="absolute inset-0 bg-[#333]/80"
       onClick={onClose}
-      aria-hidden="true"
+      aria-label="Close modal"
     />
     <div
-      className="relative bg-white rounded-3xl px-6 sm:px-10 py-8 shadow-[0px_4px_20px_0px_rgba(255,255,255,0.25)] w-[calc(100%-32px)] max-w-[448px] max-h-[90vh] overflow-y-auto"
+      ref={dialogRef}
+      className="relative bg-white rounded-3xl px-6 sm:px-10 py-8 shadow-[0px_4px_20px_0px_rgba(255,255,255,0.25)] w-[calc(100%-32px)] max-w-112 max-h-[90vh] overflow-y-auto"
       role="dialog"
       aria-modal="true"
-      aria-label={ariaLabel}>
+      aria-label={ariaLabel}
+    >
       {children}
     </div>
   </div>
@@ -42,6 +48,7 @@ const ModalShell = ({
 
 /* ── Shared input field ────────────────────────────────────── */
 const InputField = ({
+  id,
   label,
   type = "text",
   name,
@@ -50,6 +57,7 @@ const InputField = ({
   placeholder,
   trailing,
 }: {
+  id?: string;
   label: string;
   type?: string;
   name: string;
@@ -59,17 +67,21 @@ const InputField = ({
   trailing?: React.ReactNode;
 }) => (
   <div className="flex flex-col gap-2.5">
-    <label className="font-semibold text-base sm:text-lg text-[#333]/60">
+    <label
+      htmlFor={id ?? name}
+      className="font-semibold text-base sm:text-lg text-[#333]/60"
+    >
       {label}
     </label>
     <div className="relative">
       <input
+        id={id ?? name}
         type={type}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full bg-white border border-[#333]/20 rounded-lg px-6 py-3.5 text-base text-[#333] placeholder:text-[#333]/50 outline-none focus:border-landing-accent transition-colors ${
+        className={`w-full bg-white border border-[#333]/20 rounded-lg px-6 py-3.5 text-base text-[#333] placeholder:text-[#333]/50 focus:outline-none focus:border-landing-accent focus-visible:ring-2 focus-visible:ring-landing-accent/40 transition-colors ${
           trailing ? "pr-12" : ""
         }`}
       />
@@ -110,7 +122,8 @@ const SignUpView = ({
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label="Close">
+          aria-label="Close"
+        >
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </button>
       </div>
@@ -118,6 +131,7 @@ const SignUpView = ({
       {/* Fields */}
       <div className="flex flex-col gap-5 w-full">
         <InputField
+          id="signup-name"
           label="Name and Surname"
           name="name"
           value={form.name}
@@ -125,6 +139,7 @@ const SignUpView = ({
           placeholder="Enter your name and surname"
         />
         <InputField
+          id="signup-email"
           label="Email Address"
           type="email"
           name="email"
@@ -133,6 +148,7 @@ const SignUpView = ({
           placeholder="Enter your email address"
         />
         <InputField
+          id="signup-password"
           label="Password"
           type={showPassword ? "text" : "password"}
           name="password"
@@ -144,7 +160,8 @@ const SignUpView = ({
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333]/40 hover:text-[#333]/70 transition-colors"
-              aria-label={showPassword ? "Hide password" : "Show password"}>
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
               <Icon
                 icon={
                   showPassword
@@ -188,8 +205,9 @@ const SignUpView = ({
         <span className="text-[#333]/40 text-base text-center">or</span>
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
-          <img src={GOOGLE_ICON} alt="Google" className="w-6 h-6" />
+          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors"
+        >
+          <Image src={GOOGLE_ICON} alt="Google" width={24} height={24} />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
             Sign Up with Google
           </span>
@@ -202,7 +220,8 @@ const SignUpView = ({
         <button
           type="button"
           className="font-semibold text-landing-accent hover:underline"
-          onClick={goToLogin}>
+          onClick={goToLogin}
+        >
           Log In
         </button>
       </p>
@@ -243,7 +262,8 @@ const LoginView = ({
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label="Close">
+          aria-label="Close"
+        >
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </button>
       </div>
@@ -251,6 +271,7 @@ const LoginView = ({
       {/* Fields */}
       <div className="flex flex-col gap-5 w-full">
         <InputField
+          id="login-email"
           label="Email Address"
           type="email"
           name="email"
@@ -260,6 +281,7 @@ const LoginView = ({
         />
         <div className="flex flex-col gap-1">
           <InputField
+            id="login-password"
             label="Password"
             type={showPassword ? "text" : "password"}
             name="password"
@@ -271,7 +293,8 @@ const LoginView = ({
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333]/40 hover:text-[#333]/70 transition-colors"
-                aria-label={showPassword ? "Hide password" : "Show password"}>
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
                 <Icon
                   icon={
                     showPassword
@@ -286,7 +309,8 @@ const LoginView = ({
           <button
             type="button"
             onClick={goToForgot}
-            className="self-end text-sm text-[#333]/60 hover:text-[#333] transition-colors mt-1">
+            className="self-end text-sm text-[#333]/60 hover:text-[#333] transition-colors mt-1"
+          >
             Forgot your password?
           </button>
         </div>
@@ -302,8 +326,9 @@ const LoginView = ({
         <span className="text-[#333]/40 text-base text-center">or</span>
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
-          <img src={GOOGLE_ICON} alt="Google" className="w-6 h-6" />
+          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors"
+        >
+          <Image src={GOOGLE_ICON} alt="Google" width={24} height={24} />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
             Sign In with Google
           </span>
@@ -316,7 +341,8 @@ const LoginView = ({
         <button
           type="button"
           className="font-semibold text-landing-accent hover:underline"
-          onClick={goToSignUp}>
+          onClick={goToSignUp}
+        >
           Sign Up
         </button>
       </p>
@@ -356,7 +382,8 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
         <button
           type="button"
           onClick={goToLogin}
-          className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm">
+          className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm"
+        >
           <Icon icon="heroicons-outline:arrow-left" className="w-4 h-4" />
           Back to Login
         </button>
@@ -384,6 +411,7 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
       {/* Email field */}
       <div className="w-full">
         <InputField
+          id="forgot-email"
           label="Email Address"
           type="email"
           name="email"
@@ -402,7 +430,8 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
       <button
         type="button"
         onClick={goToLogin}
-        className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm">
+        className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm"
+      >
         <Icon icon="heroicons-outline:arrow-left" className="w-4 h-4" />
         Back to Login
       </button>
@@ -417,6 +446,7 @@ export const AuthModal = ({
   initialView = "signup",
 }: AuthModalProps) => {
   const [view, setView] = useState<AuthView>(initialView);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -439,6 +469,38 @@ export const AuthModal = ({
     return () => window.removeEventListener("keydown", handleKey);
   }, [open, handleClose]);
 
+  useEffect(() => {
+    if (!open || !dialogRef.current) return;
+
+    const dialog = dialogRef.current;
+    const selectors =
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(
+      dialog.querySelectorAll<HTMLElement>(selectors),
+    );
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    first?.focus();
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab" || focusables.length === 0) return;
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+        return;
+      }
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
   if (!open) return null;
 
   const ariaLabels: Record<AuthView, string> = {
@@ -448,7 +510,11 @@ export const AuthModal = ({
   };
 
   return (
-    <ModalShell onClose={handleClose} ariaLabel={ariaLabels[view]}>
+    <ModalShell
+      onClose={handleClose}
+      ariaLabel={ariaLabels[view]}
+      dialogRef={dialogRef}
+    >
       {view === "signup" && (
         <SignUpView onClose={handleClose} goToLogin={() => setView("login")} />
       )}

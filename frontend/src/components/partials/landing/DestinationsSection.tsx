@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { Badge, Card } from "@/components/ui";
-import { NavArrows, SectionContainer } from "./shared";
+import { SectionContainer } from "./shared";
 
 const DESTINATIONS = [
   {
@@ -104,11 +104,10 @@ export const TrendingDestinationsSection = () => {
   return (
     <SectionContainer>
       <section className="w-full">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
             Trending Destination
           </h2>
-          <NavArrows />
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -116,7 +115,8 @@ export const TrendingDestinationsSection = () => {
             <Link
               key={idx}
               href="/tours"
-              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl transition-shadow duration-300">
+              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl transition-shadow duration-300"
+            >
               <img
                 src={dest.image}
                 alt={dest.city}
@@ -143,11 +143,10 @@ export const TopAttractionsSection = () => {
   return (
     <SectionContainer>
       <section className="w-full">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
             Top Attractions
           </h2>
-          <NavArrows />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
