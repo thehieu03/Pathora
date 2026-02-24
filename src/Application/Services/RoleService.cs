@@ -22,16 +22,10 @@ public interface IRoleService
     Task<ErrorOr<Dictionary<string, bool>>> HasFunctions(string userId, int categoryId, string[] type);
 }
 
-public class RoleService : IRoleService
+public class RoleService(IUser user, IUnitOfWork uow) : IRoleService
 {
-    private readonly IUser _user;
-    private readonly IUnitOfWork _uow;
-
-    public RoleService(IUser user, IUnitOfWork uow)
-    {
-        _user = user;
-        _uow = uow;
-    }
+    private readonly IUser _user = user;
+    private readonly IUnitOfWork _uow = uow;
 
     public Task<ErrorOr<Guid>> Create(CreateRoleRequest request)
     {

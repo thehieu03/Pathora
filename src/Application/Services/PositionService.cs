@@ -17,18 +17,12 @@ public interface IPositionService
     Task<ErrorOr<List<LookupVm>>> GetComboboxAsync();
 }
 
-public class PositionService : IPositionService
+public class PositionService(IPositionRepository positionRepository, IRoleService roleService, IUser user)
+    : IPositionService
 {
-    private readonly IPositionRepository _positionRepository;
-    private readonly IRoleService _roleService;
-    private readonly IUser _user;
-
-    public PositionService(IPositionRepository positionRepository, IRoleService roleService, IUser user)
-    {
-        _positionRepository = positionRepository;
-        _roleService = roleService;
-        _user = user;
-    }
+    private readonly IPositionRepository _positionRepository = positionRepository;
+    private readonly IRoleService _roleService = roleService;
+    private readonly IUser _user = user;
 
     public Task<ErrorOr<Success>> CreateAsync(CreatePositionRequest request)
     {

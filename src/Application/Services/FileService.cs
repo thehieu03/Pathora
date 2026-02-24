@@ -10,18 +10,12 @@ public interface IFileService
     Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request);
 }
 
-public class FileService : IFileService
+public class FileService(IFileManager fileManager) : IFileService
 {
-    private readonly IFileManager _fileManager;
-
-    public FileService(IFileManager fileManager)
-    {
-        _fileManager = fileManager;
-    }
 
     public Task<string> UploadFileAsync(UploadFileRequest request)
     {
-        return _fileManager.UploadFileAsync(request.Stream, request.FileName);
+        return fileManager.UploadFileAsync(request.Stream, request.FileName);
     }
 
     public async Task<IEnumerable<FileMetadataVm>> UploadMultipleFilesAsync(UploadMultipleFilesRequest request)
@@ -29,7 +23,7 @@ public class FileService : IFileService
         var uploadFiles = request.Files
             .Select(data => (data.Stream, data.FileName, data.ContentType, data.Length))
             .ToArray();
-        var result = await _fileManager.UploadMultipleFilesAsync(request.EntityId, uploadFiles);
+        var result = await fileManager.UploadMultipleFilesAsync(request.EntityId, uploadFiles);
 
         return result.Select(f => new FileMetadataVm(
             f.Id,
@@ -41,6 +35,6 @@ public class FileService : IFileService
 
     public Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request)
     {
-        return _fileManager.DeleteMultipleFilesAsync(request.FileIds);
+        return fileManager.DeleteMultipleFilesAsync(request.FileIds);
     }
 }

@@ -20,29 +20,21 @@ public interface IIdentityService
     Task<ErrorOr<List<TabVm>>> GetTabs();
 }
 
-public class IdentityService : IIdentityService
+public class IdentityService(
+    IUser user,
+    ITokenManager tokenManager,
+    IUnitOfWork unitOfWork,
+    IPasswordHasher passwordHasher,
+    IUserService userService)
+    : IIdentityService
 {
-    private readonly IUser _user;
-    private readonly ITokenManager _tokenManager;
+    private readonly IUser _user = user;
+    private readonly ITokenManager _tokenManager = tokenManager;
 
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IPasswordHasher _passwordHasher;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
 
-    private readonly IUserService _userService;
-
-    public IdentityService(
-        IUser user,
-        ITokenManager tokenManager,
-        IUnitOfWork unitOfWork,
-        IPasswordHasher passwordHasher,
-        IUserService userService)
-    {
-        _user = user;
-        _tokenManager = tokenManager;
-        _unitOfWork = unitOfWork;
-        _passwordHasher = passwordHasher;
-        _userService = userService;
-    }
+    private readonly IUserService _userService = userService;
 
     public Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)
     {

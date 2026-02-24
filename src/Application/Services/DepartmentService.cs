@@ -15,21 +15,15 @@ public interface IDepartmentService
     Task<ErrorOr<List<DepartmentComboBoxVm>>> GetAllForComboBox();
 }
 
-public class DepartmentService : IDepartmentService
+public class DepartmentService(
+    IUser user,
+    IRoleService roleService,
+    IDepartmentRepository departmentRepository)
+    : IDepartmentService
 {
-    private readonly IUser _user;
-    private readonly IRoleService _roleService;
-    private readonly IDepartmentRepository _departmentRepository;
-
-    public DepartmentService(
-        IUser user,
-        IRoleService roleService,
-        IDepartmentRepository departmentRepository)
-    {
-        _user = user;
-        _roleService = roleService;
-        _departmentRepository = departmentRepository;
-    }
+    private readonly IUser _user = user;
+    private readonly IRoleService _roleService = roleService;
+    private readonly IDepartmentRepository _departmentRepository = departmentRepository;
 
     public Task<ErrorOr<Guid>> Create(CreateDepartmentRequest request)
     {

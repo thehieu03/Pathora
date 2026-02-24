@@ -17,24 +17,17 @@ public interface IUserService
     Task<ErrorOr<Success>> IsEmailUnique(string email);
 }
 
-public class UserService : IUserService
+public class UserService(
+    IUser user,
+    IUnitOfWork unitOfWork,
+    IPasswordHasher passwordHasher,
+    IRoleService roleService)
+    : IUserService
 {
-    private readonly IUser _user;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IPasswordHasher _passwordHasher;
-    private readonly IRoleService _roleService;
-
-    public UserService(
-        IUser user,
-        IUnitOfWork unitOfWork,
-        IPasswordHasher passwordHasher,
-        IRoleService roleService)
-    {
-        _user = user;
-        _unitOfWork = unitOfWork;
-        _passwordHasher = passwordHasher;
-        _roleService = roleService;
-    }
+    private readonly IUser _user = user;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+    private readonly IRoleService _roleService = roleService;
 
     public Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)
     {
