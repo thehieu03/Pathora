@@ -1,12 +1,6 @@
 services:
-  api:
-    image: ${DOCKER_REGISTRY-}api
-    build:
-      context: .
-      dockerfile: src/Api/Dockerfile
-
-  redis:
-    image: redis:7-alpine
+  # redis:
+  #   image: redis:7-alpine
 
   minio:
     image: minio/minio:latest
