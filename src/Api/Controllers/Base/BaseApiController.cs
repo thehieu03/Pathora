@@ -45,13 +45,11 @@ public abstract class BaseApiController : ControllerBase
 
     protected IActionResult HandleCreated<T>(
         ErrorOr<T> result,
-        string successMessage = "Tạo thành công",
-        int successStatusCode = StatusCodes.Status201Created)
+        int successStatusCode = StatusCodes.Status201Created,
+        string successMessage = "Tạo thành công")
     {
         if (result.IsError)
-        {
             return HandleResult(result);
-        }
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiCreatedResponse<T>>.Success(
             new ApiCreatedResponse<T>(result.Value),
@@ -62,13 +60,11 @@ public abstract class BaseApiController : ControllerBase
 
     protected IActionResult HandleUpdated<T>(
         ErrorOr<T> result,
-        string successMessage = "Cập nhật thành công",
-        int successStatusCode = StatusCodes.Status200OK)
+        int successStatusCode = StatusCodes.Status200OK,
+        string successMessage = "Cập nhật thành công")
     {
         if (result.IsError)
-        {
             return HandleResult(result);
-        }
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiUpdatedResponse<T>>.Success(
             new ApiUpdatedResponse<T>(result.Value),
@@ -79,13 +75,11 @@ public abstract class BaseApiController : ControllerBase
 
     protected IActionResult HandleDeleted<T>(
         ErrorOr<T> result,
-        string successMessage = "Xóa thành công",
-        int successStatusCode = StatusCodes.Status200OK)
+        int successStatusCode = StatusCodes.Status200OK,
+        string successMessage = "Xóa thành công")
     {
         if (result.IsError)
-        {
             return HandleResult(result);
-        }
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiDeletedResponse<T>>.Success(
             new ApiDeletedResponse<T>(result.Value),
@@ -96,13 +90,11 @@ public abstract class BaseApiController : ControllerBase
 
     protected IActionResult HandleGet<T>(
         ErrorOr<T> result,
-        string successMessage = "Lấy dữ liệu thành công",
-        int successStatusCode = StatusCodes.Status200OK)
+        int successStatusCode = StatusCodes.Status200OK,
+        string successMessage = "Lấy dữ liệu thành công")
     {
         if (result.IsError)
-        {
             return HandleResult(result);
-        }
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiGetResponse<T>>.Success(
             new ApiGetResponse<T>(result.Value),
@@ -113,18 +105,24 @@ public abstract class BaseApiController : ControllerBase
 
     protected IActionResult HandlePerformed<T>(
         ErrorOr<T> result,
-        string successMessage = "Thực thi thành công",
-        int successStatusCode = StatusCodes.Status200OK)
+        int successStatusCode = StatusCodes.Status200OK,
+        string successMessage = "Thực thi thành công")
     {
         if (result.IsError)
-        {
             return HandleResult(result);
-        }
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiPerformedResponse<T>>.Success(
             new ApiPerformedResponse<T>(result.Value),
             successMessage,
             HttpContext.Request.Path,
             successStatusCode));
+    }
+
+    protected IActionResult HandleNoContent<T>(ErrorOr<T> result)
+    {
+        if (result.IsError)
+            return HandleResult(result);
+
+        return NoContent();
     }
 }
