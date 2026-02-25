@@ -1,36 +1,18 @@
 services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: src/Api/Dockerfile
+
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - ./volume/redis:/data
 
   minio:
     image: minio/minio:latest
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - ./volume/minio:/data
 
   portainer:
     image: portainer/portainer-ce:latest
-    # UI: https://localhost:9443 (recommended) or http://localhost:9002
-    # Initial login: admin / admin
-    command:
-      - --admin-password=$$2y$$05$$WhRrYB./WG4XqeLi2CxdkOKwhd55Lio1QHSKsGkRjcxze7PEWHEoe
-    ports:
-      - "9443:9443"
-      - "9002:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    restart: unless-stopped
 
 volumes:
   portainer_data:

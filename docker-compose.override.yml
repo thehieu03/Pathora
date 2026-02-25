@@ -1,1 +1,54 @@
-services: {}
+services:
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Default=Host=18.143.220.111;Port=5432;Database=Pathora;Username=root;Password=123abc@A
+      - Redis__ConnectionString=redis:6379
+      - MinIO__Endpoint=minio:9000
+      - MinIO__AccessKey=minioadmin
+      - MinIO__SecretKey=minioadmin123
+      - MinIO__UseSSL=false
+      - MinIO__DefaultBucket=panthora
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - redis
+      - minio
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  redis:
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volume/redis:/data
+
+  minio:
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./volume/minio:/data
+
+  portainer:
+    # UI: https://localhost:9443 (recommended) or http://localhost:9002
+    # Initial login: admin / admin
+    command:
+      - --admin-password=$$2y$$05$$WhRrYB./WG4XqeLi2CxdkOKwhd55Lio1QHSKsGkRjcxze7PEWHEoe
+    ports:
+      - "9443:9443"
+      - "9002:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: unless-stopped
