@@ -89,16 +89,14 @@ public class UserService(
             return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
 
         var generatedPassword = PasswordGenerator.Generate();
-        var userEntity = new UserEntity
-        {
-            Username = request.Email,
-            FullName = request.FullName,
-            Email = request.Email,
-            Avatar = request.Avatar,
-            Password = _passwordHasher.HashPassword(generatedPassword),
-            ForcePasswordChange = true,
-            CreatedOnUtc = DateTimeOffset.UtcNow
-        };
+        var userEntity = UserEntity.Create(
+            request.Email,
+            request.FullName,
+            request.Email,
+            _passwordHasher.HashPassword(generatedPassword),
+            _user.Id ?? string.Empty,
+            request.Avatar,
+            forcePasswordChange: true);
 
         await _userRepository.Create(userEntity);
 
@@ -116,9 +114,7 @@ public class UserService(
         if (userEntity is null)
             return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
 
-        userEntity.FullName = request.FullName;
-        userEntity.Avatar = request.Avatar;
-        userEntity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        userEntity.Update(request.FullName, request.Avatar, _user.Id ?? string.Empty);
         await _userRepository.Update(userEntity);
 
         // Update roles
@@ -138,9 +134,7 @@ public class UserService(
             return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
 
         var newPassword = PasswordGenerator.Generate();
-        userEntity.Password = _passwordHasher.HashPassword(newPassword);
-        userEntity.ForcePasswordChange = true;
-        userEntity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
         await _userRepository.Update(userEntity);
 
         return Result.Success;
