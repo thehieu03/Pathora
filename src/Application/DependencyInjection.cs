@@ -18,6 +18,7 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IFileService, FileService>();

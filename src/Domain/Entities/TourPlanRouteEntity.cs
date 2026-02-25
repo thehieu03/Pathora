@@ -16,9 +16,45 @@ public class TourPlanRouteEntity : Aggregate<Guid>
     public TimeOnly? EstimatedDepartureTime { get; set; }
     public TimeOnly? EstimatedArrivalTime { get; set; }
     public int? DurationMinutes { get; set; }
-    public decimal? Price { get; set; }                        
+    public decimal? Price { get; set; }
     public string? Note { get; set; }
     public TourDayActivityEntity TourDayActivity { get; set; } = null!;
-  
+
+    public static TourPlanRouteEntity Create(int order, TransportationType transportationType, string performedBy, string? transportationName = null, string? transportationNote = null, TimeOnly? estimatedDepartureTime = null, TimeOnly? estimatedArrivalTime = null, int? durationMinutes = null, decimal? price = null, string? note = null)
+    {
+        return new TourPlanRouteEntity
+        {
+            Id = Guid.CreateVersion7(),
+            TourPlanRouteId = Guid.CreateVersion7(),
+            Order = order,
+            TransportationType = transportationType,
+            TransportationName = transportationName,
+            TransportationNote = transportationNote,
+            EstimatedDepartureTime = estimatedDepartureTime,
+            EstimatedArrivalTime = estimatedArrivalTime,
+            DurationMinutes = durationMinutes,
+            Price = price,
+            Note = note,
+            CreatedBy = performedBy,
+            LastModifiedBy = performedBy,
+            CreatedOnUtc = DateTimeOffset.UtcNow,
+            LastModifiedOnUtc = DateTimeOffset.UtcNow
+        };
+    }
+
+    public void Update(int order, TransportationType transportationType, string performedBy, string? transportationName = null, string? transportationNote = null, TimeOnly? estimatedDepartureTime = null, TimeOnly? estimatedArrivalTime = null, int? durationMinutes = null, decimal? price = null, string? note = null)
+    {
+        Order = order;
+        TransportationType = transportationType;
+        TransportationName = transportationName;
+        TransportationNote = transportationNote;
+        EstimatedDepartureTime = estimatedDepartureTime;
+        EstimatedArrivalTime = estimatedArrivalTime;
+        DurationMinutes = durationMinutes;
+        Price = price;
+        Note = note;
+        LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
 }
 

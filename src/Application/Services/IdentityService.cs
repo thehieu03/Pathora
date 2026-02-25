@@ -47,14 +47,7 @@ public class IdentityService(
             return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
 
         var hashedPassword = _passwordHasher.HashPassword(request.Password);
-        var userEntity = new UserEntity
-        {
-            Username = request.Username,
-            FullName = request.FullName,
-            Email = request.Email,
-            Password = hashedPassword,
-            CreatedOnUtc = DateTimeOffset.UtcNow
-        };
+        var userEntity = UserEntity.Create(request.Username, request.FullName, request.Email, hashedPassword, request.Email);
 
         await _userRepository.Create(userEntity);
         return Result.Success;
@@ -116,9 +109,7 @@ public class IdentityService(
         if (!isOldPasswordValid)
             return Error.Validation("User.InvalidPassword", "Mật khẩu cũ không đúng");
 
-        userEntity.Password = _passwordHasher.HashPassword(request.NewPassword);
-        userEntity.ForcePasswordChange = false;
-        userEntity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        userEntity.ChangePassword(_passwordHasher.HashPassword(request.NewPassword), _user.Id ?? string.Empty);
         await _userRepository.Update(userEntity);
 
         return Result.Success;

@@ -28,22 +28,15 @@ public class DepartmentService(
 
     public async Task<ErrorOr<Guid>> Create(CreateDepartmentRequest request)
     {
-        var department = new DepartmentEntity
-        {
-            ParentId = request.DepartmentParentId,
-            Name = request.DepartmentName,
-            Level = 1,
-            CreatedOnUtc = DateTimeOffset.UtcNow
-        };
-
+        var level = 1;
         if (request.DepartmentParentId.HasValue)
         {
             var parent = await _departmentRepository.GetByIdAsync(request.DepartmentParentId.Value);
             if (parent is not null)
-            {
-                department.Level = parent.Level + 1;
-            }
+                level = parent.Level + 1;
         }
+
+        var department = DepartmentEntity.Create(request.DepartmentName, level, _user.Id ?? string.Empty, request.DepartmentParentId);
 
         await _departmentRepository.AddAsync(department);
         return department.Id;
@@ -86,21 +79,15 @@ public class DepartmentService(
         if (department is null)
             return Error.NotFound("Department.NotFound", "Phòng ban không tồn tại");
 
-        department.Name = request.DepartmentName;
-        department.ParentId = request.DepartmentParentId;
-        department.LastModifiedOnUtc = DateTimeOffset.UtcNow;
-
+        var level = 1;
         if (request.DepartmentParentId.HasValue)
         {
             var parent = await _departmentRepository.GetByIdAsync(request.DepartmentParentId.Value);
             if (parent is not null)
-                department.Level = parent.Level + 1;
-        }
-        else
-        {
-            department.Level = 1;
+                level = parent.Level + 1;
         }
 
+        department.Update(request.DepartmentName, level, _user.Id ?? string.Empty, request.DepartmentParentId);
         _departmentRepository.Update(department);
         return Result.Success;
     }

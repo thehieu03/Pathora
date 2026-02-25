@@ -26,14 +26,7 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
 
     public async Task<ErrorOr<Success>> CreateAsync(CreatePositionRequest request)
     {
-        var position = new PositionEntity
-        {
-            Name = request.Name,
-            Level = request.Level,
-            Note = request.Note,
-            Type = request.Type,
-            CreatedOnUtc = DateTimeOffset.UtcNow
-        };
+        var position = PositionEntity.Create(request.Name, request.Level, _user.Id ?? string.Empty, request.Note, request.Type);
 
         var result = await _positionRepository.Upsert(position);
         if (result.IsError) return result.Errors;
@@ -49,8 +42,7 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
             return Error.NotFound("Position.NotFound", "Chức vụ không tồn tại");
 
         var position = positionResult.Value;
-        position.IsDeleted = true;
-        position.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        position.SoftDelete(_user.Id ?? string.Empty);
 
         return await _positionRepository.Upsert(position);
     }
@@ -96,11 +88,7 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
             return Error.NotFound("Position.NotFound", "Chức vụ không tồn tại");
 
         var position = positionResult.Value;
-        position.Name = request.Name;
-        position.Level = request.Level;
-        position.Note = request.Note;
-        position.Type = request.Type;
-        position.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        position.Update(request.Name, request.Level, _user.Id ?? string.Empty, request.Note, request.Type);
 
         return await _positionRepository.Upsert(position);
     }
