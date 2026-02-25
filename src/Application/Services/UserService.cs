@@ -48,16 +48,21 @@ public class UserService(
             request.TextSearch,
             request.DepartmentId == Guid.Empty ? null : request.DepartmentId);
 
-        var userVms = new List<UserVm>();
-        foreach (var u in users)
-        {
-            var rolesResult = await _roleRepository.FindByUserId(u.Id.ToString());
-            var roles = rolesResult.IsError ? [] : rolesResult.Value.Select(r => r.Name).ToList();
+        // Batch load tất cả roles trong 1 query, tránh N+1
+        var userIds = users.Select(u => u.Id).ToList();
+        var rolesMapResult = await _roleRepository.FindByUserIds(userIds);
+        var rolesMap = rolesMapResult.IsError
+            ? new Dictionary<Guid, List<RoleEntity>>()
+            : rolesMapResult.Value;
 
-            userVms.Add(new UserVm(
-                u.Id, u.Avatar, u.Username, u.FullName, u.Email,
-                string.Empty, roles, new Dictionary<string, bool>()));
-        }
+        var userVms = users.Select(u =>
+        {
+            var roles = rolesMap.TryGetValue(u.Id, out var r)
+                ? r.Select(x => x.Name).ToList()
+                : new List<string>();
+            return new UserVm(u.Id, u.Avatar, u.Username, u.FullName, u.Email,
+                string.Empty, roles, new Dictionary<string, bool>());
+        }).ToList();
 
         return new PaginatedListWithPermissions<UserVm>(total, userVms, new Dictionary<string, bool>());
     }
@@ -99,11 +104,18 @@ public class UserService(
             request.Avatar,
             forcePasswordChange: true);
 
-        await _userRepository.Create(userEntity);
-
-        if (request.RoleIds.Count > 0)
+        try
         {
-            await _roleRepository.AddUser(userEntity.Id, request.RoleIds);
+            await _unitOfWork.BeginTransactionAsync();
+            await _userRepository.Create(userEntity);
+            if (request.RoleIds.Count > 0)
+                await _roleRepository.AddUser(userEntity.Id, request.RoleIds);
+            await _unitOfWork.CommitTransactionAsync();
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
         }
 
         return userEntity.Id;
@@ -116,13 +128,20 @@ public class UserService(
             return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
 
         userEntity.Update(request.FullName, request.Avatar, _user.Id ?? string.Empty);
-        await _userRepository.Update(userEntity);
 
-        // Update roles
-        await _roleRepository.DeleteUser(request.Id);
-        if (request.RoleIds.Count > 0)
+        try
         {
-            await _roleRepository.AddUser(request.Id, request.RoleIds);
+            await _unitOfWork.BeginTransactionAsync();
+            await _userRepository.Update(userEntity);
+            await _roleRepository.DeleteUser(request.Id);
+            if (request.RoleIds.Count > 0)
+                await _roleRepository.AddUser(request.Id, request.RoleIds);
+            await _unitOfWork.CommitTransactionAsync();
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
         }
 
         return Result.Success;
@@ -147,7 +166,9 @@ public class UserService(
         if (userEntity is null)
             return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
 
-        await _userRepository.SoftDelete(id);
+        // Dùng entity method để đảm bảo LastModifiedBy/LastModifiedOnUtc được set
+        userEntity.SoftDelete(_user.Id ?? string.Empty);
+        await _userRepository.Update(userEntity);
         return Result.Success;
     }
 

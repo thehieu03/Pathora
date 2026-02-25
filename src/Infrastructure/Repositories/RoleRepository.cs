@@ -85,6 +85,22 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
         return roles;
     }
 
+    public async Task<ErrorOr<Dictionary<Guid, List<RoleEntity>>>> FindByUserIds(List<Guid> userIds)
+    {
+        var userRoles = await _context.UserRoles
+            .AsNoTracking()
+            .Where(ur => userIds.Contains(ur.UserId))
+            .Join(_context.Roles.Where(r => !r.IsDeleted),
+                ur => ur.RoleId,
+                r => r.Id,
+                (ur, r) => new { ur.UserId, Role = r })
+            .ToListAsync();
+
+        return userRoles
+            .GroupBy(x => x.UserId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Role).ToList());
+    }
+
     public async Task<ErrorOr<List<RoleEntity>>> FindAll(string? roleName = null, RoleStatus status = RoleStatus.Active, int pageNumber = 0, int pageSize = 0)
     {
         var query = _context.Roles.AsNoTracking().Where(r => !r.IsDeleted && r.Status == status);
