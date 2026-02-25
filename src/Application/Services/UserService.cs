@@ -43,6 +43,7 @@ public class UserService(
             request.DepartmentId == Guid.Empty ? null : request.DepartmentId,
             request.PageNumber,
             request.PageSize);
+
         var total = await _userRepository.CountAll(
             request.TextSearch,
             request.DepartmentId == Guid.Empty ? null : request.DepartmentId);

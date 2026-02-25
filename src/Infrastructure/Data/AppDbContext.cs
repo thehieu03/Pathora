@@ -32,6 +32,8 @@ public class AppDbContext : DbContext
     public DbSet<MailEntity> Mails => Set<MailEntity>();
     public DbSet<LogError> logErrors => Set<LogError>();
     public DbSet<RoleFunctionEntity> RoleFunctions => Set<RoleFunctionEntity>();
+    public DbSet<RegisterEntity> Registers => Set<RegisterEntity>();
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

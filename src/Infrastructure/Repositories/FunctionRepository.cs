@@ -21,7 +21,7 @@ public class FunctionRepository(AppDbContext context) : IFunctionRepository
             .ThenBy(f => f.Order)
             .ToListAsync();
     }
-    public Task<ErrorOr<List<Function>>> FindUserFunctions(string userId)
+    public async Task<ErrorOr<List<Function>>> FindUserFunctions(string userId)
     {
         if (!Guid.TryParse(userId, out var userGuid))
         {
