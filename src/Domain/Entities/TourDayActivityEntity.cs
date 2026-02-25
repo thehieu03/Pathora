@@ -19,4 +19,37 @@ public sealed class TourDayActivityEntity : Aggregate<Guid>
 
     // Accommodation
     public TourPlanAccommodationEntity? Accommodation { get; set; } = null!;
+
+    public static TourDayActivityEntity Create(Guid tourDayId, int order, TourDayActivityType activityType, string title, string performedBy, string? description = null, string? note = null, TimeOnly? startTime = null, TimeOnly? endTime = null)
+    {
+        return new TourDayActivityEntity
+        {
+            Id = Guid.CreateVersion7(),
+            TourDayId = tourDayId,
+            Order = order,
+            ActivityType = activityType,
+            Title = title,
+            Description = description,
+            Note = note,
+            StartTime = startTime,
+            EndTime = endTime,
+            CreatedBy = performedBy,
+            LastModifiedBy = performedBy,
+            CreatedOnUtc = DateTimeOffset.UtcNow,
+            LastModifiedOnUtc = DateTimeOffset.UtcNow
+        };
+    }
+
+    public void Update(int order, TourDayActivityType activityType, string title, string performedBy, string? description = null, string? note = null, TimeOnly? startTime = null, TimeOnly? endTime = null)
+    {
+        Order = order;
+        ActivityType = activityType;
+        Title = title;
+        Description = description;
+        Note = note;
+        StartTime = startTime;
+        EndTime = endTime;
+        LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
 }

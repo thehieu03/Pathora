@@ -31,14 +31,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
 
     public async Task<ErrorOr<Guid>> Create(CreateRoleRequest request)
     {
-        var role = new RoleEntity
-        {
-            Name = request.Name,
-            Description = request.Description,
-            Type = request.Type,
-            Status = RoleStatus.Active,
-            CreatedOnUtc = DateTimeOffset.UtcNow
-        };
+        var role = RoleEntity.Create(request.Name, request.Description, request.Type, _user.Id ?? string.Empty);
 
         var result = await _roleRepository.Create(role);
         if (result.IsError) return result.Errors;
@@ -54,11 +47,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
             return Error.NotFound("Role.NotFound", "Role không tồn tại");
 
         var role = roleResult.Value;
-        role.Name = request.Name;
-        role.Description = request.Description;
-        role.Status = request.Status;
-        role.Type = request.Type;
-        role.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        role.Update(request.Name, request.Description, request.Type, request.Status, _user.Id ?? string.Empty);
 
         return await _roleRepository.Update(role);
     }
@@ -71,8 +60,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
             return Error.NotFound("Role.NotFound", "Role không tồn tại");
 
         var role = roleResult.Value;
-        role.IsDeleted = true;
-        role.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        role.SoftDelete(_user.Id ?? string.Empty);
         return await _roleRepository.Update(role);
     }
 

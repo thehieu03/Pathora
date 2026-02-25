@@ -7,4 +7,14 @@ public sealed class ImageEntity
     public string? FileName { get; set; }
     public string? PublicURL { get; set; }
 
+    public static ImageEntity Create(string fileId, string originalFileName, string fileName, string publicURL)
+    {
+        return new ImageEntity
+        {
+            FileId = fileId,
+            OriginalFileName = originalFileName,
+            FileName = fileName,
+            PublicURL = publicURL
+        };
+    }
 }

@@ -9,6 +9,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
 <PackageReference Include="MediatR" />
     <PackageReference Include="ZiggyCreatures.FusionCache" />
+    <PackageReference Include="AutoMapper" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 using Application.Common.Contracts;
+using Application.Common.Interfaces;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
 using Domain.Common.Repositories;
@@ -16,25 +17,22 @@ public interface ITourService
     Task<ErrorOr<TourEntity>> GetDetail(Guid id);
 }
 
-public class TourService(ITourRepository tourRepository) : ITourService
+public class TourService(ITourRepository tourRepository, IUser user) : ITourService
 {
     private readonly ITourRepository _tourRepository = tourRepository;
+    private readonly IUser _user = user;
 
     public async Task<ErrorOr<Guid>> Create(CreateTourCommand request)
     {
-        var tour = new TourEntity
-        {
-            Id = Guid.CreateVersion7(),
-            TourCode = request.TourCode,
-            TourName = request.TourName,
-            ShortDescription = request.ShortDescription,
-            LongDescription = request.LongDescription,
-            SEOTitle = request.SEOTitle,
-            SEODescription = request.SEODescription,
-            Status = request.Status,
-            Thumbnail = new ImageEntity(),
-            CreatedOnUtc = DateTimeOffset.UtcNow
-        };
+        var tour = TourEntity.Create(
+            request.TourCode,
+            request.TourName,
+            request.ShortDescription,
+            request.LongDescription,
+            _user.Id ?? string.Empty,
+            request.Status,
+            request.SEOTitle,
+            request.SEODescription);
 
         await _tourRepository.Create(tour);
         return tour.Id;
@@ -46,14 +44,15 @@ public class TourService(ITourRepository tourRepository) : ITourService
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
 
-        tour.TourCode = request.TourCode;
-        tour.TourName = request.TourName;
-        tour.ShortDescription = request.ShortDescription;
-        tour.LongDescription = request.LongDescription;
-        tour.SEOTitle = request.SEOTitle;
-        tour.SEODescription = request.SEODescription;
-        tour.Status = request.Status;
-        tour.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        tour.Update(
+            request.TourCode,
+            request.TourName,
+            request.ShortDescription,
+            request.LongDescription,
+            request.Status,
+            _user.Id ?? string.Empty,
+            request.SEOTitle,
+            request.SEODescription);
 
         await _tourRepository.Update(tour);
         return Result.Success;
