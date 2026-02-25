@@ -1,3 +1,4 @@
+using Domain.Constant;
 using Domain.Entities;
 using Domain.Mails;
 using Infrastructure.Data.Configurations;
@@ -29,6 +30,8 @@ public class AppDbContext : DbContext
     public DbSet<TourPlanLocationEntity> TourPlanLocations => Set<TourPlanLocationEntity>();
     public DbSet<TourPlanRouteEntity> TourPlanRoutes => Set<TourPlanRouteEntity>();
     public DbSet<MailEntity> Mails => Set<MailEntity>();
+    public DbSet<LogError> logErrors => Set<LogError>();
+    public DbSet<RoleFunctionEntity> RoleFunctions => Set<RoleFunctionEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

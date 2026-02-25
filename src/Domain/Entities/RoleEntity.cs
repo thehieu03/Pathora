@@ -1,4 +1,5 @@
 using Domain.Abstractions;
+using Domain.Constant;
 
 namespace Domain.Entities;
 
