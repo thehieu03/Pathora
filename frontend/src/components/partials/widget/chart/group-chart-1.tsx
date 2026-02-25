@@ -1,5 +1,5 @@
 import React from "react";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 
 const shapeLine1 = {
   series: [

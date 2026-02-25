@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5000";
+const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
 
 const getCookie = (name: string): string | null => {
   if (typeof window === "undefined") return null;

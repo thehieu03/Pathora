@@ -8,7 +8,7 @@ import { ToastPosition } from "react-toastify";
 import { showErrorToast } from "./showErrorToast";
 
 const API_BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_GATEWAY || "not_config";
+  process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
 
 interface ToastConfig {
   position: ToastPosition;

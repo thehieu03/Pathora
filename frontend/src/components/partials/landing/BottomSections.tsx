@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Button, Card } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";

@@ -1,5 +1,5 @@
 import React from "react";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 import { colors } from "@/constant/data";
 import useDarkMode from "@/hooks/useDarkMode";
 const AccountPayable = ({ height = 300 }) => {

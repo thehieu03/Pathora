@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 import useDarkMode from "@/hooks/useDarkMode";
 import useRtl from "@/hooks/useRtl";
 import { reportService } from "@/services/reportService";

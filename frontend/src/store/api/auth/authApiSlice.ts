@@ -35,10 +35,29 @@ export interface RefreshRequest {
   refreshToken: string;
 }
 
+export interface RegisterRequest {
+  fullName: string;
+  username: string;
+  email: string;
+  password: string;
+}
+
 // ─── RTK Query endpoints ───────────────────────────────────────────────────
 
 export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    /**
+     * POST /api/auth/register
+     * Register a new user account.
+     */
+    register: builder.mutation<ApiSharedResponse<string>, RegisterRequest>({
+      query: (body) => ({
+        url: "/api/auth/register",
+        method: "POST",
+        body,
+      }),
+    }),
+
     /**
      * POST /api/auth/login
      * On success: stores tokens in cookies, fetches user info, updates Redux.
@@ -63,7 +82,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
           const result = await dispatch(
             authApiSlice.endpoints.getUserInfo.initiate(undefined, {
               forceRefetch: true,
-            })
+            }),
           );
           if ("data" in result && result.data?.data) {
             dispatch(setUser(result.data.data));
@@ -97,31 +116,32 @@ export const authApiSlice = apiSlice.injectEndpoints({
      * POST /api/auth/refresh
      * Rotates the access/refresh token pair and updates cookies + Redux.
      */
-    refreshToken: builder.mutation<ApiSharedResponse<TokenData>, RefreshRequest>(
-      {
-        query: (body) => ({
-          url: "/api/auth/refresh",
-          method: "POST",
-          body,
-        }),
-        async onQueryStarted(_args, { dispatch, queryFulfilled }) {
-          try {
-            const { data } = await queryFulfilled;
-            const tokens = data.data;
-            if (!tokens) return;
+    refreshToken: builder.mutation<
+      ApiSharedResponse<TokenData>,
+      RefreshRequest
+    >({
+      query: (body) => ({
+        url: "/api/auth/refresh",
+        method: "POST",
+        body,
+      }),
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const tokens = data.data;
+          if (!tokens) return;
 
-            setCookie("access_token", tokens.accessToken);
-            setCookie("refresh_token", tokens.refreshToken, DAY_SECONDS * 7);
-            dispatch(setToken(tokens.accessToken));
-          } catch {
-            // token expired — force logout
-            removeCookie("access_token");
-            removeCookie("refresh_token");
-            dispatch(logOut());
-          }
-        },
-      }
-    ),
+          setCookie("access_token", tokens.accessToken);
+          setCookie("refresh_token", tokens.refreshToken, DAY_SECONDS * 7);
+          dispatch(setToken(tokens.accessToken));
+        } catch {
+          // token expired — force logout
+          removeCookie("access_token");
+          removeCookie("refresh_token");
+          dispatch(logOut());
+        }
+      },
+    }),
 
     /**
      * POST /api/auth/logout
@@ -152,6 +172,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useLoginMutation,
+  useRegisterMutation,
   useGetUserInfoQuery,
   useRefreshTokenMutation,
   useLogoutMutation,

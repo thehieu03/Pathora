@@ -1,8 +1,13 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Button, Icon } from "@/components/ui";
 import { useTranslation } from "react-i18next";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+} from "@/store/api/auth/authApiSlice";
+import { toast } from "react-toastify";
 
 const GOOGLE_ICON =
   "https://www.figma.com/api/mcp/asset/6af47520-666a-4e1d-bb47-97db509f8848";
@@ -42,8 +47,7 @@ const ModalShell = ({
       className="relative bg-white rounded-3xl px-6 sm:px-10 py-8 shadow-[0px_4px_20px_0px_rgba(255,255,255,0.25)] w-[calc(100%-32px)] max-w-md max-h-[90vh] overflow-y-auto"
       role="dialog"
       aria-modal="true"
-      aria-label={ariaLabel}
-    >
+      aria-label={ariaLabel}>
       {children}
     </div>
   </div>
@@ -72,8 +76,7 @@ const InputField = ({
   <div className="flex flex-col gap-2.5">
     <label
       htmlFor={id ?? name}
-      className="font-semibold text-base sm:text-lg text-[#333]/60"
-    >
+      className="font-semibold text-base sm:text-lg text-[#333]/60">
       {label}
     </label>
     <div className="relative">
@@ -104,15 +107,40 @@ const SignUpView = ({
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    username: "",
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [register, { isLoading }] = useRegisterMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: integrate with auth API
-    console.log("Sign Up:", form);
+    if (!agreed) {
+      toast.error(t("landing.auth.mustAgreeToTerms"));
+      return;
+    }
+
+    try {
+      await register({
+        username: form.username,
+        fullName: form.name,
+        email: form.email,
+        password: form.password,
+      }).unwrap();
+
+      toast.success(t("landing.auth.registrationSuccess"));
+      goToLogin();
+    } catch (err: unknown) {
+      // Error is handled by RTK Query / middleware generally,
+      // but specific form errors could be shown here
+      console.error(err);
+      toast.error(t("landing.auth.registrationFailed"));
+    }
   };
 
   return (
@@ -126,14 +154,21 @@ const SignUpView = ({
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label={t("landing.auth.close")}
-        >
+          aria-label={t("landing.auth.close")}>
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </button>
       </div>
 
       {/* Fields */}
       <div className="flex flex-col gap-5 w-full">
+        <InputField
+          id="signup-username"
+          label={t("landing.auth.username")}
+          name="username"
+          value={form.username}
+          onChange={handleChange}
+          placeholder={t("landing.auth.enterUsername")}
+        />
         <InputField
           id="signup-name"
           label={t("landing.auth.nameAndSurname")}
@@ -168,8 +203,7 @@ const SignUpView = ({
                 showPassword
                   ? t("landing.auth.hidePassword")
                   : t("landing.auth.showPassword")
-              }
-            >
+              }>
               <Icon
                 icon={
                   showPassword
@@ -207,16 +241,18 @@ const SignUpView = ({
       <div className="flex flex-col gap-1.5 items-center w-full">
         <Button
           type="submit"
-          text={t("common.signUp")}
-          className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors"
+          disabled={isLoading}
+          icon={isLoading ? "heroicons-outline:arrow-path" : undefined}
+          iconClass={isLoading ? "animate-spin" : undefined}
+          text={isLoading ? t("common.processing") : t("common.signUp")}
+          className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
         />
         <span className="text-[#333]/40 text-base text-center">
           {t("landing.auth.or")}
         </span>
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors"
-        >
+          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
           <Image
             src={GOOGLE_ICON}
             alt={t("landing.auth.google")}
@@ -235,8 +271,7 @@ const SignUpView = ({
         <button
           type="button"
           className="font-semibold text-landing-accent hover:underline"
-          onClick={goToLogin}
-        >
+          onClick={goToLogin}>
           {t("landing.auth.logIn")}
         </button>
       </p>
@@ -257,14 +292,20 @@ const LoginView = ({
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: integrate with auth API
-    console.log("Login:", form);
+    try {
+      await login({ email: form.email, password: form.password }).unwrap();
+      toast.success(t("landing.auth.loginSuccess"));
+      onClose();
+    } catch {
+      // Global error toast is handled by apiSlice / middleware
+    }
   };
 
   return (
@@ -278,8 +319,7 @@ const LoginView = ({
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label={t("landing.auth.close")}
-        >
+          aria-label={t("landing.auth.close")}>
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </button>
       </div>
@@ -313,8 +353,7 @@ const LoginView = ({
                   showPassword
                     ? t("landing.auth.hidePassword")
                     : t("landing.auth.showPassword")
-                }
-              >
+                }>
                 <Icon
                   icon={
                     showPassword
@@ -329,8 +368,7 @@ const LoginView = ({
           <button
             type="button"
             onClick={goToForgot}
-            className="self-end text-sm text-[#333]/60 hover:text-[#333] transition-colors mt-1"
-          >
+            className="self-end text-sm text-[#333]/60 hover:text-[#333] transition-colors mt-1">
             {t("landing.auth.forgotYourPassword")}
           </button>
         </div>
@@ -340,16 +378,18 @@ const LoginView = ({
       <div className="flex flex-col gap-1.5 items-center w-full">
         <Button
           type="submit"
-          text={t("common.signIn")}
-          className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors"
+          disabled={isLoading}
+          icon={isLoading ? "heroicons-outline:arrow-path" : undefined}
+          iconClass={isLoading ? "animate-spin" : undefined}
+          text={isLoading ? t("common.processing") : t("common.signIn")}
+          className="w-full bg-landing-accent text-white font-semibold text-lg sm:text-xl rounded-full px-6 py-2.5 text-center hover:bg-landing-accent-hover transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
         />
         <span className="text-[#333]/40 text-base text-center">
           {t("landing.auth.or")}
         </span>
         <button
           type="button"
-          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors"
-        >
+          className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
           <Image
             src={GOOGLE_ICON}
             alt={t("landing.auth.google")}
@@ -368,8 +408,7 @@ const LoginView = ({
         <button
           type="button"
           className="font-semibold text-landing-accent hover:underline"
-          onClick={goToSignUp}
-        >
+          onClick={goToSignUp}>
           {t("common.signUp")}
         </button>
       </p>
@@ -410,8 +449,7 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
         <button
           type="button"
           onClick={goToLogin}
-          className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm"
-        >
+          className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm">
           <Icon icon="heroicons-outline:arrow-left" className="w-4 h-4" />
           {t("landing.auth.backToLogin")}
         </button>
@@ -458,8 +496,7 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
       <button
         type="button"
         onClick={goToLogin}
-        className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm"
-      >
+        className="flex items-center gap-2 text-[#333]/60 hover:text-[#333] transition-colors text-sm">
         <Icon icon="heroicons-outline:arrow-left" className="w-4 h-4" />
         {t("landing.auth.backToLogin")}
       </button>
@@ -543,8 +580,7 @@ export const AuthModal = ({
       onClose={handleClose}
       ariaLabel={ariaLabels[view]}
       closeLabel={t("landing.auth.closeModal")}
-      dialogRef={dialogRef}
-    >
+      dialogRef={dialogRef}>
       {view === "signup" && (
         <SignUpView onClose={handleClose} goToLogin={() => setView("login")} />
       )}

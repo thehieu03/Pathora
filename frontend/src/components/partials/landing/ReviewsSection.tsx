@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Button } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
 import { useTranslation } from "react-i18next";

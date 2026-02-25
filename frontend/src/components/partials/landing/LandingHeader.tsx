@@ -1,13 +1,21 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { usePathname } from "next/navigation";
 import { Button, Icon } from "@/components/ui";
 import { AuthModal } from "./AuthModal";
 import { useTranslation } from "react-i18next";
 import useMobileMenu from "@/hooks/useMobileMenu";
 import useWidth from "@/hooks/useWidth";
+import type { RootState } from "@/store";
+import { useSelector } from "react-redux";
+import { FiGlobe, FiChevronDown, FiCheck } from "react-icons/fi";
+
+const languages = [
+  { code: "en", label: "English" },
+  { code: "vi", label: "Tiếng Việt" },
+];
 
 const LOGO =
   "https://www.figma.com/api/mcp/asset/b9cd8d76-4d7f-43c8-b45b-122fe4f71260";
@@ -59,6 +67,7 @@ const MobileSidebar = ({
   dialogId: string;
 }) => {
   const { t, i18n } = useTranslation();
+  const { isAuth, user } = useSelector((state: RootState) => state.auth);
   const [expandedItem, setExpandedItem] = useState<string | null>(
     "landing.sidebar.userProfile",
   );
@@ -116,7 +125,7 @@ const MobileSidebar = ({
   const menuTitleId = `${dialogId}-title`;
 
   return (
-    <div className="fixed inset-0 z-100 md:hidden">
+    <div className="fixed inset-0 z-100 lg:hidden">
       {/* Backdrop */}
       <button
         type="button"
@@ -133,8 +142,7 @@ const MobileSidebar = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby={menuTitleId}
-        tabIndex={-1}
-      >
+        tabIndex={-1}>
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
           <Button
@@ -150,20 +158,22 @@ const MobileSidebar = ({
         </div>
 
         {/* User info */}
-        <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-          <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
-            <Icon
-              icon="heroicons-solid:user-circle"
-              className="w-full h-full text-gray-400"
-            />
+        {isAuth && (
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+            <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
+              <Icon
+                icon="heroicons-solid:user-circle"
+                className="w-full h-full text-gray-400"
+              />
+            </div>
+            <div>
+              <p className="text-sm font-normal text-gray-900">
+                {t("landing.sidebar.user")}
+              </p>
+              <p className="text-sm text-gray-500">{user?.email}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-normal text-gray-900">
-              {t("landing.sidebar.user")}
-            </p>
-            <p className="text-sm text-gray-500">user@gmail.com</p>
-          </div>
-        </div>
+        )}
 
         {/* Nav links */}
         <nav className="flex-1 overflow-y-auto py-2" aria-label="Sidebar">
@@ -181,8 +191,7 @@ const MobileSidebar = ({
                     className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent focus-visible:ring-inset"
                     aria-label={t(item.labelKey)}
                     aria-expanded={expandedItem === item.labelKey}
-                    aria-controls={`sidebar-submenu-${item.labelKey.replaceAll(".", "-")}`}
-                  >
+                    aria-controls={`sidebar-submenu-${item.labelKey.replaceAll(".", "-")}`}>
                     <Icon
                       icon={item.icon}
                       className="w-6 h-6 text-gray-600 shrink-0"
@@ -200,15 +209,13 @@ const MobileSidebar = ({
                   {expandedItem === item.labelKey && (
                     <div
                       id={`sidebar-submenu-${item.labelKey.replaceAll(".", "-")}`}
-                      className="pl-12"
-                    >
+                      className="pl-12">
                       {item.children.map((child) => (
                         <Link
                           key={child.labelKey}
                           href={child.href}
                           onClick={onClose}
-                          className="block px-4 py-2.5 text-base text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent"
-                        >
+                          className="block px-4 py-2.5 text-base text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
                           {t(child.labelKey)}
                         </Link>
                       ))}
@@ -219,8 +226,7 @@ const MobileSidebar = ({
                 <Link
                   href={item.href!}
                   onClick={onClose}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent"
-                >
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
                   <Icon
                     icon={item.icon}
                     className="w-6 h-6 text-gray-600 shrink-0"
@@ -249,8 +255,7 @@ const MobileSidebar = ({
                 } min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent`}
                 onClick={() => i18n.changeLanguage("en")}
                 aria-pressed={normalizedLanguage === "en"}
-                aria-label="Change language to English"
-              >
+                aria-label="Change language to English">
                 EN
               </button>
               <button
@@ -262,8 +267,7 @@ const MobileSidebar = ({
                 } min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent`}
                 onClick={() => i18n.changeLanguage("vi")}
                 aria-pressed={normalizedLanguage === "vi"}
-                aria-label="Change language to Vietnamese"
-              >
+                aria-label="Change language to Vietnamese">
                 VI
               </button>
             </div>
@@ -271,18 +275,20 @@ const MobileSidebar = ({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 p-4 border-t border-gray-100">
-          <Button
-            onClick={() => onOpenAuth("login")}
-            text={t("common.signIn")}
-            className="flex-1 min-h-11 px-4 py-2.5 text-center text-gray-900 border border-gray-300 rounded-full font-medium bg-white hover:bg-gray-50 transition-colors text-sm"
-          />
-          <Button
-            onClick={() => onOpenAuth("signup")}
-            text={t("common.signUp")}
-            className="flex-1 min-h-11 px-4 py-2.5 text-center bg-landing-accent text-white rounded-full font-medium hover:bg-landing-accent-hover transition-colors text-sm"
-          />
-        </div>
+        {!isAuth && (
+          <div className="flex gap-3 p-4 border-t border-gray-100">
+            <Button
+              onClick={() => onOpenAuth("login")}
+              text={t("common.signIn")}
+              className="flex-1 min-h-11 px-4 py-2.5 text-center text-gray-900 border border-gray-300 rounded-full font-medium bg-white hover:bg-gray-50 transition-colors text-sm"
+            />
+            <Button
+              onClick={() => onOpenAuth("signup")}
+              text={t("common.signUp")}
+              className="flex-1 min-h-11 px-4 py-2.5 text-center bg-landing-accent text-white rounded-full font-medium hover:bg-landing-accent-hover transition-colors text-sm"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -291,10 +297,11 @@ const MobileSidebar = ({
 /* ── Header ────────────────────────────────────────────────── */
 export const LandingHeader = () => {
   const { t, i18n } = useTranslation();
+  const { isAuth } = useSelector((state: RootState) => state.auth);
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useMobileMenu();
   const { width, breakpoints } = useWidth();
-  const mdBreakpoint = breakpoints.md;
+  const lgBreakpoint = breakpoints.lg;
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState<"signup" | "login" | "forgot">(
     "signup",
@@ -304,8 +311,6 @@ export const LandingHeader = () => {
   const normalizedLanguage = (i18n.resolvedLanguage || i18n.language || "en")
     .toLowerCase()
     .split("-")[0];
-  const switchLanguage = () =>
-    i18n.changeLanguage(normalizedLanguage === "vi" ? "en" : "vi");
 
   const openAuth = (view: "signup" | "login" | "forgot") => {
     setAuthView(view);
@@ -321,21 +326,22 @@ export const LandingHeader = () => {
   }, [mobileMenuOpen]);
 
   useEffect(() => {
-    if (mobileMenuOpen && width >= mdBreakpoint) {
+    if (mobileMenuOpen && width >= lgBreakpoint) {
       setMobileMenuOpen(false);
     }
-  }, [mobileMenuOpen, width, mdBreakpoint, setMobileMenuOpen]);
+  }, [mobileMenuOpen, width, lgBreakpoint, setMobileMenuOpen]);
 
   return (
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-landing-heading focus:shadow-lg"
-      >
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-landing-heading focus:shadow-lg">
         Skip to main content
       </a>
-      <header className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-4 md:px-12 py-4 md:py-5 min-h-17.5 md:h-32 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm">
-        <Link href="/" className="flex items-center shrink-0">
+      <header className="absolute top-0 left-0 right-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 lg:px-12 py-4 md:py-5 min-h-17.5 md:h-32 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm">
+        <Link
+          href="/"
+          className="flex items-center shrink-0 justify-self-start">
           <div className="relative h-12 md:h-25 w-28 md:w-34">
             <Image
               src={LOGO}
@@ -349,9 +355,8 @@ export const LandingHeader = () => {
 
         {/* Desktop / iPad nav — visible from md (768 px) */}
         <nav
-          className="hidden md:flex items-center gap-6 lg:gap-10"
-          aria-label="Main navigation"
-        >
+          className="hidden lg:flex items-center gap-2 xl:gap-3 justify-self-center"
+          aria-label="Main navigation">
           {navLinks.map((link) => {
             const isActive =
               link.href === "/"
@@ -362,48 +367,77 @@ export const LandingHeader = () => {
               <Link
                 key={link.labelKey}
                 href={link.href}
-                className={`text-white font-semibold text-base lg:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded ${
+                className={`inline-flex w-28 xl:w-36 justify-center overflow-hidden whitespace-nowrap text-ellipsis text-white font-semibold text-sm xl:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded ${
                   isActive ? "border-b-2 border-landing-accent" : ""
                 }`}
-                aria-current={isActive ? "page" : undefined}
-              >
+                aria-current={isActive ? "page" : undefined}>
                 {t(link.labelKey)}
               </Link>
             );
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2 lg:gap-3">
-          <Button
-            onClick={switchLanguage}
-            className="flex items-center gap-1 text-white/60 font-semibold text-base lg:text-[20px] hover:text-white transition-colors bg-transparent"
-            icon="heroicons-outline:chevron-down"
-            iconPosition="right"
-            text={normalizedLanguage.toUpperCase()}
-            ariaLabel={`${t("landing.a11y.changeLanguage")} (${normalizedLanguage.toUpperCase()})`}
-          />
-          <Button
-            onClick={() => openAuth("login")}
-            text={t("common.signIn")}
-            className="px-4 lg:px-5 py-2 lg:py-2.5 text-white font-semibold text-base lg:text-[20px] rounded-full hover:bg-white/10 transition-colors bg-transparent"
-          />
-          <Button
-            onClick={() => openAuth("signup")}
-            text={t("common.signUp")}
-            className="px-5 lg:px-6 py-2 lg:py-2.5 bg-landing-accent text-white font-semibold text-base lg:text-[20px] rounded-full hover:bg-landing-accent-hover transition-colors"
-          />
+        <div className="hidden lg:flex items-center gap-2 xl:gap-3 justify-self-end">
+          <div className="group relative">
+            <button
+              type="button"
+              suppressHydrationWarning
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-all bg-transparent"
+              aria-label={`${t("landing.a11y.changeLanguage")} (${normalizedLanguage.toUpperCase()})`}
+              aria-haspopup="true"
+            >
+              <FiGlobe suppressHydrationWarning className="w-4 h-4 xl:w-5 xl:h-5" />
+              <span className="text-sm xl:text-base font-semibold">
+                {normalizedLanguage.toUpperCase()}
+              </span>
+              <FiChevronDown suppressHydrationWarning className="w-3.5 h-3.5 transition-transform group-hover:rotate-180" />
+            </button>
+            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute right-0 top-full mt-2 min-w-40 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 py-1.5 overflow-hidden z-50">
+              {languages.map((lang) => {
+                const isActive = lang.code === normalizedLanguage;
+                return (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    onClick={() => i18n.changeLanguage(lang.code)}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                      isActive
+                        ? "bg-landing-accent/10 text-landing-accent font-semibold"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
+                  >
+                    <span>{lang.label}</span>
+                    {isActive && <FiCheck suppressHydrationWarning className="w-4 h-4" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          {!isAuth && (
+            <>
+              <Button
+                onClick={() => openAuth("login")}
+                text={t("common.signIn")}
+                className="w-30 xl:w-36 px-4 xl:px-5 py-2 xl:py-2.5 text-white font-semibold text-sm xl:text-[20px] rounded-full hover:bg-white/10 transition-colors bg-transparent"
+              />
+              <Button
+                onClick={() => openAuth("signup")}
+                text={t("common.signUp")}
+                className="w-30 xl:w-36 px-5 xl:px-6 py-2 xl:py-2.5 bg-landing-accent text-white font-semibold text-sm xl:text-[20px] rounded-full hover:bg-landing-accent-hover transition-colors"
+              />
+            </>
+          )}
         </div>
 
-        {/* Hamburger — mobile only (< 768 px) */}
+        {/* Hamburger — mobile/tablet (< 1024 px) */}
         <button
           ref={menuButtonRef}
           type="button"
-          className="md:hidden text-white bg-transparent p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="lg:hidden justify-self-end text-white bg-transparent p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           onClick={() => setMobileMenuOpen(true)}
           aria-label={t("landing.a11y.openMenu")}
           aria-expanded={mobileMenuOpen}
-          aria-controls="landing-mobile-menu"
-        >
+          aria-controls="landing-mobile-menu">
           <Icon icon="heroicons-outline:menu" className="w-7 h-7" />
         </button>
       </header>

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Icon } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -90,23 +90,23 @@ const TripCardContent = ({
       <div className="p-5 flex flex-col gap-2 flex-1">
         <div className="flex items-center gap-1 text-landing-body text-base">
           <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
-          <span className="text-sm">{location}</span>
+          <span className="text-sm truncate">{location}</span>
         </div>
-        <h3 className="text-landing-heading font-medium text-[15px] leading-snug">
+        <h3 className="h-11 overflow-hidden text-landing-heading font-medium text-[15px] leading-snug">
           {title}
         </h3>
         <StarRating count={rating} />
       </div>
 
       <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
-        <div className="flex items-center gap-1 text-landing-heading text-xs">
+        <div className="flex w-24 items-center gap-1 text-landing-heading text-xs">
           <Icon
             icon="heroicons-outline:calendar"
             className="w-4 h-4 text-gray-500"
           />
-          <span>{t("landing.featured.days", { count: days })}</span>
+          <span className="truncate">{t("landing.featured.days", { count: days })}</span>
         </div>
-        <div className="text-landing-heading text-sm">
+        <div className="w-26 text-right text-landing-heading text-sm">
           <span className="text-gray-500 text-xs font-normal">
             {t("landing.featured.from")}{" "}
           </span>
@@ -124,7 +124,7 @@ export const FeaturedTripsSection = () => {
     <SectionContainer>
       <section className="w-full">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+          <h2 className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.featured.title")}
           </h2>
         </div>

@@ -4,7 +4,7 @@ import { teamData } from "@/constant/table-data";
 import Icon from "@/components/ui/Icon";
 import Dropdown from "@/components/ui/Dropdown";
 import { MenuItem } from "@headlessui/react";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 import { colors } from "@/constant/data";
 
 import {

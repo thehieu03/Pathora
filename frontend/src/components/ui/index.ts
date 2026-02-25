@@ -1,4 +1,5 @@
 export { default as Accordion } from "./Accordion";
+export { default as Chart } from "./Chart";
 export { default as Alert } from "./Alert";
 export { default as Badge } from "./Badge";
 export { default as Breadcrumbs } from "./Breadcrumbs";

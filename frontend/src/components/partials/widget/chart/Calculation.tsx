@@ -1,6 +1,6 @@
 import React from "react";
 import { colors } from "@/constant/data";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 import useDarkMode from "@/hooks/useDarkMode";
 
 const Calculation = ({ height = 335 }) => {

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Button, Icon } from "@/components/ui";
 import { useTranslation } from "react-i18next";
 
@@ -101,8 +101,7 @@ const CalendarDropdown = ({
           type="button"
           onClick={prevMonth}
           aria-label={previousMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100"
-        >
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100">
           <Icon
             icon="heroicons-outline:chevron-left"
             className="w-4 h-4 text-gray-600"
@@ -115,8 +114,7 @@ const CalendarDropdown = ({
           type="button"
           onClick={nextMonth}
           aria-label={nextMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100"
-        >
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100">
           <Icon
             icon="heroicons-outline:chevron-right"
             className="w-4 h-4 text-gray-600"
@@ -129,8 +127,7 @@ const CalendarDropdown = ({
         {resolvedWeekdayLabels.map((wd) => (
           <span
             key={wd}
-            className="text-[11px] text-center text-gray-400 font-medium"
-          >
+            className="text-[11px] text-center text-gray-400 font-medium">
             {wd}
           </span>
         ))}
@@ -150,8 +147,7 @@ const CalendarDropdown = ({
               isSelected(day)
                 ? "bg-landing-accent text-white font-bold"
                 : "text-gray-700 hover:bg-gray-100"
-            }`}
-          >
+            }`}>
             {day}
           </button>
         ))}
@@ -180,8 +176,7 @@ const ListDropdown = ({
           value === item
             ? "bg-landing-accent/10 text-landing-accent font-medium"
             : "text-gray-700 hover:bg-gray-50"
-        }`}
-      >
+        }`}>
         {item}
       </button>
     ))}
@@ -210,8 +205,7 @@ const NumberDropdown = ({
           value === num
             ? "bg-landing-accent/10 text-landing-accent font-medium"
             : "text-gray-700 hover:bg-gray-50"
-        }`}
-      >
+        }`}>
         {num} {num === 1 ? singleLabel : pluralLabel}
       </button>
     ))}
@@ -240,34 +234,32 @@ const SelectField = ({
   displayValue,
   children,
 }: SelectFieldProps) => (
-  <div className="relative w-full md:flex-[1_1_0] md:min-w-0">
+  <div className="relative w-full h-full">
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
       aria-haspopup={children ? "listbox" : undefined}
-      className={`flex items-start gap-2 md:gap-3 p-3 md:p-4 min-h-11 bg-white w-full text-left overflow-hidden ${rounded ?? ""} ${
+      className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white w-full text-left overflow-hidden ${rounded ?? ""} ${
         isOpen ? "ring-2 ring-landing-accent/30" : ""
-      }`}
-    >
-      <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 mt-0.5 flex items-center justify-center">
+      }`}>
+      <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 flex items-center justify-center">
         <Image src={icon} alt="" fill sizes="24px" className="object-contain" />
       </div>
-      <div className="flex min-w-0 flex-col gap-1 md:gap-1.5">
-        <span className="text-[#333] font-semibold text-xs md:text-base leading-none truncate">
+      <div className="flex min-w-0 flex-col gap-0.5 md:gap-1 w-full">
+        <span className="text-[#333] font-semibold text-xs md:text-sm leading-tight truncate w-full block">
           {label}
         </span>
-        <div className="flex min-w-0 items-center gap-2 md:gap-4 opacity-70">
+        <div className="flex min-w-0 items-center justify-between gap-1 w-full opacity-70">
           <span
-            className={`text-[10px] md:text-sm font-normal truncate ${
+            className={`text-[10px] md:text-xs font-normal truncate flex-1 ${
               displayValue ? "text-[#333]" : "text-[#333] opacity-80"
-            }`}
-          >
+            }`}>
             {displayValue || placeholder}
           </span>
           <Icon
             icon="heroicons-outline:chevron-down"
-            className={`w-3 h-3 md:w-5 md:h-5 shrink-0 text-[#333] transition-transform ${
+            className={`w-3 h-3 md:w-4 md:h-4 shrink-0 text-[#333] transition-transform ${
               isOpen ? "rotate-180" : ""
             }`}
           />
@@ -361,26 +353,24 @@ export const HeroSection = () => {
       <div className="absolute inset-0 bg-black/20" />
 
       <div className="relative z-10 flex flex-col items-center pt-25 md:pt-51.75 gap-10 md:gap-15 px-4">
-        <div className="flex flex-col items-center gap-4 text-white text-center">
-          <h1 className="text-4xl md:text-[72px] font-normal leading-tight font-serif">
+        <div className="flex flex-col items-center gap-4 text-white text-center w-full max-w-5xl">
+          <h1 className="h-24 md:h-40 flex items-center justify-center text-4xl md:text-[72px] font-normal leading-tight font-serif overflow-hidden">
             {t("landing.hero.title")}
           </h1>
-          <p className="text-lg md:text-2xl font-bold">
+          <p className="h-7 md:h-8 overflow-hidden text-lg md:text-2xl font-bold">
             {t("landing.hero.subtitle")}
           </p>
         </div>
 
         <div
           ref={searchRef}
-          className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl"
-        >
+          className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl">
           <div className="flex -mb-px">
             <Button
               onClick={() => setTourType("public")}
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tl-xl transition-colors ${
                 tourType === "public" ? "bg-white" : "bg-white/40"
-              }`}
-            >
+              }`}>
               <Image
                 src={PUBLIC_ICON}
                 alt=""
@@ -391,8 +381,7 @@ export const HeroSection = () => {
               <span
                 className={`font-semibold text-base md:text-lg ${
                   tourType === "public" ? "text-landing-accent" : "text-white"
-                }`}
-              >
+                }`}>
                 {t("landing.hero.publicTours")}
               </span>
             </Button>
@@ -400,8 +389,7 @@ export const HeroSection = () => {
               onClick={() => setTourType("private")}
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tr-xl transition-colors ${
                 tourType === "private" ? "bg-white" : "bg-white/40"
-              }`}
-            >
+              }`}>
               <Image
                 src={PRIVATE_ICON}
                 alt=""
@@ -412,110 +400,114 @@ export const HeroSection = () => {
               <span
                 className={`font-semibold text-base md:text-lg ${
                   tourType === "private" ? "text-landing-accent" : "text-white"
-                }`}
-              >
+                }`}>
                 {t("landing.hero.privateTours")}
               </span>
             </Button>
           </div>
 
           <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 w-full">
-            <SelectField
-              icon={PEOPLE_ICON}
-              label={t("landing.hero.fields.people.label")}
-              placeholder={t("landing.hero.fields.people.placeholder")}
-              rounded="rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
-              isOpen={openField === "people"}
-              onToggle={() => toggleField("people")}
-              displayValue={
-                people
-                  ? `${people} ${
-                      people === 1
-                        ? t("landing.hero.fields.people.single")
-                        : t("landing.hero.fields.people.plural")
-                    }`
-                  : ""
-              }
-            >
-              <NumberDropdown
-                value={people}
-                onChange={(v) => {
-                  setPeople(v);
-                  setOpenField(null);
-                }}
-                singleLabel={t("landing.hero.fields.people.single")}
-                pluralLabel={t("landing.hero.fields.people.plural")}
-              />
-            </SelectField>
+            <div className="relative w-full md:flex-[1.2] md:min-w-0">
+              <SelectField
+                icon={PEOPLE_ICON}
+                label={t("landing.hero.fields.people.label")}
+                placeholder={t("landing.hero.fields.people.placeholder")}
+                rounded="rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
+                isOpen={openField === "people"}
+                onToggle={() => toggleField("people")}
+                displayValue={
+                  people
+                    ? `${people} ${
+                        people === 1
+                          ? t("landing.hero.fields.people.single")
+                          : t("landing.hero.fields.people.plural")
+                      }`
+                    : ""
+                }>
+                <NumberDropdown
+                  value={people}
+                  onChange={(v) => {
+                    setPeople(v);
+                    setOpenField(null);
+                  }}
+                  singleLabel={t("landing.hero.fields.people.single")}
+                  pluralLabel={t("landing.hero.fields.people.plural")}
+                />
+              </SelectField>
+            </div>
 
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
-            <SelectField
-              icon={DATE_ICON}
-              label={t("landing.hero.fields.date.label")}
-              placeholder={t("landing.hero.fields.date.placeholder")}
-              isOpen={openField === "date"}
-              onToggle={() => toggleField("date")}
-              displayValue={formatDate(date)}
-            >
-              <CalendarDropdown
-                value={date}
-                onChange={(d) => {
-                  setDate(d);
-                  setOpenField(null);
-                }}
-                locale={locale}
-                weekdayLabels={weekdays}
-                previousMonthLabel={t("landing.hero.calendar.previousMonth")}
-                nextMonthLabel={t("landing.hero.calendar.nextMonth")}
-              />
-            </SelectField>
+            <div className="relative w-full md:flex-1 md:min-w-0">
+              <SelectField
+                icon={DATE_ICON}
+                label={t("landing.hero.fields.date.label")}
+                placeholder={t("landing.hero.fields.date.placeholder")}
+                isOpen={openField === "date"}
+                onToggle={() => toggleField("date")}
+                displayValue={formatDate(date)}>
+                <CalendarDropdown
+                  value={date}
+                  onChange={(d) => {
+                    setDate(d);
+                    setOpenField(null);
+                  }}
+                  locale={locale}
+                  weekdayLabels={weekdays}
+                  previousMonthLabel={t("landing.hero.calendar.previousMonth")}
+                  nextMonthLabel={t("landing.hero.calendar.nextMonth")}
+                />
+              </SelectField>
+            </div>
 
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
-            <SelectField
-              icon={DEST_ICON}
-              label={t("landing.hero.fields.destination.label")}
-              placeholder={t("landing.hero.fields.destination.placeholder")}
-              isOpen={openField === "destination"}
-              onToggle={() => toggleField("destination")}
-              displayValue={destination}
-            >
-              <ListDropdown
-                items={destinations}
-                value={destination}
-                onChange={(v) => {
-                  setDestination(v);
-                  setOpenField(null);
-                }}
-              />
-            </SelectField>
+            <div className="relative w-full md:flex-[1.1] md:min-w-0">
+              <SelectField
+                icon={DEST_ICON}
+                label={t("landing.hero.fields.destination.label")}
+                placeholder={t("landing.hero.fields.destination.placeholder")}
+                isOpen={openField === "destination"}
+                onToggle={() => toggleField("destination")}
+                displayValue={destination}>
+                <ListDropdown
+                  items={destinations}
+                  value={destination}
+                  onChange={(v) => {
+                    setDestination(v);
+                    setOpenField(null);
+                  }}
+                />
+              </SelectField>
+            </div>
 
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
-            <SelectField
-              icon={CLASS_ICON}
-              label={t("landing.hero.fields.classification.label")}
-              placeholder={t("landing.hero.fields.classification.placeholder")}
-              isOpen={openField === "classification"}
-              onToggle={() => toggleField("classification")}
-              displayValue={classification}
-            >
-              <ListDropdown
-                items={classifications}
-                value={classification}
-                onChange={(v) => {
-                  setClassification(v);
-                  setOpenField(null);
-                }}
-              />
-            </SelectField>
+            <div className="relative w-full md:flex-[1.1] md:min-w-0">
+              <SelectField
+                icon={CLASS_ICON}
+                label={t("landing.hero.fields.classification.label")}
+                placeholder={t(
+                  "landing.hero.fields.classification.placeholder",
+                )}
+                isOpen={openField === "classification"}
+                onToggle={() => toggleField("classification")}
+                displayValue={classification}>
+                <ListDropdown
+                  items={classifications}
+                  value={classification}
+                  onChange={(v) => {
+                    setClassification(v);
+                    setOpenField(null);
+                  }}
+                />
+              </SelectField>
+            </div>
 
-            <div className="p-3 md:p-0 md:pl-2 w-full md:w-52 md:shrink-0 flex justify-center">
+            <div className="p-3 md:p-0 md:pl-2 w-full md:w-auto md:shrink-0 flex justify-center">
               <Button
                 className="bg-landing-accent rounded-lg md:rounded-xl h-11 md:h-12 px-4 md:px-5 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:w-full flex items-center justify-center gap-2"
-                ariaLabel={t("landing.hero.searchAria")}
-              >
+                ariaLabel={t("landing.hero.searchAria")}>
                 <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">
                   {t("landing.hero.exploreTours")}
                 </span>

@@ -1,7 +1,7 @@
 "use client";
 import React, { FormEvent, useId } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Button, Icon, Textinput } from "@/components/ui";
 import { useTranslation } from "react-i18next";
 

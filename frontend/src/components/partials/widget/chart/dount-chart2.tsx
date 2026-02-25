@@ -1,5 +1,5 @@
 import React from "react";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 import useDarkMode from "@/hooks/useDarkMode";
 
 const DonutChart2 = ({ height = 200, colors = ["#0CE7FA", "#E2F6FD"] }) => {

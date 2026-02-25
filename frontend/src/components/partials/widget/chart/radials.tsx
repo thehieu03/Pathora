@@ -1,5 +1,5 @@
 import React from "react";
-import Chart from "react-apexcharts";
+import Chart from "@/components/ui/Chart";
 import useDarkMode from "@/hooks/useDarkMode";
 import useWidth from "@/hooks/useWidth";
 

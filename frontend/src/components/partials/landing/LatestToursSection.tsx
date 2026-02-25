@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "./LandingImage";
 import { Button } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -49,7 +49,7 @@ export const LatestToursSection = () => {
       <section className="w-full">
         {/* Section header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+          <h2 className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.latestTours.title")}
           </h2>
           <Button
@@ -58,7 +58,7 @@ export const LatestToursSection = () => {
             icon="heroicons-outline:chevron-right"
             iconPosition="right"
             iconClass="text-[14px]"
-            className="text-landing-heading text-sm hover:text-landing-accent transition-colors bg-transparent"
+            className="w-24 justify-center text-landing-heading text-sm hover:text-landing-accent transition-colors bg-transparent"
           />
         </div>
 
@@ -93,10 +93,10 @@ export const LatestToursSection = () => {
                 </div>
               </div>
               <div className="text-left md:text-center max-w-full md:max-w-32.5 flex-1">
-                <p className="text-[#eb662b] text-[10px] md:text-sm font-normal">
+                <p className="h-4 md:h-5 overflow-hidden text-[#eb662b] text-[10px] md:text-sm font-normal">
                   {t(tour.dateKey)}
                 </p>
-                <p className="text-landing-heading text-xs md:text-sm font-medium leading-snug mt-0.5">
+                <p className="h-8 md:h-10 overflow-hidden text-landing-heading text-xs md:text-sm font-medium leading-snug mt-0.5">
                   {t(tour.titleKey)}
                 </p>
               </div>

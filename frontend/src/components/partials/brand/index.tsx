@@ -19,20 +19,31 @@ import {
   usePagination,
 } from "react-table";
 
-const GlobalFilter = ({ filter, setFilter, t }) => {
-  const [value, setValue] = useState(filter);
-  const onChange = (e) => {
-    setValue(e.target.value);
-    setFilter(e.target.value || undefined);
-  };
-  return (
-    <Textinput
-      value={value || ""}
-      onChange={onChange}
-      placeholder={t("brand.search")}
-    />
-  );
-};
+const GlobalFilter = React.memo(
+  ({
+    filter,
+    setFilter,
+    t,
+  }: {
+    filter: string | undefined;
+    setFilter: (value: string | undefined) => void;
+    t: (key: string) => string;
+  }) => {
+    const [value, setValue] = useState(filter);
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+      setFilter(e.target.value || undefined);
+    };
+    return (
+      <Textinput
+        value={value || ""}
+        onChange={onChange}
+        placeholder={t("brand.search")}
+      />
+    );
+  },
+);
+GlobalFilter.displayName = "GlobalFilter";
 
 const BrandPage = () => {
   const { t } = useTranslation();
@@ -123,16 +134,27 @@ const BrandPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh brands list
-        const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
-        const mappedBrands = extractItems<any>(refreshResponse.data).map(
-          (item: any) => ({
-            id: item.id,
-            name: item.name,
-            slug: item.slug || "",
-          }),
-        );
-        setBrands(mappedBrands);
+        // Optimistic update: update local state instead of refetching
+        if (response.data) {
+          setBrands((prev) =>
+            prev.map((item) =>
+              item.id === editingBrand.id
+                ? { ...item, name: editFormData.name }
+                : item,
+            ),
+          );
+        } else {
+          // Fallback: refetch if no data in response
+          const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
+          const mappedBrands = extractItems<any>(refreshResponse.data).map(
+            (item: any) => ({
+              id: item.id,
+              name: item.name,
+              slug: item.slug || "",
+            }),
+          );
+          setBrands(mappedBrands);
+        }
 
         setShowEditModal(false);
         setEditingBrand(null);
@@ -163,16 +185,27 @@ const BrandPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh brands list
-        const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
-        const mappedBrands = extractItems<any>(refreshResponse.data).map(
-          (item: any) => ({
-            id: item.id,
-            name: item.name,
-            slug: item.slug || "",
-          }),
-        );
-        setBrands(mappedBrands);
+        // Optimistic update: add new item to local state
+        if (response.data) {
+          const data = response.data as { id?: string; slug?: string };
+          const newBrand = {
+            id: data.id || String(data),
+            name: addFormData.name,
+            slug: data.slug || "",
+          };
+          setBrands((prev) => [newBrand, ...prev]);
+        } else {
+          // Fallback: refetch if no data in response
+          const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
+          const mappedBrands = extractItems<any>(refreshResponse.data).map(
+            (item: any) => ({
+              id: item.id,
+              name: item.name,
+              slug: item.slug || "",
+            }),
+          );
+          setBrands(mappedBrands);
+        }
 
         setShowAddModal(false);
         setAddFormData({ name: "" });

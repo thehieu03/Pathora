@@ -55,20 +55,31 @@ const mapInventoryItems = (payload: unknown) => {
   }));
 };
 
-const GlobalFilter = ({ filter, setFilter, t }) => {
-  const [value, setValue] = useState(filter);
-  const onChange = (e) => {
-    setValue(e.target.value);
-    setFilter(e.target.value || undefined);
-  };
-  return (
-    <Textinput
-      value={value || ""}
-      onChange={onChange}
-      placeholder={t("inventory.search")}
-    />
-  );
-};
+const GlobalFilter = React.memo(
+  ({
+    filter,
+    setFilter,
+    t,
+  }: {
+    filter: string | undefined;
+    setFilter: (value: string | undefined) => void;
+    t: (key: string) => string;
+  }) => {
+    const [value, setValue] = useState(filter);
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+      setFilter(e.target.value || undefined);
+    };
+    return (
+      <Textinput
+        value={value || ""}
+        onChange={onChange}
+        placeholder={t("inventory.search")}
+      />
+    );
+  },
+);
+GlobalFilter.displayName = "GlobalFilter";
 
 const InventoryPage = () => {
   const { t } = useTranslation();
@@ -295,9 +306,21 @@ const InventoryPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh inventory items
-        const refreshResponse = await inventoryService.getAllInventoryItems();
-        setInventoryItems(mapInventoryItems(refreshResponse.data));
+        // Use response data if available, otherwise refetch
+        if (response.data) {
+          const newItem = mapInventoryItems({ data: [response.data] })[0];
+          if (newItem) {
+            setInventoryItems((prev) => [newItem, ...prev]);
+          } else {
+            // Fallback: refetch if mapping failed
+            const refreshResponse = await inventoryService.getAllInventoryItems();
+            setInventoryItems(mapInventoryItems(refreshResponse.data));
+          }
+        } else {
+          // Fallback: refetch if no data in response
+          const refreshResponse = await inventoryService.getAllInventoryItems();
+          setInventoryItems(mapInventoryItems(refreshResponse.data));
+        }
 
         setAddModalOpen(false);
         setAddFormData({ productId: "", locationId: "", quantity: "" });
@@ -347,9 +370,24 @@ const InventoryPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh inventory items
-        const refreshResponse = await inventoryService.getAllInventoryItems();
-        setInventoryItems(mapInventoryItems(refreshResponse.data));
+        // Optimistic update: update local state instead of refetching
+        const quantityChange = parseInt(stockQuantity);
+        setInventoryItems((prev) =>
+          prev.map((item) =>
+            item.id === stockItem.id
+              ? {
+                  ...item,
+                  quantity: item.quantity + quantityChange,
+                  available: item.available + quantityChange,
+                  status: getStatusFromQuantity(
+                    item.quantity + quantityChange,
+                    item.available + quantityChange,
+                  ),
+                  lastUpdated: new Date().toISOString(),
+                }
+              : item,
+          ),
+        );
 
         setIncreaseStockModalOpen(false);
         setStockItem(null);
@@ -396,9 +434,24 @@ const InventoryPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh inventory items
-        const refreshResponse = await inventoryService.getAllInventoryItems();
-        setInventoryItems(mapInventoryItems(refreshResponse.data));
+        // Optimistic update: update local state instead of refetching
+        const quantityChange = parseInt(stockQuantity);
+        setInventoryItems((prev) =>
+          prev.map((item) =>
+            item.id === stockItem.id
+              ? {
+                  ...item,
+                  quantity: item.quantity - quantityChange,
+                  available: item.available - quantityChange,
+                  status: getStatusFromQuantity(
+                    item.quantity - quantityChange,
+                    item.available - quantityChange,
+                  ),
+                  lastUpdated: new Date().toISOString(),
+                }
+              : item,
+          ),
+        );
 
         setDecreaseStockModalOpen(false);
         setStockItem(null);
@@ -456,9 +509,25 @@ const InventoryPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh inventory items
-        const refreshResponse = await inventoryService.getAllInventoryItems();
-        setInventoryItems(mapInventoryItems(refreshResponse.data));
+        // Use response data if available, otherwise refetch
+        if (response.data) {
+          const updatedItem = mapInventoryItems({ data: [response.data] })[0];
+          if (updatedItem) {
+            setInventoryItems((prev) =>
+              prev.map((item) =>
+                item.id === editingItem.id ? updatedItem : item,
+              ),
+            );
+          } else {
+            // Fallback: refetch if mapping failed
+            const refreshResponse = await inventoryService.getAllInventoryItems();
+            setInventoryItems(mapInventoryItems(refreshResponse.data));
+          }
+        } else {
+          // Fallback: refetch if no data in response
+          const refreshResponse = await inventoryService.getAllInventoryItems();
+          setInventoryItems(mapInventoryItems(refreshResponse.data));
+        }
 
         setEditModalOpen(false);
         setEditingItem(null);

@@ -19,20 +19,31 @@ import {
   usePagination,
 } from "react-table";
 
-const GlobalFilter = ({ filter, setFilter, t }) => {
-  const [value, setValue] = useState(filter);
-  const onChange = (e) => {
-    setValue(e.target.value);
-    setFilter(e.target.value || undefined);
-  };
-  return (
-    <Textinput
-      value={value || ""}
-      onChange={onChange}
-      placeholder={t("category.search")}
-    />
-  );
-};
+const GlobalFilter = React.memo(
+  ({
+    filter,
+    setFilter,
+    t,
+  }: {
+    filter: string | undefined;
+    setFilter: (value: string | undefined) => void;
+    t: (key: string) => string;
+  }) => {
+    const [value, setValue] = useState(filter);
+    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+      setFilter(e.target.value || undefined);
+    };
+    return (
+      <Textinput
+        value={value || ""}
+        onChange={onChange}
+        placeholder={t("category.search")}
+      />
+    );
+  },
+);
+GlobalFilter.displayName = "GlobalFilter";
 
 type CategoryApiItem = {
   id: string;
@@ -155,12 +166,28 @@ const CategoryPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh categories list
-        const refreshResponse = await api.get(
-          API_ENDPOINTS.CATALOG.GET_CATEGORIES,
-        );
-        const mappedCategories = mapCategoryItems(refreshResponse.data);
-        setCategories(mappedCategories);
+        // Optimistic update: update local state instead of refetching
+        if (response.data) {
+          setCategories((prev) =>
+            prev.map((item) =>
+              item.id === editingCategory.id
+                ? {
+                    ...item,
+                    name: editFormData.name,
+                    description: editFormData.description,
+                    parentId: editFormData.parentId || null,
+                  }
+                : item,
+            ),
+          );
+        } else {
+          // Fallback: refetch if no data in response
+          const refreshResponse = await api.get(
+            API_ENDPOINTS.CATALOG.GET_CATEGORIES,
+          );
+          const mappedCategories = mapCategoryItems(refreshResponse.data);
+          setCategories(mappedCategories);
+        }
 
         setShowEditModal(false);
         setEditingCategory(null);
@@ -197,12 +224,26 @@ const CategoryPage = () => {
           autoClose: 5000,
         });
 
-        // Refresh categories list
-        const refreshResponse = await api.get(
-          API_ENDPOINTS.CATALOG.GET_CATEGORIES,
-        );
-        const mappedCategories = mapCategoryItems(refreshResponse.data);
-        setCategories(mappedCategories);
+        // Optimistic update: add new item to local state
+        if (response.data) {
+          const data = response.data as { id?: string };
+          const newCategory = {
+            id: data.id || String(data),
+            name: addFormData.name,
+            description: addFormData.description,
+            parentId: addFormData.parentId || null,
+            parentName: null,
+            children: [],
+          };
+          setCategories((prev) => [newCategory, ...prev]);
+        } else {
+          // Fallback: refetch if no data in response
+          const refreshResponse = await api.get(
+            API_ENDPOINTS.CATALOG.GET_CATEGORIES,
+          );
+          const mappedCategories = mapCategoryItems(refreshResponse.data);
+          setCategories(mappedCategories);
+        }
 
         setShowAddModal(false);
         setAddFormData({ name: "", description: "", parentId: "" });

@@ -3,7 +3,12 @@
  * Manages SignalR connection for real-time notifications
  */
 
-import * as signalR from "@microsoft/signalr";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  HubConnectionState,
+  LogLevel,
+} from "@microsoft/signalr";
 import { API_ENDPOINTS } from "@/api/endpoints";
 import { SignalRNotification, NotificationCallback } from "@/types";
 
@@ -27,7 +32,7 @@ interface RetryContext {
 }
 
 class SignalRService {
-  private connection: signalR.HubConnection | null = null;
+  private connection: HubConnection | null = null;
   private isConnected: boolean = false;
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 3; // Reduced from 5
@@ -71,7 +76,7 @@ class SignalRService {
    * Create and configure SignalR connection
    * @returns SignalR connection
    */
-  createConnection(): signalR.HubConnection {
+  createConnection(): HubConnection {
     const hubUrl = this.getHubUrl();
     const token = this.getAccessToken();
 
@@ -82,7 +87,7 @@ class SignalRService {
       console.warn("SignalR: No access token found, connection may fail");
     }
 
-    const connection = new signalR.HubConnectionBuilder()
+    const connection = new HubConnectionBuilder()
       .withUrl(hubUrl, {
         accessTokenFactory: () => token || "",
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -96,7 +101,7 @@ class SignalRService {
           return 30000;
         },
       })
-      .configureLogging(signalR.LogLevel.None)
+      .configureLogging(LogLevel.None)
       .build();
 
     // Setup connection event handlers
@@ -399,7 +404,7 @@ class SignalRService {
   getConnected(): boolean {
     return (
       this.isConnected &&
-      this.connection?.state === signalR.HubConnectionState.Connected
+      this.connection?.state === HubConnectionState.Connected
     );
   }
 }
