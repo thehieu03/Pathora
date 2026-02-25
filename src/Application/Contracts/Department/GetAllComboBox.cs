@@ -6,3 +6,4 @@ public sealed record DepartmentComboBoxVm(
     int Level,
     string DepartmentName
 );
+

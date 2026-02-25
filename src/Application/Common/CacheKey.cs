@@ -10,3 +10,4 @@ public static class CacheKey
     public const string Role = nameof(Role);
     public const string Position = nameof(Position);
 }
+

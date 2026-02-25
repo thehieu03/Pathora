@@ -18,3 +18,4 @@ public sealed class UpdateDepartmentRequestValidator : AbstractValidator<UpdateD
             .WithMessage("Tên phòng ban không được quá 100 ký tự");
     }
 }
+

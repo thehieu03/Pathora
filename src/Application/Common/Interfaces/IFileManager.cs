@@ -24,3 +24,4 @@ public interface IFileManager
         string fileUrl,
         CancellationToken cancellationToken = default);
 }
+

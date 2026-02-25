@@ -26,3 +26,4 @@ public sealed class UserDto
     public string Email { get; set; } = null!;
     public string DepartmentName { get; set; } = null!;
 }
+

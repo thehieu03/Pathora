@@ -15,3 +15,4 @@ public sealed class LookupVm
         Name = name;
     }
 }
+

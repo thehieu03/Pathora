@@ -15,3 +15,4 @@ public sealed class PositionEntity : Aggregate<Guid>
     public bool IsDeleted { get; set; }
     public int? Type { get; set; }
 }
+

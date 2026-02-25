@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Domain.CORS;
 
@@ -8,3 +8,4 @@ public interface IQueryHandler<in TQuery, TResponse>
     where TResponse : notnull
 {
 }
+

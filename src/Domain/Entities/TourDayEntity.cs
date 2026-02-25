@@ -9,3 +9,4 @@ public sealed class TourDayEntity : Aggregate<Guid>
     public string? Description { get; set; } = null!;
     public List<TourDayActivityEntity> Activities { get; set; } = [];
 }
+

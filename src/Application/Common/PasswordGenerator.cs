@@ -51,3 +51,4 @@ public static class PasswordGenerator
         return new string(chars);
     }
 }
+

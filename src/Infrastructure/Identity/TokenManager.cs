@@ -6,6 +6,7 @@ using Application.Common;
 using Application.Common.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.UnitOfWork;
 using ErrorOr;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,91 +14,102 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Infrastructure.Identity;
 
-internal sealed class TokenManager : ITokenManager
+internal sealed class TokenManager(
+    IOptions<JwtOptions> jwtOptions,
+    IUserRepository userRepository,
+    IFusionCache fusionCache,
+    IToken token,
+    IUnitOfWork unitOfWork)
+    : ITokenManager
 {
-    private readonly IOptions<JwtOptions> _jwtOptions;
-    private readonly IUserRepository _userRepository;
-    private readonly IFusionCache _fusionCache;
-    private readonly IToken _token;
-    private const int TokenTimeoutInHour = 24 * 7;
+    private readonly JwtOptions _jwtOptions = jwtOptions.Value;
+    private const int RefreshTokenTimeoutInHours = 24 * 7;
 
-    public TokenManager(
-        IOptions<JwtOptions> jwtOptions,
-        IUserRepository userRepository,
-        IFusionCache fusionCache,
-        IToken token)
+    public async Task<ErrorOr<(string AccessToken, string RefreshToken)>> GenerateToken(UserEntity user)
     {
-        _jwtOptions = jwtOptions;
-        _userRepository = userRepository;
-        _fusionCache = fusionCache;
-        _token = token;
+        var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
+        var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity([
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
+                new Claim(JwtRegisteredClaimNames.Aud, _jwtOptions.Audience)
+            ]),
+            Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpireInMinutes),
+            SigningCredentials = credentials
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var jwtToken = tokenHandler.CreateToken(tokenDescriptor);
+        var accessToken = tokenHandler.WriteToken(jwtToken);
+
+        var refreshTokenValue = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        var refreshTokenEntity = new RefreshTokenEntity
+        {
+            UserId = user.Id,
+            Token = refreshTokenValue,
+            ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(RefreshTokenTimeoutInHours)
+        };
+
+        var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();
+        await repo.AddAsync(refreshTokenEntity);
+
+        return (accessToken, refreshTokenValue);
     }
 
-
-    // public async Task<ErrorOr<(string, string)>> GenerateToken(UserEntity user)
-    // {
-    //     // Generate access token
-    //     var key = Encoding.UTF8.GetBytes(_jwtOptions.Value.Secret);
-    //     var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
-    //
-    //     var tokenDescriptor = new SecurityTokenDescriptor
-    //     {
-    //         Subject = new ClaimsIdentity([
-    //             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    //             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-    //             new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Value.Issuer),
-    //             new Claim(JwtRegisteredClaimNames.Aud, _jwtOptions.Value.Audience)
-    //         ]),
-    //         Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.Value.ExpireInMinutes),
-    //         SigningCredentials = credentials
-    //     };
-    //
-    //     var tokenHandler = new JwtSecurityTokenHandler();
-    //     var token = tokenHandler.CreateToken(tokenDescriptor);
-    //     var accessToken = tokenHandler.WriteToken(token);
-    //
-    //     // Generate refresh token & persist to database 
-    //     var refreshToken = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-    //     //var result = await _userRepository.UpsertRefreshToken(new RefreshToken
-    //     //{
-    //     //    UserId = user.Id,
-    //     //    Token = refreshToken,
-    //     //    ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(TokenTimeoutInHour)
-    //     //});
-    //     //if (result.IsError) return result.Errors;
-    //
-    //     return (accessToken, refreshToken);
-    // }
-
- 
-
-    //public async Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)
-    //{
-    //    var jti = _token.Id;
-    //    var exp = _token.Expire;
-    //    if (!string.IsNullOrEmpty(jti) && long.TryParse(exp, out var expEpoch))
-    //    {
-    //        var diff = expEpoch - DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-    //        if (diff > 0)
-    //        {
-    //            await _fusionCache.SetAsync($"{CacheKey.AccessToken}:blacklisted:{jti}", jti,
-    //                new FusionCacheEntryOptions
-    //                {
-    //                    Duration = TimeSpan.FromSeconds(diff)
-    //                });
-    //        }
-    //    }
-
-    //    return await _userRepository.InvalidateToken(refreshToken);
-    //}
-
-    public Task<ErrorOr<(string, string)>> RefreshToken(string token)
+    public async Task<ErrorOr<(string, string)>> RefreshToken(string refreshToken)
     {
-        throw new NotImplementedException();
+        var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();
+        var tokens = await repo.GetListAsync(t => t.Token == refreshToken);
+        var tokenEntity = tokens.FirstOrDefault();
+
+        if (tokenEntity is null)
+            return Error.NotFound("RefreshToken.NotFound", "Refresh token không tồn tại");
+
+        if (!tokenEntity.IsActive)
+            return Error.Validation("RefreshToken.Expired", "Refresh token đã hết hạn");
+
+        var user = await userRepository.FindById(tokenEntity.UserId);
+        if (user is null)
+            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+
+        // Delete old refresh token
+        repo.Delete(tokenEntity);
+
+        // Generate new token pair
+        return await GenerateToken(user);
     }
 
-    public Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)
+    public async Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)
     {
-        throw new NotImplementedException();
+        // Blacklist the current access token
+        var jti = token.Id;
+        var exp = token.Expire;
+        if (!string.IsNullOrEmpty(jti) && long.TryParse(exp, out var expEpoch))
+        {
+            var diff = expEpoch - DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            if (diff > 0)
+            {
+                await fusionCache.SetAsync($"{CacheKey.AccessToken}:blacklisted:{jti}", jti,
+                    new FusionCacheEntryOptions
+                    {
+                        Duration = TimeSpan.FromSeconds(diff)
+                    });
+            }
+        }
+
+        // Delete the refresh token from DB
+        var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();
+        var tokens = await repo.GetListAsync(t => t.Token == refreshToken);
+        var tokenEntity = tokens.FirstOrDefault();
+        if (tokenEntity is not null)
+        {
+            repo.Delete(tokenEntity);
+        }
+
+        return Result.Success;
     }
 }

@@ -60,3 +60,4 @@ public class EndpointAccessHandler : AuthorizationHandler<EndpointAccessRequirem
                && userAllowedEndpoints.Any(x => path.StartsWith(x.ApiUrl, StringComparison.OrdinalIgnoreCase));
     }
 }
+

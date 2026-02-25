@@ -1,10 +1,11 @@
 using System.Diagnostics;
 using Api.Infrastructure;
+using Api.Swagger.Extensions;
+using ApiExceptionHandler = Api.Exceptions.Handler.CustomExceptionHandler;
 using Application.Common.Constant;
 using Application.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -24,42 +25,11 @@ public static class DependencyInjection
 
     public static IServiceCollection AddApiServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOpenApi(options =>
-        {
-            options.AddDocumentTransformer((document, _, _) =>
-            {
-                document.Components ??= new OpenApiComponents();
-                document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
-
-                document.Components.SecuritySchemes.Add("Bearer", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Name = "Authorization"
-                });
-
-                document.Security =
-                [
-                    new OpenApiSecurityRequirement
-                    {
-                        {
-                            new OpenApiSecuritySchemeReference("Bearer"),
-                            []
-                        }
-                    }
-                ];
-
-                document.SetReferenceHostDocument();
-
-                return Task.CompletedTask;
-            });
-        });
+        services.AddSwaggerServices(configuration);
 
         services.AddControllers();
         services.AddHttpContextAccessor();
-        services.AddExceptionHandler<CustomExceptionHandler>();
+        services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(builder =>

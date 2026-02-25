@@ -1,6 +1,9 @@
+using Application.Common;
 using Application.Common.Contracts;
 using Application.Common.Interfaces;
 using Application.Contracts.User;
+using Domain.Common.Repositories;
+using Domain.Entities;
 using Domain.UnitOfWork;
 using ErrorOr;
 
@@ -17,57 +20,147 @@ public interface IUserService
     Task<ErrorOr<Success>> IsEmailUnique(string email);
 }
 
-public class UserService : IUserService
+public class UserService(
+    IUser user,
+    IUnitOfWork unitOfWork,
+    IPasswordHasher passwordHasher,
+    IRoleService roleService,
+    IUserRepository userRepository,
+    IRoleRepository roleRepository)
+    : IUserService
 {
-    private readonly IUser _user;
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IPasswordHasher _passwordHasher;
-    private readonly IRoleService _roleService;
+    private readonly IUser _user = user;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
+    private readonly IRoleService _roleService = roleService;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IRoleRepository _roleRepository = roleRepository;
 
-    public UserService(
-        IUser user,
-        IUnitOfWork unitOfWork,
-        IPasswordHasher passwordHasher,
-        IRoleService roleService)
+    public async Task<ErrorOr<PaginatedListWithPermissions<UserVm>>> GetAll(GetAllUserRequest request)
     {
-        _user = user;
-        _unitOfWork = unitOfWork;
-        _passwordHasher = passwordHasher;
-        _roleService = roleService;
+        var users = await _userRepository.FindAll(
+            request.TextSearch,
+            request.DepartmentId == Guid.Empty ? null : request.DepartmentId,
+            request.PageNumber,
+            request.PageSize);
+        var total = await _userRepository.CountAll(
+            request.TextSearch,
+            request.DepartmentId == Guid.Empty ? null : request.DepartmentId);
+
+        var userVms = new List<UserVm>();
+        foreach (var u in users)
+        {
+            var rolesResult = await _roleRepository.FindByUserId(u.Id.ToString());
+            var roles = rolesResult.IsError ? [] : rolesResult.Value.Select(r => r.Name).ToList();
+
+            userVms.Add(new UserVm(
+                u.Id, u.Avatar, u.Username, u.FullName, u.Email,
+                string.Empty, roles, new Dictionary<string, bool>()));
+        }
+
+        return new PaginatedListWithPermissions<UserVm>(total, userVms, new Dictionary<string, bool>());
     }
 
-    public Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)
+    public async Task<ErrorOr<UserDetailVm>> GetDetail(Guid id)
     {
-        throw new NotImplementedException();
+        var userEntity = await _userRepository.FindById(id);
+        if (userEntity is null)
+            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+
+        var rolesResult = await _roleRepository.FindByUserId(id.ToString());
+        var roles = rolesResult.IsError
+            ? Enumerable.Empty<Contracts.User.RoleVm>()
+            : rolesResult.Value.Select(r => new Contracts.User.RoleVm(r.Id, r.Name));
+
+        return new UserDetailVm(
+            userEntity.Id,
+            userEntity.Username,
+            userEntity.FullName,
+            userEntity.Email,
+            userEntity.Avatar,
+            roles,
+            []);
     }
 
-    public Task<ErrorOr<Guid>> Create(CreateUserRequest request)
+    public async Task<ErrorOr<Guid>> Create(CreateUserRequest request)
     {
-        throw new NotImplementedException();
+        var isUnique = await _userRepository.IsEmailUnique(request.Email);
+        if (!isUnique)
+            return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+
+        var generatedPassword = PasswordGenerator.Generate();
+        var userEntity = new UserEntity
+        {
+            Username = request.Email,
+            FullName = request.FullName,
+            Email = request.Email,
+            Avatar = request.Avatar,
+            Password = _passwordHasher.HashPassword(generatedPassword),
+            ForcePasswordChange = true,
+            CreatedOnUtc = DateTimeOffset.UtcNow
+        };
+
+        await _userRepository.Create(userEntity);
+
+        if (request.RoleIds.Count > 0)
+        {
+            await _roleRepository.AddUser(userEntity.Id, request.RoleIds);
+        }
+
+        return userEntity.Id;
     }
 
-    public Task<ErrorOr<Success>> Delete(Guid id)
+    public async Task<ErrorOr<Success>> Update(UpdateUserRequest request)
     {
-        throw new NotImplementedException();
+        var userEntity = await _userRepository.FindById(request.Id);
+        if (userEntity is null)
+            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+
+        userEntity.FullName = request.FullName;
+        userEntity.Avatar = request.Avatar;
+        userEntity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        await _userRepository.Update(userEntity);
+
+        // Update roles
+        await _roleRepository.DeleteUser(request.Id);
+        if (request.RoleIds.Count > 0)
+        {
+            await _roleRepository.AddUser(request.Id, request.RoleIds);
+        }
+
+        return Result.Success;
     }
 
-    public Task<ErrorOr<PaginatedListWithPermissions<UserVm>>> GetAll(GetAllUserRequest request)
+    public async Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)
     {
-        throw new NotImplementedException();
+        var userEntity = await _userRepository.FindById(request.UserId);
+        if (userEntity is null)
+            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+
+        var newPassword = PasswordGenerator.Generate();
+        userEntity.Password = _passwordHasher.HashPassword(newPassword);
+        userEntity.ForcePasswordChange = true;
+        userEntity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        await _userRepository.Update(userEntity);
+
+        return Result.Success;
     }
 
-    public Task<ErrorOr<UserDetailVm>> GetDetail(Guid id)
+    public async Task<ErrorOr<Success>> Delete(Guid id)
     {
-        throw new NotImplementedException();
+        var userEntity = await _userRepository.FindById(id);
+        if (userEntity is null)
+            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+
+        await _userRepository.SoftDelete(id);
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> IsEmailUnique(string email)
+    public async Task<ErrorOr<Success>> IsEmailUnique(string email)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<ErrorOr<Success>> Update(UpdateUserRequest request)
-    {
-        throw new NotImplementedException();
+        var isUnique = await _userRepository.IsEmailUnique(email);
+        if (!isUnique)
+            return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+        return Result.Success;
     }
 }

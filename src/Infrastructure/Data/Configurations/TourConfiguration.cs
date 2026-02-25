@@ -39,7 +39,7 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
         builder.Property(t => t.Status)
             .HasConversion<string>()
             .HasMaxLength(50)
-            .HasDefaultValue(Domain.Enums.TourStatus.Pending);
+            .IsRequired();
 
         builder.Property(t => t.IsDeleted)
             .HasDefaultValue(false);

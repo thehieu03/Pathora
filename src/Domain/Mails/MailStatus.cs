@@ -11,3 +11,4 @@ public enum MailStatus
     [Description("Failed")]
     Failed
 }
+

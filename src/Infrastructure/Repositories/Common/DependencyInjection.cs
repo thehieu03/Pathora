@@ -27,8 +27,11 @@ internal static class DependencyInjection
         services.AddKeyedScoped<IFunctionRepository, FunctionRepository>("original");
         services.AddScoped<IFunctionRepository, FunctionRepository>();
 
+        services.AddScoped<ITourRepository, TourRepository>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
 }
+

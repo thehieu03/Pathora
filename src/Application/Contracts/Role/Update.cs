@@ -15,6 +15,9 @@ public sealed class UpdateRoleRequestValidator : AbstractValidator<UpdateRoleReq
 {
     public UpdateRoleRequestValidator()
     {
+        RuleFor(x => x.Status)
+            .IsInEnum().WithMessage("Trạng thái role không hợp lệ");
+
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Tên role không được để trống")
             .MaximumLength(100).WithMessage("Tên role không được quá 100 ký tự");

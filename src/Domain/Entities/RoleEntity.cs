@@ -16,3 +16,4 @@ public sealed class RoleEntity : Aggregate<Guid>
     public RoleStatus Status { get; set; } = RoleStatus.Active;
     public bool IsDeleted { get; set; }
 }
+

@@ -9,3 +9,4 @@ public static class ButtonShow
     public const string IsDetail = nameof(IsDetail);
     public const string IsResetPass = nameof(IsResetPass);
 }
+

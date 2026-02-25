@@ -14,3 +14,4 @@ public sealed class RefreshTokenEntity : Aggregate<Guid>
     public DateTimeOffset ExpiresOnUtc { get; set; }
     public bool IsActive => DateTimeOffset.UtcNow < ExpiresOnUtc;
 }
+

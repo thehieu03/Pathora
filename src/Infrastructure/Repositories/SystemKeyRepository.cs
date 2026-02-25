@@ -2,19 +2,20 @@ using Domain.Common.Repositories;
 using Domain.Constant;
 using ErrorOr;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class SystemKeyRepository : ISystemKeyRepository
+public class SystemKeyRepository(AppDbContext context) : ISystemKeyRepository
 {
-    private readonly AppDbContext _context;
-    public SystemKeyRepository(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
-    public Task<ErrorOr<List<SystemKey>>> FindAll()
+    public async Task<ErrorOr<List<SystemKey>>> FindAll()
     {
-        throw new NotImplementedException();
+        return await _context.SystemKeys
+            .AsNoTracking()
+            .Where(s => !s.IsDeleted)
+            .OrderBy(s => s.SortOrder)
+            .ToListAsync();
     }
 }

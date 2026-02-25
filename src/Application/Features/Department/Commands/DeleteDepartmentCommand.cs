@@ -1,0 +1,18 @@
+using Domain.CORS;
+using ErrorOr;
+using Application.Services;
+
+namespace Application.Features.Department.Commands;
+
+public sealed record DeleteDepartmentCommand(Guid Id) : ICommand<ErrorOr<Success>>;
+
+public sealed class DeleteDepartmentCommandHandler(IDepartmentService departmentService)
+    : ICommandHandler<DeleteDepartmentCommand, ErrorOr<Success>>
+{
+    public async Task<ErrorOr<Success>> Handle(DeleteDepartmentCommand request, CancellationToken cancellationToken)
+    {
+        return await departmentService.Delete(request.Id);
+    }
+}
+
+

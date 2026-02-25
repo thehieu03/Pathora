@@ -1,0 +1,21 @@
+using Domain.CORS;
+using Domain.Enums;
+using ErrorOr;
+using Application.Contracts.Role;
+using Application.Services;
+
+namespace Application.Features.Role.Commands;
+
+public sealed record UpdateRoleCommand(string RoleId, string Name, string Description, RoleStatus Status, int Type, IEnumerable<int> FunctionIds) : ICommand<ErrorOr<Success>>;
+
+public sealed class UpdateRoleCommandHandler(IRoleService roleService)
+    : ICommandHandler<UpdateRoleCommand, ErrorOr<Success>>
+{
+    public async Task<ErrorOr<Success>> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
+    {
+        return await roleService.Update(new UpdateRoleRequest(
+            request.RoleId, request.Name, request.Description, request.Status, request.Type, request.FunctionIds));
+    }
+}
+
+

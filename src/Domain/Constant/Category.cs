@@ -7,3 +7,4 @@ public static class Category
     public const int Department = 3;
     public const int Position = 4;
 }
+

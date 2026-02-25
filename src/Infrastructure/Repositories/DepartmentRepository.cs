@@ -11,3 +11,4 @@ public class DepartmentRepository : Repository<DepartmentEntity>, IDepartmentRep
     {
     }
 }
+

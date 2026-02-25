@@ -283,3 +283,10 @@ CLAUDE.md
 src/Api/logs/
 
 src/Application/Common/Repositories/
+docs/plans/
+
+# Docker volumes (keep structure, ignore contents)
+volume/minio/*
+!volume/minio/.gitkeep
+volume/redis/*
+!volume/redis/.gitkeep

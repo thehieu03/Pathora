@@ -22,49 +22,97 @@ public interface IRoleService
     Task<ErrorOr<Dictionary<string, bool>>> HasFunctions(string userId, int categoryId, string[] type);
 }
 
-public class RoleService : IRoleService
+public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleRepository, IFunctionRepository functionRepository) : IRoleService
 {
-    private readonly IUser _user;
-    private readonly IUnitOfWork _uow;
+    private readonly IUser _user = user;
+    private readonly IUnitOfWork _uow = uow;
+    private readonly IRoleRepository _roleRepository = roleRepository;
+    private readonly IFunctionRepository _functionRepository = functionRepository;
 
-    public RoleService(IUser user, IUnitOfWork uow)
+    public async Task<ErrorOr<Guid>> Create(CreateRoleRequest request)
     {
-        _user = user;
-        _uow = uow;
+        var role = new RoleEntity
+        {
+            Name = request.Name,
+            Description = request.Description,
+            Type = request.Type,
+            Status = RoleStatus.Active,
+            CreatedOnUtc = DateTimeOffset.UtcNow
+        };
+
+        var result = await _roleRepository.Create(role);
+        if (result.IsError) return result.Errors;
+
+        return role.Id;
     }
 
-    public Task<ErrorOr<Guid>> Create(CreateRoleRequest request)
+    public async Task<ErrorOr<Success>> Update(UpdateRoleRequest request)
     {
-        throw new NotImplementedException();
+        var roleResult = await _roleRepository.FindById(request.RoleId);
+        if (roleResult.IsError) return roleResult.Errors;
+        if (roleResult.Value is null)
+            return Error.NotFound("Role.NotFound", "Role không tồn tại");
+
+        var role = roleResult.Value;
+        role.Name = request.Name;
+        role.Description = request.Description;
+        role.Status = request.Status;
+        role.Type = request.Type;
+        role.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+
+        return await _roleRepository.Update(role);
     }
 
-    public Task<ErrorOr<Success>> Delete(DeleteRoleRequest request)
+    public async Task<ErrorOr<Success>> Delete(DeleteRoleRequest request)
     {
-        throw new NotImplementedException();
+        var roleResult = await _roleRepository.FindById(request.RoleId);
+        if (roleResult.IsError) return roleResult.Errors;
+        if (roleResult.Value is null)
+            return Error.NotFound("Role.NotFound", "Role không tồn tại");
+
+        var role = roleResult.Value;
+        role.IsDeleted = true;
+        role.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+        return await _roleRepository.Update(role);
     }
 
-    public Task<ErrorOr<PaginatedListWithPermissions<RoleVm>>> GetAll(GetAllRoleRequest request)
+    public async Task<ErrorOr<PaginatedListWithPermissions<RoleVm>>> GetAll(GetAllRoleRequest request)
     {
-        throw new NotImplementedException();
+        var rolesResult = await _roleRepository.GetAll();
+        if (rolesResult.IsError) return rolesResult.Errors;
+
+        var roleVms = rolesResult.Value.Select(r => new RoleVm(
+            r.Id, r.Name, r.Description, r.Type, r.Status, [])).ToList();
+
+        return new PaginatedListWithPermissions<RoleVm>(roleVms.Count, roleVms, new Dictionary<string, bool>());
     }
 
-    public Task<ErrorOr<List<LookupVm>>> GetAll()
+    public async Task<ErrorOr<List<LookupVm>>> GetAll()
     {
-        throw new NotImplementedException();
+        var rolesResult = await _roleRepository.GetAll();
+        if (rolesResult.IsError) return rolesResult.Errors;
+
+        return rolesResult.Value
+            .Select(r => new LookupVm(r.Id.ToString(), r.Name))
+            .ToList();
     }
 
-    public Task<ErrorOr<RoleDetailVm>> GetDetail(GetRoleDetailRequest request)
+    public async Task<ErrorOr<RoleDetailVm>> GetDetail(GetRoleDetailRequest request)
     {
-        throw new NotImplementedException();
+        var roleResult = await _roleRepository.FindById(request.RoleId);
+        if (roleResult.IsError) return roleResult.Errors;
+        if (roleResult.Value is null)
+            return Error.NotFound("Role.NotFound", "Role không tồn tại");
+
+        var role = roleResult.Value;
+        return new RoleDetailVm(role.Id, role.Name, role.Description, role.Type, role.Status, []);
     }
 
-    public Task<ErrorOr<Dictionary<string, bool>>> HasFunctions(string userId, int categoryId, string[] type)
+    public async Task<ErrorOr<Dictionary<string, bool>>> HasFunctions(string userId, int categoryId, string[] type)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<ErrorOr<Success>> Update(UpdateRoleRequest request)
-    {
-        throw new NotImplementedException();
+        var result = new Dictionary<string, bool>();
+        foreach (var t in type)
+            result[t] = false;
+        return result;
     }
 }

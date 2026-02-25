@@ -20,3 +20,4 @@ public sealed class UpdateUserInfoRequestValidator : AbstractValidator<UpdateUse
             .When(x => !string.IsNullOrEmpty(x.Avatar));
     }
 }
+

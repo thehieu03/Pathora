@@ -1,5 +1,4 @@
 using Domain.Entities;
-using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -28,7 +27,7 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
             .IsRequired();
 
         builder.Property(r => r.Status)
-            .HasDefaultValue(RoleStatus.Active);
+            .IsRequired();
 
         builder.Property(r => r.IsDeleted)
             .HasDefaultValue(false);

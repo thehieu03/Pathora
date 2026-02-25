@@ -9,3 +9,4 @@ public enum RoleStatus
     [Description("Inactive")]
     Inactive = 2
 }
+

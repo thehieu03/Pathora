@@ -3,64 +3,103 @@ using Domain.Entities;
 using Domain.Enums;
 using ErrorOr;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class RoleRepository : IRoleRepository
+public class RoleRepository(AppDbContext context) : IRoleRepository
 {
-    private readonly AppDbContext _context;
-    public RoleRepository(AppDbContext context)
+    private readonly AppDbContext _context = context;
+
+    public async Task<ErrorOr<Success>> Create(RoleEntity role)
     {
-        _context = context;
+        await _context.Roles.AddAsync(role);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> AddUser(Guid userId, List<Guid> roleIds)
+    public async Task<ErrorOr<Success>> Update(RoleEntity role)
     {
-        throw new NotImplementedException();
+        _context.Roles.Update(role);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<int>> CountAll(string? roleName = null, RoleStatus status = RoleStatus.Active)
+    public async Task<ErrorOr<Success>> AddUser(Guid userId, List<Guid> roleIds)
     {
-        throw new NotImplementedException();
+        var userRoles = roleIds.Select(roleId => new UserRoleEntity
+        {
+            UserId = userId,
+            RoleId = roleId
+        }).ToList();
+        await _context.UserRoles.AddRangeAsync(userRoles);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> Create(RoleEntity role)
+    public async Task<ErrorOr<Success>> DeleteUser(Guid userId)
     {
-        throw new NotImplementedException();
+        var userRoles = await _context.UserRoles.Where(ur => ur.UserId == userId).ToListAsync();
+        _context.UserRoles.RemoveRange(userRoles);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> DeleteUser(Guid userId)
+    public async Task<ErrorOr<List<(Guid UserId, Guid RoleId)>>> FindAllUserRoles()
     {
-        throw new NotImplementedException();
+        var result = await _context.UserRoles
+            .AsNoTracking()
+            .Select(ur => new { ur.UserId, ur.RoleId })
+            .ToListAsync();
+        return result.Select(ur => (ur.UserId, ur.RoleId)).ToList();
     }
 
-    public Task<ErrorOr<List<RoleEntity>>> FindAll(string? roleName = null, RoleStatus status = RoleStatus.Active, int pageNumber = 0, int pageSize = 0)
+    public async Task<ErrorOr<List<RoleEntity>>> GetAll()
     {
-        throw new NotImplementedException();
+        return await _context.Roles
+            .AsNoTracking()
+            .Where(r => !r.IsDeleted)
+            .ToListAsync();
     }
 
-    public Task<ErrorOr<List<(Guid UserId, Guid RoleId)>>> FindAllUserRoles()
+    public async Task<ErrorOr<RoleEntity?>> FindById(string roleId)
     {
-        throw new NotImplementedException();
+        if (!Guid.TryParse(roleId, out var id))
+            return Error.Validation("Role.InvalidId", "Role ID không hợp lệ");
+        var role = await _context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+        return role;
     }
 
-    public Task<ErrorOr<RoleEntity?>> FindById(string roleId)
+    public async Task<ErrorOr<List<RoleEntity>>> FindByUserId(string userId)
     {
-        throw new NotImplementedException();
+        if (!Guid.TryParse(userId, out var uid))
+            return Error.Validation("User.InvalidId", "User ID không hợp lệ");
+        var roleIds = await _context.UserRoles
+            .Where(ur => ur.UserId == uid)
+            .Select(ur => ur.RoleId)
+            .ToListAsync();
+        var roles = await _context.Roles
+            .AsNoTracking()
+            .Where(r => roleIds.Contains(r.Id) && !r.IsDeleted)
+            .ToListAsync();
+        return roles;
     }
 
-    public Task<ErrorOr<List<RoleEntity>>> FindByUserId(string userId)
+    public async Task<ErrorOr<List<RoleEntity>>> FindAll(string? roleName = null, RoleStatus status = RoleStatus.Active, int pageNumber = 0, int pageSize = 0)
     {
-        throw new NotImplementedException();
+        var query = _context.Roles.AsNoTracking().Where(r => !r.IsDeleted && r.Status == status);
+        if (!string.IsNullOrWhiteSpace(roleName))
+            query = query.Where(r => r.Name.ToLower().Contains(roleName.ToLower()));
+        if (pageNumber > 0 && pageSize > 0)
+            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+        return await query.OrderByDescending(r => r.CreatedOnUtc).ToListAsync();
     }
 
-    public Task<ErrorOr<List<RoleEntity>>> GetAll()
+    public async Task<ErrorOr<int>> CountAll(string? roleName = null, RoleStatus status = RoleStatus.Active)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<ErrorOr<Success>> Update(RoleEntity role)
-    {
-        throw new NotImplementedException();
+        var query = _context.Roles.Where(r => !r.IsDeleted && r.Status == status);
+        if (!string.IsNullOrWhiteSpace(roleName))
+            query = query.Where(r => r.Name.ToLower().Contains(roleName.ToLower()));
+        return await query.CountAsync();
     }
 }

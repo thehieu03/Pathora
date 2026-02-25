@@ -3,23 +3,25 @@ using Domain.Constant;
 using Domain.Entities;
 using ErrorOr;
 using Infrastructure.Data;
-using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Repositories.Common;
 
 namespace Infrastructure.Repositories;
 
-public class FunctionRepository : Repository<Function>, IFunctionRepository
+public class FunctionRepository(AppDbContext context) : IFunctionRepository
 {
-    public FunctionRepository(AppDbContext context) : base(context)
-    {
-    }
+    private readonly AppDbContext _context = context;
 
-    public Task<ErrorOr<List<Function>>> FindAll()
+    public async Task<ErrorOr<List<Function>>> FindAll()
     {
-        var functions = _context.Functions.Where(f => !f.IsDeleted).ToList();
-        return Task.FromResult<ErrorOr<List<Function>>>(functions);
+        return await _context.Functions
+            .AsNoTracking()
+            .Where(f => !f.IsDeleted)
+            .OrderBy(f => f.CategoryId)
+            .ThenBy(f => f.Order)
+            .ToListAsync();
     }
-    public async Task<ErrorOr<List<Function>>> FindUserFunctions(string userId)
+    public Task<ErrorOr<List<Function>>> FindUserFunctions(string userId)
     {
         if (!Guid.TryParse(userId, out var userGuid))
         {

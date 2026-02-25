@@ -395,9 +395,7 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(1);
+                        .HasColumnType("integer");
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
@@ -608,10 +606,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasDefaultValue("Pending");
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("TourCode")
                         .IsRequired()

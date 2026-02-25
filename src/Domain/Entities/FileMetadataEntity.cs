@@ -17,3 +17,4 @@ public sealed class FileMetadataEntity : Aggregate<Guid>
     public long FileSize { get; set; }
     public bool IsDeleted { get; set; }
 }
+

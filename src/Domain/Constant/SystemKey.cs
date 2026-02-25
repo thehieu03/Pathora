@@ -9,3 +9,4 @@ public sealed class SystemKey : Entity<int>
     public int SortOrder { get; set; }
     public bool IsDeleted { get; set; }
 }
+

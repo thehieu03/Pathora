@@ -1,3 +1,4 @@
-﻿namespace Application.Contracts.Identity;
+namespace Application.Contracts.Identity;
 
 public sealed record LogoutRequest(string RefreshToken);
+

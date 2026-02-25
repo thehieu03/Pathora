@@ -1,36 +1,55 @@
-// làm riêng
-
-using Application.Common.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using ErrorOr;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class FileRepository : IFileRepository
+public class FileRepository(AppDbContext context) : IFileRepository
 {
-    public Task<ErrorOr<Success>> AddRange(FileMetadataEntity[] fileMetadatas)
+    private readonly AppDbContext _context = context;
+
+    public async Task<ErrorOr<Success>> AddRange(FileMetadataEntity[] fileMetadatas)
     {
-        throw new NotImplementedException();
+        await _context.FileMetadatas.AddRangeAsync(fileMetadatas);
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> DeleteByLinkedEntityId(Guid id)
+    public async Task<ErrorOr<List<FileMetadataEntity>>> FindByIds(IEnumerable<Guid> ids)
     {
-        throw new NotImplementedException();
+        var idList = ids.ToList();
+        return await _context.FileMetadatas
+            .AsNoTracking()
+            .Where(f => idList.Contains(f.Id) && !f.IsDeleted)
+            .ToListAsync();
     }
 
-    public Task<ErrorOr<Success>> DeleteRange(List<Guid> ids)
+    public async Task<ErrorOr<List<FileMetadataEntity>>> FindByLinkedEntityIds(IEnumerable<string> ids)
     {
-        throw new NotImplementedException();
+        var guidIds = ids.Where(id => Guid.TryParse(id, out _)).Select(Guid.Parse).ToList();
+        return await _context.FileMetadatas
+            .AsNoTracking()
+            .Where(f => guidIds.Contains(f.LinkedEntityId) && !f.IsDeleted)
+            .ToListAsync();
     }
 
-    public Task<ErrorOr<List<FileMetadataEntity>>> FindByIds(IEnumerable<Guid> ids)
+    public async Task<ErrorOr<Success>> DeleteRange(List<Guid> ids)
     {
-        throw new NotImplementedException();
+        var files = await _context.FileMetadatas.Where(f => ids.Contains(f.Id)).ToListAsync();
+        foreach (var file in files)
+            file.IsDeleted = true;
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 
-    public Task<ErrorOr<List<FileMetadataEntity>>> FindByLinkedEntityIds(IEnumerable<string> ids)
+    public async Task<ErrorOr<Success>> DeleteByLinkedEntityId(Guid id)
     {
-        throw new NotImplementedException();
+        var files = await _context.FileMetadatas.Where(f => f.LinkedEntityId == id).ToListAsync();
+        foreach (var file in files)
+            file.IsDeleted = true;
+        await _context.SaveChangesAsync();
+        return Result.Success;
     }
 }
