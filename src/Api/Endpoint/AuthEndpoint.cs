@@ -9,4 +9,5 @@ public static class AuthEndpoint
     public const string Logout = "logout";
     public const string Me = "me";
     public const string Tabs = "tabs";
+    public const string DevResetPassword = "dev-reset-password";
 }

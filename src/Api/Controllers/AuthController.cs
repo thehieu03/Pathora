@@ -1,8 +1,11 @@
 using Api.Endpoint;
+using Application.Common.Interfaces;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
@@ -53,4 +56,29 @@ public class AuthController : BaseApiController
         var result = await Sender.Send(new GetTabsQuery());
         return HandleResult(result);
     }
+
+    /// <summary>DEV ONLY – reset a user password without authentication.</summary>
+    [HttpPost(AuthEndpoint.DevResetPassword)]
+    public async Task<IActionResult> DevResetPassword(
+        [FromBody] DevResetPasswordRequest request,
+        [FromServices] AppDbContext db,
+        [FromServices] IPasswordHasher hasher,
+        [FromServices] IWebHostEnvironment env)
+    {
+        if (!env.IsDevelopment())
+            return NotFound();
+
+        var user = await db.Users
+            .FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted);
+
+        if (user is null)
+            return NotFound(new { message = $"Không tìm thấy user với email: {request.Email}" });
+
+        user.ChangePassword(hasher.HashPassword(request.NewPassword), "dev-reset");
+        await db.SaveChangesAsync();
+
+        return Ok(new { message = $"Đã đổi mật khẩu cho {user.Email} (username: {user.Username})" });
+    }
 }
+
+public sealed record DevResetPasswordRequest(string Email, string NewPassword);
