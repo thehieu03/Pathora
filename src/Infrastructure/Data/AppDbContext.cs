@@ -1,3 +1,4 @@
+using Domain.Abstractions;
 using Domain.Entities;
 using Domain.Mails;
 using Infrastructure.Data.Configurations;
@@ -9,6 +10,32 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateAuditableEntities();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateAuditableEntities()
+    {
+        foreach (var entry in ChangeTracker.Entries<IAuditable>())
+        {
+            if (entry.State == EntityState.Added)
+            {
+                if (entry.Entity.CreatedOnUtc == default)
+                    entry.Entity.CreatedOnUtc = DateTimeOffset.UtcNow;
+
+                if (entry.Entity.LastModifiedOnUtc is null)
+                    entry.Entity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+            }
+
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.LastModifiedOnUtc = DateTimeOffset.UtcNow;
+            }
+        }
     }
 
     public DbSet<UserEntity> Users => Set<UserEntity>();
