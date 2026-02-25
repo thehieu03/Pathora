@@ -6,6 +6,7 @@ import Card from "@/components/ui/Card";
 import BasicArea from "../chart/appex-chart/BasicArea";
 import { useAuth } from "@/contexts/AuthContext";
 import LoaderCircle from "@/components/Loader-circle";
+import { useLoginMutation } from "@/store/api/auth/authApiSlice";
 
 // import images
 import ProfileImage from "@/assets/images/users/user-1.jpg";
@@ -25,10 +26,9 @@ const Profile = () => {
     );
   }
 
-  const displayName =
-    user?.firstName && user?.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user?.username || user?.email || "Albert Flores";
+  const displayName = user?.fullName
+    ? user.fullName
+    : user?.username || user?.email || "Albert Flores";
 
   const email = user?.email || "info-500@progcoder.com";
   const phone = "+1-202-555-0151";
@@ -51,8 +51,7 @@ const Profile = () => {
                   />
                   <Link
                     href="#"
-                    className="absolute top-25 right-2 flex h-8 w-8 flex-col items-center justify-center rounded-full bg-slate-50 text-slate-600 shadow-xs md:top-35"
-                  >
+                    className="absolute top-25 right-2 flex h-8 w-8 flex-col items-center justify-center rounded-full bg-slate-50 text-slate-600 shadow-xs md:top-35">
                     <Icon icon="heroicons:pencil-square" />
                   </Link>
                 </div>
@@ -111,8 +110,7 @@ const Profile = () => {
                     </div>
                     <a
                       href={`mailto:${email}`}
-                      className="text-base text-slate-600 dark:text-slate-50"
-                    >
+                      className="text-base text-slate-600 dark:text-slate-50">
                       {email}
                     </a>
                   </div>
@@ -128,8 +126,7 @@ const Profile = () => {
                     </div>
                     <a
                       href={`tel:${phone.replace(/\D/g, "")}`}
-                      className="text-base text-slate-600 dark:text-slate-50"
-                    >
+                      className="text-base text-slate-600 dark:text-slate-50">
                       {phone}
                     </a>
                   </div>

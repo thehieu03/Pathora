@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -90,9 +91,11 @@ export const ReviewsSection = () => {
             </p>
 
             <div className="flex justify-center mb-4">
-              <img
+              <Image
                 src={review.avatar}
                 alt={`${review.name}'s avatar`}
+                width={60}
+                height={60}
                 className="w-15 h-15 rounded-full object-cover"
               />
             </div>
@@ -125,7 +128,7 @@ export const ReviewsSection = () => {
               type="button"
               key={i}
               onClick={() => setCurrent(i)}
-              className="w-11 h-11 flex items-center justify-center rounded-full"
+              className="w-11 h-11 flex items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent"
               aria-label={t("landing.reviews.goToReview", { number: i + 1 })}
               aria-current={i === current ? "true" : undefined}
             >

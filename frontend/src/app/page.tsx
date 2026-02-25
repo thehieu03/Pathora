@@ -16,7 +16,7 @@ import {
 
 export default function Home() {
   return (
-    <main className="bg-white min-h-screen overflow-x-hidden">
+    <main id="main-content" tabIndex={-1} className="bg-white min-h-screen overflow-x-hidden">
       {/* Fixed nav sits on top of the hero */}
       <div className="relative">
         <LandingHeader />

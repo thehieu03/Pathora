@@ -50,7 +50,10 @@ const ButtonContent = ({
   iconPosition = "left",
   iconClass = "text-[20px]",
   loadingClass,
-}: Omit<ButtonProps, "onClick" | "link" | "type" | "disabled" | "className" | "ariaLabel">) => {
+}: Omit<
+  ButtonProps,
+  "onClick" | "link" | "type" | "disabled" | "className" | "ariaLabel"
+>) => {
   if (children && !isLoading) return children;
 
   if (!children && !isLoading) {
@@ -96,7 +99,7 @@ const Button = ({
   ariaLabel,
 }: ButtonProps) => {
   const baseClasses = `btn inline-flex items-center justify-center ${
-    isLoading ? "pointer-events-none" : ""
+    disabled || isLoading ? "pointer-events-none" : ""
   } ${disabled ? "cursor-not-allowed opacity-40" : ""} ${className}`;
 
   if (link) {
@@ -104,18 +107,20 @@ const Button = ({
       <Link
         href={link}
         className={baseClasses}
+        onClick={onClick}
         aria-label={ariaLabel}
         aria-disabled={disabled || isLoading}
       >
         <ButtonContent
           text={text}
-          children={children}
           isLoading={isLoading}
           icon={icon}
           iconPosition={iconPosition}
           iconClass={iconClass}
           loadingClass={loadingClass}
-        />
+        >
+          {children}
+        </ButtonContent>
       </Link>
     );
   }
@@ -131,13 +136,14 @@ const Button = ({
     >
       <ButtonContent
         text={text}
-        children={children}
         isLoading={isLoading}
         icon={icon}
         iconPosition={iconPosition}
         iconClass={iconClass}
         loadingClass={loadingClass}
-      />
+      >
+        {children}
+      </ButtonContent>
     </button>
   );
 };

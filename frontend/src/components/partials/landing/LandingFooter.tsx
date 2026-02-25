@@ -1,44 +1,88 @@
 "use client";
-import React from "react";
+import React, { FormEvent, useId } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button, Icon, Textinput } from "@/components/ui";
 import { useTranslation } from "react-i18next";
 
 const FOOTER_BG =
   "https://www.figma.com/api/mcp/asset/b457b48b-2c4f-49e0-a589-ec3d2233e4c1";
 
-const companyLinkKeys = [
-  "landing.footer.links.company.aboutUs",
-  "landing.footer.links.company.reviews",
-  "landing.footer.links.company.contactUs",
-  "landing.footer.links.company.travelGuides",
-  "landing.footer.links.company.dataPolicy",
-  "landing.footer.links.company.cookiePolicy",
-  "landing.footer.links.company.legal",
-  "landing.footer.links.company.sitemap",
+const companyLinks = [
+  { labelKey: "landing.footer.links.company.aboutUs", href: "/#about-us" },
+  { labelKey: "landing.footer.links.company.reviews", href: "/#reviews" },
+  { labelKey: "landing.footer.links.company.contactUs", href: "/#contact" },
+  {
+    labelKey: "landing.footer.links.company.travelGuides",
+    href: "/#travel-guides",
+  },
+  {
+    labelKey: "landing.footer.links.company.dataPolicy",
+    href: "/policies#data-policy",
+  },
+  {
+    labelKey: "landing.footer.links.company.cookiePolicy",
+    href: "/policies#cookie-policy",
+  },
+  { labelKey: "landing.footer.links.company.legal", href: "/policies#legal" },
+  { labelKey: "landing.footer.links.company.sitemap", href: "/sitemap.xml" },
 ];
-const supportLinkKeys = [
-  "landing.footer.links.support.getInTouch",
-  "landing.footer.links.support.helpCenter",
-  "landing.footer.links.support.liveChat",
-  "landing.footer.links.support.howItWorks",
+const supportLinks = [
+  { labelKey: "landing.footer.links.support.getInTouch", href: "/#contact" },
+  {
+    labelKey: "landing.footer.links.support.helpCenter",
+    href: "/#help-center",
+  },
+  { labelKey: "landing.footer.links.support.liveChat", href: "/#live-chat" },
+  {
+    labelKey: "landing.footer.links.support.howItWorks",
+    href: "/#how-it-works",
+  },
 ];
 
-const socialIcons = [
-  { name: "facebook", icon: "mdi:facebook" },
-  { name: "twitter", icon: "mdi:twitter" },
-  { name: "instagram", icon: "mdi:instagram" },
-  { name: "youtube", icon: "mdi:youtube" },
+const socialLinks = [
+  {
+    name: "facebook",
+    icon: "mdi:facebook",
+    href: "https://facebook.com",
+    label: "Facebook",
+  },
+  {
+    name: "twitter",
+    icon: "mdi:twitter",
+    href: "https://twitter.com",
+    label: "Twitter",
+  },
+  {
+    name: "instagram",
+    icon: "mdi:instagram",
+    href: "https://instagram.com",
+    label: "Instagram",
+  },
+  {
+    name: "youtube",
+    icon: "mdi:youtube",
+    href: "https://youtube.com",
+    label: "YouTube",
+  },
 ];
 
 export const LandingFooter = () => {
   const { t } = useTranslation();
+  const newsletterInputId = useId();
+
+  const handleSubscribe = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
 
   return (
     <footer className="relative overflow-hidden text-white">
-      <img
+      <Image
         src={FOOTER_BG}
-        alt={t("landing.footer.backgroundAlt")}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="100vw"
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-landing-heading/90" />
@@ -48,20 +92,28 @@ export const LandingFooter = () => {
         <div className="flex flex-col md:flex-row items-center justify-between border-b border-white/15 pb-8 mb-10 gap-4">
           <p className="text-[#eb662b] font-medium">
             {t("landing.footer.speakToExpert")}{" "}
-            <span className="font-bold">1-800-453-6744</span>
+            <a
+              href="tel:+18004536744"
+              className="font-bold underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
+            >
+              1-800-453-6744
+            </a>
           </p>
           <div className="flex items-center gap-4 text-sm">
             <span className="text-white/70">
               {t("landing.footer.followUs")}
             </span>
-            {socialIcons.map((s) => (
-              <Link
+            {socialLinks.map((s) => (
+              <a
                 key={s.name}
-                href={`https://${s.name}.com`}
-                className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors text-white/70 hover:text-white"
+                href={s.href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={s.label}
+                className="w-11 h-11 rounded-full border border-white/20 flex items-center justify-center hover:bg-landing-accent hover:border-landing-accent transition-colors text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <Icon icon={s.icon} className="w-4 h-4" />
-              </Link>
+              </a>
             ))}
           </div>
         </div>
@@ -76,7 +128,14 @@ export const LandingFooter = () => {
             <p className="text-white/60 text-sm leading-relaxed">
               {t("landing.footer.contact.address")}
             </p>
-            <p className="text-white/60 text-sm mt-3">hi@pathora.com</p>
+            <p className="text-white/60 text-sm mt-3">
+              <a
+                href="mailto:hi@pathora.com"
+                className="hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
+              >
+                hi@pathora.com
+              </a>
+            </p>
           </div>
 
           {/* Company */}
@@ -85,13 +144,13 @@ export const LandingFooter = () => {
               {t("landing.footer.company.title")}
             </h4>
             <ul className="flex flex-col gap-2">
-              {companyLinkKeys.map((linkKey) => (
-                <li key={linkKey}>
+              {companyLinks.map((link) => (
+                <li key={link.labelKey}>
                   <Link
-                    href="#"
-                    className="text-white/60 text-sm hover:text-landing-accent transition-colors"
+                    href={link.href}
+                    className="text-white/60 text-sm hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
                   >
-                    {t(linkKey)}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -104,13 +163,13 @@ export const LandingFooter = () => {
               {t("landing.footer.support.title")}
             </h4>
             <ul className="flex flex-col gap-2">
-              {supportLinkKeys.map((linkKey) => (
-                <li key={linkKey}>
+              {supportLinks.map((link) => (
+                <li key={link.labelKey}>
                   <Link
-                    href="#"
-                    className="text-white/60 text-sm hover:text-landing-accent transition-colors"
+                    href={link.href}
+                    className="text-white/60 text-sm hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
                   >
-                    {t(linkKey)}
+                    {t(link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -125,42 +184,52 @@ export const LandingFooter = () => {
             <p className="text-white/60 text-sm leading-relaxed mb-5">
               {t("landing.footer.newsletter.description")}
             </p>
-            <div className="flex gap-2">
+            <form className="flex gap-2" onSubmit={handleSubscribe} noValidate>
               <Textinput
+                id={newsletterInputId}
+                name="newsletterEmail"
                 type="email"
+                autocomplete="email"
+                label={t("landing.footer.newsletter.title")}
+                classLabel="sr-only"
                 placeholder={t("landing.footer.newsletter.placeholder")}
-                className="flex-1 !bg-white !border-white/20 !rounded-xl !px-4 !py-3 !text-landing-heading !text-sm placeholder:!text-gray-400"
+                className="flex-1 bg-white! border-white/20! rounded-xl! min-h-11! px-4! py-3! text-landing-heading! text-sm! placeholder:text-gray-400!"
               />
               <Button
+                type="submit"
                 text={t("landing.footer.newsletter.send")}
-                className="bg-landing-accent text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-landing-accent-hover transition-colors shrink-0"
+                className="bg-landing-accent text-white min-h-11 px-5 py-3 rounded-xl text-sm font-semibold hover:bg-landing-accent-hover transition-colors shrink-0"
               />
-            </div>
+            </form>
 
             <h4 className="text-white font-semibold text-lg mt-8 mb-3">
               {t("landing.footer.mobileApps.title")}
             </h4>
             <div className="flex flex-col gap-2">
-              <Link
-                href="#"
-                className="text-white/60 text-sm hover:text-landing-accent transition-colors flex items-center gap-2"
+              <a
+                href="https://apps.apple.com"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-white/60 text-sm hover:text-landing-accent transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
               >
                 <Icon icon="mdi:apple" className="w-4 h-4" />{" "}
                 {t("landing.footer.mobileApps.ios")}
-              </Link>
-              <Link
-                href="#"
-                className="text-white/60 text-sm hover:text-landing-accent transition-colors flex items-center gap-2"
+              </a>
+              <a
+                href="https://play.google.com/store"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="text-white/60 text-sm hover:text-landing-accent transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
               >
                 <Icon icon="mdi:android" className="w-4 h-4" />{" "}
                 {t("landing.footer.mobileApps.android")}
-              </Link>
+              </a>
             </div>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-white/15 mt-10 pt-6 text-center text-white/40 text-sm">
+        <div className="border-t border-white/15 mt-10 pt-6 text-center text-white/60 text-sm">
           {t("landing.footer.copyright", {
             year: new Date().getFullYear(),
           })}

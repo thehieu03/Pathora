@@ -30,7 +30,7 @@ const ModalShell = ({
   closeLabel: string;
   dialogRef?: React.RefObject<HTMLDivElement | null>;
 }) => (
-  <div className="fixed inset-0 z-[200] flex items-center justify-center">
+  <div className="fixed inset-0 z-200 flex items-center justify-center">
     <button
       type="button"
       className="absolute inset-0 bg-[#333]/80"
@@ -39,7 +39,7 @@ const ModalShell = ({
     />
     <div
       ref={dialogRef}
-      className="relative bg-white rounded-3xl px-6 sm:px-10 py-8 shadow-[0px_4px_20px_0px_rgba(255,255,255,0.25)] w-[calc(100%-32px)] max-w-112 max-h-[90vh] overflow-y-auto"
+      className="relative bg-white rounded-3xl px-6 sm:px-10 py-8 shadow-[0px_4px_20px_0px_rgba(255,255,255,0.25)] w-[calc(100%-32px)] max-w-md max-h-[90vh] overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-label={ariaLabel}

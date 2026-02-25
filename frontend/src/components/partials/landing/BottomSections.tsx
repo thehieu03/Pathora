@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { Button, Card } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -42,9 +43,12 @@ export const CTASection = () => {
   const { t } = useTranslation();
   return (
     <section className="relative w-full h-112.5 overflow-hidden">
-      <img
+      <Image
         src={CTA_BG}
-        alt={t("landing.cta.backgroundAlt")}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="100vw"
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-landing-heading/60" />
@@ -85,11 +89,18 @@ export const WhyChooseSection = () => {
           {FEATURES.map((feat, idx) => (
             <Card
               key={idx}
-              className="!bg-transparent !shadow-none border-none flex flex-col items-center text-center"
+              className="bg-transparent! shadow-none! border-none flex flex-col items-center text-center"
               bodyClass="p-0 flex flex-col items-center text-center gap-4"
             >
               <div className="w-17.5 h-17.5 bg-landing-accent/10 rounded-full flex items-center justify-center">
-                <img src={feat.icon} alt="" className="w-8 h-8" />
+                <Image
+                  src={feat.icon}
+                  alt=""
+                  aria-hidden="true"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                />
               </div>
               <h3 className="font-semibold text-landing-heading text-base leading-snug">
                 {t(feat.titleKey)}
@@ -115,10 +126,12 @@ export const TrustedBrandsSection = () => {
         </p>
         <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
           {BRANDS.map((src, idx) => (
-            <img
+            <Image
               key={idx}
               src={src}
-              alt={t("landing.trustedBrands.brandAlt")}
+              alt={`${t("landing.trustedBrands.brandAlt")} ${idx + 1}`}
+              width={128}
+              height={32}
               className="h-6 md:h-8 object-contain opacity-60 hover:opacity-100 transition-opacity"
             />
           ))}

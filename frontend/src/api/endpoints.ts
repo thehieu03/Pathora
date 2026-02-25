@@ -103,7 +103,10 @@ export interface CommunicationEndpoints {
 export interface AuthEndpoints {
   LOGIN: string;
   REGISTER: string;
+  REFRESH: string;
+  LOGOUT: string;
   GET_ME: string;
+  GET_TABS: string;
 }
 
 // Main API Endpoints Interface
@@ -215,7 +218,10 @@ export const API_ENDPOINTS: ApiEndpoints = {
   AUTH: {
     LOGIN: "/api/auth/login",
     REGISTER: "/api/auth/register",
+    REFRESH: "/api/auth/refresh",
+    LOGOUT: "/api/auth/logout",
     GET_ME: "/api/auth/me",
+    GET_TABS: "/api/auth/tabs",
   },
 };
 

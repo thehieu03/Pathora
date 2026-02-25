@@ -64,11 +64,11 @@ export interface User {
   updatedAt?: string;
 }
 
-export type UserRole = "admin" | "manager" | "user" | "guest" | string;
+export type UserRole = "admin" | "user" | "guest" | string;
 
 export interface AuthState {
   isAuth: boolean;
-  user: User | null;
+  user: UserInfo | null;
   token: string | null;
 }
 
@@ -82,6 +82,40 @@ export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
+}
+
+export interface UserRoleVm {
+  type: number;
+  id: string;
+  name: string;
+}
+
+export interface UserDepartmentVm {
+  id: string;
+  name: string;
+  positionId: string | null;
+  positionName: string | null;
+}
+
+/** User info returned from GET /api/auth/me — matches backend UserInfoVm */
+export interface UserInfo {
+  id: string;
+  username: string | null;
+  fullName: string | null;
+  email: string | null;
+  avatar: string | null;
+  forcePasswordChange: boolean;
+  roles: UserRoleVm[];
+  departments: UserDepartmentVm[];
+}
+
+/** Generic wrapper for all backend ResultSharedResponse<T> payloads */
+export interface ApiSharedResponse<T> {
+  data: T | null;
+  message: string | null;
+  statusCode: number;
+  instance: string | null;
+  errors: { errorMessage: string; code: string }[] | null;
 }
 
 // ==================== Layout Types ====================
@@ -247,7 +281,14 @@ export interface UpdateBrandDto extends Partial<CreateBrandDto> {
 
 // ==================== Order Types ====================
 
-export type OrderStatus = "pending" | "processing" | "confirmed" | "shipped" | "delivered" | "cancelled" | "refunded";
+export type OrderStatus =
+  | "pending"
+  | "processing"
+  | "confirmed"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | "refunded";
 
 export interface Order {
   id: string;
@@ -328,13 +369,15 @@ export interface CreateOrUpdateOrderDto {
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
-  shippingAddress: string | {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zipCode: string;
-  };
+  shippingAddress:
+    | string
+    | {
+        street: string;
+        city: string;
+        state: string;
+        country: string;
+        zipCode: string;
+      };
   paymentMethod?: string;
   notes?: string;
   items: CreateOrderItemDto[];

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -56,9 +57,12 @@ export const StatsSection = () => {
                   className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-4 bg-white shadow-sm md:shadow-none rounded-lg p-3 md:p-0 min-w-25 md:min-w-0 shrink-0"
                 >
                   <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center shrink-0">
-                    <img
+                    <Image
                       src={stat.icon}
                       alt=""
+                      aria-hidden="true"
+                      width={28}
+                      height={28}
                       className="w-5 h-5 md:w-7 md:h-7"
                     />
                   </div>
@@ -87,16 +91,24 @@ export const StatsSection = () => {
           </div>
 
           <div className="flex-1 relative h-50 md:h-100 w-full lg:block">
-            <img
-              src={EXPLORE_IMG}
-              alt={t("landing.stats.exploreImageAlt")}
-              className="absolute right-0 top-0 w-[60%] md:w-75 h-[90%] md:h-95 object-cover rounded-xl md:rounded-2xl shadow-xl"
-            />
-            <img
-              src={BG_IMG}
-              alt={t("landing.stats.backgroundImageAlt")}
-              className="absolute left-0 bottom-0 w-[50%] md:w-65 h-[80%] md:h-80 object-cover rounded-xl md:rounded-2xl shadow-lg"
-            />
+            <div className="absolute right-0 top-0 w-[60%] md:w-75 h-[90%] md:h-95 rounded-xl md:rounded-2xl overflow-hidden shadow-xl">
+              <Image
+                src={EXPLORE_IMG}
+                alt={t("landing.stats.exploreImageAlt")}
+                fill
+                sizes="(max-width: 768px) 60vw, 300px"
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute left-0 bottom-0 w-[50%] md:w-65 h-[80%] md:h-80 rounded-xl md:rounded-2xl overflow-hidden shadow-lg">
+              <Image
+                src={BG_IMG}
+                alt={t("landing.stats.backgroundImageAlt")}
+                fill
+                sizes="(max-width: 768px) 50vw, 260px"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </SectionContainer>

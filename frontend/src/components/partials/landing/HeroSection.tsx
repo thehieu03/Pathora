@@ -240,26 +240,26 @@ const SelectField = ({
   displayValue,
   children,
 }: SelectFieldProps) => (
-  <div className="relative w-full md:flex-1 md:min-w-0">
+  <div className="relative w-full md:flex-[1_1_0] md:min-w-0">
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
       aria-haspopup={children ? "listbox" : undefined}
-      className={`flex items-start gap-2 md:gap-3 p-3 md:p-4 min-h-11 bg-white w-full text-left ${rounded ?? ""} ${
+      className={`flex items-start gap-2 md:gap-3 p-3 md:p-4 min-h-11 bg-white w-full text-left overflow-hidden ${rounded ?? ""} ${
         isOpen ? "ring-2 ring-landing-accent/30" : ""
       }`}
     >
       <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 mt-0.5 flex items-center justify-center">
         <Image src={icon} alt="" fill sizes="24px" className="object-contain" />
       </div>
-      <div className="flex flex-col gap-1 md:gap-1.5">
-        <span className="text-[#333] font-semibold text-xs md:text-base leading-none">
+      <div className="flex min-w-0 flex-col gap-1 md:gap-1.5">
+        <span className="text-[#333] font-semibold text-xs md:text-base leading-none truncate">
           {label}
         </span>
-        <div className="flex items-center gap-2 md:gap-4 opacity-70">
+        <div className="flex min-w-0 items-center gap-2 md:gap-4 opacity-70">
           <span
-            className={`text-[10px] md:text-sm font-normal ${
+            className={`text-[10px] md:text-sm font-normal truncate ${
               displayValue ? "text-[#333]" : "text-[#333] opacity-80"
             }`}
           >
@@ -419,7 +419,7 @@ export const HeroSection = () => {
             </Button>
           </div>
 
-          <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 w-full overflow-hidden">
+          <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 w-full">
             <SelectField
               icon={PEOPLE_ICON}
               label={t("landing.hero.fields.people.label")}
@@ -511,9 +511,9 @@ export const HeroSection = () => {
               />
             </SelectField>
 
-            <div className="p-3 md:p-0 md:pl-2 w-full md:w-auto md:shrink-0 flex justify-center">
+            <div className="p-3 md:p-0 md:pl-2 w-full md:w-52 md:shrink-0 flex justify-center">
               <Button
-                className="bg-landing-accent rounded-lg md:rounded-xl h-11 md:h-12 px-5 md:px-6 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:min-w-47.5 md:w-auto flex items-center justify-center gap-2"
+                className="bg-landing-accent rounded-lg md:rounded-xl h-11 md:h-12 px-4 md:px-5 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:w-full flex items-center justify-center gap-2"
                 ariaLabel={t("landing.hero.searchAria")}
               >
                 <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">

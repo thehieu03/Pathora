@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Badge, Card } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -114,15 +115,17 @@ export const TrendingDestinationsSection = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {DESTINATIONS.map((dest, idx) => (
+          {DESTINATIONS.map((dest) => (
             <Link
-              key={idx}
+              key={dest.city}
               href="/tours"
-              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl transition-shadow duration-300"
+              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl transition-shadow duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent"
             >
-              <img
+              <Image
                 src={dest.image}
                 alt={dest.city}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -157,16 +160,22 @@ export const TopAttractionsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {ATTRACTIONS.map((attr, idx) => (
-            <Link key={idx} href="/tours" className="group">
+          {ATTRACTIONS.map((attr) => (
+            <Link
+              key={attr.name}
+              href="/tours"
+              className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent rounded-xl"
+            >
               <Card
-                className="!bg-white border border-landing-border !rounded-xl hover:shadow-md transition-shadow duration-300"
+                className="bg-white! border border-landing-border rounded-xl! hover:shadow-md transition-shadow duration-300"
                 bodyClass="p-3 flex items-center gap-3"
               >
-                <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                  <img
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
+                  <Image
                     src={attr.image}
                     alt={attr.name}
+                    fill
+                    sizes="64px"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>

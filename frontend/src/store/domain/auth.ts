@@ -1,3 +1,29 @@
+export interface UserRoleVm {
+  type: number;
+  id: string;
+  name: string;
+}
+
+export interface UserDepartmentVm {
+  id: string;
+  name: string;
+  positionId: string | null;
+  positionName: string | null;
+}
+
+/** Matches backend UserInfoVm returned from GET /api/auth/me */
+export interface UserInfo {
+  id: string;
+  username: string | null;
+  fullName: string | null;
+  email: string | null;
+  avatar: string | null;
+  forcePasswordChange: boolean;
+  roles: UserRoleVm[];
+  departments: UserDepartmentVm[];
+}
+
+/** @deprecated Use UserInfo instead */
 export interface User {
   id: string;
   email: string;
@@ -16,6 +42,6 @@ export type UserRole = "admin" | "manager" | "user" | "guest" | string;
 
 export interface AuthState {
   isAuth: boolean;
-  user: User | null;
+  user: UserInfo | null;
   token: string | null;
 }

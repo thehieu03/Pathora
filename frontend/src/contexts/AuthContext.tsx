@@ -2,15 +2,15 @@
 
 import type { ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { logOut } from "@/store/api/auth/authSlice";
+import { logOut } from "@/store/infrastructure/authSlice";
 import type { RootState, AppDispatch } from "@/store";
-import type { User } from "@/types";
+import type { UserInfo } from "@/types";
 
 type LoginRequest = Record<string, unknown>;
 type RegisterRequest = Record<string, unknown>;
 
 export interface AuthContextValue {
-  user: User | null;
+  user: UserInfo | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (data: LoginRequest) => Promise<void>;

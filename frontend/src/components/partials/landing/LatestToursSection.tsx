@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
@@ -67,22 +68,26 @@ export const LatestToursSection = () => {
             <Link
               key={idx}
               href="/tours"
-              className="flex flex-row md:flex-col items-center gap-3 md:gap-3 shrink-0 group w-full md:w-auto"
+              className="flex flex-row md:flex-col items-center gap-3 md:gap-3 shrink-0 group w-full md:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent rounded-lg"
             >
               <div className="relative shrink-0">
                 {tour.avatar && (
-                  <div className="absolute -inset-1 rounded-full hidden md:block">
-                    <img
+                  <div className="absolute -inset-1 rounded-full overflow-hidden hidden md:block">
+                    <Image
                       src={tour.avatar}
                       alt={t("landing.latestTours.avatarAlt")}
-                      className="w-27 h-27 rounded-full object-cover"
+                      fill
+                      sizes="108px"
+                      className="rounded-full object-cover"
                     />
                   </div>
                 )}
                 <div className="relative w-15 h-15 md:w-25 md:h-25 rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-                  <img
+                  <Image
                     src={tour.image}
                     alt={t(tour.titleKey)}
+                    fill
+                    sizes="(max-width: 768px) 60px, 100px"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
