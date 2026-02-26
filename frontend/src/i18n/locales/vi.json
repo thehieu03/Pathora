@@ -1228,6 +1228,10 @@
     "language": {
       "title": "Ngôn ngữ"
     },
+    "userMenu": {
+      "profile": "Thông tin cá nhân",
+      "changePassword": "Đổi mật khẩu"
+    },
     "a11y": {
       "openMenu": "Mở menu",
       "closeMenu": "Đóng menu",

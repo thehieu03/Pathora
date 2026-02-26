@@ -1228,6 +1228,10 @@
     "language": {
       "title": "Language"
     },
+    "userMenu": {
+      "profile": "My Profile",
+      "changePassword": "Change Password"
+    },
     "a11y": {
       "openMenu": "Open menu",
       "closeMenu": "Close menu",

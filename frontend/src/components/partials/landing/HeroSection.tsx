@@ -3,21 +3,17 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "./LandingImage";
 import { Button, Icon } from "@/components/ui";
 import { useTranslation } from "react-i18next";
+import {
+  FaGlobe,
+  FaLock,
+  FaUsers,
+  FaCalendarAlt,
+  FaMapMarkerAlt,
+  FaTag,
+} from "react-icons/fa";
 
 const HERO_BG =
   "https://www.figma.com/api/mcp/asset/e4c27cca-3e11-49a0-bb16-22b1bdf0f4cc";
-const PUBLIC_ICON =
-  "https://www.figma.com/api/mcp/asset/554c0547-fd8d-4c08-bff9-b4b0129f531a";
-const PRIVATE_ICON =
-  "https://www.figma.com/api/mcp/asset/c0d410d5-3013-4c54-aa50-807d334a3f82";
-const PEOPLE_ICON =
-  "https://www.figma.com/api/mcp/asset/e4a75e02-46bb-4c17-94d3-685688ecf5a2";
-const DATE_ICON =
-  "https://www.figma.com/api/mcp/asset/8452a393-4dd5-406c-a3ce-2bac21cf6389";
-const DEST_ICON =
-  "https://www.figma.com/api/mcp/asset/bf2d5a5d-a72b-46e7-9c41-a78011b2ea6c";
-const CLASS_ICON =
-  "https://www.figma.com/api/mcp/asset/b067c485-6c91-4a06-98d2-87ac97fb3ae5";
 
 /* ── Calendar helpers ──────────────────────────────────────── */
 
@@ -214,7 +210,7 @@ const NumberDropdown = ({
 
 /* ── SelectField ───────────────────────────────────────────── */
 type SelectFieldProps = {
-  icon: string;
+  icon: React.ReactNode;
   label: string;
   placeholder: string;
   rounded?: string;
@@ -243,8 +239,8 @@ const SelectField = ({
       className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white w-full text-left overflow-hidden ${rounded ?? ""} ${
         isOpen ? "ring-2 ring-landing-accent/30" : ""
       }`}>
-      <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 flex items-center justify-center">
-        <Image src={icon} alt="" fill sizes="24px" className="object-contain" />
+      <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 flex items-center justify-center text-landing-accent">
+        {icon}
       </div>
       <div className="flex min-w-0 flex-col gap-0.5 md:gap-1 w-full">
         <span className="text-[#333] font-semibold text-xs md:text-sm leading-tight truncate w-full block">
@@ -341,16 +337,19 @@ export const HeroSection = () => {
       : "";
 
   return (
-    <section className="relative w-full min-h-150 md:h-189.75 overflow-hidden">
-      <Image
-        src={HERO_BG}
-        alt={t("landing.hero.backgroundAlt")}
-        fill
-        priority
-        sizes="100vw"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-      <div className="absolute inset-0 bg-black/20" />
+    <section className="relative w-full min-h-150 md:h-189.75">
+      {/* overflow-hidden scoped only to bg image so dropdowns can overflow the section */}
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={HERO_BG}
+          alt={t("landing.hero.backgroundAlt")}
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
 
       <div className="relative z-10 flex flex-col items-center pt-25 md:pt-51.75 gap-10 md:gap-15 px-4">
         <div className="flex flex-col items-center gap-4 text-white text-center w-full max-w-5xl">
@@ -371,12 +370,10 @@ export const HeroSection = () => {
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tl-xl transition-colors ${
                 tourType === "public" ? "bg-white" : "bg-white/40"
               }`}>
-              <Image
-                src={PUBLIC_ICON}
-                alt=""
-                width={24}
-                height={24}
-                className="w-5 md:w-6 h-5 md:h-6"
+              <FaGlobe
+                className={`w-5 md:w-6 h-5 md:h-6 ${
+                  tourType === "public" ? "text-landing-accent" : "text-white"
+                }`}
               />
               <span
                 className={`font-semibold text-base md:text-lg ${
@@ -390,12 +387,10 @@ export const HeroSection = () => {
               className={`flex items-center gap-2.5 px-3 md:px-4 py-3 md:py-4 rounded-tr-xl transition-colors ${
                 tourType === "private" ? "bg-white" : "bg-white/40"
               }`}>
-              <Image
-                src={PRIVATE_ICON}
-                alt=""
-                width={24}
-                height={24}
-                className="w-5 md:w-6 h-5 md:h-6"
+              <FaLock
+                className={`w-5 md:w-6 h-5 md:h-6 ${
+                  tourType === "private" ? "text-landing-accent" : "text-white"
+                }`}
               />
               <span
                 className={`font-semibold text-base md:text-lg ${
@@ -407,9 +402,10 @@ export const HeroSection = () => {
           </div>
 
           <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 w-full">
-            <div className="relative w-full md:flex-[1.2] md:min-w-0">
+            <div
+              className={`relative w-full md:flex-[1.2] md:min-w-0 ${openField === "people" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={PEOPLE_ICON}
+                icon={<FaUsers className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.people.label")}
                 placeholder={t("landing.hero.fields.people.placeholder")}
                 rounded="rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
@@ -438,9 +434,10 @@ export const HeroSection = () => {
 
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
-            <div className="relative w-full md:flex-1 md:min-w-0">
+            <div
+              className={`relative w-full md:flex-1 md:min-w-0 ${openField === "date" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={DATE_ICON}
+                icon={<FaCalendarAlt className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.date.label")}
                 placeholder={t("landing.hero.fields.date.placeholder")}
                 isOpen={openField === "date"}
@@ -462,9 +459,10 @@ export const HeroSection = () => {
 
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
-            <div className="relative w-full md:flex-[1.1] md:min-w-0">
+            <div
+              className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "destination" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={DEST_ICON}
+                icon={<FaMapMarkerAlt className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.destination.label")}
                 placeholder={t("landing.hero.fields.destination.placeholder")}
                 isOpen={openField === "destination"}
@@ -483,9 +481,10 @@ export const HeroSection = () => {
 
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
 
-            <div className="relative w-full md:flex-[1.1] md:min-w-0">
+            <div
+              className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "classification" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={CLASS_ICON}
+                icon={<FaTag className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.classification.label")}
                 placeholder={t(
                   "landing.hero.fields.classification.placeholder",

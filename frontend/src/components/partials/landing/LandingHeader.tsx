@@ -1,16 +1,29 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button, Icon } from "@/components/ui";
 import { AuthModal } from "./AuthModal";
 import { useTranslation } from "react-i18next";
 import useMobileMenu from "@/hooks/useMobileMenu";
 import useWidth from "@/hooks/useWidth";
 import type { RootState } from "@/store";
-import { useSelector } from "react-redux";
-import { FiGlobe, FiChevronDown, FiCheck } from "react-icons/fi";
+import { useSelector, useDispatch } from "react-redux";
+import useDarkmode from "@/hooks/useDarkMode";
+import { handleCustomizer } from "@/store/layout";
+import { useLogoutMutation } from "@/store/api/auth/authApiSlice";
+import {
+  FiGlobe,
+  FiChevronDown,
+  FiCheck,
+  FiSun,
+  FiMoon,
+  FiSliders,
+  FiUser,
+  FiLock,
+  FiLogOut,
+} from "react-icons/fi";
 
 const languages = [
   { code: "en", label: "English" },
@@ -297,7 +310,41 @@ const MobileSidebar = ({
 /* ── Header ────────────────────────────────────────────────── */
 export const LandingHeader = () => {
   const { t, i18n } = useTranslation();
-  const { isAuth } = useSelector((state: RootState) => state.auth);
+  const { isAuth, user } = useSelector((state: RootState) => state.auth);
+  const customizerOpen = useSelector(
+    (state: RootState) => state.layout.customizer,
+  );
+  const dispatch = useDispatch();
+  const [isDark, setDarkMode] = useDarkmode();
+  const [logout] = useLogoutMutation();
+  const router = useRouter();
+
+  // useSyncExternalStore is the React-recommended way to detect client mount
+  // without hydration mismatch — returns false on server, true on client
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
+  // Use mounted to prevent SSR/client hydration mismatch for auth state
+  const clientIsAuth = mounted && isAuth;
+
+  const handleLogout = async () => {
+    const refreshToken =
+      (typeof document !== "undefined"
+        ? document.cookie
+            .split("; ")
+            .find((r) => r.startsWith("refresh_token="))
+            ?.split("=")[1]
+        : undefined) ?? "";
+    try {
+      await logout({ refreshToken }).unwrap();
+    } catch {
+      // logOut is dispatched inside the mutation's onQueryStarted
+    }
+    router.push("/home");
+  };
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useMobileMenu();
   const { width, breakpoints } = useWidth();
@@ -378,19 +425,62 @@ export const LandingHeader = () => {
         </nav>
 
         <div className="hidden lg:flex items-center gap-2 xl:gap-3 justify-self-end">
+          {/* Dark mode toggle */}
+          <button
+            type="button"
+            onClick={() => setDarkMode(!isDark)}
+            className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-all bg-transparent"
+            aria-label={
+              isDark ? "Switch to light mode" : "Switch to dark mode"
+            }>
+            {isDark ? (
+              <FiSun
+                suppressHydrationWarning
+                className="w-4 h-4 xl:w-5 xl:h-5"
+              />
+            ) : (
+              <FiMoon
+                suppressHydrationWarning
+                className="w-4 h-4 xl:w-5 xl:h-5"
+              />
+            )}
+          </button>
+
+          {/* Live mode (customizer) toggle */}
+          <button
+            type="button"
+            onClick={() => dispatch(handleCustomizer(!customizerOpen))}
+            className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all ${
+              customizerOpen
+                ? "border-landing-accent text-landing-accent bg-landing-accent/10"
+                : "border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
+            }`}
+            aria-label="Toggle live customizer">
+            <FiSliders
+              suppressHydrationWarning
+              className="w-4 h-4 xl:w-5 xl:h-5"
+            />
+          </button>
+
+          {/* Language switcher */}
           <div className="group relative">
             <button
               type="button"
               suppressHydrationWarning
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-all bg-transparent"
               aria-label={`${t("landing.a11y.changeLanguage")} (${normalizedLanguage.toUpperCase()})`}
-              aria-haspopup="true"
-            >
-              <FiGlobe suppressHydrationWarning className="w-4 h-4 xl:w-5 xl:h-5" />
+              aria-haspopup="true">
+              <FiGlobe
+                suppressHydrationWarning
+                className="w-4 h-4 xl:w-5 xl:h-5"
+              />
               <span className="text-sm xl:text-base font-semibold">
                 {normalizedLanguage.toUpperCase()}
               </span>
-              <FiChevronDown suppressHydrationWarning className="w-3.5 h-3.5 transition-transform group-hover:rotate-180" />
+              <FiChevronDown
+                suppressHydrationWarning
+                className="w-3.5 h-3.5 transition-transform group-hover:rotate-180"
+              />
             </button>
             <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute right-0 top-full mt-2 min-w-40 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 py-1.5 overflow-hidden z-50">
               {languages.map((lang) => {
@@ -404,16 +494,99 @@ export const LandingHeader = () => {
                       isActive
                         ? "bg-landing-accent/10 text-landing-accent font-semibold"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}
-                  >
+                    }`}>
                     <span>{lang.label}</span>
-                    {isActive && <FiCheck suppressHydrationWarning className="w-4 h-4" />}
+                    {isActive && (
+                      <FiCheck suppressHydrationWarning className="w-4 h-4" />
+                    )}
                   </button>
                 );
               })}
             </div>
           </div>
-          {!isAuth && (
+
+          {/* Avatar dropdown — shown when logged in */}
+          {clientIsAuth && (
+            <div className="group relative">
+              <button
+                type="button"
+                className="w-9 h-9 xl:w-10 xl:h-10 rounded-full border-2 border-white/40 hover:border-landing-accent overflow-hidden transition-all bg-gray-300 flex items-center justify-center shrink-0"
+                aria-label="User menu">
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.fullName ?? user.username ?? ""}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-sm font-bold text-white select-none">
+                    {(user?.fullName ?? user?.username ?? "U")[0].toUpperCase()}
+                  </span>
+                )}
+              </button>
+
+              {/* Dropdown */}
+              <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute right-0 top-full mt-2 w-60 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 overflow-hidden z-50">
+                {/* User info header */}
+                <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                  <div className="w-9 h-9 rounded-full bg-landing-accent flex items-center justify-center shrink-0 overflow-hidden">
+                    {user?.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm font-bold text-white">
+                        {(user?.fullName ??
+                          user?.username ??
+                          "U")[0].toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {user?.fullName ?? user?.username ?? ""}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {user?.email}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Menu items */}
+                <div className="py-1">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors">
+                    <FiUser className="w-4 h-4 shrink-0" />
+                    <span>
+                      {t("landing.userMenu.profile") || "Thông tin cá nhân"}
+                    </span>
+                  </Link>
+                  <Link
+                    href="/profile/change-password"
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors">
+                    <FiLock className="w-4 h-4 shrink-0" />
+                    <span>
+                      {t("landing.userMenu.changePassword") || "Đổi mật khẩu"}
+                    </span>
+                  </Link>
+                </div>
+
+                <div className="border-t border-gray-100 py-1">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors bg-transparent">
+                    <FiLogOut className="w-4 h-4 shrink-0" />
+                    <span>{t("common.signOut") || "Đăng xuất"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {!clientIsAuth && (
             <>
               <Button
                 onClick={() => openAuth("login")}
