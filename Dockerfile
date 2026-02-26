@@ -5,9 +5,9 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-RUN dotnet nuget add source "https://nuget.democloud.xyz/v3/index.json" --name private
 
 COPY ["nuget.config", "nuget.config"]
+COPY ["Directory.Build.props", "Directory.Build.props"]
 COPY ["Directory.Packages.props", "Directory.Packages.props"]
 COPY ["src/Domain/Domain.csproj", "src/Domain/"]
 COPY ["src/Application/Application.csproj", "src/Application/"]

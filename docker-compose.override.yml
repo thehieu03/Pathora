@@ -1,4 +1,24 @@
 services:
+  api:
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: "Host=18.143.220.111;Port=5432;Database=Pathora;Username=root;Password=123abc@A"
+      Redis__ConnectionString: "redis:6379"
+      MinIO__Endpoint: "minio:9000"
+      MinIO__AccessKey: "minioadmin"
+      MinIO__SecretKey: "minioadmin123"
+      MinIO__UseSSL: "false"
+      MinIO__DefaultBucket: "panthora"
+      Cors__AllowedOrigins__0: "http://localhost:3000"
+      Cors__AllowedOrigins__1: "https://localhost:3000"
+      Cors__AllowedOrigins__2: "http://frontend:3000"
+
+  frontend:
+    ports:
+      - "3000:3000"
+
   redis:
     ports:
       - "6379:6379"
@@ -11,8 +31,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
     ports:
-      - "9000:9000"  # API
-      - "9001:9001"  # Console UI
+      - "9000:9000" # API
+      - "9001:9001" # Console UI
     volumes:
       - ./volume/minio:/data
 
@@ -21,8 +41,8 @@ services:
     command:
       - --admin-password=$$2y$$05$$WhRrYB./WG4XqeLi2CxdkOKwhd55Lio1QHSKsGkRjcxze7PEWHEoe
     ports:
-      - "9443:9443"  # HTTPS UI
-      - "9002:9000"  # HTTP UI
+      - "9443:9443" # HTTPS UI
+      - "9002:9000" # HTTP UI
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volume/portainer:/data

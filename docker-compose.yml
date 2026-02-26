@@ -1,4 +1,35 @@
 services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - minio
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ../pathora/frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_GATEWAY: http://localhost:8080
+    restart: unless-stopped
+    depends_on:
+      - api
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   redis:
     container_name: redis
     image: redis:7-alpine
