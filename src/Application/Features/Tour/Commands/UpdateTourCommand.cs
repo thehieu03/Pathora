@@ -1,3 +1,4 @@
+using Application.Dtos;
 using Domain.CORS;
 using Domain.Enums;
 using ErrorOr;
@@ -13,7 +14,9 @@ public sealed record UpdateTourCommand(
     string LongDescription,
     string? SEOTitle,
     string? SEODescription,
-    TourStatus Status) : ICommand<ErrorOr<Success>>;
+    TourStatus Status,
+    ImageInputDto? Thumbnail = null,
+    List<ImageInputDto>? Images = null) : ICommand<ErrorOr<Success>>;
 
 public sealed class UpdateTourCommandHandler(ITourService tourService)
     : ICommandHandler<UpdateTourCommand, ErrorOr<Success>>

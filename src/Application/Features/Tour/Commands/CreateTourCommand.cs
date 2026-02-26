@@ -1,3 +1,4 @@
+using Application.Dtos;
 using Domain.CORS;
 using Domain.Enums;
 using ErrorOr;
@@ -13,7 +14,9 @@ public sealed record CreateTourCommand(
     string LongDescription,
     string? SEOTitle,
     string? SEODescription,
-    TourStatus Status) : ICommand<ErrorOr<Guid>>;
+    TourStatus Status,
+    ImageInputDto? Thumbnail = null,
+    List<ImageInputDto>? Images = null) : ICommand<ErrorOr<Guid>>;
 
 public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCommand>
 {

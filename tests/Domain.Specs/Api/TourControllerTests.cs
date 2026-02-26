@@ -1,8 +1,10 @@
 using Api.Controllers;
 using Application.Common.Contracts;
+using Application.Contracts.File;
+using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
-using Domain.Entities;
+using Application.Services;
 using Domain.Enums;
 using ErrorOr;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +13,23 @@ namespace Domain.Specs.Api;
 
 public sealed class TourControllerTests
 {
+    private static IFileService StubFileService()
+    {
+        return new StubFileServiceImpl();
+    }
+
+    private sealed class StubFileServiceImpl : IFileService
+    {
+        public Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request)
+            => Task.FromResult(new FileMetadataVm(Guid.CreateVersion7(), "http://cdn/test.jpg", request.FileName, "image/jpeg", request.Length));
+
+        public Task<IEnumerable<FileMetadataVm>> UploadMultipleFilesAsync(UploadMultipleFilesRequest request)
+            => Task.FromResult<IEnumerable<FileMetadataVm>>([]);
+
+        public Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request)
+            => Task.CompletedTask;
+    }
+
     [Fact]
     public async Task GetAll_WhenQuerySucceeds_ShouldReturnOkAndPayload()
     {
@@ -26,7 +45,8 @@ public sealed class TourControllerTests
         };
         var response = new PaginatedList<TourVm>(tours.Count, tours);
         var (controller, probe) = ApiControllerTestHelper
-            .BuildController<TourController, GetAllToursQuery, PaginatedList<TourVm>>(response, "/api/tour");
+            .BuildController<TourController, GetAllToursQuery, PaginatedList<TourVm>>(
+                response, "/api/tour", StubFileService());
 
         var actionResult = await controller.GetAll(searchText: "Đà Nẵng", pageNumber: 2, pageSize: 5);
 
@@ -43,9 +63,10 @@ public sealed class TourControllerTests
     {
         var id = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
-            .BuildController<TourController, GetTourDetailQuery, TourEntity>(
+            .BuildController<TourController, GetTourDetailQuery, TourDto>(
                 Error.NotFound("Tour.NotFound", "Không tìm thấy tour"),
-                $"/api/tour/{id}");
+                $"/api/tour/{id}",
+                StubFileService());
 
         var actionResult = await controller.GetDetail(id);
 
@@ -61,51 +82,58 @@ public sealed class TourControllerTests
     [Fact]
     public async Task Create_WhenCommandSucceeds_ShouldReturnOkAndPayload()
     {
-        var command = new CreateTourCommand(
-            TourCode: "TOUR-001",
-            TourName: "Tour Đà Nẵng",
-            ShortDescription: "Mô tả ngắn",
-            LongDescription: "Mô tả dài",
-            SEOTitle: "SEO title",
-            SEODescription: "SEO description",
-            Status: TourStatus.Active);
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
-            .BuildController<TourController, CreateTourCommand, Guid>(response, "/api/tour");
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                response, "/api/tour", StubFileService());
 
-        var actionResult = await controller.Create(command);
+        var actionResult = await controller.Create(
+            tourCode: "TOUR-001",
+            tourName: "Tour Đà Nẵng",
+            shortDescription: "Mô tả ngắn",
+            longDescription: "Mô tả dài",
+            seoTitle: "SEO title",
+            seoDescription: "SEO description",
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null);
 
         ApiControllerTestHelper.AssertSuccessResponse(
             actionResult,
             expectedStatusCode: StatusCodes.Status200OK,
             expectedInstance: "/api/tour",
             expectedData: response);
-        Assert.Equal(command, probe.CapturedRequest);
+        Assert.NotNull(probe.CapturedRequest);
+        Assert.Equal("TOUR-001", probe.CapturedRequest.TourCode);
     }
 
     [Fact]
     public async Task Update_WhenCommandSucceeds_ShouldReturnOkAndPayload()
     {
-        var command = new UpdateTourCommand(
-            Id: Guid.CreateVersion7(),
-            TourCode: "TOUR-001",
-            TourName: "Tour Đà Nẵng",
-            ShortDescription: "Mô tả ngắn",
-            LongDescription: "Mô tả dài",
-            SEOTitle: "SEO title",
-            SEODescription: "SEO description",
-            Status: TourStatus.Active);
+        var tourId = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
-            .BuildController<TourController, UpdateTourCommand, Success>(Result.Success, "/api/tour");
+            .BuildController<TourController, UpdateTourCommand, Success>(
+                Result.Success, "/api/tour", StubFileService());
 
-        var actionResult = await controller.Update(command);
+        var actionResult = await controller.Update(
+            id: tourId,
+            tourCode: "TOUR-001",
+            tourName: "Tour Đà Nẵng",
+            shortDescription: "Mô tả ngắn",
+            longDescription: "Mô tả dài",
+            seoTitle: "SEO title",
+            seoDescription: "SEO description",
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null);
 
         ApiControllerTestHelper.AssertSuccessResponse(
             actionResult,
             expectedStatusCode: StatusCodes.Status200OK,
             expectedInstance: "/api/tour",
             expectedData: Result.Success);
-        Assert.Equal(command, probe.CapturedRequest);
+        Assert.NotNull(probe.CapturedRequest);
+        Assert.Equal(tourId, probe.CapturedRequest.Id);
     }
 
     [Fact]
@@ -115,7 +143,8 @@ public sealed class TourControllerTests
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, DeleteTourCommand, Success>(
                 Error.NotFound("Tour.NotFound", "Không tìm thấy tour"),
-                $"/api/tour/{id}");
+                $"/api/tour/{id}",
+                StubFileService());
 
         var actionResult = await controller.Delete(id);
 

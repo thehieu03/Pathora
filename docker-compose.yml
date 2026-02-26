@@ -1,12 +1,34 @@
 services:
-  # redis:
-  #   image: redis:7-alpine
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   minio:
+    container_name: minio
     image: minio/minio:latest
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   portainer:
+    container_name: portainer
     image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-volumes:
-  portainer_data:
+networks:
+  default:
+    name: panthora-dev

@@ -10,11 +10,15 @@ namespace Infrastructure.Files;
 public sealed class MinIOCloudService : IMinIOCloudService
 {
     private readonly IMinioClient _minioClient;
-    private readonly string _endPoint;
+    private readonly string _publicBaseUrl;
     public MinIOCloudService(IMinioClient minioClient)
     {
         _minioClient = minioClient;
-        _endPoint = _minioClient.Config.Endpoint;
+        var raw = minioClient.Config.Endpoint;
+        var scheme = minioClient.Config.Secure ? "https" : "http";
+        _publicBaseUrl = raw.StartsWith("http://") || raw.StartsWith("https://")
+            ? raw.TrimEnd('/')
+            : $"{scheme}://{raw.TrimEnd('/')}";
     }
     public async Task<string> GetShareLinkAsync(string bucketName, string objectName, int expireTime)
     {
@@ -64,7 +68,7 @@ public sealed class MinIOCloudService : IMinIOCloudService
                     FileName=objectName,
                     FileSize=f.Bytes.Length,
                     ContentType=f.ContentType,
-                    PublicURL=isPublicBucket?  $"{_endPoint}/{bucketName}/{objectName}" : string.Empty,
+                    PublicURL=isPublicBucket?  $"{_publicBaseUrl}/{bucketName}/{objectName}" : string.Empty,
                 });
             }
             return results;

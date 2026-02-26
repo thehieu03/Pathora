@@ -17,18 +17,20 @@ public class FileController : BaseApiController
     }
 
     [HttpPost(FileEndpoint.Upload)]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> Upload(IFormFile file)
     {
         if (file.Length == 0)
             return BadRequest("File is empty");
 
         await using var stream = file.OpenReadStream();
-        var url = await _fileService.UploadFileAsync(
-            new Application.Contracts.File.UploadFileRequest(stream, file.FileName));
-        return Ok(new { Url = url });
+        var result = await _fileService.UploadFileAsync(
+            new Application.Contracts.File.UploadFileRequest(stream, file.FileName, file.ContentType ?? "application/octet-stream", file.Length));
+        return Ok(result);
     }
 
     [HttpPost(FileEndpoint.UploadMultiple)]
+    [Consumes("multipart/form-data")]
     public async Task<IActionResult> UploadMultiple([FromForm] Guid entityId, [FromForm] List<IFormFile> files)
     {
         if (files.Count == 0)

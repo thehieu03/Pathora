@@ -25,16 +25,21 @@ public sealed class FileControllerTests
     [Fact]
     public async Task Upload_WhenFileIsValid_ShouldReturnUrl()
     {
-        var fileService = new CaptureFileService { UploadResult = "https://cdn.example.com/file.png" };
+        var expectedVm = new FileMetadataVm(Guid.CreateVersion7(), "https://cdn.example.com/file.png", "avatar.png", "image/png", 4);
+        var fileService = new CaptureFileService { UploadResult = expectedVm };
         var controller = new FileController(fileService);
         await using var stream = new MemoryStream([1, 2, 3, 4]);
-        var file = new FormFile(stream, 0, stream.Length, "file", "avatar.png");
+        var file = new FormFile(stream, 0, stream.Length, "file", "avatar.png")
+        {
+            Headers = new HeaderDictionary(),
+            ContentType = "image/png"
+        };
 
         var actionResult = await controller.Upload(file);
 
         var ok = Assert.IsType<OkObjectResult>(actionResult);
-        var url = ok.Value!.GetType().GetProperty("Url")!.GetValue(ok.Value) as string;
-        Assert.Equal("https://cdn.example.com/file.png", url);
+        var vm = Assert.IsType<FileMetadataVm>(ok.Value);
+        Assert.Equal("https://cdn.example.com/file.png", vm.Url);
         Assert.True(fileService.UploadCalled);
         Assert.Equal("avatar.png", fileService.CapturedUploadRequest?.FileName);
     }
@@ -104,13 +109,13 @@ public sealed class FileControllerTests
         public bool UploadCalled { get; private set; }
         public bool UploadMultipleCalled { get; private set; }
         public bool DeleteCalled { get; private set; }
-        public string UploadResult { get; set; } = "https://cdn.example.com/default.png";
+        public FileMetadataVm UploadResult { get; set; } = new(Guid.Empty, "https://cdn.example.com/default.png", "default.png", "image/png", 0);
         public IEnumerable<FileMetadataVm> UploadMultipleResult { get; set; } = [];
         public UploadFileRequest? CapturedUploadRequest { get; private set; }
         public UploadMultipleFilesRequest? CapturedUploadMultipleRequest { get; private set; }
         public DeleteMultipleFilesRequest? CapturedDeleteRequest { get; private set; }
 
-        public Task<string> UploadFileAsync(UploadFileRequest request)
+        public Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request)
         {
             UploadCalled = true;
             CapturedUploadRequest = request;

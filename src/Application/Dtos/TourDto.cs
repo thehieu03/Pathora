@@ -13,6 +13,7 @@ public sealed record TourDto(
     string? SEODescription,
     bool IsDeleted,
     ImageDto Thumbnail,
+    List<ImageDto> Images,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,

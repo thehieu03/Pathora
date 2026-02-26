@@ -1,33 +1,97 @@
 using Application.Common.Interfaces;
+using Domain.Common.Models;
+using Domain.Common.Repositories;
 using Domain.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Files;
-// làm lại theo file could holder mới
-public class FileManager : IFileManager
+
+public class FileManager(
+    IMinIOCloudService minIOCloudService,
+    IConfiguration configuration,
+    IFileRepository fileRepository) : IFileManager
 {
-    public Task DeleteMultipleFilesAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    private string DefaultBucket => configuration["MinIO:DefaultBucket"] ?? "panthora";
+
+    private static async Task<byte[]> ReadBytesAsync(Stream stream, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms, ct);
+        return ms.ToArray();
     }
 
-    public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
+    private static string GuessContentType(string fileName) =>
+        Path.GetExtension(fileName).ToLowerInvariant() switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png"           => "image/png",
+            ".gif"           => "image/gif",
+            ".webp"          => "image/webp",
+            ".pdf"           => "application/pdf",
+            _                => "application/octet-stream"
+        };
+
+    public async Task<string> UploadFileAsync(
+        Stream stream,
+        string fileName,
+        CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var bytes = await ReadBytesAsync(stream, cancellationToken);
+        var results = await minIOCloudService.UploadFilesAsync(
+            [new UploadFileBytes { FileName = fileName, ContentType = GuessContentType(fileName), Bytes = bytes }],
+            DefaultBucket,
+            isPublicBucket: true,
+            cancellationToken);
+        return results.FirstOrDefault()?.PublicURL ?? string.Empty;
+    }
+
+    public async Task<IEnumerable<FileMetadataEntity>> UploadMultipleFilesAsync(
+        Guid entityId,
+        (Stream Stream, string FileName, string ContentType, long Length)[] files,
+        CancellationToken cancellationToken = default)
+    {
+        var uploadFiles = await Task.WhenAll(files.Select(async f =>
+        {
+            await using var stream = f.Stream;
+            var bytes = await ReadBytesAsync(stream, cancellationToken);
+            return new UploadFileBytes
+            {
+                FileName = f.FileName,
+                ContentType = string.IsNullOrEmpty(f.ContentType) ? GuessContentType(f.FileName) : f.ContentType,
+                Bytes = bytes
+            };
+        }));
+
+        var results = await minIOCloudService.UploadFilesAsync(
+            uploadFiles.ToList(),
+            DefaultBucket,
+            isPublicBucket: true,
+            cancellationToken);
+
+        return results.Select(r => FileMetadataEntity.Create(
+            entityId,
+            r.OriginalFileName ?? r.FileName ?? string.Empty,
+            r.FileName ?? string.Empty,
+            r.ContentType ?? "application/octet-stream",
+            r.PublicURL ?? string.Empty,
+            r.FileSize,
+            "system"));
     }
 
     public Task<Dictionary<Guid, FileMetadataEntity[]>> FindFiles(string[] entityIds)
+        => throw new NotImplementedException();
+
+    public async Task DeleteMultipleFilesAsync(List<Guid> ids, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        if (ids.Count == 0)
+            return;
+
+        var result = await fileRepository.DeleteRange(ids);
+        if (result.IsError)
+            throw new InvalidOperationException(result.FirstError.Description);
     }
 
-    public Task<string> UploadFileAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<IEnumerable<FileMetadataEntity>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+    public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
+        => throw new NotImplementedException();
 }
 

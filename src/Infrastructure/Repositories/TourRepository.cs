@@ -62,6 +62,14 @@ public class TourRepository(AppDbContext context) : ITourRepository
         return await query.CountAsync();
     }
 
+    public async Task<bool> ExistsByTourCode(string tourCode, Guid? excludeId = null)
+    {
+        var query = _context.Tours.Where(t => !t.IsDeleted && t.TourCode == tourCode);
+        if (excludeId.HasValue)
+            query = query.Where(t => t.Id != excludeId.Value);
+        return await query.AnyAsync();
+    }
+
     public async Task Create(TourEntity tour)
     {
         await _context.Tours.AddAsync(tour);

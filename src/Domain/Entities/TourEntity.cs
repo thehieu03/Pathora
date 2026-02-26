@@ -14,7 +14,7 @@ public class TourEntity : Aggregate<Guid>
     public List<ImageEntity> Images { get; set; } = [];
     public List<TourClassificationEntity> Classifications { get; set; } = [];
 
-    public static TourEntity Create(string tourCode, string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null)
+    public static TourEntity Create(string tourCode, string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
     {
         return new TourEntity
         {
@@ -26,7 +26,8 @@ public class TourEntity : Aggregate<Guid>
             SEOTitle = seoTitle,
             SEODescription = seoDescription,
             Status = status,
-            Thumbnail = new ImageEntity(),
+            Thumbnail = thumbnail ?? new ImageEntity(),
+            Images = images ?? [],
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,
@@ -34,7 +35,7 @@ public class TourEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(string tourCode, string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, string? seoTitle = null, string? seoDescription = null)
+    public void Update(string tourCode, string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
     {
         TourCode = tourCode;
         TourName = tourName;
@@ -43,6 +44,12 @@ public class TourEntity : Aggregate<Guid>
         SEOTitle = seoTitle;
         SEODescription = seoDescription;
         Status = status;
+        if (thumbnail is not null) Thumbnail = thumbnail;
+        if (images is not null)
+        {
+            Images.Clear();
+            Images.AddRange(images);
+        }
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }

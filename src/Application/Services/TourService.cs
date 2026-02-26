@@ -1,10 +1,14 @@
 using Application.Common.Contracts;
 using Application.Common.Interfaces;
+using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
+using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using ErrorOr;
+
+
 
 namespace Application.Services;
 
@@ -14,16 +18,26 @@ public interface ITourService
     Task<ErrorOr<Success>> Update(UpdateTourCommand request);
     Task<ErrorOr<Success>> Delete(Guid id);
     Task<ErrorOr<PaginatedList<TourVm>>> GetAll(GetAllToursQuery request);
-    Task<ErrorOr<TourEntity>> GetDetail(Guid id);
+    Task<ErrorOr<TourDto>> GetDetail(Guid id);
 }
 
-public class TourService(ITourRepository tourRepository, IUser user) : ITourService
+public class TourService(ITourRepository tourRepository, IUser user, IMapper mapper) : ITourService
 {
     private readonly ITourRepository _tourRepository = tourRepository;
     private readonly IUser _user = user;
+    private readonly IMapper _mapper = mapper;
+
+    private static ImageEntity ToImageEntity(ImageInputDto dto) =>
+        ImageEntity.Create(dto.FileId, dto.OriginalFileName, dto.FileName, dto.PublicURL);
 
     public async Task<ErrorOr<Guid>> Create(CreateTourCommand request)
     {
+        if (await _tourRepository.ExistsByTourCode(request.TourCode))
+            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{request.TourCode}' đã tồn tại");
+
+        var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : new ImageEntity();
+        var images = request.Images?.Select(ToImageEntity).ToList() ?? [];
+
         var tour = TourEntity.Create(
             request.TourCode,
             request.TourName,
@@ -32,7 +46,9 @@ public class TourService(ITourRepository tourRepository, IUser user) : ITourServ
             _user.Id ?? string.Empty,
             request.Status,
             request.SEOTitle,
-            request.SEODescription);
+            request.SEODescription,
+            thumbnail,
+            images);
 
         await _tourRepository.Create(tour);
         return tour.Id;
@@ -44,6 +60,12 @@ public class TourService(ITourRepository tourRepository, IUser user) : ITourServ
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
 
+        if (await _tourRepository.ExistsByTourCode(request.TourCode, request.Id))
+            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{request.TourCode}' đã tồn tại");
+
+        var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : null;
+        var images = request.Images?.Select(ToImageEntity).ToList();
+
         tour.Update(
             request.TourCode,
             request.TourName,
@@ -52,7 +74,9 @@ public class TourService(ITourRepository tourRepository, IUser user) : ITourServ
             request.Status,
             _user.Id ?? string.Empty,
             request.SEOTitle,
-            request.SEODescription);
+            request.SEODescription,
+            thumbnail,
+            images);
 
         await _tourRepository.Update(tour);
         return Result.Success;
@@ -84,11 +108,11 @@ public class TourService(ITourRepository tourRepository, IUser user) : ITourServ
         return new PaginatedList<TourVm>(total, tourVms);
     }
 
-    public async Task<ErrorOr<TourEntity>> GetDetail(Guid id)
+    public async Task<ErrorOr<TourDto>> GetDetail(Guid id)
     {
         var tour = await _tourRepository.FindById(id);
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
-        return tour;
+        return _mapper.Map<TourDto>(tour);
     }
 }

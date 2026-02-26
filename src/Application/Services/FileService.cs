@@ -5,17 +5,22 @@ namespace Application.Services;
 
 public interface IFileService
 {
-    Task<string> UploadFileAsync(UploadFileRequest request);
+    Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request);
     Task<IEnumerable<FileMetadataVm>> UploadMultipleFilesAsync(UploadMultipleFilesRequest request);
     Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request);
 }
 
 public class FileService(IFileManager fileManager) : IFileService
 {
-
-    public Task<string> UploadFileAsync(UploadFileRequest request)
+    public async Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request)
     {
-        return fileManager.UploadFileAsync(request.Stream, request.FileName);
+        var results = await fileManager.UploadMultipleFilesAsync(
+            Guid.Empty,
+            [(request.Stream, request.FileName, request.ContentType, request.Length)]);
+
+        var f = results.FirstOrDefault()
+                ?? throw new InvalidOperationException("Uploaded file metadata was not returned.");
+        return new FileMetadataVm(f.Id, f.Url, f.OriginalFileName, f.MimeType, f.FileSize);
     }
 
     public async Task<IEnumerable<FileMetadataVm>> UploadMultipleFilesAsync(UploadMultipleFilesRequest request)

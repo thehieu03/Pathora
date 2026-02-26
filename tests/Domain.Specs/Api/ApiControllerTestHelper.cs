@@ -38,6 +38,38 @@ internal static class ApiControllerTestHelper
         return (controller, probe);
     }
 
+    /// <summary>
+    /// Overload for controllers with primary-constructor dependencies (no parameterless ctor).
+    /// Pass extra constructor arguments after <paramref name="path"/>.
+    /// </summary>
+    internal static (TController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TController, TRequest, TResponse>(
+        ErrorOr<TResponse> response,
+        string path,
+        params object[] ctorArgs)
+        where TController : ControllerBase
+        where TRequest : IRequest<ErrorOr<TResponse>>
+    {
+        var services = new ServiceCollection();
+        var probe = new RequestProbe<TRequest, TResponse>(response);
+        services.AddSingleton(probe);
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<RequestProbeHandler<TRequest, TResponse>>());
+        services.AddTransient<IRequestHandler<TRequest, ErrorOr<TResponse>>, RequestProbeHandler<TRequest, TResponse>>();
+
+        var httpContext = new DefaultHttpContext
+        {
+            RequestServices = services.BuildServiceProvider()
+        };
+        httpContext.Request.Path = path;
+
+        var controller = (TController)Activator.CreateInstance(typeof(TController), ctorArgs)!;
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = httpContext
+        };
+
+        return (controller, probe);
+    }
+
     internal static void AssertSuccessResponse<T>(
         IActionResult actionResult,
         int expectedStatusCode,
