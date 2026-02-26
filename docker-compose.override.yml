@@ -13,11 +13,12 @@ services:
       MinIO__DefaultBucket: "panthora"
       Cors__AllowedOrigins__0: "http://localhost:3000"
       Cors__AllowedOrigins__1: "https://localhost:3000"
-      Cors__AllowedOrigins__2: "http://frontend:3000"
+      Cors__AllowedOrigins__2: "http://localhost:4001"
+      Cors__AllowedOrigins__3: "http://frontend:3000"
 
   frontend:
     ports:
-      - "3000:3000"
+      - "4001:3000"
 
   redis:
     ports:

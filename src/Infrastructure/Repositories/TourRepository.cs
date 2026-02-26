@@ -78,6 +78,16 @@ public class TourRepository(AppDbContext context) : ITourRepository
 
     public async Task Update(TourEntity tour)
     {
+        // Ensure new Images (OwnsMany) are tracked as Added
+        foreach (var img in tour.Images)
+        {
+            var imgEntry = _context.Entry(img);
+            if (imgEntry.State == EntityState.Detached)
+            {
+                imgEntry.State = EntityState.Added;
+            }
+        }
+
         _context.Tours.Update(tour);
         await _context.SaveChangesAsync();
     }

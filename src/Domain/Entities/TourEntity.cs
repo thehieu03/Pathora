@@ -44,7 +44,13 @@ public class TourEntity : Aggregate<Guid>
         SEOTitle = seoTitle;
         SEODescription = seoDescription;
         Status = status;
-        if (thumbnail is not null) Thumbnail = thumbnail;
+        if (thumbnail is not null)
+        {
+            Thumbnail.FileId = thumbnail.FileId;
+            Thumbnail.OriginalFileName = thumbnail.OriginalFileName;
+            Thumbnail.FileName = thumbnail.FileName;
+            Thumbnail.PublicURL = thumbnail.PublicURL;
+        }
         if (images is not null)
         {
             Images.Clear();
