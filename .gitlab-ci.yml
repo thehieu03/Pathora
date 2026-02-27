@@ -9,6 +9,7 @@ build-job:
   script:
     - echo "Building..."
     - docker build -t panthora-be:latest . 
+    
 deploy:
   stage: deploy
   tags:
