@@ -41,7 +41,9 @@ const IndeterminateCheckbox = React.forwardRef<
   );
 });
 
-const InvoicePage = () => {
+IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
+
+const InvoicePage= () => {
   const router = useRouter();
   const actions = [
     {
@@ -211,16 +213,16 @@ const InvoicePage = () => {
     usePagination,
     useRowSelect,
 
-    (hooks: any) => {
-      hooks.visibleColumns.push((columns: any) => [
+    (hooks: { visibleColumns: Array<unknown> }) => {
+      hooks.visibleColumns.push((columns: unknown[]) => [
         {
           id: "selection",
-          Header: ({ getToggleAllRowsSelectedProps }: any) => (
+          Header: ({ getToggleAllRowsSelectedProps }: { getToggleAllRowsSelectedProps: () => React.InputHTMLAttributes<HTMLInputElement> }) => (
             <div>
               <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
             </div>
           ),
-          Cell: ({ row }: any) => (
+          Cell: ({ row }: { row: { getToggleRowSelectedProps: () => React.InputHTMLAttributes<HTMLInputElement> } }) => (
             <div>
               <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
             </div>

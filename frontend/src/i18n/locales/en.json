@@ -1177,6 +1177,32 @@
       "bookingHistory": "Booking History",
       "tourDiscovery": "Tour Discovery"
     },
+    "tourDiscovery": {
+      "title": "Available Tour Departures",
+      "tours": "Tours",
+      "availableDepartures": "Available Departures",
+      "searchPlaceholder": "Search tours",
+      "resultsCount": "{{count}} results",
+      "sortBy": "Sort by",
+      "sortFeatured": "Featured",
+      "whenTraveling": "When are you traveling?",
+      "tourType": "Tour Type",
+      "filterPrice": "Filter Price",
+      "featured": "FEATURED",
+      "bestPriceGuarantee": "Best Price Guarantee",
+      "from": "From",
+      "viewDetails": "View Details",
+      "pagination": "Pages",
+      "showingResults": "Showing results {{start}}-{{end}} of {{total}}",
+      "filters": {
+        "departureDate": "Departure Date",
+        "destination": "Destination",
+        "duration": "Duration",
+        "visaRequirement": "Visa Requirement",
+        "depositRate": "Deposit Rate",
+        "seatsAvailability": "Seats Availability"
+      }
+    },
     "footer": {
       "backgroundAlt": "Footer background",
       "speakToExpert": "Speak to our expert at",

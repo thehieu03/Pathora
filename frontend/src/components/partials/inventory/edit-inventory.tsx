@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -105,14 +105,31 @@ const EditInventory = () => {
   const params = useParams();
   const id = params?.id;
 
-  const [productName, setProductName] = useState("");
-  const [sku, setSku] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [minQuantity, setMinQuantity] = useState("");
-  const [warehouse, setWarehouse] = useState("");
-  const [location, setLocation] = useState("");
-  const [status, setStatus] = useState("");
-  const [notes, setNotes] = useState("");
+  const initialData = useMemo(() => {
+    const inventoryData = sampleInventory[Number(id)];
+    if (inventoryData) {
+      return {
+        productName: inventoryData.productName || "",
+        sku: inventoryData.sku || "",
+        quantity: inventoryData.quantity?.toString() || "",
+        minQuantity: inventoryData.minQuantity?.toString() || "",
+        warehouse: inventoryData.warehouse || "",
+        location: inventoryData.location || "",
+        status: inventoryData.status || "",
+        notes: inventoryData.notes || "",
+      };
+    }
+    return { productName: "", sku: "", quantity: "", minQuantity: "", warehouse: "", location: "", status: "", notes: "" };
+  }, [id]);
+
+  const [productName, setProductName] = useState(initialData.productName);
+  const [sku, setSku] = useState(initialData.sku);
+  const [quantity, setQuantity] = useState(initialData.quantity);
+  const [minQuantity, setMinQuantity] = useState(initialData.minQuantity);
+  const [warehouse, setWarehouse] = useState(initialData.warehouse);
+  const [location, setLocation] = useState(initialData.location);
+  const [status, setStatus] = useState(initialData.status);
+  const [notes, setNotes] = useState(initialData.notes);
 
   const warehouseOptions = [
     { value: "hanoi", label: t("editInventory.warehouseHanoi") },
@@ -125,21 +142,6 @@ const EditInventory = () => {
     { value: "low_stock", label: t("inventory.lowStock") },
     { value: "out_of_stock", label: t("inventory.outOfStock") },
   ];
-
-  // Load inventory data
-  useEffect(() => {
-    const inventoryData = sampleInventory[Number(id)];
-    if (inventoryData) {
-      setProductName(inventoryData.productName || "");
-      setSku(inventoryData.sku || "");
-      setQuantity(inventoryData.quantity?.toString() || "");
-      setMinQuantity(inventoryData.minQuantity?.toString() || "");
-      setWarehouse(inventoryData.warehouse || "");
-      setLocation(inventoryData.location || "");
-      setStatus(inventoryData.status || "");
-      setNotes(inventoryData.notes || "");
-    }
-  }, [id]);
 
   const handleSave = () => {
     console.log("Saving inventory:", {

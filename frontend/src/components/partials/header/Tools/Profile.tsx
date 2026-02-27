@@ -6,17 +6,18 @@ import { MenuItem } from "@headlessui/react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "@/store/api/auth/authSlice";
+import { RootState } from "@/lib/store";
 
 import UserAvatar from "@/assets/images/all-img/user.png";
 
 const Profile = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const userInfo = user;
   const displayName =
-    userInfo?.name || userInfo?.username || userInfo?.email || "User";
+    userInfo?.fullName || userInfo?.username || userInfo?.email || "User";
 
   const profileLabel = () => (
     <div className="flex items-center">

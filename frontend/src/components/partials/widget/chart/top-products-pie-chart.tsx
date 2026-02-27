@@ -5,7 +5,12 @@ import { reportService } from "@/services/reportService";
 import { useTranslation } from "react-i18next";
 import { extractItems } from "@/utils/apiResponse";
 
-const TopProductsPieChart = ({ height = 420, onRefresh }) => {
+interface TopProductItem {
+  name: string;
+  value: number;
+}
+
+const TopProductsPieChart = ({ height = 420, onRefresh }: { height?: number; onRefresh?: (fn: () => Promise<void>) => void }) => {
   const { t } = useTranslation();
   const [isDark] = useDarkMode();
   const [topProducts, setTopProducts] = useState([]);
@@ -16,7 +21,7 @@ const TopProductsPieChart = ({ height = 420, onRefresh }) => {
       setIsLoading(true);
       const response = await reportService.getTopProductStatistics();
 
-      setTopProducts(extractItems<any>(response));
+      setTopProducts(extractItems<TopProductItem>(response));
     } catch (error) {
       console.error("Failed to fetch top products statistics:", error);
       // Set empty data on error

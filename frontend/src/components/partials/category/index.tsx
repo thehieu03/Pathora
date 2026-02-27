@@ -57,9 +57,9 @@ type CategoryApiItem = {
 const mapCategoryItems = (rawData: unknown) => {
   const sourceItems: CategoryApiItem[] = Array.isArray(rawData)
     ? (rawData as CategoryApiItem[])
-    : ((rawData as any)?.result?.items as CategoryApiItem[]) ||
-      ((rawData as any)?.result as CategoryApiItem[]) ||
-      ((rawData as any)?.data?.items as CategoryApiItem[]) ||
+    : (((rawData as Record<string, unknown>)?.result as Record<string, unknown>)?.items as CategoryApiItem[]) ||
+      ((rawData as Record<string, unknown>)?.result as CategoryApiItem[]) ||
+      (((rawData as Record<string, unknown>)?.data as Record<string, unknown>)?.items as CategoryApiItem[]) ||
       [];
 
   return sourceItems.map((item) => ({
@@ -145,7 +145,7 @@ const CategoryPage = () => {
 
     try {
       setSaving(true);
-      const requestBody: any = {
+      const requestBody: { name: string; description: string; parentId?: string } = {
         name: editFormData.name,
         description: editFormData.description,
       };
@@ -203,7 +203,7 @@ const CategoryPage = () => {
   const handleSaveAdd = async () => {
     try {
       setSaving(true);
-      const requestBody: any = {
+      const requestBody: { name: string; description: string; parentId?: string } = {
         name: addFormData.name,
         description: addFormData.description,
       };
@@ -814,7 +814,7 @@ const CategoryPage = () => {
           </p>
           {itemToDelete && (
             <p className="mb-6 font-semibold text-slate-800 dark:text-slate-200">
-              "{itemToDelete.name}"
+              &quot;{itemToDelete.name}&quot;
             </p>
           )}
           <div className="flex justify-center space-x-3">

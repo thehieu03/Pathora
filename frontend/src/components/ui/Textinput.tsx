@@ -12,7 +12,7 @@ type TextinputProps = {
   classLabel?: string;
   className?: string;
   classGroup?: string;
-  register?: any;
+  register?: (name: string, options?: Record<string, unknown>) => Record<string, unknown>;
   name?: string;
   readonly?: boolean;
   value?: string;
@@ -29,10 +29,10 @@ type TextinputProps = {
   autocomplete?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  options?: any;
+  options?: Record<string, unknown>;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   defaultValue?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 const Textinput = ({

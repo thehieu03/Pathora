@@ -10,7 +10,7 @@ type IconProps = {
   vFlip?: boolean;
   ariaHidden?: boolean;
   ariaLabel?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 const Icon = ({

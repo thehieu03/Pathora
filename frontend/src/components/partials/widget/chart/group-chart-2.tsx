@@ -6,7 +6,16 @@ import { reportService } from "@/services/reportService";
 import { useTranslation } from "react-i18next";
 import { extractItems } from "@/utils/apiResponse";
 
-const GroupChart2 = ({ onRefresh }) => {
+interface DashboardStatistic {
+  id: string;
+  bg: string;
+  text: string;
+  icon: string;
+  title: string;
+  count: number;
+}
+
+const GroupChart2 = ({ onRefresh }: { onRefresh?: (fn: () => Promise<void>) => void }) => {
   const { t } = useTranslation();
   const [statistics, setStatistics] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,7 +25,7 @@ const GroupChart2 = ({ onRefresh }) => {
       setIsLoading(true);
       const response = await reportService.getDashboardStatistics();
 
-      const stats = extractItems<any>(response);
+      const stats = extractItems<DashboardStatistic>(response);
       setStatistics(stats);
     } catch (error) {
       console.error("Failed to fetch dashboard statistics:", error);

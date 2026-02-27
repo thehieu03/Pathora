@@ -23,6 +23,33 @@ import {
   usePagination,
 } from "react-table";
 
+type CouponApiItem = {
+  id?: string;
+  code?: string;
+  name?: string;
+  description?: string;
+  discountValue?: number;
+  value?: number;
+  discountType?: string;
+  displayType?: string;
+  type?: number;
+  minOrderAmount?: number;
+  minPurchaseAmount?: number;
+  maxDiscountAmount?: number;
+  usageLimit?: number;
+  maxUsage?: number;
+  usageCount?: number;
+  startDate?: string;
+  validFrom?: string;
+  endDate?: string;
+  validTo?: string;
+  status?: string;
+  displayStatus?: string;
+  isValid?: boolean;
+  isExpired?: boolean;
+  isOutOfUses?: boolean;
+};
+
 const GlobalFilter = ({ filter, setFilter, t }) => {
   const [value, setValue] = useState(filter);
   const onChange = (e) => {
@@ -43,9 +70,9 @@ const CouponPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [viewingCoupon, setViewingCoupon] = useState<any>(null);
+  const [viewingCoupon, setViewingCoupon] = useState<CouponListModel | null>(null);
   const [validityModalOpen, setValidityModalOpen] = useState(false);
-  const [couponForValidity, setCouponForValidity] = useState<any>(null);
+  const [couponForValidity, setCouponForValidity] = useState<CouponListModel | null>(null);
   const [validityStartDate, setValidityStartDate] = useState(new Date());
   const [validityEndDate, setValidityEndDate] = useState(new Date());
   const [coupons, setCoupons] = useState<CouponListModel[]>([]);
@@ -60,9 +87,9 @@ const CouponPage = () => {
       setLoading(true);
       const response = await discountService.getAllCoupons();
 
-      const result = extractResult<any>(response.data);
-      const couponList = result?.coupons || extractItems<any>(response.data);
-      const mappedCoupons = couponList.map((item: any) => ({
+      const result = extractResult<{ coupons?: CouponApiItem[] }>(response.data);
+      const couponList = result?.coupons || extractItems<CouponApiItem>(response.data);
+      const mappedCoupons = couponList.map((item: CouponApiItem) => ({
         id: item.id,
         code: item.code,
         name: item.name || item.description || "",
@@ -148,10 +175,10 @@ const CouponPage = () => {
   const handleViewClick = async (coupon) => {
     try {
       const response = await discountService.getCouponById(coupon.id);
-      const result = extractResult<any>(response.data);
+      const result = extractResult<{ coupon?: CouponApiItem } & CouponApiItem>(response.data);
       const couponData = result?.coupon || result;
 
-      const mappedCoupon: any = {
+      const mappedCoupon: CouponListModel = {
         id: couponData.id,
         code: couponData.code,
         name: couponData.name || couponData.description || "",
@@ -970,7 +997,7 @@ const CouponPage = () => {
           </p>
           {itemToDelete && (
             <p className="mb-6 font-semibold text-slate-800 dark:text-slate-200">
-              "{itemToDelete.code}"
+              &quot;{itemToDelete.code}&quot;
             </p>
           )}
           <div className="flex justify-center space-x-3">

@@ -1,5 +1,10 @@
 "use client";
-import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
 import { usePathname, useRouter } from "next/navigation";
@@ -66,6 +71,71 @@ const sidebarLinks = [
     icon: "heroicons-outline:document-text",
   },
 ];
+
+const configuredRemoteImageHosts = new Set(
+  (process.env.NEXT_PUBLIC_REMOTE_IMAGE_HOSTS ?? "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      try {
+        const normalized = entry.includes("://")
+          ? entry
+          : `https://${entry.replace(/^\/\//, "")}`;
+        return new URL(normalized).hostname.toLowerCase();
+      } catch {
+        return "";
+      }
+    })
+    .filter(Boolean),
+);
+
+const canUseNextImage = (src: string) => {
+  try {
+    const url = new URL(src);
+    if (!["http:", "https:"].includes(url.protocol)) return false;
+    return configuredRemoteImageHosts.has(url.hostname.toLowerCase());
+  } catch {
+    return false;
+  }
+};
+
+const AvatarImage = ({
+  src,
+  alt,
+  size,
+}: {
+  src: string;
+  alt: string;
+  size: number;
+}) => {
+  if (canUseNextImage(src)) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={size}
+        height={size}
+        sizes={`${size}px`}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element -- fallback for non-allowlisted user avatar hosts */
+    <img
+      src={src}
+      alt={alt}
+      width={size}
+      height={size}
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+      className="w-full h-full object-cover"
+    />
+  );
+};
 
 /* ── Mobile Sidebar Drawer ─────────────────────────────────── */
 const MobileSidebar = ({
@@ -160,7 +230,7 @@ const MobileSidebar = ({
         <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
           <Button
             onClick={onClose}
-            className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors bg-transparent"
+            className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors bg-transparent"
             icon="heroicons-outline:chevron-left"
             iconClass="text-[20px] text-gray-700"
             ariaLabel={t("landing.a11y.closeMenu")}
@@ -308,7 +378,12 @@ const MobileSidebar = ({
 };
 
 /* ── Header ────────────────────────────────────────────────── */
-export const LandingHeader = () => {
+export const LandingHeader = ({
+  variant = "overlay",
+}: {
+  variant?: "overlay" | "solid";
+}) => {
+  const isSolid = variant === "solid";
   const { t, i18n } = useTranslation();
   const { isAuth, user } = useSelector((state: RootState) => state.auth);
   const customizerOpen = useSelector(
@@ -331,6 +406,7 @@ export const LandingHeader = () => {
   const clientIsAuth = mounted && isAuth;
 
   const handleLogout = async () => {
+    setUserMenuOpen(false);
     const refreshToken =
       (typeof document !== "undefined"
         ? document.cookie
@@ -353,16 +429,29 @@ export const LandingHeader = () => {
   const [authView, setAuthView] = useState<"signup" | "login" | "forgot">(
     "signup",
   );
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const languageMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const wasMenuOpenRef = useRef(false);
+  const languageMenuId = "landing-language-menu";
+  const userMenuId = "landing-user-menu";
   const normalizedLanguage = (i18n.resolvedLanguage || i18n.language || "en")
     .toLowerCase()
     .split("-")[0];
+  const userDisplayName = user?.fullName ?? user?.username ?? "";
+  const userInitial = (userDisplayName || "U")[0].toUpperCase();
+  const userAvatarAlt = userDisplayName
+    ? `${userDisplayName} avatar`
+    : "User avatar";
 
   const openAuth = (view: "signup" | "login" | "forgot") => {
     setAuthView(view);
     setAuthOpen(true);
     setMobileMenuOpen(false);
+    setLanguageMenuOpen(false);
+    setUserMenuOpen(false);
   };
 
   useEffect(() => {
@@ -378,6 +467,43 @@ export const LandingHeader = () => {
     }
   }, [mobileMenuOpen, width, lgBreakpoint, setMobileMenuOpen]);
 
+  useEffect(() => {
+    if (!languageMenuOpen && !userMenuOpen) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        languageMenuOpen &&
+        languageMenuRef.current &&
+        !languageMenuRef.current.contains(target)
+      ) {
+        setLanguageMenuOpen(false);
+      }
+      if (
+        userMenuOpen &&
+        userMenuRef.current &&
+        !userMenuRef.current.contains(target)
+      ) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setLanguageMenuOpen(false);
+        setUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [languageMenuOpen, userMenuOpen]);
+
   return (
     <>
       <a
@@ -385,7 +511,12 @@ export const LandingHeader = () => {
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-landing-heading focus:shadow-lg">
         Skip to main content
       </a>
-      <header className="absolute top-0 left-0 right-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 lg:px-12 py-4 md:py-5 min-h-17.5 md:h-32 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm">
+      <header
+        className={`${
+          isSolid
+            ? "relative bg-white shadow-sm border-b border-landing-border"
+            : "absolute top-0 left-0 right-0 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm"
+        } z-50 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 lg:px-12 py-4 md:py-5 min-h-17.5 md:h-32`}>
         <Link
           href="/"
           className="flex items-center shrink-0 justify-self-start">
@@ -414,7 +545,7 @@ export const LandingHeader = () => {
               <Link
                 key={link.labelKey}
                 href={link.href}
-                className={`inline-flex w-28 xl:w-36 justify-center overflow-hidden whitespace-nowrap text-ellipsis text-white font-semibold text-sm xl:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded ${
+                className={`inline-flex w-28 xl:w-36 justify-center overflow-hidden whitespace-nowrap text-ellipsis ${isSolid ? "text-landing-heading" : "text-white"} font-semibold text-sm xl:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 ${isSolid ? "focus-visible:ring-landing-heading" : "focus-visible:ring-white"} rounded ${
                   isActive ? "border-b-2 border-landing-accent" : ""
                 }`}
                 aria-current={isActive ? "page" : undefined}>
@@ -429,7 +560,7 @@ export const LandingHeader = () => {
           <button
             type="button"
             onClick={() => setDarkMode(!isDark)}
-            className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-all bg-transparent"
+            className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
             aria-label={
               isDark ? "Switch to light mode" : "Switch to dark mode"
             }>
@@ -450,10 +581,12 @@ export const LandingHeader = () => {
           <button
             type="button"
             onClick={() => dispatch(handleCustomizer(!customizerOpen))}
-            className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all ${
+            className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${
               customizerOpen
                 ? "border-landing-accent text-landing-accent bg-landing-accent/10"
-                : "border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent"
+                : isSolid
+                  ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 bg-transparent focus-visible:ring-landing-heading"
+                  : "border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent focus-visible:ring-white"
             }`}
             aria-label="Toggle live customizer">
             <FiSliders
@@ -463,13 +596,19 @@ export const LandingHeader = () => {
           </button>
 
           {/* Language switcher */}
-          <div className="group relative">
+          <div className="relative" ref={languageMenuRef}>
             <button
               type="button"
               suppressHydrationWarning
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-all bg-transparent"
+              className={`min-h-11 flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
+              onClick={() => {
+                setLanguageMenuOpen((prev) => !prev);
+                setUserMenuOpen(false);
+              }}
               aria-label={`${t("landing.a11y.changeLanguage")} (${normalizedLanguage.toUpperCase()})`}
-              aria-haspopup="true">
+              aria-haspopup="menu"
+              aria-expanded={languageMenuOpen}
+              aria-controls={languageMenuId}>
               <FiGlobe
                 suppressHydrationWarning
                 className="w-4 h-4 xl:w-5 xl:h-5"
@@ -479,18 +618,30 @@ export const LandingHeader = () => {
               </span>
               <FiChevronDown
                 suppressHydrationWarning
-                className="w-3.5 h-3.5 transition-transform group-hover:rotate-180"
+                className={`w-3.5 h-3.5 transition-transform ${
+                  languageMenuOpen ? "rotate-180" : ""
+                }`}
               />
             </button>
-            <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute right-0 top-full mt-2 min-w-40 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 py-1.5 overflow-hidden z-50">
+            <div
+              id={languageMenuId}
+              role="menu"
+              className={`absolute right-0 top-full mt-2 min-w-40 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 py-1.5 overflow-hidden z-50 transition-all duration-200 ${
+                languageMenuOpen
+                  ? "visible opacity-100 pointer-events-auto"
+                  : "invisible opacity-0 pointer-events-none"
+              }`}>
               {languages.map((lang) => {
                 const isActive = lang.code === normalizedLanguage;
                 return (
                   <button
                     key={lang.code}
                     type="button"
-                    onClick={() => i18n.changeLanguage(lang.code)}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors ${
+                    onClick={() => {
+                      i18n.changeLanguage(lang.code);
+                      setLanguageMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
                       isActive
                         ? "bg-landing-accent/10 text-landing-accent font-semibold"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -507,40 +658,48 @@ export const LandingHeader = () => {
 
           {/* Avatar dropdown — shown when logged in */}
           {clientIsAuth && (
-            <div className="group relative">
+            <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
-                className="w-9 h-9 xl:w-10 xl:h-10 rounded-full border-2 border-white/40 hover:border-landing-accent overflow-hidden transition-all bg-gray-300 flex items-center justify-center shrink-0"
-                aria-label="User menu">
+                onClick={() => {
+                  setUserMenuOpen((prev) => !prev);
+                  setLanguageMenuOpen(false);
+                }}
+                className={`w-11 h-11 rounded-full border-2 hover:border-landing-accent overflow-hidden transition-all bg-gray-300 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-300 focus-visible:ring-landing-heading" : "border-white/40 focus-visible:ring-white"}`}
+                aria-label="User menu"
+                aria-haspopup="menu"
+                aria-expanded={userMenuOpen}
+                aria-controls={userMenuId}>
                 {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.fullName ?? user.username ?? ""}
-                    className="w-full h-full object-cover"
-                  />
+                  <AvatarImage src={user.avatar} alt={userAvatarAlt} size={44} />
                 ) : (
                   <span className="text-sm font-bold text-white select-none">
-                    {(user?.fullName ?? user?.username ?? "U")[0].toUpperCase()}
+                    {userInitial}
                   </span>
                 )}
               </button>
 
               {/* Dropdown */}
-              <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-200 absolute right-0 top-full mt-2 w-60 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 overflow-hidden z-50">
+              <div
+                id={userMenuId}
+                role="menu"
+                className={`absolute right-0 top-full mt-2 w-60 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 overflow-hidden z-50 transition-all duration-200 ${
+                  userMenuOpen
+                    ? "visible opacity-100 pointer-events-auto"
+                    : "invisible opacity-0 pointer-events-none"
+                }`}>
                 {/* User info header */}
                 <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
                   <div className="w-9 h-9 rounded-full bg-landing-accent flex items-center justify-center shrink-0 overflow-hidden">
                     {user?.avatar ? (
-                      <img
+                      <AvatarImage
                         src={user.avatar}
-                        alt=""
-                        className="w-full h-full object-cover"
+                        alt={userAvatarAlt}
+                        size={36}
                       />
                     ) : (
                       <span className="text-sm font-bold text-white">
-                        {(user?.fullName ??
-                          user?.username ??
-                          "U")[0].toUpperCase()}
+                        {userInitial}
                       </span>
                     )}
                   </div>
@@ -558,7 +717,8 @@ export const LandingHeader = () => {
                 <div className="py-1">
                   <Link
                     href="/profile"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors">
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
                     <FiUser className="w-4 h-4 shrink-0" />
                     <span>
                       {t("landing.userMenu.profile") || "Thông tin cá nhân"}
@@ -566,7 +726,8 @@ export const LandingHeader = () => {
                   </Link>
                   <Link
                     href="/profile/change-password"
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors">
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
                     <FiLock className="w-4 h-4 shrink-0" />
                     <span>
                       {t("landing.userMenu.changePassword") || "Đổi mật khẩu"}
@@ -578,7 +739,7 @@ export const LandingHeader = () => {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors bg-transparent">
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer">
                     <FiLogOut className="w-4 h-4 shrink-0" />
                     <span>{t("common.signOut") || "Đăng xuất"}</span>
                   </button>
@@ -591,7 +752,7 @@ export const LandingHeader = () => {
               <Button
                 onClick={() => openAuth("login")}
                 text={t("common.signIn")}
-                className="w-30 xl:w-36 px-4 xl:px-5 py-2 xl:py-2.5 text-white font-semibold text-sm xl:text-[20px] rounded-full hover:bg-white/10 transition-colors bg-transparent"
+                className={`w-30 xl:w-36 px-4 xl:px-5 py-2 xl:py-2.5 font-semibold text-sm xl:text-[20px] rounded-full transition-colors ${isSolid ? "text-landing-heading hover:bg-gray-100 bg-transparent" : "text-white hover:bg-white/10 bg-transparent"}`}
               />
               <Button
                 onClick={() => openAuth("signup")}
@@ -606,7 +767,7 @@ export const LandingHeader = () => {
         <button
           ref={menuButtonRef}
           type="button"
-          className="lg:hidden justify-self-end text-white bg-transparent p-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className={`lg:hidden justify-self-end w-11 h-11 flex items-center justify-center bg-transparent rounded focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "text-landing-heading focus-visible:ring-landing-heading" : "text-white focus-visible:ring-white"}`}
           onClick={() => setMobileMenuOpen(true)}
           aria-label={t("landing.a11y.openMenu")}
           aria-expanded={mobileMenuOpen}

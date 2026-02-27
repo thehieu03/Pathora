@@ -14,3 +14,4 @@ export {
   TrustedBrandsSection,
 } from "./BottomSections";
 export { LandingFooter } from "./LandingFooter";
+export { TourDiscoveryPage } from "./TourDiscoveryPage";

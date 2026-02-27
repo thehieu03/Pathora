@@ -12,7 +12,7 @@ import {
 import { Fragment, useState } from "react";
 import Icon from "@/components/ui/Icon";
 const SearchModal = () => {
-  let [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
     setIsOpen(false);

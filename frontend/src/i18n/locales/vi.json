@@ -1177,6 +1177,32 @@
       "bookingHistory": "Lịch sử đặt tour",
       "tourDiscovery": "Khám phá tour"
     },
+    "tourDiscovery": {
+      "title": "Các Tour Khởi Hành Hiện Có",
+      "tours": "Tour",
+      "availableDepartures": "Khởi hành hiện có",
+      "searchPlaceholder": "Tìm kiếm sản phẩm",
+      "resultsCount": "{{count}} kết quả",
+      "sortBy": "Sắp xếp",
+      "sortFeatured": "Nổi bật",
+      "whenTraveling": "Bạn muốn đi khi nào?",
+      "tourType": "Loại tour",
+      "filterPrice": "Lọc theo giá",
+      "featured": "NỔI BẬT",
+      "bestPriceGuarantee": "Đảm bảo giá tốt nhất",
+      "from": "Từ",
+      "viewDetails": "Xem chi tiết",
+      "pagination": "Trang",
+      "showingResults": "Hiển thị kết quả {{start}}-{{end}} của {{total}}",
+      "filters": {
+        "departureDate": "Ngày khởi hành",
+        "destination": "Điểm đến",
+        "duration": "Thời gian",
+        "visaRequirement": "Yêu cầu visa",
+        "depositRate": "Tỷ lệ đặt cọc",
+        "seatsAvailability": "Chỗ trống"
+      }
+    },
     "footer": {
       "backgroundAlt": "Nền chân trang",
       "speakToExpert": "Trao đổi với chuyên gia của chúng tôi tại",

@@ -12,7 +12,7 @@ type InputGroupProps = {
   classLabel?: string;
   className?: string;
   classGroup?: string;
-  register?: any;
+  register?: (name: string, options?: Record<string, unknown>) => Record<string, unknown>;
   name?: string;
   readonly?: boolean;
   value?: string;
@@ -30,7 +30,7 @@ type InputGroupProps = {
   merged?: boolean;
   append?: React.ReactNode;
   prepend?: React.ReactNode;
-  options?: any;
+  options?: Record<string, unknown>;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
 

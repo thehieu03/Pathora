@@ -1,5 +1,5 @@
 declare module "react-table" {
-  import { ReactNode, MouseEvent, ChangeEvent, KeyboardEvent } from "react";
+  import { ReactNode, MouseEvent, ChangeEvent } from "react";
 
   export interface TableInstance<T extends object> {
     getTableProps: () => TableProps;
@@ -40,7 +40,7 @@ declare module "react-table" {
   export interface ColumnInstance<T extends object> {
     id: string;
     Header: string | ((props: HeaderProps<T>) => ReactNode);
-    accessor: string | ((row: T, rowIndex: number) => any);
+    accessor: string | ((row: T, rowIndex: number) => unknown);
     columns?: Array<ColumnInstance<T>>;
     isVisible?: boolean;
     getHeaderProps: (props?: TableHeaderProps) => TableHeaderProps;
@@ -67,7 +67,7 @@ declare module "react-table" {
   export interface Cell<T extends object> {
     column: ColumnInstance<T>;
     row: Row<T>;
-    value: any;
+    value: unknown;
     getCellProps: (props?: TableCellProps) => TableCellProps;
     render: (type: string, props?: object) => ReactNode;
   }
@@ -76,21 +76,21 @@ declare module "react-table" {
     role?: string;
     className?: string;
     style?: React.CSSProperties;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableBodyProps {
     role?: string;
     className?: string;
     style?: React.CSSProperties;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableHeaderGroupProps {
     role?: string;
     className?: string;
     style?: React.CSSProperties;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableHeaderProps {
@@ -99,7 +99,7 @@ declare module "react-table" {
     style?: React.CSSProperties;
     colSpan?: number;
     onClick?: (e: MouseEvent) => void;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableRowProps {
@@ -107,35 +107,35 @@ declare module "react-table" {
     className?: string;
     style?: React.CSSProperties;
     onClick?: (e: MouseEvent) => void;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableCellProps {
     role?: string;
     className?: string;
     style?: React.CSSProperties;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableToggleHideAllColumnsProps {
     type?: string;
     checked?: boolean;
     onChange?: (e: ChangeEvent) => void;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableToggleProps {
     type?: string;
     checked?: boolean;
     onChange?: (e: ChangeEvent) => void;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableSortByToggleProps {
     onClick?: (e: MouseEvent) => void;
     title?: string;
     style?: React.CSSProperties;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface TableState<T extends object> {
@@ -153,9 +153,9 @@ declare module "react-table" {
     column: ColumnInstance<T>;
   }
 
-  export interface Column<T extends object = {}> {
+  export interface Column<T extends object = Record<string, unknown>> {
     Header?: string | ((props: { column: ColumnInstance<T> }) => ReactNode);
-    accessor?: string | ((row: T, rowIndex: number) => any);
+    accessor?: string | ((row: T, rowIndex: number) => unknown);
     id?: string;
     columns?: Array<Column<T>>;
     Cell?:
@@ -163,7 +163,7 @@ declare module "react-table" {
       | ((props: {
           row: Row<T>;
           cell: Cell<T>;
-          value: any;
+          value: unknown;
           column: ColumnInstance<T>;
         }) => ReactNode);
     width?: number | string;
@@ -177,13 +177,13 @@ declare module "react-table" {
     sortDescFirst?: boolean;
     sortInverted?: boolean;
     filter?: string;
-    filterValue?: any;
+    filterValue?: unknown;
     disableFilters?: boolean;
     disableSortBy?: boolean;
     disableGlobalFilter?: boolean;
     isVisible?: boolean;
     sticky?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   export interface UseTableOptions<T extends object> {
@@ -224,17 +224,17 @@ declare module "react-table" {
     globalFilter?:
       | string
       | ((
-          rows: Array<Row<any>>,
+          rows: Array<Row<object>>,
           columnIds: string[],
-          filterValue: any,
-        ) => Array<Row<any>>);
+          filterValue: unknown,
+        ) => Array<Row<object>>);
     filterTypes?: Record<
       string,
       (
-        rows: Array<Row<any>>,
+        rows: Array<Row<object>>,
         columnIds: string[],
-        filterValue: any,
-      ) => Array<Row<any>>
+        filterValue: unknown,
+      ) => Array<Row<object>>
     >;
     autoResetGlobalFilter?: boolean;
   }
@@ -273,9 +273,9 @@ declare module "react-table" {
   }
 
   export interface UseRowStateOptions<T extends object> {
-    initialState?: Record<string, any>;
-    initialRowStateAccessor?: (row: Row<T>) => any;
-    getRowState?: (row: Row<T>) => any;
+    initialState?: Record<string, unknown>;
+    initialRowStateAccessor?: (row: Row<T>) => unknown;
+    getRowState?: (row: Row<T>) => unknown;
   }
 
   export type ActionType =
@@ -356,7 +356,7 @@ declare module "react-table" {
     useSticky: typeof useSticky;
   };
 
-  export interface Hooks<T extends object = {}> {
+  export interface Hooks<T extends object = Record<string, unknown>> {
     useGlobalFilter: typeof useGlobalFilter;
     useFilters: typeof useFilters;
     useSortBy: typeof useSortBy;
@@ -374,10 +374,10 @@ declare module "react-table" {
     getToggleHideAllColumnsProps: () => TableToggleHideAllColumnsProps;
     state: TableState<T>;
     visibleColumns: Array<ColumnInstance<T>>;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
-  export const defaultColumn: Partial<Column<any>>;
+  export const defaultColumn: Partial<Column<object>>;
 
   export const actions: Record<string, ActionType>;
 }

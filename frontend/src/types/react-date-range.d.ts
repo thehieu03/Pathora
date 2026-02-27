@@ -38,11 +38,11 @@ declare module "react-date-range" {
     shownDate?: Date;
     scroll?: { enabled?: boolean };
     className?: string;
-    navigatorRenderer?: (props: any) => React.ReactNode;
-    headerRenderer?: (props: any) => React.ReactNode;
+    navigatorRenderer?: (props: Record<string, unknown>) => React.ReactNode;
+    headerRenderer?: (props: Record<string, unknown>) => React.ReactNode;
     footerContent?: React.ReactNode;
     preview?: Range;
-    drag?: { [key: string]: any };
+    drag?: { [key: string]: unknown };
     classNames?: { [key: string]: string };
   }
 

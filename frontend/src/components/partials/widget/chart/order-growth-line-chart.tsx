@@ -6,7 +6,14 @@ import { reportService } from "@/services/reportService";
 import { useTranslation } from "react-i18next";
 import { extractItems } from "@/utils/apiResponse";
 
-const OrderGrowthLineChart = ({ height = 420, onRefresh }) => {
+interface OrderGrowthItem {
+  day?: string;
+  label?: string;
+  value?: number;
+  count?: number;
+}
+
+const OrderGrowthLineChart = ({ height = 420, onRefresh }: { height?: number; onRefresh?: (fn: () => Promise<void>) => void }) => {
   const { t } = useTranslation();
   const [isDark] = useDarkMode();
   const [isRtl] = useRtl();
@@ -18,7 +25,7 @@ const OrderGrowthLineChart = ({ height = 420, onRefresh }) => {
       setIsLoading(true);
       const response = await reportService.getOrderGrowthStatistics();
 
-      const items = extractItems<any>(response);
+      const items = extractItems<OrderGrowthItem>(response);
       const days = items.map((item) => item.day || item.label || "");
       const values = items.map((item) => item.value || item.count || 0);
       setChartData({ days, values });

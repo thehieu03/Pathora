@@ -16,6 +16,26 @@ import {
   usePagination,
 } from "react-table";
 
+interface RawNotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  readAt?: string;
+  targetUrl?: string;
+  createdAt?: string;
+}
+
+interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  readAt?: string;
+  targetUrl?: string;
+  createdAt: string;
+}
+
 const GlobalFilter = ({ filter, setFilter, t }) => {
   const [value, setValue] = useState(filter);
   const onChange = (e) => {
@@ -54,10 +74,12 @@ const IndeterminateCheckbox = React.forwardRef<
   );
 });
 
-const NotificationPage = () => {
+IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
+
+const NotificationPage= () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState(false);
 
@@ -70,8 +92,8 @@ const NotificationPage = () => {
 
         // Map API response to component format
         const mappedNotifications = (
-          response.data as any
-        ).result.notifications.map((item: any) => ({
+          response.data as { result: { notifications: RawNotificationItem[] } }
+        ).result.notifications.map((item) => ({
           id: item.id,
           title: item.title,
           message: item.message,
@@ -270,14 +292,14 @@ const NotificationPage = () => {
     useSortBy,
     usePagination,
     useRowSelect,
-    (hooks: any) => {
-      hooks.visibleColumns.push((columns: any) => [
+    (hooks: { visibleColumns: Array<unknown> }) => {
+      hooks.visibleColumns.push((columns: unknown[]) => [
         {
           id: "selection",
-          Header: ({ getToggleAllRowsSelectedProps }: any) => (
+          Header: ({ getToggleAllRowsSelectedProps }: { getToggleAllRowsSelectedProps: () => React.InputHTMLAttributes<HTMLInputElement> }) => (
             <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
           ),
-          Cell: ({ row }: any) => (
+          Cell: ({ row }: { row: { getToggleRowSelectedProps: () => React.InputHTMLAttributes<HTMLInputElement> } }) => (
             <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
           ),
         },

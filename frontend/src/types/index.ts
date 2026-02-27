@@ -730,5 +730,5 @@ export type SignalRNotification = {
 export type NotificationCallback = (notification: SignalRNotification) => void;
 
 export interface KeycloakInitOptions {
-  [key: string]: any;
+  [key: string]: unknown;
 }

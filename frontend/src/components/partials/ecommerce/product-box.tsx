@@ -11,7 +11,19 @@ import { addToCart, updateQuantity } from "@/store/infrastructure/cartSlice";
 import Link from "next/link";
 import { RootState } from "@/lib/store";
 
-const ProductBox = ({ item, wish }: { item: any; wish?: boolean }) => {
+interface ProductItem {
+  id: string;
+  name: string;
+  category: string;
+  img: string;
+  rating?: number;
+  subtitle?: string;
+  price: number;
+  oldPrice?: number;
+  percent?: string;
+}
+
+const ProductBox = ({ item, wish }: { item: ProductItem; wish?: boolean }) => {
   const dispatch = useDispatch();
 
   const {

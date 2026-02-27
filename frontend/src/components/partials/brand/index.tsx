@@ -19,6 +19,8 @@ import {
   usePagination,
 } from "react-table";
 
+type BrandApiItem = { id: string; name: string; slug?: string };
+
 const GlobalFilter = React.memo(
   ({
     filter,
@@ -72,8 +74,8 @@ const BrandPage = () => {
       const response = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
 
       // Map API response to component format
-      const mappedBrands = extractItems<any>(response.data).map(
-        (item: any) => ({
+      const mappedBrands = extractItems<BrandApiItem>(response.data).map(
+        (item) => ({
           id: item.id,
           name: item.name,
           slug: item.slug || "",
@@ -146,8 +148,8 @@ const BrandPage = () => {
         } else {
           // Fallback: refetch if no data in response
           const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
-          const mappedBrands = extractItems<any>(refreshResponse.data).map(
-            (item: any) => ({
+          const mappedBrands = extractItems<BrandApiItem>(refreshResponse.data).map(
+            (item) => ({
               id: item.id,
               name: item.name,
               slug: item.slug || "",
@@ -197,8 +199,8 @@ const BrandPage = () => {
         } else {
           // Fallback: refetch if no data in response
           const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
-          const mappedBrands = extractItems<any>(refreshResponse.data).map(
-            (item: any) => ({
+          const mappedBrands = extractItems<BrandApiItem>(refreshResponse.data).map(
+            (item) => ({
               id: item.id,
               name: item.name,
               slug: item.slug || "",
@@ -688,7 +690,7 @@ const BrandPage = () => {
           </p>
           {itemToDelete && (
             <p className="mb-6 font-semibold text-slate-800 dark:text-slate-200">
-              "{itemToDelete.name}"
+              &quot;{itemToDelete.name}&quot;
             </p>
           )}
           <div className="flex justify-center space-x-3">

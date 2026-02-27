@@ -119,7 +119,7 @@ const CartStep = () => {
                 ) : (
                   <tr>
                     <td className="table-td h-24 text-center" colSpan={5}>
-                      No result's
+                      No result&apos;s
                     </td>
                   </tr>
                 )}

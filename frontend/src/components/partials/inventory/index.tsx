@@ -21,6 +21,70 @@ import {
   usePagination,
 } from "react-table";
 
+interface RawInventoryApiItem {
+  id?: string;
+  productId?: string;
+  product?: { name?: string; sku?: string };
+  quantity?: number;
+  reserved?: number;
+  available?: number;
+  locationId?: string;
+  location?: { location?: string };
+  lastModifiedOnUtc?: string;
+  createdOnUtc?: string;
+}
+
+interface RawHistoryItem {
+  id?: string;
+  message?: string;
+  createdOnUtc?: string;
+  createdBy?: string;
+}
+
+interface RawReservationItem {
+  id?: string;
+  productId?: string;
+  productName?: string;
+  referenceId?: string;
+  quantity?: number;
+  status?: string;
+  expiresAt?: string;
+  createdOnUtc?: string;
+}
+
+interface RawProductOption {
+  id?: string;
+  name?: string;
+}
+
+interface RawLocationOption {
+  id?: string;
+  location?: string;
+}
+
+interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+interface HistoryDataItem {
+  id?: string;
+  message: string;
+  createdOnUtc?: string;
+  createdBy: string;
+}
+
+interface ReservationDataItem {
+  id?: string;
+  productId?: string;
+  productName?: string;
+  referenceId?: string;
+  quantity?: number;
+  status?: string;
+  expiresAt?: string;
+  createdOnUtc?: string;
+}
+
 const formatDate = (dateString) => {
   if (!dateString) return "-";
   const date = new Date(dateString);
@@ -40,7 +104,7 @@ const getStatusFromQuantity = (quantity, available) => {
 };
 
 const mapInventoryItems = (payload: unknown) => {
-  return extractItems<any>(payload).map((item: any) => ({
+  return extractItems<RawInventoryApiItem>(payload).map((item) => ({
     id: item.id,
     productId: item.productId,
     productName: item.product?.name || "N/A",
@@ -97,15 +161,15 @@ const InventoryPage = () => {
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [locations, setLocations] = useState([]);
+  const [products, setProducts] = useState<DropdownOption[]>([]);
+  const [locations, setLocations] = useState<DropdownOption[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
-  const [historyData, setHistoryData] = useState([]);
+  const [historyData, setHistoryData] = useState<HistoryDataItem[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [reservationModalOpen, setReservationModalOpen] = useState(false);
-  const [reservationData, setReservationData] = useState([]);
+  const [reservationData, setReservationData] = useState<ReservationDataItem[]>([]);
   const [loadingReservations, setLoadingReservations] = useState(false);
 
   // Form data for add
@@ -152,7 +216,7 @@ const InventoryPage = () => {
     try {
       setLoadingHistory(true);
       const response = await inventoryService.getHistories();
-      const mappedHistories = extractItems<any>(response.data).map((item: any) => ({
+      const mappedHistories = extractItems<RawHistoryItem>(response.data).map((item) => ({
         id: item.id,
         message: item.message || "-",
         createdOnUtc: item.createdOnUtc,
@@ -172,7 +236,7 @@ const InventoryPage = () => {
     try {
       setLoadingReservations(true);
       const response = await inventoryService.getAllReservations();
-      const mappedReservations = extractItems<any>(response.data).map((item: any) => ({
+      const mappedReservations = extractItems<RawReservationItem>(response.data).map((item) => ({
         id: item.id,
         productId: item.productId,
         productName: item.productName,
@@ -197,7 +261,7 @@ const InventoryPage = () => {
       try {
         setLoadingProducts(true);
         const response = await catalogService.getAllProducts();
-        const productOptions = extractItems<any>(response.data).map((item: any) => ({
+        const productOptions = extractItems<RawProductOption>(response.data).map((item) => ({
           value: item.id,
           label: item.name,
         }));
@@ -218,7 +282,7 @@ const InventoryPage = () => {
       try {
         setLoadingLocations(true);
         const response = await inventoryService.getLocations();
-        const locationOptions = extractItems<any>(response.data).map((item: any) => ({
+        const locationOptions = extractItems<RawLocationOption>(response.data).map((item) => ({
           value: item.id,
           label: item.location,
         }));
@@ -1494,7 +1558,7 @@ const InventoryPage = () => {
           </p>
           {itemToDelete && (
             <p className="mb-6 font-semibold text-slate-800 dark:text-slate-200">
-              "{itemToDelete.productName}"
+              &quot;{itemToDelete.productName}&quot;
             </p>
           )}
           <div className="flex justify-center space-x-3">

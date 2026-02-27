@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Collapse } from "react-collapse";
@@ -9,29 +9,10 @@ import useMobileMenu from "@/hooks/useMobileMenu";
 import Submenu from "./Submenu";
 
 const Navmenu = ({ menus }) => {
-  const [activeSubmenu, setActiveSubmenu] = useState(null);
-
-  const toggleSubmenu = (i) => {
-    if (activeSubmenu === i) {
-      setActiveSubmenu(null);
-    } else {
-      setActiveSubmenu(i);
-    }
-  };
-
   const pathname = usePathname();
   const locationName = pathname.replace(/^\//, "");
   const [mobileMenu, setMobileMenu] = useMobileMenu();
-  const [activeMultiMenu, setMultiMenu] = useState(null);
   const dispatch = useDispatch();
-
-  const toggleMultiMenu = (j) => {
-    if (activeMultiMenu === j) {
-      setMultiMenu(null);
-    } else {
-      setMultiMenu(j);
-    }
-  };
 
   const isLocationMatch = (targetLocation) => {
     return (
@@ -40,20 +21,18 @@ const Navmenu = ({ menus }) => {
     );
   };
 
-  useEffect(() => {
+  const { derivedSubmenu, derivedMultiMenu } = useMemo(() => {
     let submenuIndex = null;
     let multiMenuIndex = null;
     menus.forEach((item, i) => {
       if (isLocationMatch(item.link)) {
         submenuIndex = i;
       }
-
       if (item.child) {
         item.child.forEach((childItem, j) => {
           if (isLocationMatch(childItem.childlink)) {
             submenuIndex = i;
           }
-
           if (childItem.multi_menu) {
             childItem.multi_menu.forEach((nestedItem) => {
               if (isLocationMatch(nestedItem.multiLink)) {
@@ -65,10 +44,37 @@ const Navmenu = ({ menus }) => {
         });
       }
     });
-    document.title = `progcoder  | ${locationName}`;
+    return { derivedSubmenu: submenuIndex, derivedMultiMenu: multiMenuIndex };
+  }, [pathname, menus]);
 
-    setActiveSubmenu(submenuIndex);
-    setMultiMenu(multiMenuIndex);
+  const [activeSubmenu, setActiveSubmenu] = useState(derivedSubmenu);
+  const [activeMultiMenu, setMultiMenu] = useState(derivedMultiMenu);
+
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setActiveSubmenu(derivedSubmenu);
+    setMultiMenu(derivedMultiMenu);
+  }
+
+  const toggleSubmenu = (i) => {
+    if (activeSubmenu === i) {
+      setActiveSubmenu(null);
+    } else {
+      setActiveSubmenu(i);
+    }
+  };
+
+  const toggleMultiMenu = (j) => {
+    if (activeMultiMenu === j) {
+      setMultiMenu(null);
+    } else {
+      setMultiMenu(j);
+    }
+  };
+
+  useEffect(() => {
+    document.title = `progcoder  | ${locationName}`;
     if (mobileMenu) {
       setMobileMenu(false);
     }

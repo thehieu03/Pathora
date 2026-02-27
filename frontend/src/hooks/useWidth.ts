@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 
 interface Breakpoints {
   sm: number;
@@ -12,8 +12,21 @@ interface UseWidthReturn {
   breakpoints: Breakpoints;
 }
 
+function subscribeToResize(callback: () => void) {
+  window.addEventListener("resize", callback);
+  return () => window.removeEventListener("resize", callback);
+}
+
+function getWidth() {
+  return window.innerWidth;
+}
+
+function getServerWidth() {
+  return 0;
+}
+
 export default function useWidth(): UseWidthReturn {
-  const [width, setWidth] = useState<number>(0); // Default to 0 or a sensible default for SSR
+  const width = useSyncExternalStore(subscribeToResize, getWidth, getServerWidth);
 
   const breakpoints: Breakpoints = {
     sm: 640,
@@ -21,19 +34,6 @@ export default function useWidth(): UseWidthReturn {
     lg: 1024,
     xl: 1280,
   };
-
-  useEffect(() => {
-    // Set initial width on client mount
-    setWidth(window.innerWidth);
-
-    const handleResize = () => {
-      setWidth(window.innerWidth);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   return { width, breakpoints };
 }

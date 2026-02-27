@@ -8,7 +8,19 @@ import { addToCart, updateQuantity } from "@/store/infrastructure/cartSlice";
 import Link from "next/link";
 import { RootState } from "@/lib/store";
 
-const ProductList = ({ item }: { item: any }) => {
+interface ProductItem {
+  id: string;
+  name: string;
+  category: string;
+  img: string;
+  rating?: number;
+  desc?: string;
+  price: number;
+  oldPrice?: number;
+  percent?: string;
+}
+
+const ProductList = ({ item }: { item: ProductItem }) => {
   const dispatch = useDispatch();
   const { name, category, img, rating, desc, price, oldPrice, percent, id } =
     item;

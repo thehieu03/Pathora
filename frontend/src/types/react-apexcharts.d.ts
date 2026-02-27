@@ -2,12 +2,12 @@ declare module "react-apexcharts" {
   import { ComponentType } from "react";
 
   interface ApexOptions {
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   interface Props {
     options?: ApexOptions;
-    series?: any[];
+    series?: unknown[];
     type?:
       | "line"
       | "area"
@@ -26,7 +26,7 @@ declare module "react-apexcharts" {
       | "treemap";
     width?: string | number;
     height?: string | number;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   const ReactApexChart: ComponentType<Props>;

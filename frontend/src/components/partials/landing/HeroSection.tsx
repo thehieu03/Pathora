@@ -97,7 +97,7 @@ const CalendarDropdown = ({
           type="button"
           onClick={prevMonth}
           aria-label={previousMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100">
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
           <Icon
             icon="heroicons-outline:chevron-left"
             className="w-4 h-4 text-gray-600"
@@ -110,7 +110,7 @@ const CalendarDropdown = ({
           type="button"
           onClick={nextMonth}
           aria-label={nextMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100">
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
           <Icon
             icon="heroicons-outline:chevron-right"
             className="w-4 h-4 text-gray-600"
@@ -139,7 +139,7 @@ const CalendarDropdown = ({
             type="button"
             key={day}
             onClick={() => onChange(new Date(viewYear, viewMonth, day))}
-            className={`w-11 h-11 mx-auto rounded-full text-sm flex items-center justify-center transition-colors ${
+            className={`w-11 h-11 mx-auto rounded-full text-sm flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
               isSelected(day)
                 ? "bg-landing-accent text-white font-bold"
                 : "text-gray-700 hover:bg-gray-100"
@@ -168,7 +168,7 @@ const ListDropdown = ({
         type="button"
         key={item}
         onClick={() => onChange(item)}
-        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors ${
+        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
           value === item
             ? "bg-landing-accent/10 text-landing-accent font-medium"
             : "text-gray-700 hover:bg-gray-50"
@@ -197,7 +197,7 @@ const NumberDropdown = ({
         type="button"
         key={num}
         onClick={() => onChange(num)}
-        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors ${
+        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
           value === num
             ? "bg-landing-accent/10 text-landing-accent font-medium"
             : "text-gray-700 hover:bg-gray-50"
@@ -236,7 +236,7 @@ const SelectField = ({
       onClick={onToggle}
       aria-expanded={isOpen}
       aria-haspopup={children ? "listbox" : undefined}
-      className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white w-full text-left overflow-hidden ${rounded ?? ""} ${
+      className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white w-full text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${rounded ?? ""} ${
         isOpen ? "ring-2 ring-landing-accent/30" : ""
       }`}>
       <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 flex items-center justify-center text-landing-accent">
@@ -348,7 +348,19 @@ export const HeroSection = () => {
           sizes="100vw"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/20" />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-300/30 via-fuchsia-400/25 to-blue-500/30 mix-blend-screen"
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-black/25" />
+        <div
+          className="pointer-events-none absolute -top-28 -left-24 h-96 w-96 rounded-full bg-cyan-300/30 blur-3xl motion-safe:animate-[landing-aurora_12s_ease-in-out_infinite] motion-reduce:animate-none"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute -bottom-36 -right-20 h-[28rem] w-[28rem] rounded-full bg-fuchsia-400/25 blur-3xl motion-safe:animate-[landing-aurora-slow_14s_ease-in-out_infinite] motion-reduce:animate-none"
+          aria-hidden="true"
+        />
       </div>
 
       <div className="relative z-10 flex flex-col items-center pt-25 md:pt-51.75 gap-10 md:gap-15 px-4">
@@ -363,7 +375,7 @@ export const HeroSection = () => {
 
         <div
           ref={searchRef}
-          className="bg-white/20 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl">
+          className="bg-white/35 backdrop-blur-md border border-white/30 rounded-xl px-3 md:px-5 pt-5 pb-5 flex flex-col items-start justify-center w-full max-w-4xl">
           <div className="flex -mb-px">
             <Button
               onClick={() => setTourType("public")}

@@ -35,7 +35,7 @@ const RegForm = () => {
 
   const router = useRouter();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: yup.InferType<typeof schema>) => {
     try {
       setIsLoading(true);
       console.log("Register data:", data);

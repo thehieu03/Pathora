@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useMemo } from "react";
 import {
   Listbox,
   ListboxButton,
@@ -21,26 +21,17 @@ const normalizeLanguageCode = (value?: string) =>
 
 const Language = () => {
   const { i18n } = useTranslation();
-  const currentLanguage = normalizeLanguageCode(
-    i18n.resolvedLanguage || i18n.language,
+  const selected = useMemo(
+    () =>
+      languages.find(
+        (lang) =>
+          lang.code ===
+          normalizeLanguageCode(i18n.resolvedLanguage || i18n.language),
+      ) || languages[0],
+    [i18n.language, i18n.resolvedLanguage],
   );
-  const [selected, setSelected] = useState(
-    languages.find((lang) => lang.code === currentLanguage) || languages[0],
-  );
-
-  useEffect(() => {
-    const currentLang = languages.find(
-      (lang) =>
-        lang.code ===
-        normalizeLanguageCode(i18n.resolvedLanguage || i18n.language),
-    );
-    if (currentLang) {
-      setSelected(currentLang);
-    }
-  }, [i18n.language, i18n.resolvedLanguage]);
 
   const handleChange = (lang: (typeof languages)[number]) => {
-    setSelected(lang);
     i18n.changeLanguage(lang.code);
   };
 

@@ -24,7 +24,7 @@ declare module "cleave.js/react" {
     rawValueTrimPrefix?: boolean;
     tailPrefix?: boolean;
     signBeforePrefix?: boolean;
-    onValueChanged?: (value: any) => void;
+    onValueChanged?: (value: { target: { rawValue: string; value: string } }) => void;
   }
 
   interface CleaveProps {
@@ -40,7 +40,7 @@ declare module "cleave.js/react" {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
     onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   const Cleave: ComponentClass<CleaveProps>;

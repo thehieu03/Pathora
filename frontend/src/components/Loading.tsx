@@ -1,19 +1,17 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useSyncExternalStore } from "react";
 import useDarkMode from "@/hooks/useDarkMode";
 import LogoWhite from "@/assets/images/logo/logo-white.svg";
 import Logo from "@/assets/images/logo/logo.png";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
+const emptySubscribe = () => () => {};
+
 const Loading = () => {
   const [isDark] = useDarkMode();
   const { isAuth } = useSelector((state: RootState) => state.auth);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   // Show consistent loading state during SSR to avoid hydration mismatch
   if (!mounted) {

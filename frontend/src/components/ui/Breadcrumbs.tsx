@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import useMenuTranslation from "@/hooks/useMenuTranslation";
@@ -11,10 +11,7 @@ const Breadcrumbs = () => {
   const locationName = pathname.replace(/^\//, "");
   const { menuItems } = useMenuTranslation();
 
-  const [isHide, setIsHide] = useState(null);
-  const [groupTitle, setGroupTitle] = useState("");
-
-  useEffect(() => {
+  const { isHide, groupTitle } = useMemo(() => {
     const currentMenuItem = menuItems.find(
       (item) => item.link === locationName
     );
@@ -24,11 +21,14 @@ const Breadcrumbs = () => {
     );
 
     if (currentMenuItem) {
-      setIsHide(currentMenuItem.isHide);
+      return { isHide: currentMenuItem.isHide, groupTitle: "" };
     } else if (currentChild) {
-      setIsHide(currentChild?.isHide || false);
-      setGroupTitle(currentChild?.title || "");
+      return {
+        isHide: currentChild?.isHide || false,
+        groupTitle: currentChild?.title || "",
+      };
     }
+    return { isHide: null, groupTitle: "" };
   }, [pathname, locationName, menuItems]);
 
   return (

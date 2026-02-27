@@ -3,13 +3,15 @@
 import React, { Fragment } from "react";
 import Icon from "@/components/ui/Icon";
 
+type SelectOption = { value: string; label: string } | string;
+
 type SelectProps = {
   label?: string;
   placeholder?: string;
   classLabel?: string;
   className?: string;
   classGroup?: string;
-  register?: any;
+  register?: (name: string, options?: Record<string, unknown>) => Record<string, unknown>;
   name?: string;
   readonly?: boolean;
   value?: string;
@@ -23,10 +25,10 @@ type SelectProps = {
   description?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLSelectElement>) => void;
-  options?: any[];
+  options?: SelectOption[];
   defaultValue?: string;
   size?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 const Select = ({

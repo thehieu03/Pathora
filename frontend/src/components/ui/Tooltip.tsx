@@ -11,7 +11,7 @@ const Tooltip = ({
   children?: React.ReactNode;
   title?: string;
   className?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }) => {
   return <>{children || <button className={className}>{title}</button>}</>;
 };

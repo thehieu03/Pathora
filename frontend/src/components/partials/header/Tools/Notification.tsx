@@ -12,6 +12,23 @@ import { notificationService } from "@/services/notificationService";
 import { RootState } from "@/lib/store";
 import { extractResult } from "@/utils/apiResponse";
 
+interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  createdOnUtc: string;
+  isRead: boolean;
+  targetUrl?: string;
+}
+
+interface NotificationsResponse {
+  notifications: NotificationItem[];
+}
+
+interface UnreadCountResponse {
+  count: number;
+}
+
 const Notification = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -44,8 +61,8 @@ const Notification = () => {
         notificationService.getUnreadCount(),
       ]);
 
-      const notificationsResult = extractResult<any>(notificationsRes?.data);
-      const countResult = extractResult<any>(countRes?.data);
+      const notificationsResult = extractResult<NotificationsResponse>(notificationsRes?.data);
+      const countResult = extractResult<UnreadCountResponse>(countRes?.data);
       setNotifications(notificationsResult?.notifications || []);
       setUnreadCount(countResult?.count ?? 0);
       

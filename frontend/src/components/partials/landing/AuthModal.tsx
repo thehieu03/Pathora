@@ -1,16 +1,13 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import Image from "./LandingImage";
-import { Button, Icon } from "@/components/ui";
+import { FcGoogle } from "react-icons/fc";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { Button, Icon } from "@/components/ui";
 import {
   useLoginMutation,
   useRegisterMutation,
 } from "@/store/api/auth/authApiSlice";
-import { toast } from "react-toastify";
-
-const GOOGLE_ICON =
-  "https://www.figma.com/api/mcp/asset/6af47520-666a-4e1d-bb47-97db509f8848";
 
 type AuthView = "signup" | "login" | "forgot";
 
@@ -253,12 +250,7 @@ const SignUpView = ({
         <button
           type="button"
           className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
-          <Image
-            src={GOOGLE_ICON}
-            alt={t("landing.auth.google")}
-            width={24}
-            height={24}
-          />
+          <FcGoogle className="w-6 h-6" aria-hidden="true" />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
             {t("landing.auth.signUpWithGoogle")}
           </span>
@@ -390,12 +382,7 @@ const LoginView = ({
         <button
           type="button"
           className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
-          <Image
-            src={GOOGLE_ICON}
-            alt={t("landing.auth.google")}
-            width={24}
-            height={24}
-          />
+          <FcGoogle className="w-6 h-6" aria-hidden="true" />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
             {t("landing.auth.signInWithGoogle")}
           </span>

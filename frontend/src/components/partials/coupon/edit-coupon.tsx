@@ -17,6 +17,19 @@ import { discountService } from "@/services/discountService";
 import LoaderCircle from "@/components/Loader-circle";
 import { extractResult } from "@/utils/apiResponse";
 
+type CouponApiData = {
+  code?: string;
+  name?: string;
+  description?: string;
+  type?: number;
+  value?: number;
+  minPurchaseAmount?: number;
+  maxDiscountAmount?: number;
+  maxUsage?: number;
+  validFrom?: string;
+  validTo?: string;
+};
+
 const EditCoupon = () => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -137,7 +150,7 @@ const EditCoupon = () => {
       try {
         setLoading(true);
         const response = await discountService.getCouponById(id);
-        const result = extractResult<any>(response.data);
+        const result = extractResult<{ coupon?: CouponApiData } & CouponApiData>(response.data);
         const couponData = result?.coupon || result;
 
         setCode(couponData.code || "");

@@ -21,7 +21,7 @@ const ForgotPass = () => {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: yup.InferType<typeof schema>) => {
     try {
       setIsLoading(true);
       console.log(data);
