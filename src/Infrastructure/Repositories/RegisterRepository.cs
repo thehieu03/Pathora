@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Domain.Entities;
+using Infrastructure.Data;
+using Infrastructure.Repositories.Common;
 
-namespace Infrastructure.Repositories
+namespace Infrastructure.Repositories;
+
+internal class RegisterRepository(AppDbContext context) : Repository<RegisterEntity>(context), IRegisterRepository
 {
-    internal class RegisterRepository
-    {
-    }
 }

@@ -1,3 +1,5 @@
+using Api.Exceptions;
+using ErrorOr;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 
@@ -17,27 +19,14 @@ public class CustomAuthorizationResultHandler : IAuthorizationMiddlewareResultHa
         {
             //sử lý không có quyền truy cập chức năng này
 
-
-            //context.Response.StatusCode = StatusCodes.Status200OK;
-            //await context.Response.WriteAsJsonAsync(new Result
-            //{
-            //    Status = 1,
-            //    StatusCode = StatusCodes.Status403Forbidden,
-            //    Object = "Người dùng không có quyền truy cập chức năng này"
-            //});
+            throw new NoPermissionException("Người dùng không có quyền truy cập chức năng này");
+           
         }
         else if (authorizeResult.Challenged)
         {
             //sử lý Người dùng chưa được xác thực
 
-
-            //context.Response.StatusCode = StatusCodes.Status200OK;
-            //await context.Response.WriteAsJsonAsync(new Result
-            //{
-            //    Status = 1,
-            //    StatusCode = StatusCodes.Status401Unauthorized,
-            //    Object = "Người dùng chưa được xác thực"
-            //});
+            throw new UnauthorizedException("Người dùng chưa được xác thực");
         }
         else
         {
