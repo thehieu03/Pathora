@@ -4,13 +4,15 @@ stages:
 
 build-job:
   stage: build
-   # tag của runner
+  tags:
+    - Pathora_DoAn   # tag của runner
   script:
     - echo "Building..."
     - docker build -t panthora-be:latest . 
 deploy:
   stage: deploy
- 
+  tags:
+    - Pathora_DoAn
   only:
     - main
   script:
