@@ -26,15 +26,15 @@ internal static class DependencyInjection
             })
             .AddCookie(IdentityConstants.ExternalScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddGoogle(options =>
-            {
-                options.ClientId = configuration["Authentication:Google:ClientId"] ??
-                                   throw new InvalidOperationException("Invalid Google Client ID");
-                options.ClientSecret = configuration["Authentication:Google:ClientSecret"] ??
-                                       throw new InvalidOperationException("Invalid Google Client Secret");
-                options.Scope.Add("email");
-                options.Scope.Add("profile");
-            })
+            //.AddGoogle(options =>
+            //{
+            //    options.ClientId = configuration["Authentication:Google:ClientId"] ??
+            //                       throw new InvalidOperationException("Invalid Google Client ID");
+            //    options.ClientSecret = configuration["Authentication:Google:ClientSecret"] ??
+            //                           throw new InvalidOperationException("Invalid Google Client Secret");
+            //    options.Scope.Add("email");
+            //    options.Scope.Add("profile");
+            //})
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters

@@ -8,9 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 
-// Ai hiểu cho 10k
-var tenK = "2" | int.Parse | (val => val * 10) | (val => val == 20);
-
 var builder = WebApplication.CreateBuilder(args);
 var disableAuthorization = builder.Configuration.IsAuthorizationDisabled();
 builder.Logging.ClearProviders();

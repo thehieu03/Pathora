@@ -81,15 +81,15 @@ public static class DependencyInjection
                 },
                 true));
 
-        services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(ServiceName))
-            .UseOtlpExporter(OtlpExportProtocol.HttpProtobuf, new Uri(configuration["OpenTelemetry:Endpoint"]!))
-            .WithTracing(tracing => tracing
-                .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation())
-            .WithMetrics(metrics => metrics
-                .AddHttpClientInstrumentation()
-                .AddAspNetCoreInstrumentation());
+        //services.AddOpenTelemetry()
+        //    .ConfigureResource(resource => resource.AddService(ServiceName))
+        //    .UseOtlpExporter(OtlpExportProtocol.HttpProtobuf, new Uri(configuration["OpenTelemetry:Endpoint"]!))
+        //    .WithTracing(tracing => tracing
+        //        .AddHttpClientInstrumentation()
+        //        .AddAspNetCoreInstrumentation())
+        //    .WithMetrics(metrics => metrics
+        //        .AddHttpClientInstrumentation()
+        //        .AddAspNetCoreInstrumentation());
 
         return services;
     }
