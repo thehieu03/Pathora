@@ -18,8 +18,4 @@ deploy:
   script:
     - docker stop panthora || true
     - docker rm panthora || true
-    - docker run -d \
-        --name panthora \
-        -p 8080:8080 \
-        --env-file .env \
-        panthora-be:latest
+    - docker run -d --name panthora -p 8080:8080 --env-file .env panthora-be:latest
