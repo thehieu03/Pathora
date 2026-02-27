@@ -282,6 +282,10 @@ CLAUDE.md
 
 src/Api/logs/
 
+# Secrets - never commit these
+appsettings.Development.json
+.env
+
 src/Application/Common/Repositories/
 docs/plans/
 
