@@ -486,7 +486,7 @@ const CategoryPage = () => {
                     const { key: headerKey, ...restHeaderProps } =
                       headerGroup.getHeaderGroupProps();
                     return (
-                      <tr key={headerKey} {...restHeaderProps}>
+                      <tr key={headerKey as React.Key} {...restHeaderProps}>
                         {headerGroup.headers.map((column) => {
                           const { key: columnKey, ...restColumnProps } =
                             column.getHeaderProps(
@@ -494,7 +494,7 @@ const CategoryPage = () => {
                             );
                           return (
                             <th
-                              key={columnKey}
+                              key={columnKey as React.Key}
                               {...restColumnProps}
                               scope="col"
                               className="table-th"
@@ -552,13 +552,13 @@ const CategoryPage = () => {
                       const { key: rowKey, ...restRowProps } =
                         row.getRowProps();
                       return (
-                        <tr key={rowKey} {...restRowProps}>
+                        <tr key={rowKey as React.Key} {...restRowProps}>
                           {row.cells.map((cell) => {
                             const { key: cellKey, ...restCellProps } =
                               cell.getCellProps();
                             return (
                               <td
-                                key={cellKey}
+                                key={cellKey as React.Key}
                                 {...restCellProps}
                                 className="table-td"
                               >

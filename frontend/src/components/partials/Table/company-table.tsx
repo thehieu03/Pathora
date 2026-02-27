@@ -137,7 +137,7 @@ const CompanyTable = () => {
                       headerGroupProps;
 
                     return (
-                      <tr key={groupKey} {...restGroupProps}>
+                      <tr key={groupKey as React.Key} {...restGroupProps}>
                         {headerGroup.headers.map((column) => {
                           const headerProps = column.getHeaderProps(
                             column.getSortByToggleProps(),
@@ -147,7 +147,7 @@ const CompanyTable = () => {
 
                           return (
                             <th
-                              key={columnKey}
+                              key={columnKey as React.Key}
                               {...restHeaderProps}
                               scope="col"
                               className="table-th"
@@ -177,13 +177,13 @@ const CompanyTable = () => {
                     const { key: rowKey, ...restRowProps } = row.getRowProps();
 
                     return (
-                      <tr key={rowKey} {...restRowProps}>
+                      <tr key={rowKey as React.Key} {...restRowProps}>
                         {row.cells.map((cell) => {
                           const { key: cellKey, ...restCellProps } =
                             cell.getCellProps();
                           return (
                             <td
-                              key={cellKey}
+                              key={cellKey as React.Key}
                               {...restCellProps}
                               className="table-td"
                             >

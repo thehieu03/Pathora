@@ -147,14 +147,16 @@ const BrandPage = () => {
           );
         } else {
           // Fallback: refetch if no data in response
-          const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
-          const mappedBrands = extractItems<BrandApiItem>(refreshResponse.data).map(
-            (item) => ({
-              id: item.id,
-              name: item.name,
-              slug: item.slug || "",
-            }),
+          const refreshResponse = await api.get(
+            API_ENDPOINTS.CATALOG.GET_BRANDS,
           );
+          const mappedBrands = extractItems<BrandApiItem>(
+            refreshResponse.data,
+          ).map((item) => ({
+            id: item.id,
+            name: item.name,
+            slug: item.slug || "",
+          }));
           setBrands(mappedBrands);
         }
 
@@ -198,14 +200,16 @@ const BrandPage = () => {
           setBrands((prev) => [newBrand, ...prev]);
         } else {
           // Fallback: refetch if no data in response
-          const refreshResponse = await api.get(API_ENDPOINTS.CATALOG.GET_BRANDS);
-          const mappedBrands = extractItems<BrandApiItem>(refreshResponse.data).map(
-            (item) => ({
-              id: item.id,
-              name: item.name,
-              slug: item.slug || "",
-            }),
+          const refreshResponse = await api.get(
+            API_ENDPOINTS.CATALOG.GET_BRANDS,
           );
+          const mappedBrands = extractItems<BrandApiItem>(
+            refreshResponse.data,
+          ).map((item) => ({
+            id: item.id,
+            name: item.name,
+            slug: item.slug || "",
+          }));
           setBrands(mappedBrands);
         }
 
@@ -285,13 +289,11 @@ const BrandPage = () => {
                 content={t("common.view")}
                 placement="top"
                 arrow
-                animation="shift-away"
-              >
+                animation="shift-away">
                 <button
                   className="action-btn"
                   type="button"
-                  onClick={() => handleViewClick(brand)}
-                >
+                  onClick={() => handleViewClick(brand)}>
                   <Icon icon="heroicons:eye" />
                 </button>
               </Tooltip>
@@ -299,13 +301,11 @@ const BrandPage = () => {
                 content={t("common.edit")}
                 placement="top"
                 arrow
-                animation="shift-away"
-              >
+                animation="shift-away">
                 <button
                   className="action-btn"
                   type="button"
-                  onClick={() => handleEditClick(brand)}
-                >
+                  onClick={() => handleEditClick(brand)}>
                   <Icon icon="heroicons:pencil-square" />
                 </button>
               </Tooltip>
@@ -314,13 +314,11 @@ const BrandPage = () => {
                 placement="top"
                 arrow
                 animation="shift-away"
-                theme="danger"
-              >
+                theme="danger">
                 <button
                   className="action-btn"
                   type="button"
-                  onClick={() => handleDeleteClick(brand)}
-                >
+                  onClick={() => handleDeleteClick(brand)}>
                   <Icon icon="heroicons:trash" />
                 </button>
               </Tooltip>
@@ -379,8 +377,7 @@ const BrandPage = () => {
             <button
               className="btn btn-outline-dark btn-sm inline-flex items-center"
               onClick={fetchBrands}
-              disabled={loading}
-            >
+              disabled={loading}>
               <Icon
                 icon="heroicons:arrow-path"
                 className={`ltr:mr-2 rtl:ml-2 ${loading ? "animate-spin" : ""}`}
@@ -389,8 +386,7 @@ const BrandPage = () => {
             </button>
             <button
               className="btn btn-dark btn-sm inline-flex items-center"
-              onClick={() => setShowAddModal(true)}
-            >
+              onClick={() => setShowAddModal(true)}>
               <Icon icon="heroicons:plus" className="ltr:mr-2 rtl:ml-2" />
               {t("brand.addBrand")}
             </button>
@@ -401,14 +397,13 @@ const BrandPage = () => {
             <div className="overflow-hidden">
               <table
                 className="min-w-full table-fixed divide-y divide-slate-100 dark:divide-slate-700!"
-                {...getTableProps()}
-              >
+                {...getTableProps()}>
                 <thead className="bg-slate-200 dark:bg-slate-700">
                   {headerGroups.map((headerGroup) => {
                     const { key: headerKey, ...restHeaderProps } =
                       headerGroup.getHeaderGroupProps();
                     return (
-                      <tr key={headerKey} {...restHeaderProps}>
+                      <tr key={headerKey as React.Key} {...restHeaderProps}>
                         {headerGroup.headers.map((column) => {
                           const { key: columnKey, ...restColumnProps } =
                             column.getHeaderProps(
@@ -416,11 +411,10 @@ const BrandPage = () => {
                             );
                           return (
                             <th
-                              key={columnKey}
+                              key={columnKey as React.Key}
                               {...restColumnProps}
                               scope="col"
-                              className="table-th"
-                            >
+                              className="table-th">
                               {column.render("Header")}
                               <span>
                                 {column.isSorted
@@ -438,14 +432,12 @@ const BrandPage = () => {
                 </thead>
                 <tbody
                   className="divide-y divide-slate-100 bg-white dark:divide-slate-700! dark:bg-slate-800"
-                  {...getTableBodyProps()}
-                >
+                  {...getTableBodyProps()}>
                   {loading ? (
                     <tr>
                       <td
                         colSpan={headerGroups[0]?.headers?.length || 3}
-                        className="table-td py-8 text-center"
-                      >
+                        className="table-td py-8 text-center">
                         <div className="flex flex-col items-center justify-center">
                           <Icon
                             icon="heroicons:arrow-path"
@@ -461,8 +453,7 @@ const BrandPage = () => {
                     <tr>
                       <td
                         colSpan={headerGroups[0]?.headers?.length || 3}
-                        className="table-td py-8 text-center"
-                      >
+                        className="table-td py-8 text-center">
                         <span className="text-slate-500 dark:text-slate-400">
                           {t("brand.noBrands")}
                         </span>
@@ -474,16 +465,15 @@ const BrandPage = () => {
                       const { key: rowKey, ...restRowProps } =
                         row.getRowProps();
                       return (
-                        <tr key={rowKey} {...restRowProps}>
+                        <tr key={rowKey as React.Key} {...restRowProps}>
                           {row.cells.map((cell) => {
                             const { key: cellKey, ...restCellProps } =
                               cell.getCellProps();
                             return (
                               <td
-                                key={cellKey}
+                                key={cellKey as React.Key}
                                 {...restCellProps}
-                                className="table-td"
-                              >
+                                className="table-td">
                                 {cell.render("Cell")}
                               </td>
                             );
@@ -502,8 +492,7 @@ const BrandPage = () => {
             <select
               className="form-control w-max py-2"
               value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-            >
+              onChange={(e) => setPageSize(Number(e.target.value))}>
               {[10, 25, 50].map((size) => (
                 <option key={size} value={size}>
                   {t("common.show")} {size}
@@ -522,8 +511,7 @@ const BrandPage = () => {
               <button
                 className={`${!canPreviousPage ? "cursor-not-allowed opacity-50" : ""}`}
                 onClick={() => gotoPage(0)}
-                disabled={!canPreviousPage}
-              >
+                disabled={!canPreviousPage}>
                 <Icon icon="heroicons:chevron-double-left-solid" />
               </button>
             </li>
@@ -531,8 +519,7 @@ const BrandPage = () => {
               <button
                 className={`${!canPreviousPage ? "cursor-not-allowed opacity-50" : ""}`}
                 onClick={() => previousPage()}
-                disabled={!canPreviousPage}
-              >
+                disabled={!canPreviousPage}>
                 {t("common.previous")}
               </button>
             </li>
@@ -545,8 +532,7 @@ const BrandPage = () => {
                       ? "bg-slate-900 font-medium text-white dark:bg-slate-600 dark:text-slate-200"
                       : "bg-slate-100 font-normal text-slate-900 dark:bg-slate-700 dark:text-slate-400"
                   } flex h-6 w-6 items-center justify-center rounded text-sm leading-4 transition-all duration-150`}
-                  onClick={() => gotoPage(pageIdx)}
-                >
+                  onClick={() => gotoPage(pageIdx)}>
                   {pageNum + 1}
                 </button>
               </li>
@@ -555,8 +541,7 @@ const BrandPage = () => {
               <button
                 className={`${!canNextPage ? "cursor-not-allowed opacity-50" : ""}`}
                 onClick={() => nextPage()}
-                disabled={!canNextPage}
-              >
+                disabled={!canNextPage}>
                 {t("common.next")}
               </button>
             </li>
@@ -564,8 +549,7 @@ const BrandPage = () => {
               <button
                 onClick={() => gotoPage(pageCount - 1)}
                 disabled={!canNextPage}
-                className={`${!canNextPage ? "cursor-not-allowed opacity-50" : ""}`}
-              >
+                className={`${!canNextPage ? "cursor-not-allowed opacity-50" : ""}`}>
                 <Icon icon="heroicons:chevron-double-right-solid" />
               </button>
             </li>
@@ -577,8 +561,7 @@ const BrandPage = () => {
       <Modal
         title={t("brand.addNewBrand")}
         activeModal={showAddModal}
-        onClose={() => setShowAddModal(false)}
-      >
+        onClose={() => setShowAddModal(false)}>
         <div className="space-y-4">
           <Textinput
             label={t("brand.name")}
@@ -590,15 +573,13 @@ const BrandPage = () => {
           <div className="flex justify-end space-x-3">
             <button
               className="btn btn-outline-dark inline-flex items-center"
-              onClick={() => setShowAddModal(false)}
-            >
+              onClick={() => setShowAddModal(false)}>
               {t("common.cancel")}
             </button>
             <button
               className="btn btn-dark inline-flex items-center"
               onClick={handleSaveAdd}
-              disabled={saving}
-            >
+              disabled={saving}>
               {saving ? (
                 <>
                   <Icon
@@ -625,8 +606,7 @@ const BrandPage = () => {
         onClose={() => {
           setShowEditModal(false);
           setEditingBrand(null);
-        }}
-      >
+        }}>
         <div className="space-y-4">
           <Textinput
             label={t("brand.name")}
@@ -641,15 +621,13 @@ const BrandPage = () => {
               onClick={() => {
                 setShowEditModal(false);
                 setEditingBrand(null);
-              }}
-            >
+              }}>
               {t("common.cancel")}
             </button>
             <button
               className="btn btn-dark inline-flex items-center"
               onClick={handleSaveEdit}
-              disabled={saving}
-            >
+              disabled={saving}>
               {saving ? (
                 <>
                   <Icon
@@ -676,8 +654,7 @@ const BrandPage = () => {
         onClose={() => {
           setDeleteModalOpen(false);
           setItemToDelete(null);
-        }}
-      >
+        }}>
         <div className="text-center">
           <div className="bg-danger-500/20 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
             <Icon
@@ -699,15 +676,13 @@ const BrandPage = () => {
               onClick={() => {
                 setDeleteModalOpen(false);
                 setItemToDelete(null);
-              }}
-            >
+              }}>
               {t("common.cancel")}
             </button>
             <button
               className="btn btn-danger inline-flex items-center"
               onClick={confirmDelete}
-              disabled={deleting}
-            >
+              disabled={deleting}>
               {deleting ? (
                 <>
                   <Icon
@@ -734,8 +709,7 @@ const BrandPage = () => {
         onClose={() => {
           setShowViewModal(false);
           setViewingBrand(null);
-        }}
-      >
+        }}>
         {viewingBrand && (
           <div className="space-y-4">
             <div>
@@ -760,8 +734,7 @@ const BrandPage = () => {
                 onClick={() => {
                   setShowViewModal(false);
                   setViewingBrand(null);
-                }}
-              >
+                }}>
                 {t("common.close")}
               </button>
             </div>
