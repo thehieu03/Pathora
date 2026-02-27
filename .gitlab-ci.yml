@@ -1,33 +1,21 @@
-services:
-  - name: docker:dind
-
 stages:
   - build
   - deploy
 
-build:
-  image: docker:cli
+build-job:
   stage: build
-  services:
-    - docker:dind
-  variables:
-    DOCKER_TLS_CERTDIR: ""
-  before_script:
-    - docker login https://registry.h2qsolution.com -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
-  script:
-    - docker build -t registry.h2qsolution.com/localservice-be/localservice-be:latest .
-    - docker push registry.h2qsolution.com/localservice-be/localservice-be:latest
-  only:
-    - main
   tags:
-    - hhsk_be
-
+    - Pathora_DoAn   # tag của runner
+  script:
+    - echo "Building..."
+    - docker build -t panthora-be:latest . 
 deploy:
   stage: deploy
-  script:
-    - kubectl rollout restart deployment/localservice-be-deployment -n localservice-be
-    - kubectl rollout status deployment/localservice-be-deployment -n localservice-be
+  tags:
+    - Pathora_DoAn
   only:
     - main
-  tags:
-    - hhsk_be
+  script:
+    - docker stop panthora || true
+    - docker rm panthora || true
+    - docker run -d --name panthora -p 8080:8080 panthora-be:latest
