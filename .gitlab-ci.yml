@@ -3,7 +3,7 @@ stages:
 deploy-app:
   stage: build-and-deploy
   tags:
-    - doan
+    - DoAn
   script:
     - echo "Bắt đầu quá trình build và deploy trực tiếp trên server..."
     # 1. Xóa container cũ nếu đang chạy để tránh trùng tên/port
