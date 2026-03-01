@@ -1,6 +1,5 @@
 stages:
   - build-and-deploy
-
 deploy-app:
   stage: build-and-deploy
   script:
