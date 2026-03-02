@@ -1,22 +1,23 @@
 stages:
   - build-and-deploy
+
 deploy-app:
   stage: build-and-deploy
   tags:
     - do-an
   script:
-    - echo "Bắt đầu quá trình build và deploy trực tiếp trên server..."
-    # 1. Xóa container cũ nếu đang chạy để tránh trùng tên/port
-    - docker stop pathora || true
-    - docker rm pathora || true
+    - echo "Bắt đầu quá trình build Image cho Backend..."
     
-    # 2. Build image mới từ Dockerfile trong source code
+    # 1. Build image mới (Đặt tên pathora-be cho khớp với compose của bạn)
     - docker build -t pathora-be:latest .
     
-    # 3. Chạy container mới
-    - docker run -d --name pathora -p 8080:8080 pathora-be:latest
-    # 4. Kiểm tra trạng thái container
-    - docker ps | grep pathora
+    # 2. Di chuyển vào thư mục chứa Docker Compose
     - cd ~/my-database/my-project
-    - docker compose down
-    - docker compose up -d
+    
+    # 3. Dùng Compose để cập nhật hệ thống
+    # Lệnh này sẽ tự động nhận biết image pathora-be vừa build xong để restart container
+    - echo "Đang cập nhật các container qua Docker Compose..."
+    - docker compose up -d --remove-orphans
+    
+    # 4. Kiểm tra lại trạng thái các dịch vụ
+    - docker ps
