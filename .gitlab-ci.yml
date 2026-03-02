@@ -5,6 +5,8 @@ deploy-app:
   stage: build-and-deploy
   tags:
     - do-an
+  only:
+    - main
   script:
     - echo "Bắt đầu quá trình build Image cho Backend..."
     
