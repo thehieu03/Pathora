@@ -282,6 +282,14 @@ CLAUDE.md
 
 src/Api/logs/
 
+# API local artifacts
+src/Api/appsettings.*.json
+!src/Api/appsettings.json
+src/Api/*.http
+src/Api/*.rest
+src/Api/openapi*.json
+src/Api/swagger*.json
+
 # Secrets - never commit these
 appsettings.Development.json
 .env
