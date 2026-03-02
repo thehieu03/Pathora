@@ -17,6 +17,5 @@ deploy-app:
     - cd ~/my-database/my-project
     
     # 3. Dùng Compose để cập nhật hệ thống
-    # Lệnh này sẽ tự động nhận biết image pathora-be vừa build xong để restart container
     - echo "Đang cập nhật các container qua Docker Compose..."
     - docker compose up -d --remove-orphans
