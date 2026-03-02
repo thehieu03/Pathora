@@ -7,13 +7,16 @@ deploy-app:
   script:
     - echo "Bắt đầu quá trình build và deploy trực tiếp trên server..."
     # 1. Xóa container cũ nếu đang chạy để tránh trùng tên/port
+    - cd ~/my-database/my-project
+    - docker compose down
     - docker stop panthora || true
     - docker rm panthora || true
     
     # 2. Build image mới từ Dockerfile trong source code
-    - docker build -t panthora-be:latest .
+    - docker build -t pathora-be:latest .
     
     # 3. Chạy container mới
-    - docker run -d --name panthora -p 8080:8080 panthora-be:latest
+    - docker run -d --name pathora -p 8080:8080 pathora-be:latest
     # 4. Kiểm tra trạng thái container
     - docker ps | grep panthora
+    - docker compose up -d
