@@ -20,6 +20,3 @@ deploy-app:
     # Lệnh này sẽ tự động nhận biết image pathora-be vừa build xong để restart container
     - echo "Đang cập nhật các container qua Docker Compose..."
     - docker compose up -d --remove-orphans
-    
-    # 4. Kiểm tra lại trạng thái các dịch vụ
-    - docker ps
