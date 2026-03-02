@@ -1,0 +1,142 @@
+import type { AxiosError, AxiosRequestHeaders, RawAxiosRequestHeaders } from "axios";
+
+interface ErrorDetail {
+  errorMessage?: string;
+  message?: string;
+  details?: string;
+}
+
+interface ErrorResponsePayload {
+  errors?: ErrorDetail[];
+  message?: string;
+}
+
+interface ErrorToastPayload {
+  key: string;
+  details?: string;
+}
+
+interface ErrorLogPayload {
+  endpoint: string;
+  method: string;
+  statusCode: number | null;
+  timestamp: string;
+  headers: Record<string, string>;
+}
+
+const SENSITIVE_HEADER_NAMES = new Set([
+  "authorization",
+  "cookie",
+  "set-cookie",
+  "x-api-key",
+]);
+
+const toHeaderRecord = (
+  headers: AxiosRequestHeaders | RawAxiosRequestHeaders | undefined,
+): Record<string, string> => {
+  if (!headers) {
+    return {};
+  }
+
+  const result: Record<string, string> = {};
+  Object.entries(headers).forEach(([name, value]) => {
+    if (value == null) {
+      return;
+    }
+    result[name] = String(value);
+  });
+
+  return result;
+};
+
+const sanitizeHeaders = (
+  headers: AxiosRequestHeaders | RawAxiosRequestHeaders | undefined,
+): Record<string, string> => {
+  const sanitized: Record<string, string> = {};
+
+  Object.entries(toHeaderRecord(headers)).forEach(([name, value]) => {
+    if (SENSITIVE_HEADER_NAMES.has(name.toLowerCase())) {
+      return;
+    }
+    sanitized[name] = value;
+  });
+
+  return sanitized;
+};
+
+const getStatusErrorKey = (status: number): string => {
+  switch (status) {
+    case 400:
+      return "BAD_REQUEST";
+    case 401:
+      return "UNAUTHORIZED";
+    case 403:
+      return "FORBIDDEN";
+    case 404:
+      return "NOT_FOUND";
+    default:
+      return status >= 500 ? "SERVER_ERROR" : "DEFAULT_ERROR";
+  }
+};
+
+export const resolveErrorToast = (
+  error: AxiosError<ErrorResponsePayload>,
+): ErrorToastPayload => {
+  if (error.code === "ECONNABORTED") {
+    return { key: "TIMEOUT_ERROR" };
+  }
+
+  const response = error.response;
+  if (response) {
+    const data = response.data;
+    const firstError = data?.errors?.[0];
+
+    if (firstError?.errorMessage || firstError?.message) {
+      return {
+        key: firstError.errorMessage ?? firstError.message ?? "DEFAULT_ERROR",
+        details: firstError.details,
+      };
+    }
+
+    if (data?.message) {
+      return { key: data.message };
+    }
+
+    return { key: getStatusErrorKey(response.status) };
+  }
+
+  if (error.request) {
+    return { key: "NETWORK_ERROR" };
+  }
+
+  return { key: "DEFAULT_ERROR" };
+};
+
+export const buildErrorLogPayload = (
+  error: AxiosError,
+  timestamp = new Date().toISOString(),
+): ErrorLogPayload => {
+  const method = (error.config?.method ?? "GET").toUpperCase();
+  const endpoint = error.config?.url ?? "unknown";
+  const statusCode = error.response?.status ?? null;
+  const headers = sanitizeHeaders(error.config?.headers);
+
+  return {
+    endpoint,
+    method,
+    statusCode,
+    timestamp,
+    headers,
+  };
+};
+
+export const logApiError = (
+  error: AxiosError,
+  timestamp = new Date().toISOString(),
+): void => {
+  console.error("[API_ERROR]", buildErrorLogPayload(error, timestamp));
+
+  if (process.env.NODE_ENV === "development") {
+    console.error("[API_ERROR_FULL]", error);
+  }
+};

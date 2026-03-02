@@ -1,13 +1,24 @@
-import { api, API_ENDPOINTS } from "@/api";
-
-const notificationEndpoints = API_ENDPOINTS.NOTIFICATION;
+import { api } from "../api/axiosInstance";
+import { API_ENDPOINTS } from "../api/endpoints";
+import type { ApiResponse } from "../types/api";
+import { executeApiRequest } from "./serviceExecutor";
 
 export const notificationService = {
-  getAll: () => api.get(notificationEndpoints.GET_ALL),
-  getTop10Unread: () => api.get(notificationEndpoints.GET_TOP_10_UNREAD),
-  getUnreadCount: () => api.get(notificationEndpoints.GET_COUNT_UNREAD),
-  markAsRead: (ids: string[]) =>
-    api.patch(notificationEndpoints.MARK_AS_READ, { ids }),
-};
+  getNotifications: <T = unknown[]>(): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.get(API_ENDPOINTS.NOTIFICATION.GET_LIST),
+    );
+  },
 
-export default notificationService;
+  getUnreadCount: <T = unknown>(): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.get(API_ENDPOINTS.NOTIFICATION.GET_COUNT_UNREAD),
+    );
+  },
+
+  markAsRead: <T = unknown>(payload: unknown): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.post(API_ENDPOINTS.NOTIFICATION.MARK_AS_READ, payload),
+    );
+  },
+};

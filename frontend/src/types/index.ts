@@ -4,6 +4,7 @@
  */
 
 import type { ReactNode, CSSProperties } from "react";
+export * from "./api";
 
 // ==================== Common Types ====================
 
@@ -15,29 +16,6 @@ export interface PaginationParams {
   filter?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-}
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  totalCount: number;
-  pageIndex: number;
-  pageSize: number;
-  totalPages: number;
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-}
-
-export interface ApiResponse<T> {
-  result: T;
-  error?: string;
-  message?: string;
-  errors?: ApiError[];
-}
-
-export interface ApiError {
-  errorMessage: string;
-  details?: string;
-  code?: string;
 }
 
 // ==================== Theme Types ====================

@@ -859,6 +859,7 @@
   "error_response": {
     "DEFAULT_ERROR": "Đã xảy ra lỗi, vui lòng thử lại sau",
     "NETWORK_ERROR": "Lỗi kết nối mạng, vui lòng kiểm tra kết nối internet",
+    "TIMEOUT_ERROR": "Yêu cầu đã hết thời gian chờ, vui lòng thử lại.",
     "BAD_REQUEST": "Yêu cầu không hợp lệ",
     "UNAUTHORIZED": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại",
     "FORBIDDEN": "Bạn không có quyền truy cập tài nguyên này",

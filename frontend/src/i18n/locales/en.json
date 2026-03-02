@@ -859,6 +859,7 @@
   "error_response": {
     "DEFAULT_ERROR": "An error occurred, please try again later",
     "NETWORK_ERROR": "Network error, please check your internet connection",
+    "TIMEOUT_ERROR": "Request timed out, please try again.",
     "BAD_REQUEST": "Invalid request",
     "UNAUTHORIZED": "Session expired, please login again",
     "FORBIDDEN": "You don't have permission to access this resource",

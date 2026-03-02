@@ -1,22 +1,24 @@
-import { api, API_ENDPOINTS } from "@/api";
-
-const inventoryEndpoints = API_ENDPOINTS.INVENTORY;
+import { api } from "../api/axiosInstance";
+import { API_ENDPOINTS } from "../api/endpoints";
+import type { ApiResponse } from "../types/api";
+import { executeApiRequest } from "./serviceExecutor";
 
 export const inventoryService = {
-  getAllInventoryItems: () => api.get(inventoryEndpoints.GET_ALL),
-  getHistories: () => api.get(inventoryEndpoints.GET_HISTORIES),
-  getAllReservations: () => api.get(inventoryEndpoints.GET_ALL_RESERVATIONS),
-  getLocations: () => api.get(inventoryEndpoints.GET_LOCATIONS),
-  createInventoryItem: (payload: unknown) =>
-    api.post(inventoryEndpoints.CREATE, payload),
-  updateInventoryItem: (id: string, payload: unknown) =>
-    api.put(inventoryEndpoints.UPDATE(id), payload),
-  deleteInventoryItem: (id: string) =>
-    api.delete(inventoryEndpoints.DELETE(id)),
-  increaseStock: (id: string, payload: unknown) =>
-    api.put(inventoryEndpoints.INCREASE_STOCK(id), payload),
-  decreaseStock: (id: string, payload: unknown) =>
-    api.put(inventoryEndpoints.DECREASE_STOCK(id), payload),
-};
+  getInventoryItems: <T = unknown[]>(): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() => api.get(API_ENDPOINTS.INVENTORY.GET_LIST));
+  },
 
-export default inventoryService;
+  getInventoryDetail: <T = unknown>(id: string): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.get(API_ENDPOINTS.INVENTORY.GET_DETAIL(id)),
+    );
+  },
+
+  createInventoryItem: <T = unknown>(
+    payload: unknown,
+  ): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.post(API_ENDPOINTS.INVENTORY.CREATE, payload),
+    );
+  },
+};

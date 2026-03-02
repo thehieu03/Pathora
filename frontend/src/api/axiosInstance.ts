@@ -1,10 +1,12 @@
 import axios, {
+  AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
 import { ToastPosition } from "react-toastify";
+import { handleResponseError, waitForRetry } from "./responseInterceptor";
 import { showErrorToast } from "./showErrorToast";
 
 const API_BASE_URL: string =
@@ -29,6 +31,7 @@ export const toastConfig: ToastConfig = {
 };
 
 export interface ApiErrorDetail {
+  code?: string;
   errorMessage: string;
   details?: string;
 }
@@ -44,52 +47,16 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 const getCookie = (name: string): string | null => {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) {
     return parts.pop()?.split(";").shift() || null;
   }
   return null;
-};
-
-const handleStatusError = (status: number): void => {
-  switch (status) {
-    case 400:
-      showErrorToast("BAD_REQUEST");
-      break;
-    case 401:
-      showErrorToast("UNAUTHORIZED");
-      break;
-    case 403:
-      showErrorToast("FORBIDDEN");
-      break;
-    case 404:
-      showErrorToast("NOT_FOUND");
-      break;
-    case 500:
-      showErrorToast("SERVER_ERROR");
-      break;
-    default:
-      showErrorToast("DEFAULT_ERROR");
-  }
-};
-
-const handleErrorResponse = (
-  response: AxiosResponse<ApiErrorResponse>,
-): void => {
-  const data = response?.data;
-
-  if (data?.errors && Array.isArray(data.errors) && data.errors.length > 0) {
-    data.errors.forEach((error: ApiErrorDetail) => {
-      if (error.errorMessage) {
-        showErrorToast(error.errorMessage, error.details);
-      }
-    });
-  } else if (data?.message) {
-    showErrorToast(data.message);
-  } else {
-    handleStatusError(response.status);
-  }
 };
 
 const axiosInstance: AxiosInstance = axios.create({
@@ -100,45 +67,63 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = getCookie("access_token");
+const onUnauthorized = (): void => {
+  if (typeof document !== "undefined") {
+    document.cookie =
+      "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
+  if (typeof window !== "undefined") {
+    window.location.href = "/login";
+  }
+};
 
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+const attachInterceptors = (instance: AxiosInstance): void => {
+  instance.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const token = getCookie("access_token");
 
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
-
-axiosInstance.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
-  (error) => {
-    const { response } = error;
-
-    if (response) {
-      handleErrorResponse(response);
-
-      if (response.status === 401) {
-        document.cookie =
-          "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        window.location.href = "/login";
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
-    } else if (error.request) {
-      showErrorToast("NETWORK_ERROR");
-    } else {
-      showErrorToast("DEFAULT_ERROR");
-    }
 
-    return Promise.reject(error);
-  },
-);
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    },
+  );
+
+  instance.interceptors.response.use(
+    (response: AxiosResponse) => {
+      return response;
+    },
+    async (error: AxiosError<ApiErrorResponse>) => {
+      return handleResponseError(error, {
+        request: (config) => {
+          return instance.request(config);
+        },
+        wait: waitForRetry,
+        showError: (key, details) => {
+          showErrorToast(key, details);
+        },
+        onUnauthorized,
+      });
+    },
+  );
+};
+
+attachInterceptors(axiosInstance);
+
+const createCustomInstance = (baseURL: string): AxiosInstance => {
+  const customInstance = axios.create({
+    ...axiosInstance.defaults,
+    baseURL,
+  });
+
+  attachInterceptors(customInstance);
+
+  return customInstance;
+};
 
 interface ApiHelper {
   get: <T = unknown>(
@@ -172,25 +157,7 @@ export const api: ApiHelper = {
     config: CustomAxiosRequestConfig = {},
   ): Promise<AxiosResponse<T>> => {
     if (config.baseURL) {
-      const customInstance = axios.create({
-        ...axiosInstance.defaults,
-        baseURL: config.baseURL,
-      });
-      const requestHandler = axiosInstance.interceptors.request.handlers?.[0];
-      const responseHandler = axiosInstance.interceptors.response.handlers?.[0];
-
-      if (requestHandler) {
-        customInstance.interceptors.request.use(
-          requestHandler.fulfilled,
-          requestHandler.rejected,
-        );
-      }
-      if (responseHandler) {
-        customInstance.interceptors.response.use(
-          responseHandler.fulfilled,
-          responseHandler.rejected,
-        );
-      }
+      const customInstance = createCustomInstance(config.baseURL);
       return customInstance.get<T>(url, { ...config, baseURL: undefined });
     }
     return axiosInstance.get<T>(url, config);
@@ -201,25 +168,7 @@ export const api: ApiHelper = {
     config: CustomAxiosRequestConfig = {},
   ): Promise<AxiosResponse<T>> => {
     if (config.baseURL) {
-      const customInstance = axios.create({
-        ...axiosInstance.defaults,
-        baseURL: config.baseURL,
-      });
-      const requestHandler = axiosInstance.interceptors.request.handlers?.[0];
-      const responseHandler = axiosInstance.interceptors.response.handlers?.[0];
-
-      if (requestHandler) {
-        customInstance.interceptors.request.use(
-          requestHandler.fulfilled,
-          requestHandler.rejected,
-        );
-      }
-      if (responseHandler) {
-        customInstance.interceptors.response.use(
-          responseHandler.fulfilled,
-          responseHandler.rejected,
-        );
-      }
+      const customInstance = createCustomInstance(config.baseURL);
       return customInstance.post<T>(url, data, {
         ...config,
         baseURL: undefined,
@@ -233,25 +182,7 @@ export const api: ApiHelper = {
     config: CustomAxiosRequestConfig = {},
   ): Promise<AxiosResponse<T>> => {
     if (config.baseURL) {
-      const customInstance = axios.create({
-        ...axiosInstance.defaults,
-        baseURL: config.baseURL,
-      });
-      const requestHandler = axiosInstance.interceptors.request.handlers?.[0];
-      const responseHandler = axiosInstance.interceptors.response.handlers?.[0];
-
-      if (requestHandler) {
-        customInstance.interceptors.request.use(
-          requestHandler.fulfilled,
-          requestHandler.rejected,
-        );
-      }
-      if (responseHandler) {
-        customInstance.interceptors.response.use(
-          responseHandler.fulfilled,
-          responseHandler.rejected,
-        );
-      }
+      const customInstance = createCustomInstance(config.baseURL);
       return customInstance.put<T>(url, data, {
         ...config,
         baseURL: undefined,
@@ -265,25 +196,7 @@ export const api: ApiHelper = {
     config: CustomAxiosRequestConfig = {},
   ): Promise<AxiosResponse<T>> => {
     if (config.baseURL) {
-      const customInstance = axios.create({
-        ...axiosInstance.defaults,
-        baseURL: config.baseURL,
-      });
-      const requestHandler = axiosInstance.interceptors.request.handlers?.[0];
-      const responseHandler = axiosInstance.interceptors.response.handlers?.[0];
-
-      if (requestHandler) {
-        customInstance.interceptors.request.use(
-          requestHandler.fulfilled,
-          requestHandler.rejected,
-        );
-      }
-      if (responseHandler) {
-        customInstance.interceptors.response.use(
-          responseHandler.fulfilled,
-          responseHandler.rejected,
-        );
-      }
+      const customInstance = createCustomInstance(config.baseURL);
       return customInstance.patch<T>(url, data, {
         ...config,
         baseURL: undefined,
@@ -296,25 +209,7 @@ export const api: ApiHelper = {
     config: CustomAxiosRequestConfig = {},
   ): Promise<AxiosResponse<T>> => {
     if (config.baseURL) {
-      const customInstance = axios.create({
-        ...axiosInstance.defaults,
-        baseURL: config.baseURL,
-      });
-      const requestHandler = axiosInstance.interceptors.request.handlers?.[0];
-      const responseHandler = axiosInstance.interceptors.response.handlers?.[0];
-
-      if (requestHandler) {
-        customInstance.interceptors.request.use(
-          requestHandler.fulfilled,
-          requestHandler.rejected,
-        );
-      }
-      if (responseHandler) {
-        customInstance.interceptors.response.use(
-          responseHandler.fulfilled,
-          responseHandler.rejected,
-        );
-      }
+      const customInstance = createCustomInstance(config.baseURL);
       return customInstance.delete<T>(url, { ...config, baseURL: undefined });
     }
     return axiosInstance.delete<T>(url, config);

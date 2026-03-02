@@ -1,20 +1,24 @@
-import { api, API_ENDPOINTS } from "@/api";
-
-const reportEndpoints = API_ENDPOINTS.REPORT;
+import { api } from "../api/axiosInstance";
+import { API_ENDPOINTS } from "../api/endpoints";
+import type { ApiResponse } from "../types/api";
+import { executeApiRequest } from "./serviceExecutor";
 
 export const reportService = {
-  getDashboardStatistics: async () => {
-    const response = await api.get(reportEndpoints.DASHBOARD_STATISTICS);
-    return response.data;
+  getDashboardStatistics: <T = unknown>(): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.get(API_ENDPOINTS.REPORT.DASHBOARD_STATISTICS),
+    );
   },
-  getOrderGrowthStatistics: async () => {
-    const response = await api.get(reportEndpoints.ORDER_GROWTH_LINE_CHART);
-    return response.data;
+
+  getOrderGrowthLineChart: <T = unknown>(): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.get(API_ENDPOINTS.REPORT.ORDER_GROWTH_LINE_CHART),
+    );
   },
-  getTopProductStatistics: async () => {
-    const response = await api.get(reportEndpoints.TOP_PRODUCT_PIE_CHART);
-    return response.data;
+
+  getTopProductPieChart: <T = unknown>(): Promise<ApiResponse<T>> => {
+    return executeApiRequest<T>(() =>
+      api.get(API_ENDPOINTS.REPORT.TOP_PRODUCT_PIE_CHART),
+    );
   },
 };
-
-export default reportService;

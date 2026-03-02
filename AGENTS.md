@@ -1,357 +1,176 @@
-# Pathora - Agent Development Guidelines
+# Repository Guidelines for Agents
 
 ## Project Overview
 
-Pathora is an admin dashboard/portal built with Next.js 16 (App Router) and React 19. The repository contains a frontend application in the `frontend/` directory, communicating with a backend API gateway via Axios and receiving real-time updates via SignalR.
+Pathora is an admin dashboard/portal with a frontend in `frontend/` built on **Next.js 16 and **React  (App Router)**19**. It communicates with a backend API gateway via Axios and receives real-time updates via SignalR.
+
+## Project Structure
+
+```
+frontend/
+├── src/
+│   ├── app/                    # Next.js App Router (layout.tsx, page.tsx)
+│   │   ├── (auth)/             # Public routes: login, register
+│   │   └── (dashboard)/        # Protected: dashboard, products, orders, etc.
+│   ├── components/ui/          # Reusable UI primitives (Button, Input, etc.)
+│   ├── components/partials/    # Feature-specific components by domain
+│   ├── api/                    # Axios instance, endpoints
+│   ├── services/              # Domain services (catalogService, orderService, etc.)
+│   ├── store/                  # Redux Toolkit + RTK Query
+│   ├── hooks/                  # Custom hooks (useAuth, useRealtimeRefresh)
+│   ├── contexts/               # React Context (AuthContext)
+│   └── i18n/                   # i18next locales (en.json, vi.json)
+├── public/                     # Static assets
+└── package.json
+```
+
+**Legacy code** (`src/pages-legacy`, `src/layout-legacy`) is excluded—do not use.
 
 ---
 
 ## Build, Test, and Development Commands
 
-All commands must be run from the `frontend/` directory.
+All commands run from `frontend/`:
 
-### Installation
 ```bash
-cd frontend
-npm ci                    # Install dependencies from package-lock.json
+npm ci                          # Install exact dependencies from lockfile
+npm run dev                     # Start dev server at http://localhost:3000
+npm run lint                    # Run ESLint (Next.js core-web-vitals + TypeScript)
+npm run build                   # Production build (primary validation)
+npm run start                   # Run production server after build
+npm run lint && npm run build   # Full validation gate
 ```
 
-### Development
-```bash
-npm run dev              # Start dev server at http://localhost:3000
-```
-
-### Building & Validation
-```bash
-npm run build            # Production build (primary validation step)
-npm run start            # Run production server after build
-npm run lint             # Run ESLint (Next.js core-web-vitals + TypeScript rules)
-```
-
-### Testing
-There is no dedicated test framework. For validation, run:
-```bash
-npm run lint && npm run build
-```
-
-To run a single test (if tests are added later):
-```bash
-npx vitest run <file>    # If using Vitest
-npx jest <file>          # If using Jest
-```
+**Testing**: No test suite configured. Validate changes with `npm run lint && npm run build`.
 
 ---
 
-## Code Style Guidelines
+## Coding Style & Conventions
 
-### General Principles
+### Formatting
+- **2-space indentation**, semicolons required, **double quotes**, LF line endings
+- Follow ESLint in `eslint.config.mjs`
 
-- **Language**: TypeScript + React (Next.js 16, React 19)
-- **Indentation**: 2 spaces
-- **Semicolons**: Required
-- **Quotes**: Double quotes for strings
-- **Line endings**: Unix-style (LF)
+### TypeScript
+- Use strict typing where possible
+- Define domain types in `src/store/domain/`
+- Use interfaces for objects, types for unions/primitives
 
-### File Organization
-
-- Core code lives in `src/`
-- App Router entry files in `src/app/` (`layout.tsx`, `page.tsx`, `not-found.tsx`)
-- Reusable UI components in `src/components/ui/`
-- Feature-specific partials in `src/components/partials/`
-- Skeleton loaders in `src/components/skeleton/`
-- API layer in `src/api/`
-- Services in `src/services/`
-- State management in `src/store/`
-- Custom hooks in `src/hooks/`
-- Localization in `src/i18n/locales/` (`en.json`, `vi.json`)
-- Legacy code excluded from builds: `src/pages-legacy`, `src/layout-legacy`
-
----
-
-## Import Conventions
-
-### Path Alias
-Use the `@/*` alias for imports (maps to `./src/*`):
+### Path Aliases
+Use `@/*` imports (maps to `./src/*`):
 ```typescript
-// Good
-import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/hooks/useAuth';
-
-// Avoid
-import { Button } from '../../../components/ui/Button';
+import Button from "@/components/ui/Button";
+import { useAuth } from "@/contexts/AuthContext";
 ```
 
-### Import Order (Recommended)
-1. React/Next imports
-2. External libraries
-3. Path alias imports (`@/*`)
+### Naming Conventions
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | PascalCase | `UserProfile.tsx`, `OrderList.tsx` |
+| Hooks | camelCase + `use` prefix | `useAuth.ts`, `useRealtimeRefresh.ts` |
+| Constants | UPPER_SNAKE_CASE | `API_ENDPOINTS`, `MAX_UPLOAD_SIZE` |
+| Interfaces/Types | PascalCase | `User`, `OrderItem`, `ApiResponse<T>` |
+| Route folders | lowercase | `(dashboard)/orders/page.tsx` |
+| Utilities | camelCase | `formatCurrency.ts`, `apiResponse.ts` |
+
+### Imports Order
+1. React/Next.js imports
+2. External libraries (axios, redux, etc.)
+3. Path alias imports (`@/...`)
 4. Relative imports
 5. Type imports
 
-```typescript
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import { Button } from '@/components/ui/Button';
-import { useAuth } from '@/hooks/useAuth';
-import { User } from '@/store/domain/types';
-import { formatDate } from '@/utils/dateUtils';
-```
+---
+
+## Component Architecture
+
+- **UI Components** (`src/components/ui/`): Reusable primitives (Button, Input, Modal, Dropdown)
+- **Feature Components** (`src/components/partials/`): Domain-specific (e.g., `orders/OrderTable.tsx`)
+- **Forms**: Use **React Hook Form** + **Yup** for validation
 
 ---
 
-## Naming Conventions
+## API Layer
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `HeroSection.tsx`, `UserProfile.tsx` |
-| Component Exports | PascalCase | `export default HeroSection` |
-| Hooks | camelCase with `use` prefix | `useAuth.ts`, `useDarkMode.ts` |
-| Constants | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT`, `API_BASE_URL` |
-| Variables/Functions | camelCase | `isLoading`, `handleSubmit` |
-| Interfaces/Types | PascalCase | `UserProps`, `ApiResponse<T>` |
-| Enums | PascalCase | `UserRole`, `OrderStatus` |
-| Files (general) | camelCase or PascalCase | `apiUtils.ts`, `HeroSection.tsx` |
-| Route Segments | lowercase | `(auth)/login/page.tsx` |
-
----
-
-## TypeScript Guidelines
-
-### Type Annotations
-- Use explicit types for function parameters and return values when not inferrable
-- Prefer interfaces for object shapes, types for unions/intersections
-- Use generics for reusable components
-
-```typescript
-// Good
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-const getUser = (id: string): Promise<User> => {
-  return axios.get(`/users/${id}`);
-};
-
-// Good - Generic component
-interface ListProps<T> {
-  items: T[];
-  renderItem: (item: T) => React.ReactNode;
-}
-
-function List<T>({ items, renderItem }: ListProps<T>) {
-  return <>{items.map(renderItem)}</>;
-}
-```
-
-### Strict Mode
-TypeScript strict mode is disabled (`"strict": false`). Be mindful of:
-- Implicit `any` - avoid using `any`, use `unknown` if type is uncertain
-- Null/undefined handling - always check for nullish values
-
----
-
-## Component Guidelines
-
-### Component Structure
-```typescript
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/Button';
-
-interface ComponentProps {
-  title: string;
-  onSubmit: () => void;
-}
-
-export default function MyComponent({ title, onSubmit }: ComponentProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    // Effect logic
-  }, []);
-
-  const handleClick = () => {
-    setIsLoading(true);
-    onSubmit();
-  };
-
-  return (
-    <div>
-      <h1>{title}</h1>
-      <Button onClick={handleClick} disabled={isLoading}>
-        Submit
-      </Button>
-    </div>
-  );
-}
-```
-
-### Best Practices
-- Use functional components with hooks
-- Keep components focused and single-purpose
-- Extract reusable logic into custom hooks
-- Use TypeScript interfaces for props
-- Destructure props for clarity
-
----
-
-## Error Handling
-
-### API Errors
-Use centralized axios interceptors for error handling (`src/api/axiosInstance.ts`):
-```typescript
-// The axios instance automatically:
-// - Injects bearer token
-// - Redirects to login on 401
-// - Handles common errors
-
-try {
-  const response = await axiosInstance.get('/endpoint');
-} catch (error) {
-  // Use error.response?.data for API error messages
-  console.error(error);
-}
-```
-
-### Form Validation
-Use React Hook Form + Yup for form validation:
-```typescript
-import { useForm } from 'react-hook-form';
-import * as yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-
-const schema = yup.object({
-  email: yup.string().email('Invalid email').required('Email is required'),
-  password: yup.string().min(8, 'Password must be at least 8 characters'),
-});
-
-function LoginForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register('email')} />
-      {errors.email && <span>{errors.email.message}</span>}
-    </form>
-  );
-}
-```
-
-### Error Toasts
-Use react-toastify with i18n support for user-facing errors.
+- **Axios** (`src/api/axiosInstance.ts`): Centralized with interceptors, auto-injects bearer token, redirects to login on 401
+- **Endpoints** (`src/api/endpoints.ts`): Define all API endpoints centrally
+- **Services** (`src/services/`): Domain services (catalogService, orderService, etc.)
+- **RTK Query**: Data fetching/caching via `src/store/api/apiSlice.ts`
+- **Response handling**: Use helpers from `src/utils/apiResponse.ts`
 
 ---
 
 ## State Management
 
-### Redux Toolkit
-- Global state for auth, layout, cart in `src/store/index.ts`
-- RTK Query for API data fetching in `src/store/api/apiSlice.ts`
-- Domain types in `src/store/domain/`
-- Slices in `src/store/infrastructure/`
-
-```typescript
-// Use RTK Query for API calls
-import { apiSlice } from '@/store/api/apiSlice';
-
-export const extendedApiSlice = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getUsers: builder.query<User[], void>({
-      query: () => '/users',
-    }),
-  }),
-});
-```
-
-### React Context
-Use for auth operations in `src/contexts/AuthContext.tsx`.
+- **Redux Toolkit**: Global state (auth, layout, cart) in `src/store/index.ts`
+- **RTK Query**: API data fetching/caching in `src/store/api/apiSlice.ts`
+- **React Context**: Auth operations in `src/contexts/AuthContext.tsx`
 
 ---
 
-## Routing (App Router)
+## Real-time Updates
 
-### Route Groups
-- `(auth)/` - Public routes: login, register, forgot-password
-- `(dashboard)/` - Protected routes: dashboard, products, orders, customers, etc.
-
-### Middleware
-Auth middleware in `src/middleware.ts` uses `auth_status` cookie for redirects.
+SignalR via `src/services/signalRService.ts`. Use `useRealtimeRefresh` hook to trigger refetches on server events.
 
 ---
 
-## Internationalization
+## Internationalization (i18n)
 
-- i18next for translations
-- Locales in `src/i18n/locales/`: `en.json`, `vi.json`
-- Use translation keys in components:
-```typescript
-import { useTranslation } from 'react-i18next';
-
-const { t } = useTranslation();
-return <h1>{t('common.welcome')}</h1>;
-```
+- Uses **i18next** with `en` and `vi` locales in `src/i18n/locales/`
+- Error toasts include i18n translation support
+- Use `useTranslation()` hook for strings
 
 ---
 
 ## Styling
 
-### Tailwind CSS v4
-- Use Tailwind utility classes consistently
-- Theme configuration in `src/configs/themeConfig.ts`
-- Supports dark mode, RTL, multiple layouts
-
-### Custom Hooks for Theming
-- `useDarkMode` - dark mode toggle
-- `useRtl` - RTL support
-- `useSidebar` - sidebar state
-
-### Sass
-Available for custom styles in `src/styles/`.
+- **Tailwind CSS v4** with Sass
+- Supports dark mode, RTL, multiple layout modes
+- Custom hooks: `useDarkMode`, `useRtl`, `useSidebar`
+- Theme config in `src/configs/themeConfig.ts`
 
 ---
 
-## Security Guidelines
+## Security
 
-- **Never commit secrets** - `.env*` files are ignored
-- **Environment variables**: `NEXT_PUBLIC_API_GATEWAY` (defaults to `http://localhost:5000`)
-- **New image hosts**: Update `images.remotePatterns` in `next.config.ts`
-
----
-
-## Git Workflow
-
-### Commit Messages
-Use concise, imperative subjects:
-```
-Internationalize landing and header components
-Standardize Tailwind utility classes
-Fix login redirect issue
-```
-
-### Pull Requests
-Include:
-- What changed and why
-- Linked issue/task ID
-- Validation commands run (`npm run lint && npm run build`)
-- Screenshots for UI changes
+- Never commit secrets; use `.env.local`
+- Important variable: `NEXT_PUBLIC_API_GATEWAY` (default: `http://localhost:5000`)
+- Add external image domains to `images.remotePatterns` in `next.config.ts`
 
 ---
 
-## Validation Checklist
+## Error Handling
 
-Before submitting changes, run:
+- Use try-catch for async operations
+- Display user-friendly errors via toast notifications
+- Include i18n translation keys for error messages
+- Log errors appropriately for debugging
+
+---
+
+## Commit & Pull Request Guidelines
+
+- Use short, imperative commit subjects (e.g., `Fix login redirect issue`, `Add order export feature`)
+- Keep commits focused on one logical change
+- Avoid combining refactors and feature work in one commit
+- **PRs should include**: summary, linked issue/task, validation steps, screenshots for UI changes
+
+---
+
+## Cursor Workflow Commands
+
+- `/opsx-propose` - Propose a new change with proposal, design, and tasks
+- `/opsx-apply` - Implement tasks from an OpenSpec change
+- `/opsx-archive` - Archive a completed change
+- `/opsx-explore` - Explore and investigate codebase
+
+---
+
+## Validation
+
+Before marking work complete, run:
 ```bash
-cd frontend
-npm run lint
-npm run build
+cd frontend && npm run lint && npm run build
 ```
 
-For UI changes, manually verify:
-- Auth flows
-- Internationalization (en/vi)
-- Dashboard widgets
-- Responsive layouts
+Ensure no ESLint errors and build succeeds.
