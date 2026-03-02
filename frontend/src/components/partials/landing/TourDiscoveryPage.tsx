@@ -404,7 +404,7 @@ export const TourDiscoveryPage = () => {
     <main
       id="main-content"
       tabIndex={-1}
-      className="bg-white min-h-screen overflow-x-hidden">
+      className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
       {/* Header */}
       <LandingHeader variant="solid" />
 

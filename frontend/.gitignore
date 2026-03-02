@@ -33,6 +33,14 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# API local artifacts
+/src/api/generated/
+/src/api/**/*.generated.ts
+/openapi*.json
+/swagger*.json
+*.http
+*.rest
+
 # vercel
 .vercel
 

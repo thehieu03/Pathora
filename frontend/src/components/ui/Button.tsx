@@ -88,7 +88,7 @@ const Button = ({
   type = "button",
   isLoading,
   disabled,
-  className = "bg-primary-500 text-white",
+  className = "bg-primary-500 text-white dark:bg-primary-500 dark:text-white",
   children,
   icon,
   loadingClass = "unset-classname",

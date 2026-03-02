@@ -1,22 +1,14 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
 import "./globals.css";
 import AppProviders from "@/providers/AppProviders";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { buildThemeInitScript } from "@/hooks/themePreference";
 
 export const metadata: Metadata = {
   title: "Pathora",
   description: "Pathora web",
 };
+
+const themeInitScript = buildThemeInitScript();
 
 export default function RootLayout({
   children,
@@ -25,9 +17,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+      </head>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="light antialiased"
       >
         <AppProviders>{children}</AppProviders>
       </body>

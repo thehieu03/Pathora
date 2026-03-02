@@ -16,8 +16,33 @@ const getFromLocalStorage = <T>(key: string, defaultValue: T): T => {
 
 const initialRtl = (): boolean =>
   getFromLocalStorage("direction", themeConfig.layout.isRTL);
-const initialDarkMode = (): boolean =>
-  getFromLocalStorage("darkMode", themeConfig.layout.darkMode);
+const initialDarkMode = (): boolean => {
+  if (typeof window === "undefined") {
+    return themeConfig.layout.darkMode;
+  }
+
+  const storedTheme = window.localStorage.getItem("theme");
+  if (storedTheme === "dark") {
+    return true;
+  }
+  if (storedTheme === "light") {
+    return false;
+  }
+
+  const legacyDarkMode = window.localStorage.getItem("darkMode");
+  if (legacyDarkMode === "true") {
+    return true;
+  }
+  if (legacyDarkMode === "false") {
+    return false;
+  }
+
+  if (typeof window.matchMedia === "function") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  return themeConfig.layout.darkMode;
+};
 const initialSidebarCollapsed = (): boolean =>
   getFromLocalStorage("sidebarCollapsed", themeConfig.layout.menu.isCollapsed);
 const initialSemiDarkMode = (): boolean =>
@@ -51,7 +76,10 @@ export const layoutSlice = createSlice({
   reducers: {
     handleDarkMode: (state, action: PayloadAction<boolean>) => {
       state.darkMode = action.payload;
-      window.localStorage.setItem("darkMode", String(action.payload));
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("darkMode", String(action.payload));
+        window.localStorage.setItem("theme", action.payload ? "dark" : "light");
+      }
     },
     handleSidebarCollapsed: (state, action: PayloadAction<boolean>) => {
       state.isCollapsed = action.payload;

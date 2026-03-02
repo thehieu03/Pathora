@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import StoreProvider from "./StoreProvider";
+import DarkModeSync from "./DarkModeSync";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
