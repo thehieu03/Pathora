@@ -15,6 +15,5 @@ deploy-app:
     
     # 3. Chạy container mới
     - docker run -d --name panthora -p 8080:8080 panthora-be:latest
-    
     # 4. Kiểm tra trạng thái container
     - docker ps | grep panthora
