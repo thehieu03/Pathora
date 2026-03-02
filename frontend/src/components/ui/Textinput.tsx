@@ -76,7 +76,7 @@ const Textinput = ({
   };
 
   const renderInput = () => {
-    const inputClasses = `form-control py-2 ${error ? "has-error" : ""} ${className}`;
+    const inputClasses = `form-control py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:placeholder:text-slate-400 ${error ? "has-error" : ""} ${className}`;
 
     if (isMask) {
       return (
