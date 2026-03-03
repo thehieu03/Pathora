@@ -1,25 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 
-namespace Domain.Enums
+namespace Domain.Enums;
+
+public enum InsuranceType
 {
-    public enum InsuranceType
-    {
-        [Description("None")]
-        None = 0,
-        [Description("Travel Insurance")]
-        Travel = 1,
-        [Description("Health Insurance")]
-        Health = 2,
-        [Description("Trip Cancellation Insurance")]
-        TripCancellation = 3,
-        [Description("Baggage Loss Insurance")]
-        BaggageLoss = 4,
-        [Description("Personal Liability Insurance")]
-        PersonalLiability = 5,
-        [Description("Adventure Sports Insurance")]
-        AdventureSports = 6,
-    }
+    [Description("None")]
+    None = 0,
+    [Description("Travel Insurance")]
+    Travel = 1,
+    [Description("Health Insurance")]
+    Health = 2,
+    [Description("Trip Cancellation Insurance")]
+    TripCancellation = 3,
+    [Description("Baggage Loss Insurance")]
+    BaggageLoss = 4,
+    [Description("Personal Liability Insurance")]
+    PersonalLiability = 5,
+    [Description("Adventure Sports Insurance")]
+    AdventureSports = 6
 }

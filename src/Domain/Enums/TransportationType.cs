@@ -1,13 +1,29 @@
+using System.ComponentModel;
+
 namespace Domain.Enums;
 
 public enum TransportationType
 {
-    Walking = 0,
-    Car = 1,
+    [Description("Flight")]
+    Flight = 0,
+    [Description("Train")]
+    Train = 1,
+    [Description("Bus")]
     Bus = 2,
-    Train = 3,
-    Plane = 4,
+    [Description("Car")]
+    Car = 3,
+    [Description("Taxi")]
+    Taxi = 4,
+    [Description("Boat")]
     Boat = 5,
-    Motorbike = 6,
-    Other = 99,
+    [Description("Ferry")]
+    Ferry = 6,
+    [Description("Motorbike")]
+    Motorbike = 7,
+    [Description("Bicycle")]
+    Bicycle = 8,
+    [Description("Walking")]
+    Walking = 9,
+    [Description("Other")]
+    Other = 99
 }

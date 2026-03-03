@@ -12,11 +12,13 @@ public sealed class UserEntity : Aggregate<Guid>
     public string Username { get; set; } = null!;
     public string? FullName { get; set; }
     public string Email { get; set; } = null!;
-    public string? Avatar { get; set; }
-
-    public string Password { get; set; } = null!;
+    public string? PhoneNumber { get; set; }
+    public string? AvatarUrl { get; set; }
+    public UserStatus? Status { get; set; } = UserStatus.Active;
+    public VerifyStatus VerifyStatus { get; set; } = VerifyStatus.Unverified;
+    public string? Password { get; set; } = null!;
     public bool ForcePasswordChange { get; set; }
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
 
     public static UserEntity Create(string username, string? fullName, string email, string hashedPassword, string performedBy, string? avatar = null, bool forcePasswordChange = false)
     {
@@ -25,7 +27,7 @@ public sealed class UserEntity : Aggregate<Guid>
             Username = username,
             FullName = fullName,
             Email = email,
-            Avatar = avatar,
+            AvatarUrl = avatar,
             Password = hashedPassword,
             ForcePasswordChange = forcePasswordChange,
             CreatedBy = performedBy,
@@ -38,7 +40,7 @@ public sealed class UserEntity : Aggregate<Guid>
     public void Update(string? fullName, string? avatar, string performedBy)
     {
         FullName = fullName;
-        Avatar = avatar;
+        AvatarUrl = avatar;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }

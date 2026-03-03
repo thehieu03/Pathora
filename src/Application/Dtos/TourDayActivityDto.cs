@@ -10,6 +10,8 @@ public sealed record TourDayActivityDto(
     string Title,
     string? Description,
     string? Note,
+    decimal? EstimatedCost,
+    bool IsOptional,
     TimeOnly? StartTime,
     TimeOnly? EndTime,
     string? CreatedBy,

@@ -4,9 +4,8 @@ namespace Application.Dtos;
 
 public sealed record TourPlanLocationDto(
     Guid Id,
-    Guid LocationId,
     string LocationName,
-    string LocationDescription,
+    string? LocationDescription,
     LocationType LocationType,
     string? Address,
     string? City,
@@ -14,6 +13,9 @@ public sealed record TourPlanLocationDto(
     decimal? Latitude,
     decimal? Longitude,
     decimal? EntranceFee,
+    TimeOnly? OpeningHours,
+    TimeOnly? ClosingHours,
+    int? EstimatedDurationMinutes,
     string? Note,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
