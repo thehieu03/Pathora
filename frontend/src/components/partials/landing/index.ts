@@ -15,3 +15,5 @@ export {
 } from "./BottomSections";
 export { LandingFooter } from "./LandingFooter";
 export { TourDiscoveryPage } from "./TourDiscoveryPage";
+export { AboutUsPage } from "./AboutUsPage";
+export { PolicyPage } from "./PolicyPage";

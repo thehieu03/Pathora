@@ -5,7 +5,7 @@ import Icon from "@/components/ui/Icon";
 import Cleave from "cleave.js/react";
 import "cleave.js/dist/addons/cleave-phone.us";
 
-type TextinputProps = {
+type TextInputProps = {
   type?: string;
   label?: string;
   placeholder?: string;
@@ -35,7 +35,7 @@ type TextinputProps = {
   [key: string]: unknown;
 };
 
-const Textinput = ({
+const TextInput = ({
   type,
   label,
   placeholder,
@@ -63,7 +63,7 @@ const Textinput = ({
   onFocus,
   defaultValue,
   ...rest
-}: TextinputProps) => {
+}: TextInputProps) => {
   const [open, setOpen] = useState(false);
   const inputType = type === "password" && open ? "text" : type;
 
@@ -200,4 +200,4 @@ const Textinput = ({
   );
 };
 
-export default Textinput;
+export default TextInput;
