@@ -1,5 +1,11 @@
 import React from "react";
-import { AboutUsPage } from "@/components/partials/landing/AboutUsPage";
+import dynamic from "next/dynamic";
+import AboutLoading from "./loading";
+
+const AboutUsPage = dynamic(() =>
+  import("@/components/partials/landing/AboutUsPage").then((m) => m.AboutUsPage),
+  { loading: () => <AboutLoading /> },
+);
 
 export default function About() {
   return <AboutUsPage />;
