@@ -59,7 +59,7 @@ public class IdentityService(
         if (userEntity is null)
             return Error.NotFound("User.NotFound", "Email hoặc mật khẩu không đúng");
 
-        var isPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password, request.Password);
+        var isPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.Password);
         if (!isPasswordValid)
             return Error.Validation("User.InvalidPassword", "Email hoặc mật khẩu không đúng");
 
@@ -105,7 +105,7 @@ public class IdentityService(
         if (userEntity is null)
             return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
 
-        var isOldPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password, request.OldPassword);
+        var isOldPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.OldPassword);
         if (!isOldPasswordValid)
             return Error.Validation("User.InvalidPassword", "Mật khẩu cũ không đúng");
 
@@ -145,7 +145,7 @@ public class IdentityService(
             userEntity.Username,
             userEntity.FullName,
             userEntity.Email,
-            userEntity.Avatar,
+            userEntity.AvatarUrl,
             userEntity.ForcePasswordChange,
             roles,
             []);

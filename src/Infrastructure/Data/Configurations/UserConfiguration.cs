@@ -26,7 +26,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.HasIndex(u => u.Email)
             .IsUnique();
 
-        builder.Property(u => u.Avatar)
+        builder.Property(u => u.AvatarUrl)
             .HasMaxLength(500);
 
         builder.Property(u => u.Password)

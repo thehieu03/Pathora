@@ -18,7 +18,6 @@ public class TourPlanLocationConfiguration : IEntityTypeConfiguration<TourPlanLo
             .HasMaxLength(300);
 
         builder.Property(l => l.LocationDescription)
-            .IsRequired()
             .HasMaxLength(2000);
 
         builder.Property(l => l.LocationType)
@@ -42,6 +41,12 @@ public class TourPlanLocationConfiguration : IEntityTypeConfiguration<TourPlanLo
 
         builder.Property(l => l.EntranceFee)
             .HasColumnType("numeric(18,2)");
+
+        builder.Property(l => l.OpeningHours);
+
+        builder.Property(l => l.ClosingHours);
+
+        builder.Property(l => l.EstimatedDurationMinutes);
 
         builder.Property(l => l.Note)
             .HasMaxLength(1000);

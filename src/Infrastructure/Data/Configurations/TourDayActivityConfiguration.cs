@@ -32,6 +32,12 @@ public class TourDayActivityConfiguration : IEntityTypeConfiguration<TourDayActi
         builder.Property(a => a.Note)
             .HasMaxLength(1000);
 
+        builder.Property(a => a.EstimatedCost)
+            .HasColumnType("numeric(18,2)");
+
+        builder.Property(a => a.IsOptional)
+            .HasDefaultValue(false);
+
         builder.Property(a => a.StartTime);
 
         builder.Property(a => a.EndTime);

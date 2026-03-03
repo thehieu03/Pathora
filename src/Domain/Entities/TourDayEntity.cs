@@ -2,7 +2,7 @@ namespace Domain.Entities;
 
 public sealed class TourDayEntity : Aggregate<Guid>
 {
-    public Guid TourDayId { get; set; }
+    public Guid TourClassificationId { get; set; }
     public TourClassificationEntity Classification { get; set; } = null!;
     public int DayNumber { get; set; }
     public string Title { get; set; } = null!;
@@ -14,7 +14,7 @@ public sealed class TourDayEntity : Aggregate<Guid>
         return new TourDayEntity
         {
             Id = Guid.CreateVersion7(),
-            TourDayId = classificationId,
+            TourClassificationId = classificationId,
             DayNumber = dayNumber,
             Title = title,
             Description = description,

@@ -12,7 +12,7 @@ public class TourDayConfiguration : IEntityTypeConfiguration<TourDayEntity>
 
         builder.HasKey(d => d.Id);
 
-        builder.Property(d => d.TourDayId)
+        builder.Property(d => d.TourClassificationId)
             .IsRequired();
 
         builder.Property(d => d.DayNumber)
