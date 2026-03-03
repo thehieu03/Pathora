@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Card from "@/components/ui/Card";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Select from "@/components/ui/Select";
 import Switch from "@/components/ui/Switch";
 import Flatpickr from "react-flatpickr";
@@ -168,7 +168,7 @@ const CreateCoupon = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <Textinput
+                  <TextInput
                     label={t("createCoupon.code")}
                     id="code"
                     name="code"
@@ -187,7 +187,7 @@ const CreateCoupon = () => {
                   )}
                 </div>
                 <div>
-                  <Textinput
+                  <TextInput
                     label={t("createCoupon.programName")}
                     id="name"
                     name="name"
@@ -233,7 +233,7 @@ const CreateCoupon = () => {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <Textinput
+                  <TextInput
                     label={
                       formik.values.discountType === "percent"
                         ? t("createCoupon.discountValuePercent")
@@ -259,7 +259,7 @@ const CreateCoupon = () => {
                   )}
                 </div>
                 <div>
-                  <Textinput
+                  <TextInput
                     label={t("createCoupon.minOrder")}
                     id="minOrder"
                     name="minOrder"
@@ -280,7 +280,7 @@ const CreateCoupon = () => {
 
               {formik.values.discountType === "percent" && (
                 <div>
-                  <Textinput
+                  <TextInput
                     label={t("createCoupon.maxDiscount")}
                     id="maxDiscount"
                     name="maxDiscount"
@@ -360,7 +360,7 @@ const CreateCoupon = () => {
               </div>
               {formik.values.hasUsageLimit && (
                 <div>
-                  <Textinput
+                  <TextInput
                     label={t("createCoupon.maxUsage")}
                     id="usageLimit"
                     name="usageLimit"
@@ -381,7 +381,7 @@ const CreateCoupon = () => {
                 </div>
               )}
 
-              {/* <Textinput
+              {/* <TextInput
                 label={t("createCoupon.perCustomer")}
                 id="per_customer"
                 type="number"

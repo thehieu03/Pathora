@@ -2,7 +2,7 @@
 import React, { FormEvent, useId } from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
-import { Button, Icon, Textinput } from "@/components/ui";
+import { Button, Icon, TextInput } from "@/components/ui";
 import { useTranslation } from "react-i18next";
 
 const FOOTER_BG =
@@ -185,7 +185,7 @@ export const LandingFooter = () => {
               {t("landing.footer.newsletter.description")}
             </p>
             <form className="flex gap-2" onSubmit={handleSubscribe} noValidate>
-              <Textinput
+              <TextInput
                 id={newsletterInputId}
                 name="newsletterEmail"
                 type="email"

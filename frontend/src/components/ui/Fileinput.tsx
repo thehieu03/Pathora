@@ -2,7 +2,7 @@
 
 import React from "react";
 
-type FileinputProps = {
+type FileInputProps = {
   name?: string;
   label?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -16,7 +16,7 @@ type FileinputProps = {
   selectedFiles?: File[];
 };
 
-const Fileinput = ({
+const FileInput = ({
   name,
   label = "Browse",
   onChange,
@@ -28,7 +28,7 @@ const Fileinput = ({
   selectedFile,
   badge,
   selectedFiles = [],
-}: FileinputProps) => {
+}: FileInputProps) => {
   return (
     <div>
       <div className="filegroup">
@@ -114,4 +114,4 @@ const Fileinput = ({
   );
 };
 
-export default Fileinput;
+export default FileInput;

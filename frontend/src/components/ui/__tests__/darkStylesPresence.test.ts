@@ -11,7 +11,7 @@ describe("dark style presence", () => {
   it("has dark styles in target ui components", () => {
     const targets = [
       "src/components/ui/Button.tsx",
-      "src/components/ui/Textinput.tsx",
+      "src/components/ui/TextInput.tsx",
       "src/components/ui/Card.tsx",
       "src/components/ui/Modal.tsx",
       "src/components/ui/Dropdown.tsx",

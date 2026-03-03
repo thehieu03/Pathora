@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Textarea from "@/components/ui/Textarea";
 import Repeater from "./Repeater";
 import Flatpickr from "react-flatpickr";
@@ -33,9 +33,9 @@ const InvoiceEditPage = () => {
               />
             </div>
 
-            <Textinput label="Name" type="text" placeholder="Add your name" />
-            <Textinput label="Phone" type="text" placeholder="Add your phone" />
-            <Textinput
+            <TextInput label="Name" type="text" placeholder="Add your name" />
+            <TextInput label="Phone" type="text" placeholder="Add your phone" />
+            <TextInput
               label="Email"
               type="email"
               placeholder="Add your email"
@@ -49,10 +49,10 @@ const InvoiceEditPage = () => {
               Owner info-500
             </div>
 
-            <Textinput label="Name" type="text" placeholder="Add your name" />
-            <Textinput label="Phone" type="text" placeholder="Add your phone" />
+            <TextInput label="Name" type="text" placeholder="Add your name" />
+            <TextInput label="Phone" type="text" placeholder="Add your phone" />
             <div className="col-span-1 lg:col-span-2">
-              <Textinput
+              <TextInput
                 label="Email"
                 type="email"
                 placeholder="Add your email"

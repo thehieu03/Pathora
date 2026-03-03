@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import Card from "@/components/ui/Card";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Select from "@/components/ui/Select";
 import Switch from "@/components/ui/Switch";
 import Flatpickr from "react-flatpickr";
@@ -225,7 +225,7 @@ const EditCoupon = () => {
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <label className="form-label">{t("editCoupon.code")}</label>
-                    <Textinput
+                    <TextInput
                       id="code"
                       type="text"
                       placeholder={t("editCoupon.codePlaceholder")}
@@ -238,7 +238,7 @@ const EditCoupon = () => {
                     </p>
                   </div>
                   <div>
-                    <Textinput
+                    <TextInput
                       label={t("editCoupon.programName")}
                       id="name"
                       name="name"
@@ -289,7 +289,7 @@ const EditCoupon = () => {
                         ? t("editCoupon.discountValuePercent")
                         : t("editCoupon.discountValueFixed")}
                     </label>
-                    <Textinput
+                    <TextInput
                       id="discountValue"
                       name="discountValue"
                       type="number"
@@ -315,7 +315,7 @@ const EditCoupon = () => {
                     <label className="form-label">
                       {t("editCoupon.minOrder")}
                     </label>
-                    <Textinput
+                    <TextInput
                       id="minOrder"
                       name="minOrder"
                       type="number"
@@ -340,7 +340,7 @@ const EditCoupon = () => {
                     <label className="form-label">
                       {t("editCoupon.maxDiscount")}
                     </label>
-                    <Textinput
+                    <TextInput
                       id="maxDiscount"
                       name="maxDiscount"
                       type="number"
@@ -416,7 +416,7 @@ const EditCoupon = () => {
                     <label className="form-label">
                       {t("editCoupon.maxUsage")}
                     </label>
-                    <Textinput
+                    <TextInput
                       id="usageLimit"
                       name="usageLimit"
                       type="number"
@@ -438,7 +438,7 @@ const EditCoupon = () => {
 
                 {/* <div>
                   <label className="form-label">{t("editCoupon.perCustomer")}</label>
-                  <Textinput
+                  <TextInput
                     id="perCustomer"
                     name="perCustomer"
                     type="number"

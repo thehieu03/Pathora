@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Button from "@/components/ui/Button";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -52,7 +52,7 @@ const RegForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <Textinput
+      <TextInput
         name="username"
         label="Name"
         type="text"
@@ -62,7 +62,7 @@ const RegForm = () => {
         className="h-12"
         autocomplete="username"
       />
-      <Textinput
+      <TextInput
         name="email"
         label="Email"
         type="email"
@@ -73,7 +73,7 @@ const RegForm = () => {
         autocomplete="email"
         spellCheck={false}
       />
-      <Textinput
+      <TextInput
         name="password"
         label="Password"
         type="password"

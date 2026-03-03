@@ -2,7 +2,7 @@
 import React from "react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Textarea from "@/components/ui/Textarea";
 import Icon from "@/components/ui/Icon";
 import Link from "next/link";
@@ -318,12 +318,12 @@ const BlogDetailsPage = () => {
                           placeholder="writte your comment"
                         />
                       </div>
-                      <Textinput
+                      <TextInput
                         label="Full name"
                         placeholder="Full name"
                         type="text"
                       />
-                      <Textinput
+                      <TextInput
                         label="Email"
                         placeholder="Email Address"
                         type="email"

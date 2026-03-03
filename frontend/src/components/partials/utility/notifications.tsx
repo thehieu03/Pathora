@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import { notificationService } from "@/services/notificationService";
 import {
   useTable,
@@ -43,7 +43,7 @@ const GlobalFilter = ({ filter, setFilter, t }) => {
     setFilter(e.target.value || undefined);
   };
   return (
-    <Textinput
+    <TextInput
       value={value || ""}
       onChange={onChange}
       placeholder={t("notification.search")}

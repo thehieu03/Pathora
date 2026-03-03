@@ -556,24 +556,24 @@ export const LandingHeader = ({
         </nav>
 
         <div className="hidden lg:flex items-center gap-2 xl:gap-3 justify-self-end">
-          {/* Dark mode toggle */}
+          {/* Dark mode toggle — render icon only after mount to prevent
+              browser extensions (e.g. Dark Reader) from mutating the SSR HTML */}
           <button
             type="button"
+            suppressHydrationWarning
             onClick={() => setDarkMode(!isDark)}
             className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
             aria-label={
-              isDark ? "Switch to light mode" : "Switch to dark mode"
+              mounted && isDark ? "Switch to light mode" : "Switch to dark mode"
             }>
-            {isDark ? (
-              <FiSun
-                suppressHydrationWarning
-                className="w-4 h-4 xl:w-5 xl:h-5"
-              />
+            {mounted ? (
+              isDark ? (
+                <FiSun className="w-4 h-4 xl:w-5 xl:h-5" />
+              ) : (
+                <FiMoon className="w-4 h-4 xl:w-5 xl:h-5" />
+              )
             ) : (
-              <FiMoon
-                suppressHydrationWarning
-                className="w-4 h-4 xl:w-5 xl:h-5"
-              />
+              <span className="w-4 h-4 xl:w-5 xl:h-5" />
             )}
           </button>
 
@@ -589,10 +589,11 @@ export const LandingHeader = ({
                   : "border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent focus-visible:ring-white"
             }`}
             aria-label="Toggle live customizer">
-            <FiSliders
-              suppressHydrationWarning
-              className="w-4 h-4 xl:w-5 xl:h-5"
-            />
+            {mounted ? (
+              <FiSliders className="w-4 h-4 xl:w-5 xl:h-5" />
+            ) : (
+              <span className="w-4 h-4 xl:w-5 xl:h-5" />
+            )}
           </button>
 
           {/* Language switcher */}
@@ -609,19 +610,23 @@ export const LandingHeader = ({
               aria-haspopup="menu"
               aria-expanded={languageMenuOpen}
               aria-controls={languageMenuId}>
-              <FiGlobe
-                suppressHydrationWarning
-                className="w-4 h-4 xl:w-5 xl:h-5"
-              />
+              {mounted ? (
+                <FiGlobe className="w-4 h-4 xl:w-5 xl:h-5" />
+              ) : (
+                <span className="w-4 h-4 xl:w-5 xl:h-5" />
+              )}
               <span className="text-sm xl:text-base font-semibold">
                 {normalizedLanguage.toUpperCase()}
               </span>
-              <FiChevronDown
-                suppressHydrationWarning
-                className={`w-3.5 h-3.5 transition-transform ${
-                  languageMenuOpen ? "rotate-180" : ""
-                }`}
-              />
+              {mounted ? (
+                <FiChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    languageMenuOpen ? "rotate-180" : ""
+                  }`}
+                />
+              ) : (
+                <span className="w-3.5 h-3.5" />
+              )}
             </button>
             <div
               id={languageMenuId}
@@ -671,7 +676,11 @@ export const LandingHeader = ({
                 aria-expanded={userMenuOpen}
                 aria-controls={userMenuId}>
                 {user?.avatar ? (
-                  <AvatarImage src={user.avatar} alt={userAvatarAlt} size={44} />
+                  <AvatarImage
+                    src={user.avatar}
+                    alt={userAvatarAlt}
+                    size={44}
+                  />
                 ) : (
                   <span className="text-sm font-bold text-white select-none">
                     {userInitial}

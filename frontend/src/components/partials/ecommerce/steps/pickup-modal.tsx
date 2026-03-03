@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import Radio from "@/components/ui/Radio";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Icon from "@/components/ui/Icon";
 const PickupModal = ({ activeModal, onClose }) => {
   const [value, setValue] = useState("A");
@@ -31,7 +31,7 @@ const PickupModal = ({ activeModal, onClose }) => {
       }
     >
       <div className="space-y-5">
-        <Textinput
+        <TextInput
           id="phone No"
           type="text"
           placeholder="Enter Pickup Address"

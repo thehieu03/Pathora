@@ -1,6 +1,6 @@
 import React from "react";
 import Card from "@/components/ui/Card";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Icon from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -32,7 +32,7 @@ const Repeater = () => {
                 className="mb-5 grid grid-cols-1 gap-5 last:mb-0 md:grid-cols-2 lg:grid-cols-3"
                 key={index}
               >
-                <Textinput
+                <TextInput
                   label="First Name"
                   type="text"
                   id={`name${index}`}
@@ -41,7 +41,7 @@ const Repeater = () => {
                   name={`test[${index}].firstName`}
                 />
 
-                <Textinput
+                <TextInput
                   label="last Name"
                   type="text"
                   id={`name2${index}`}
@@ -52,7 +52,7 @@ const Repeater = () => {
 
                 <div className="flex items-end justify-between space-x-5">
                   <div className="flex-1">
-                    <Textinput
+                    <TextInput
                       label="Phone"
                       type="text"
                       id={`name3${index}`}

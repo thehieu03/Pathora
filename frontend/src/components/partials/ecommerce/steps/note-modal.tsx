@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 
 const NoteModal = ({ activeModal, onclose }) => {
   const options = [
@@ -66,14 +66,14 @@ const NoteModal = ({ activeModal, onclose }) => {
           horizontal
           placeholder="Select Your City"
         />
-        <Textinput
+        <TextInput
           label="Product Name"
           id="h_Fullname"
           type="text"
           placeholder="Your Postal Code"
           horizontal
         />
-        <Textinput
+        <TextInput
           label="Phone No"
           id="phone No"
           type="text"

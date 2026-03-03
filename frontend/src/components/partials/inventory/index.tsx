@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Select from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
 import { inventoryService } from "@/services/inventoryService";
@@ -135,7 +135,7 @@ const GlobalFilter = React.memo(
       setFilter(e.target.value || undefined);
     };
     return (
-      <Textinput
+      <TextInput
         value={value || ""}
         onChange={onChange}
         placeholder={t("inventory.search")}
@@ -1181,7 +1181,7 @@ const InventoryPage = () => {
             onChange={(e) => handleAddFormChange("locationId", e.target.value)}
             isLoading={loadingLocations}
           />
-          <Textinput
+          <TextInput
             label={t("inventory.quantity")}
             type="number"
             placeholder="0"
@@ -1242,7 +1242,7 @@ const InventoryPage = () => {
               </p>
             </div>
           )}
-          <Textinput
+          <TextInput
             label={t("inventory.quantity")}
             type="number"
             placeholder="0"
@@ -1311,7 +1311,7 @@ const InventoryPage = () => {
               </p>
             </div>
           )}
-          <Textinput
+          <TextInput
             label={t("inventory.quantity")}
             type="number"
             placeholder="0"

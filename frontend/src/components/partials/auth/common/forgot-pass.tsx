@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Button from "@/components/ui/Button";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -34,7 +34,7 @@ const ForgotPass = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <Textinput
+      <TextInput
         name="email"
         label="Email"
         type="email"

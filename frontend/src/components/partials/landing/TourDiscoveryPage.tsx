@@ -3,328 +3,629 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
 import { Icon } from "@/components/ui";
-import { StarRating } from "./shared";
 import { LandingHeader } from "./LandingHeader";
 import { LandingFooter } from "./LandingFooter";
 import { useTranslation } from "react-i18next";
 
-/* ── Sample Tour Data ──────────────────────────────────────── */
-const TOUR_IMAGES = [
-  "https://www.figma.com/api/mcp/asset/376def41-3ada-46d6-bc15-15a90d47e877",
-  "https://www.figma.com/api/mcp/asset/0b0f78f8-a3d5-455a-8517-d3e9a30ba3ee",
-  "https://www.figma.com/api/mcp/asset/b8a1b3ef-885e-4918-a4bd-28cc72158758",
-  "https://www.figma.com/api/mcp/asset/f69eee8d-bc64-4c1c-9077-7a16614f5cda",
-  "https://www.figma.com/api/mcp/asset/f5d4fd9b-5ccc-427a-940a-d0f92012d69a",
-  "https://www.figma.com/api/mcp/asset/e0caae3f-56bd-4093-b2ed-66986ad053ae",
-];
+/* ── Hero Background ───────────────────────────────────────── */
+const HERO_BG =
+  "https://www.figma.com/api/mcp/asset/6b3bd8ae-6ffb-498d-a62b-9de9ca38cdd4";
 
+/* ── Sample Tour Data ──────────────────────────────────────── */
 interface TourItem {
   id: number;
   image: string;
   location: string;
   title: string;
-  description: string;
-  rating: number;
   duration: string;
-  originalPrice: string;
-  price: string;
-  featured?: boolean;
+  maxPax: number;
+  price: number;
+  category: string;
+  classification: string;
 }
 
 const SAMPLE_TOURS: TourItem[] = [
   {
     id: 1,
-    image: TOUR_IMAGES[0],
-    location: "Paris, France",
-    title:
-      "Phi Phi Islands Adventure Day Trip with Seaview Lunch by V. Marine Tour",
-    description:
-      "The Phi Phi archipelago is a must-visit while in Phuket, and this speedboat trip.",
-    rating: 5,
-    duration: "2 Days 1 Nights",
-    originalPrice: "$1200",
-    price: "$114",
+    image:
+      "https://www.figma.com/api/mcp/asset/2f522778-a155-437a-b5a2-6142ef1c1bb2",
+    location: "New York, USA",
+    title: "Statue of Liberty & Ellis Island Ferry Access Tour",
+    duration: "1 day",
+    maxPax: 12,
+    price: 35,
+    category: "Cultural Tour",
+    classification: "Budget Tour",
   },
   {
     id: 2,
-    image: TOUR_IMAGES[1],
-    location: "Paris, France",
-    title:
-      "Phi Phi Islands Adventure Day Trip with Seaview Lunch by V. Marine Tour",
-    description:
-      "The Phi Phi archipelago is a must-visit while in Phuket, and this speedboat trip.",
-    rating: 5,
-    duration: "2 Days 1 Nights",
-    originalPrice: "$1200",
-    price: "$114",
+    image:
+      "https://www.figma.com/api/mcp/asset/376def41-3ada-46d6-bc15-15a90d47e877",
+    location: "Washington, USA",
+    title: "National Mall Monuments Guided Sunset Walking Tour",
+    duration: "1 day",
+    maxPax: 12,
+    price: 45,
+    category: "Cultural Tour",
+    classification: "Budget Tour",
   },
   {
     id: 3,
-    image: TOUR_IMAGES[2],
-    location: "Paris, France",
-    title:
-      "Phi Phi Islands Adventure Day Trip with Seaview Lunch by V. Marine Tour",
-    description:
-      "The Phi Phi archipelago is a must-visit while in Phuket, and this speedboat trip.",
-    rating: 5,
-    duration: "2 Days 1 Nights",
-    originalPrice: "$1200",
-    price: "$114",
-    featured: true,
+    image:
+      "https://www.figma.com/api/mcp/asset/0b0f78f8-a3d5-455a-8517-d3e9a30ba3ee",
+    location: "Bangkok, Thailand",
+    title: "Floating Market & Temple Day Tour by Long-Tail Boat",
+    duration: "1 day",
+    maxPax: 12,
+    price: 49,
+    category: "Cultural Tour",
+    classification: "Budget Tour",
   },
   {
     id: 4,
-    image: TOUR_IMAGES[3],
-    location: "Paris, France",
-    title:
-      "Phi Phi Islands Adventure Day Trip with Seaview Lunch by V. Marine Tour",
-    description:
-      "The Phi Phi archipelago is a must-visit while in Phuket, and this speedboat trip.",
-    rating: 5,
-    duration: "2 Days 1 Nights",
-    originalPrice: "$1200",
-    price: "$114",
+    image:
+      "https://www.figma.com/api/mcp/asset/b8a1b3ef-885e-4918-a4bd-28cc72158758",
+    location: "Rome, Italy",
+    title: "Colosseum, Roman Forum & Palatine Hill Guided Tour",
+    duration: "2 days",
+    maxPax: 12,
+    price: 65,
+    category: "Cultural Tour",
+    classification: "Standard Tour",
   },
   {
     id: 5,
-    image: TOUR_IMAGES[4],
-    location: "Paris, France",
-    title:
-      "Phi Phi Islands Adventure Day Trip with Seaview Lunch by V. Marine Tour",
-    description:
-      "The Phi Phi archipelago is a must-visit while in Phuket, and this speedboat trip.",
-    rating: 5,
-    duration: "2 Days 1 Nights",
-    originalPrice: "$1200",
-    price: "$114",
+    image:
+      "https://www.figma.com/api/mcp/asset/f69eee8d-bc64-4c1c-9077-7a16614f5cda",
+    location: "Dubai, UAE",
+    title: "Dubai Desert Safari with BBQ Dinner & Camel Ride",
+    duration: "1 day",
+    maxPax: 12,
+    price: 75,
+    category: "Adventure Tour",
+    classification: "Group Tour",
   },
   {
     id: 6,
-    image: TOUR_IMAGES[5],
+    image:
+      "https://www.figma.com/api/mcp/asset/f5d4fd9b-5ccc-427a-940a-d0f92012d69a",
+    location: "Bali, Indonesia",
+    title: "Sacred Monkey Forest & Tegallalang Rice Terrace Tour",
+    duration: "2 days",
+    maxPax: 12,
+    price: 79,
+    category: "Eco Tour",
+    classification: "Standard Tour",
+  },
+  {
+    id: 7,
+    image:
+      "https://www.figma.com/api/mcp/asset/e0caae3f-56bd-4093-b2ed-66986ad053ae",
     location: "Paris, France",
-    title:
-      "Phi Phi Islands Adventure Day Trip with Seaview Lunch by V. Marine Tour",
-    description:
-      "The Phi Phi archipelago is a must-visit while in Phuket, and this speedboat trip.",
-    rating: 5,
-    duration: "2 Days 1 Nights",
-    originalPrice: "$1200",
-    price: "$114",
+    title: "Louvre Museum Skip-the-Line Guided Tour",
+    duration: "1 day",
+    maxPax: 12,
+    price: 85,
+    category: "Cultural Tour",
+    classification: "Standard Tour",
+  },
+  {
+    id: 8,
+    image:
+      "https://www.figma.com/api/mcp/asset/376def41-3ada-46d6-bc15-15a90d47e877",
+    location: "Tokyo, Japan",
+    title: "Tokyo Night Lights & Street Food Walking Experience",
+    duration: "1 day",
+    maxPax: 12,
+    price: 89,
+    category: "Food Tour",
+    classification: "Standard Tour",
+  },
+  {
+    id: 9,
+    image:
+      "https://www.figma.com/api/mcp/asset/0b0f78f8-a3d5-455a-8517-d3e9a30ba3ee",
+    location: "Phuket, Thailand",
+    title: "Phi Phi Islands Speedboat Snorkeling Day Trip",
+    duration: "1 day",
+    maxPax: 12,
+    price: 95,
+    category: "Adventure Tour",
+    classification: "Group Tour",
+  },
+  {
+    id: 10,
+    image:
+      "https://www.figma.com/api/mcp/asset/b8a1b3ef-885e-4918-a4bd-28cc72158758",
+    location: "Paris, France",
+    title: "Eiffel Tower Summit Access with Champagne Toast",
+    duration: "1 day",
+    maxPax: 12,
+    price: 120,
+    category: "Relaxation Tour",
+    classification: "Premium Tour",
+  },
+  {
+    id: 11,
+    image:
+      "https://www.figma.com/api/mcp/asset/f69eee8d-bc64-4c1c-9077-7a16614f5cda",
+    location: "Singapore, Singapore",
+    title: "Marina Bay Sands Sunset Cruise with Dinner",
+    duration: "1 day",
+    maxPax: 12,
+    price: 149,
+    category: "Relaxation Tour",
+    classification: "VIP / Luxury Tour",
+  },
+  {
+    id: 12,
+    image:
+      "https://www.figma.com/api/mcp/asset/f5d4fd9b-5ccc-427a-940a-d0f92012d69a",
+    location: "London, UK",
+    title: "Tower of London & Crown Jewels Exclusive Tour",
+    duration: "2 days",
+    maxPax: 12,
+    price: 180,
+    category: "Cultural Tour",
+    classification: "Standard Tour",
   },
 ];
 
-const FILTER_OPTIONS = [
-  "departureDate",
-  "destination",
-  "duration",
-  "visaRequirement",
-  "depositRate",
-  "seatsAvailability",
+/* ── Filter Data ───────────────────────────────────────────── */
+const CLASSIFICATION_OPTIONS = [
+  "Standard Tour",
+  "Premium Tour",
+  "VIP / Luxury Tour",
+  "Budget Tour",
+  "Private Tour",
+  "Group Tour",
 ];
 
-/* ── SearchBar ─────────────────────────────────────────────── */
+const CATEGORY_OPTIONS = [
+  "Adventure Tour",
+  "Cultural Tour",
+  "Relaxation Tour",
+  "Eco Tour",
+  "Food Tour",
+  "Religious Tour",
+  "Honeymoon Tour",
+];
+
+const DURATION_OPTIONS = [
+  "One-day Tour",
+  "1-3 Days Tour",
+  "4-7 Days Tour",
+  "7-15 Days Tour",
+  "> 15 Days Tour",
+];
+
+const PRICE_QUICK_FILTERS = ["Under $100", "$100–$300", "$300–$1k", "$1k+"];
+
+/* ── Hero Banner ───────────────────────────────────────────── */
+const HeroBanner = () => {
+  const { t } = useTranslation();
+  return (
+    <section className="relative h-[500px] w-full overflow-hidden">
+      <Image
+        src={HERO_BG}
+        alt="Package Tours hero background"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[rgba(5,7,60,0.7)] via-[rgba(5,7,60,0.4)] to-[rgba(5,7,60,0.8)]" />
+      {/* Content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <span className="inline-block bg-[rgba(250,139,2,0.2)] border border-[rgba(250,139,2,0.4)] text-[#fa8b02] text-xs font-semibold uppercase tracking-[1.2px] px-6 py-1.5 rounded-full mb-4">
+          {t("landing.tourDiscovery.discoverAdventures")}
+        </span>
+        <h1 className="text-[48px] md:text-[60px] font-bold text-white leading-[75px] mb-4">
+          {t("landing.tourDiscovery.packageLabel")}{" "}
+          <span className="text-[#fa8b02]">
+            {t("landing.tourDiscovery.toursLabel")}
+          </span>
+        </h1>
+        <p className="text-base text-white/70 mb-6 max-w-[550px]">
+          {t("landing.tourDiscovery.heroDescription")}
+        </p>
+        <nav
+          aria-label="Breadcrumb"
+          className="flex items-center gap-2 text-sm">
+          <Link
+            href="/home"
+            className="text-white/50 hover:text-white transition-colors">
+            {t("landing.nav.home")}
+          </Link>
+          <Icon
+            icon="heroicons-outline:chevron-right"
+            className="w-3.5 h-3.5 text-white/50"
+          />
+          <span className="text-white/80">
+            {t("landing.tourDiscovery.packageTours")}
+          </span>
+        </nav>
+      </div>
+    </section>
+  );
+};
+
+/* ── Full-Width Search Bar ─────────────────────────────────── */
 const SearchBar = () => {
   const { t } = useTranslation();
   return (
-    <div className="bg-[#f7f7f7] flex items-center justify-between rounded-full px-3 py-1.5 w-full">
-      <span className="text-[#828282] text-base pl-2">
-        {t("landing.tourDiscovery.searchPlaceholder")}
-      </span>
-      <button
-        type="button"
-        aria-label={t("landing.hero.searchAria")}
-        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors">
+    <div className="max-w-[1152px] mx-auto px-6 py-3">
+      <div className="relative">
         <Icon
           icon="heroicons-outline:search"
-          className="w-6 h-6 text-[#828282]"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99a1af]"
         />
-      </button>
+        <input
+          type="text"
+          placeholder={t("landing.tourDiscovery.searchFullPlaceholder")}
+          className="w-full h-[42px] bg-[#f9fafb] border border-[#f3f4f6] rounded-lg pl-11 pr-4 text-sm text-[#05073c] placeholder:text-[#99a1af] focus:outline-none focus:ring-2 focus:ring-[#eb662b]/30 focus:border-[#eb662b] transition-colors"
+        />
+      </div>
     </div>
   );
 };
 
-/* ── Filter Checkbox List ───────────────────────────────────── */
-const FilterCheckboxList = ({
-  filters,
-  selected,
-  onToggle,
+/* ── Collapsible Filter Section ─────────────────────────────── */
+const FilterSection = ({
+  title,
+  children,
+  defaultOpen = true,
 }: {
-  filters: string[];
-  selected: string[];
-  onToggle: (filter: string) => void;
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
 }) => {
-  const { t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
-    <div className="flex flex-col gap-3 pt-3">
-      {filters.map((filter) => (
-        <label
-          key={filter}
-          className="flex items-center gap-2.5 cursor-pointer text-sm text-landing-heading">
-          <input
-            type="checkbox"
-            checked={selected.includes(filter)}
-            onChange={() => onToggle(filter)}
-            className="w-[18px] h-[18px] rounded border border-landing-heading accent-landing-accent"
-          />
-          <span>{t(`landing.tourDiscovery.filters.${filter}`)}</span>
-        </label>
-      ))}
+    <div className="border-b border-[#f3f4f6] pb-4">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full py-3">
+        <span className="text-[14px] font-semibold text-[#05073c]">
+          {title}
+        </span>
+        <Icon
+          icon={
+            isOpen
+              ? "heroicons-outline:chevron-up"
+              : "heroicons-outline:chevron-down"
+          }
+          className="w-4 h-4 text-[#05073c]"
+        />
+      </button>
+      {isOpen && <div className="pb-1">{children}</div>}
     </div>
   );
 };
+
+/* ── Radio-style Filter List ────────────────────────────────── */
+const FilterRadioList = ({
+  options,
+  selected,
+  onToggle,
+}: {
+  options: string[];
+  selected: string[];
+  onToggle: (option: string) => void;
+}) => (
+  <div className="flex flex-col">
+    {options.map((option) => (
+      <label
+        key={option}
+        className="flex items-center gap-2.5 cursor-pointer py-1 text-[12px] text-[#6a7282] hover:text-[#05073c] transition-colors">
+        <div
+          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+            selected.includes(option)
+              ? "border-[#eb662b] bg-[#eb662b]"
+              : "border-[#d1d5db]"
+          }`}>
+          {selected.includes(option) && (
+            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+          )}
+        </div>
+        <span>{option}</span>
+      </label>
+    ))}
+  </div>
+);
 
 /* ── Sidebar Filter ────────────────────────────────────────── */
 const TourSidebar = () => {
   const { t } = useTranslation();
-  const [tourTypeFilters, setTourTypeFilters] = useState<string[]>([]);
-  const [priceFilters, setPriceFilters] = useState<string[]>([]);
+  const [classFilters, setClassFilters] = useState<string[]>([]);
+  const [catFilters, setCatFilters] = useState<string[]>([]);
+  const [durFilters, setDurFilters] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
+  const [activePriceQuick, setActivePriceQuick] = useState<string | null>(null);
 
   const toggleFilter = (
-    filter: string,
+    option: string,
     current: string[],
     setter: React.Dispatch<React.SetStateAction<string[]>>,
   ) => {
     setter(
-      current.includes(filter)
-        ? current.filter((f) => f !== filter)
-        : [...current, filter],
+      current.includes(option)
+        ? current.filter((f) => f !== option)
+        : [...current, option],
     );
   };
 
   return (
-    <aside className="w-full lg:w-[300px] shrink-0 border border-landing-border rounded-xl overflow-hidden">
-      {/* Date Range Header */}
-      <div className="bg-[#eb662b] px-7 pt-5 pb-5 rounded-t-xl">
-        <p className="text-white text-[15px] font-medium mb-3">
-          {t("landing.tourDiscovery.whenTraveling")}
-        </p>
-        <div className="bg-white rounded-xl h-[50px] flex items-center px-5 gap-2">
+    <aside className="w-full lg:w-[256px] shrink-0">
+      {/* Orange top bar */}
+      <div className="h-1 bg-[#eb662b] rounded-t-lg" />
+      <div className="border border-t-0 border-[#f3f4f6] rounded-b-lg px-5 pb-5">
+        {/* Filter Header */}
+        <div className="flex items-center gap-2 py-5 border-b border-[#f3f4f6]">
           <Icon
-            icon="heroicons-outline:calendar"
-            className="w-5 h-5 text-landing-heading"
+            icon="heroicons-outline:adjustments-horizontal"
+            className="w-4 h-4 text-[#05073c]"
           />
-          <span className="text-sm text-landing-heading">
-            February 05 ~ March 14
+          <span className="text-sm font-semibold text-[#05073c]">
+            {t("landing.tourDiscovery.filter")}
           </span>
         </div>
-      </div>
 
-      {/* Tour Type */}
-      <div className="px-5 pt-4 pb-4">
-        <h3 className="text-[17px] font-medium text-landing-heading">
-          {t("landing.tourDiscovery.tourType")}
-        </h3>
-        <FilterCheckboxList
-          filters={FILTER_OPTIONS}
-          selected={tourTypeFilters}
-          onToggle={(f) => toggleFilter(f, tourTypeFilters, setTourTypeFilters)}
-        />
-      </div>
+        {/* Classification */}
+        <FilterSection title={t("landing.tourDiscovery.classification")}>
+          <FilterRadioList
+            options={CLASSIFICATION_OPTIONS}
+            selected={classFilters}
+            onToggle={(o) => toggleFilter(o, classFilters, setClassFilters)}
+          />
+        </FilterSection>
 
-      {/* Filter Price */}
-      <div className="px-5 pt-4 pb-5 border-t border-landing-border">
-        <h3 className="text-[17px] font-medium text-landing-heading">
-          {t("landing.tourDiscovery.filterPrice")}
-        </h3>
-        <FilterCheckboxList
-          filters={FILTER_OPTIONS}
-          selected={priceFilters}
-          onToggle={(f) => toggleFilter(f, priceFilters, setPriceFilters)}
-        />
+        {/* Category */}
+        <FilterSection title={t("landing.tourDiscovery.category")}>
+          <FilterRadioList
+            options={CATEGORY_OPTIONS}
+            selected={catFilters}
+            onToggle={(o) => toggleFilter(o, catFilters, setCatFilters)}
+          />
+        </FilterSection>
+
+        {/* Duration */}
+        <FilterSection title={t("landing.tourDiscovery.duration")}>
+          <FilterRadioList
+            options={DURATION_OPTIONS}
+            selected={durFilters}
+            onToggle={(o) => toggleFilter(o, durFilters, setDurFilters)}
+          />
+        </FilterSection>
+
+        {/* Price Range */}
+        <FilterSection title={t("landing.tourDiscovery.priceRange")}>
+          <div className="flex flex-col gap-3">
+            {/* Min/Max labels */}
+            <div className="flex items-center justify-between text-[12px] text-[#99a1af]">
+              <span>${priceRange[0]}</span>
+              <span>${priceRange[1].toLocaleString()}</span>
+            </div>
+
+            {/* Slider */}
+            <div className="relative h-[3px] bg-[#f3f4f6] rounded-full">
+              <div
+                className="absolute h-full bg-[#eb662b] rounded-full"
+                style={{
+                  left: `${(priceRange[0] / 3000) * 100}%`,
+                  right: `${100 - (priceRange[1] / 3000) * 100}%`,
+                }}
+              />
+              <input
+                type="range"
+                min={0}
+                max={3000}
+                value={priceRange[0]}
+                onChange={(e) =>
+                  setPriceRange([+e.target.value, priceRange[1]])
+                }
+                className="absolute w-full h-full opacity-0 cursor-pointer"
+              />
+              <input
+                type="range"
+                min={0}
+                max={3000}
+                value={priceRange[1]}
+                onChange={(e) =>
+                  setPriceRange([priceRange[0], +e.target.value])
+                }
+                className="absolute w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+
+            {/* From / To display */}
+            <div className="flex items-center justify-center gap-3 bg-[#f9fafb] rounded-lg py-2 px-3 mt-1">
+              <div className="text-center">
+                <p className="text-[10px] text-[#99a1af] uppercase tracking-wider">
+                  {t("landing.tourDiscovery.from")}
+                </p>
+                <p className="text-sm font-bold text-[#eb662b]">
+                  ${priceRange[0]}
+                </p>
+              </div>
+              <div className="w-4 h-[1px] bg-[#d1d5db]" />
+              <div className="text-center">
+                <p className="text-[10px] text-[#99a1af] uppercase tracking-wider">
+                  {t("landing.tourDiscovery.to")}
+                </p>
+                <p className="text-sm font-bold text-[#eb662b]">
+                  ${priceRange[1].toLocaleString()}
+                </p>
+              </div>
+            </div>
+
+            {/* Quick price buttons */}
+            <div className="flex flex-wrap gap-1.5">
+              {PRICE_QUICK_FILTERS.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() =>
+                    setActivePriceQuick(
+                      activePriceQuick === label ? null : label,
+                    )
+                  }
+                  className={`px-2 py-1 rounded-md text-[10px] border transition-colors ${
+                    activePriceQuick === label
+                      ? "bg-[#eb662b] text-white border-[#eb662b]"
+                      : "bg-white text-[#6a7282] border-[#f3f4f6] hover:border-[#eb662b]"
+                  }`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </FilterSection>
       </div>
     </aside>
   );
 };
 
-/* ── Tour Card ─────────────────────────────────────────────── */
+/* ── Tour Card (Grid Style) ────────────────────────────────── */
 const TourCard = ({ tour }: { tour: TourItem }) => {
   const { t } = useTranslation();
   return (
-    <article className="border border-landing-border rounded-xl p-5 flex flex-col md:flex-row gap-5 md:gap-7 hover:shadow-md transition-shadow duration-300">
+    <article className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
       {/* Image */}
-      <div className="relative w-full md:w-[280px] h-[200px] md:h-[264px] shrink-0 rounded-xl overflow-hidden">
+      <div className="relative w-full h-[192px] overflow-hidden">
         <Image
           src={tour.image}
           alt={tour.title}
           fill
-          sizes="(max-width: 767px) 100vw, 280px"
-          className="object-cover"
+          sizes="(max-width: 767px) 100vw, 400px"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        {tour.featured && (
-          <span className="absolute top-4 left-4 bg-[#4a43c4] text-white text-xs px-4 py-2 rounded-xl">
-            {t("landing.tourDiscovery.featured")}
-          </span>
-        )}
+        {/* Category badge on image */}
+        <span className="absolute bottom-3 left-3 bg-black/50 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
+          {tour.category}
+        </span>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-between min-w-0">
-        {/* Location */}
-        <div>
-          <div className="flex items-center gap-1 text-landing-heading text-sm mb-1">
-            <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
+      <div className="p-4">
+        {/* Location + Classification */}
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1 text-[12px] text-[#99a1af]">
+            <Icon icon="heroicons-solid:map-pin" className="w-3 h-3 shrink-0" />
             <span>{tour.location}</span>
           </div>
-
-          {/* Title */}
-          <h3 className="text-[17px] font-bold text-landing-heading leading-[30px] mb-3">
-            {tour.title}
-          </h3>
-
-          {/* Rating */}
-          <div className="mb-3">
-            <StarRating count={tour.rating} size="md" />
-          </div>
-
-          {/* Description */}
-          <p className="text-sm text-landing-heading leading-7 mb-3 line-clamp-2">
-            {tour.description}
-          </p>
-
-          {/* Best Price Guarantee */}
-          <div className="flex items-center gap-1.5 text-[#eb662b] text-[13px]">
-            <Icon icon="heroicons-solid:shield-check" className="w-3.5 h-3.5" />
-            <span>{t("landing.tourDiscovery.bestPriceGuarantee")}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Info Panel */}
-      <div className="flex flex-row md:flex-col items-center md:items-center justify-between md:justify-between border-t md:border-t-0 md:border-l border-landing-border pt-4 md:pt-0 md:pl-6 w-full md:w-[185px] shrink-0">
-        <div className="flex flex-col items-center gap-2 md:mt-2.5">
-          {/* Duration */}
-          <div className="flex items-center gap-1 text-landing-heading text-[13px]">
-            <Icon icon="heroicons-outline:clock" className="w-3.5 h-3.5" />
-            <span>{tour.duration}</span>
-          </div>
+          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[rgba(106,114,130,0.1)] text-[10px] font-bold text-[#6a7282] px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#99a1af]" />
+            {tour.classification}
+          </span>
         </div>
 
-        <div className="flex flex-col items-center gap-2 md:mt-auto md:mb-2">
-          {/* Price */}
-          <div className="flex flex-col items-center text-center">
-            <span className="text-[#c6c6d2] text-sm line-through">
-              {tour.originalPrice}
+        {/* Title */}
+        <h3 className="text-[14px] font-semibold text-[#05073c] leading-[19px] mb-3 line-clamp-2 min-h-[38px]">
+          {tour.title}
+        </h3>
+
+        {/* Duration & Max Pax */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
+            <Icon
+              icon="heroicons-outline:clock"
+              className="w-3 h-3 text-[#6a7282]"
+            />
+            {tour.duration}
+          </span>
+          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
+            <Icon
+              icon="heroicons-outline:users"
+              className="w-3 h-3 text-[#6a7282]"
+            />
+            {t("landing.tourDiscovery.maxPax", { count: tour.maxPax })}
+          </span>
+        </div>
+
+        {/* Price + Arrow */}
+        <div className="flex items-center justify-between border-t border-[#f3f4f6] pt-3">
+          <p className="text-[12px] text-[#99a1af]">
+            <span>{t("landing.tourDiscovery.from")} </span>
+            <span className="text-[14px] font-bold text-[#05073c]">
+              ${tour.price}
             </span>
-            <div className="flex items-baseline gap-1">
-              <span className="text-landing-heading text-[15px]">
-                {t("landing.tourDiscovery.from")}
-              </span>
-              <span className="text-landing-heading font-medium text-[17px]">
-                {tour.price}
-              </span>
-            </div>
-          </div>
-
-          {/* View Details Button */}
-          <button
-            type="button"
-            className="border border-[#eb662b] text-[#eb662b] rounded-xl px-6 py-3.5 text-sm font-medium hover:bg-[#eb662b] hover:text-white transition-colors duration-200 flex items-center gap-1.5">
-            <span>{t("landing.tourDiscovery.viewDetails")}</span>
-            <Icon icon="heroicons-outline:arrow-right" className="w-4 h-4" />
-          </button>
+            <span> /pax</span>
+          </p>
+          <Link
+            href={`/tours/${tour.id}`}
+            className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors">
+            <Icon
+              icon="heroicons-outline:arrow-right"
+              className="w-3.5 h-3.5 text-[#eb662b] group-hover/arrow:text-white transition-colors"
+            />
+          </Link>
         </div>
       </div>
     </article>
+  );
+};
+
+/* ── Results Toolbar ───────────────────────────────────────── */
+const ResultsToolbar = ({ count }: { count: number }) => {
+  const { t } = useTranslation();
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  return (
+    <div className="flex items-center justify-between py-2 mb-4">
+      <p className="text-sm text-[#05073c]">
+        {t("landing.tourDiscovery.showing")}{" "}
+        <span className="font-bold">{count}</span>{" "}
+        {t("landing.tourDiscovery.toursLower")}
+      </p>
+      <div className="flex items-center gap-2">
+        {/* Scheduled Tours Button */}
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-xs font-medium px-4 py-2 rounded-lg hover:bg-[#d45a24] transition-colors">
+          <Icon icon="heroicons-outline:calendar" className="w-4 h-4" />
+          {t("landing.tourDiscovery.scheduledTours")}
+        </button>
+
+        {/* Recommended Dropdown */}
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 bg-white border border-[#f3f4f6] text-[#05073c] text-xs font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+          <Icon
+            icon="heroicons-outline:sparkles"
+            className="w-3.5 h-3.5 text-[#eb662b]"
+          />
+          {t("landing.tourDiscovery.recommended")}
+          <Icon icon="heroicons-outline:chevron-down" className="w-3.5 h-3.5" />
+        </button>
+
+        {/* View Mode Toggle */}
+        <div className="flex items-center border border-[#f3f4f6] rounded-lg overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setViewMode("grid")}
+            className={`w-9 h-9 flex items-center justify-center transition-colors ${
+              viewMode === "grid"
+                ? "bg-[#eb662b] text-white"
+                : "bg-white text-[#6a7282] hover:bg-gray-50"
+            }`}>
+            <Icon icon="heroicons-outline:squares-2x2" className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("list")}
+            className={`w-9 h-9 flex items-center justify-center transition-colors ${
+              viewMode === "list"
+                ? "bg-[#eb662b] text-white"
+                : "bg-white text-[#6a7282] hover:bg-gray-50"
+            }`}>
+            <Icon icon="heroicons-outline:bars-3" className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -340,60 +641,69 @@ const Pagination = ({
 }) => {
   const { t } = useTranslation();
 
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    if (totalPages <= 6) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1, 2, 3, 4);
-      if (currentPage > 4 && currentPage < totalPages - 1) {
-        pages.push("...", currentPage);
-      } else {
-        pages.push("...");
-      }
-      pages.push(totalPages);
-    }
-    return pages;
-  };
-
   return (
     <nav
       aria-label={t("landing.tourDiscovery.pagination")}
-      className="flex flex-col items-center gap-3 mt-8">
-      <div className="flex items-center gap-1">
-        {getPageNumbers().map((page, idx) =>
-          typeof page === "string" ? (
-            <span
-              key={`ellipsis-${idx}`}
-              className="w-10 h-10 flex items-center justify-center text-landing-heading text-sm">
-              ...
-            </span>
-          ) : (
-            <button
-              key={page}
-              type="button"
-              onClick={() => onPageChange(page)}
-              aria-current={currentPage === page ? "page" : undefined}
-              className={`w-10 h-10 flex items-center justify-center rounded-full text-[15px] font-medium transition-colors ${
-                currentPage === page
-                  ? "bg-[#eb662b] text-white"
-                  : "text-landing-heading hover:bg-gray-100"
-              }`}>
-              {page}
-            </button>
-          ),
-        )}
-      </div>
-      <p className="text-[13px] text-landing-heading text-center">
-        {t("landing.tourDiscovery.showingResults", {
-          start: 1,
-          end: 30,
-          total: "1,415",
-        })}
-      </p>
+      className="flex items-center justify-center gap-1 mt-10">
+      {/* Prev */}
+      <button
+        type="button"
+        disabled={currentPage <= 1}
+        onClick={() => onPageChange(currentPage - 1)}
+        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#f3f4f6] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
+        <Icon icon="heroicons-outline:chevron-left" className="w-4 h-4" />
+      </button>
+
+      {/* Page Numbers */}
+      {Array.from({ length: Math.min(totalPages, 2) }, (_, i) => i + 1).map(
+        (page) => (
+          <button
+            key={page}
+            type="button"
+            onClick={() => onPageChange(page)}
+            aria-current={currentPage === page ? "page" : undefined}
+            className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+              currentPage === page
+                ? "bg-[#eb662b] text-white"
+                : "border border-[#f3f4f6] text-[#05073c] hover:bg-gray-50"
+            }`}>
+            {page}
+          </button>
+        ),
+      )}
+
+      {/* Next */}
+      <button
+        type="button"
+        disabled={currentPage >= totalPages}
+        onClick={() => onPageChange(currentPage + 1)}
+        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#f3f4f6] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
+        <Icon icon="heroicons-outline:chevron-right" className="w-4 h-4" />
+      </button>
     </nav>
   );
 };
+
+/* ── Floating Social Buttons ───────────────────────────────── */
+const FloatingButtons = () => (
+  <div className="fixed right-4 top-[502px] z-50 flex flex-col gap-3">
+    <a
+      href="#"
+      aria-label="Facebook"
+      className="w-11 h-11 bg-[#1877f2] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
+      <Icon icon="ri:facebook-fill" className="w-5 h-5" />
+    </a>
+    <button
+      type="button"
+      aria-label="Chat"
+      className="w-11 h-11 bg-[#eb662b] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
+      <Icon
+        icon="heroicons-outline:chat-bubble-oval-left"
+        className="w-5 h-5"
+      />
+    </button>
+  </div>
+);
 
 /* ── Main Tour Discovery Page ──────────────────────────────── */
 export const TourDiscoveryPage = () => {
@@ -408,63 +718,26 @@ export const TourDiscoveryPage = () => {
       {/* Header */}
       <LandingHeader variant="solid" />
 
+      {/* Hero Banner */}
+      <HeroBanner />
+
+      {/* Search Bar */}
+      <SearchBar />
+
       {/* Page Content */}
-      <div className="max-w-[1380px] mx-auto px-4 md:px-12 py-5">
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-2">
-          <ol className="flex items-center gap-1 text-sm text-landing-heading">
-            <li>
-              <Link
-                href="/home"
-                className="hover:text-landing-accent transition-colors">
-                {t("landing.nav.home")}
-              </Link>
-            </li>
-            <li aria-hidden="true">&gt;</li>
-            <li>
-              <Link
-                href="/tours"
-                className="hover:text-landing-accent transition-colors">
-                {t("landing.tourDiscovery.tours")}
-              </Link>
-            </li>
-            <li aria-hidden="true">&gt;</li>
-            <li aria-current="page" className="text-landing-body">
-              {t("landing.tourDiscovery.availableDepartures")}
-            </li>
-          </ol>
-        </nav>
-
-        {/* Title */}
-        <h1 className="text-[40px] font-bold text-landing-heading leading-[60px] mb-8">
-          {t("landing.tourDiscovery.title")}
-        </h1>
-
+      <div className="max-w-[1152px] mx-auto px-6 py-4">
         {/* Content: Sidebar + Main */}
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-6">
           {/* Sidebar */}
           <TourSidebar />
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            {/* Search Bar */}
-            <SearchBar />
+            {/* Results Toolbar */}
+            <ResultsToolbar count={SAMPLE_TOURS.length} />
 
-            {/* Results header */}
-            <div className="flex items-center justify-between mt-6 mb-6">
-              <p className="text-sm text-landing-heading">
-                {t("landing.tourDiscovery.resultsCount", { count: 1362 })}
-              </p>
-              <div className="flex items-center gap-1 text-sm text-landing-heading">
-                <span>{t("landing.tourDiscovery.sortBy")}:</span>
-                <span className="font-medium">
-                  {t("landing.tourDiscovery.sortFeatured")}
-                </span>
-              </div>
-            </div>
-
-            {/* Tour List */}
-            <div className="flex flex-col gap-7">
+            {/* Tour Grid (2 columns) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {SAMPLE_TOURS.map((tour) => (
                 <TourCard key={tour.id} tour={tour} />
               ))}
@@ -473,12 +746,15 @@ export const TourDiscoveryPage = () => {
             {/* Pagination */}
             <Pagination
               currentPage={currentPage}
-              totalPages={20}
+              totalPages={2}
               onPageChange={setCurrentPage}
             />
           </div>
         </div>
       </div>
+
+      {/* Floating Social Buttons */}
+      <FloatingButtons />
 
       {/* Footer */}
       <LandingFooter />

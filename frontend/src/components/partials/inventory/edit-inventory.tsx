@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import Card from "@/components/ui/Card";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Select from "@/components/ui/Select";
 import Icon from "@/components/ui/Icon";
 
@@ -182,7 +182,7 @@ const EditInventory = () => {
                   <label className="form-label">
                     {t("editInventory.productName")}
                   </label>
-                  <Textinput
+                  <TextInput
                     id="productName"
                     type="text"
                     value={productName}
@@ -195,7 +195,7 @@ const EditInventory = () => {
                 </div>
                 <div>
                   <label className="form-label">{t("editInventory.sku")}</label>
-                  <Textinput
+                  <TextInput
                     id="sku"
                     type="text"
                     value={sku}
@@ -214,7 +214,7 @@ const EditInventory = () => {
                   <label className="form-label">
                     {t("editInventory.quantity")} *
                   </label>
-                  <Textinput
+                  <TextInput
                     id="quantity"
                     type="number"
                     placeholder="0"
@@ -226,7 +226,7 @@ const EditInventory = () => {
                   <label className="form-label">
                     {t("editInventory.minQuantity")}
                   </label>
-                  <Textinput
+                  <TextInput
                     id="minQuantity"
                     type="number"
                     placeholder="10"
@@ -261,7 +261,7 @@ const EditInventory = () => {
                   <label className="form-label">
                     {t("editInventory.location")}
                   </label>
-                  <Textinput
+                  <TextInput
                     id="location"
                     type="text"
                     placeholder="A1-01"

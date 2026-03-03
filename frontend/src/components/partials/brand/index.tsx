@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
-import Textinput from "@/components/ui/Textinput";
+import TextInput from "@/components/ui/TextInput";
 import Modal from "@/components/ui/Modal";
 import LoaderCircle from "@/components/Loader-circle";
 import { api } from "@/api";
@@ -37,7 +37,7 @@ const GlobalFilter = React.memo(
       setFilter(e.target.value || undefined);
     };
     return (
-      <Textinput
+      <TextInput
         value={value || ""}
         onChange={onChange}
         placeholder={t("brand.search")}
@@ -563,7 +563,7 @@ const BrandPage = () => {
         activeModal={showAddModal}
         onClose={() => setShowAddModal(false)}>
         <div className="space-y-4">
-          <Textinput
+          <TextInput
             label={t("brand.name")}
             type="text"
             placeholder={t("brand.namePlaceholder")}
@@ -608,7 +608,7 @@ const BrandPage = () => {
           setEditingBrand(null);
         }}>
         <div className="space-y-4">
-          <Textinput
+          <TextInput
             label={t("brand.name")}
             type="text"
             placeholder={t("brand.namePlaceholder")}
