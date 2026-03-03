@@ -221,7 +221,7 @@ const HeroBanner = () => {
         <span className="inline-block bg-[rgba(250,139,2,0.2)] border border-[rgba(250,139,2,0.4)] text-[#fa8b02] text-xs font-semibold uppercase tracking-[1.2px] px-6 py-1.5 rounded-full mb-4">
           {t("landing.tourDiscovery.discoverAdventures")}
         </span>
-        <h1 className="text-[48px] md:text-[60px] font-bold text-white leading-[75px] mb-4">
+        <h1 className="text-[36px] md:text-[48px] lg:text-[60px] font-bold text-white leading-[1.25] md:leading-[75px] mb-4">
           {t("landing.tourDiscovery.packageLabel")}{" "}
           <span className="text-[#fa8b02]">
             {t("landing.tourDiscovery.toursLabel")}
@@ -252,20 +252,33 @@ const HeroBanner = () => {
 };
 
 /* ── Full-Width Search Bar ─────────────────────────────────── */
-const SearchBar = () => {
+const SearchBar = ({ onFilterToggle }: { onFilterToggle?: () => void }) => {
   const { t } = useTranslation();
   return (
-    <div className="max-w-[1152px] mx-auto px-6 py-3">
-      <div className="relative">
-        <Icon
-          icon="heroicons-outline:search"
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99a1af]"
-        />
-        <input
-          type="text"
-          placeholder={t("landing.tourDiscovery.searchFullPlaceholder")}
-          className="w-full h-[42px] bg-[#f9fafb] border border-[#f3f4f6] rounded-lg pl-11 pr-4 text-sm text-[#05073c] placeholder:text-[#99a1af] focus:outline-none focus:ring-2 focus:ring-[#eb662b]/30 focus:border-[#eb662b] transition-colors"
-        />
+    <div className="bg-white border-b border-black/5 shadow-sm lg:border-0 lg:shadow-none">
+      <div className="max-w-[1152px] mx-auto px-6 py-3 flex items-center gap-3">
+        <div className="relative flex-1">
+          <Icon
+            icon="heroicons-outline:search"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99a1af]"
+          />
+          <input
+            type="text"
+            placeholder={t("landing.tourDiscovery.searchFullPlaceholder")}
+            className="w-full h-[42px] bg-[#f9fafb] border border-[#e5e7eb] lg:border-[#f3f4f6] rounded-xl lg:rounded-lg pl-11 pr-4 text-sm text-[#05073c] placeholder:text-[#99a1af] focus:outline-none focus:ring-2 focus:ring-[#eb662b]/30 focus:border-[#eb662b] transition-colors"
+          />
+        </div>
+        {/* Mobile filter button */}
+        <button
+          type="button"
+          onClick={onFilterToggle}
+          className="lg:hidden inline-flex items-center gap-2 h-[42px] bg-white border border-[#e5e7eb] rounded-xl px-4 text-sm font-medium text-[#4a5565] hover:bg-gray-50 transition-colors shrink-0">
+          <Icon
+            icon="heroicons-outline:adjustments-horizontal"
+            className="w-4 h-4"
+          />
+          {t("landing.tourDiscovery.filtersLabel")}
+        </button>
       </div>
     </div>
   );
@@ -337,7 +350,13 @@ const FilterRadioList = ({
 );
 
 /* ── Sidebar Filter ────────────────────────────────────────── */
-const TourSidebar = () => {
+const TourSidebar = ({
+  isMobileOpen,
+  onClose,
+}: {
+  isMobileOpen?: boolean;
+  onClose?: () => void;
+}) => {
   const { t } = useTranslation();
   const [classFilters, setClassFilters] = useState<string[]>([]);
   const [catFilters, setCatFilters] = useState<string[]>([]);
@@ -357,8 +376,8 @@ const TourSidebar = () => {
     );
   };
 
-  return (
-    <aside className="w-full lg:w-[256px] shrink-0">
+  const sidebarContent = (
+    <>
       {/* Orange top bar */}
       <div className="h-1 bg-[#eb662b] rounded-t-lg" />
       <div className="border border-t-0 border-[#f3f4f6] rounded-b-lg px-5 pb-5">
@@ -484,7 +503,80 @@ const TourSidebar = () => {
           </div>
         </FilterSection>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:block w-[256px] shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile drawer overlay */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+          {/* Drawer panel */}
+          <aside className="absolute right-0 top-0 h-full w-[320px] max-w-[85vw] bg-white overflow-y-auto shadow-xl">
+            {/* Close button */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#f3f4f6]">
+              <span className="text-sm font-semibold text-[#05073c]">
+                {t("landing.tourDiscovery.filtersLabel")}
+              </span>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close filters"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                <Icon
+                  icon="heroicons-outline:x-mark"
+                  className="w-5 h-5 text-[#05073c]"
+                />
+              </button>
+            </div>
+            <div className="p-4">{sidebarContent}</div>
+          </aside>
+        </div>
+      )}
+    </>
+  );
+};
+
+/* ── Customize Your Tour CTA ───────────────────────────────── */
+const CustomizeTourCTA = () => {
+  const { t } = useTranslation();
+  return (
+    <Link
+      href="/tours/customize"
+      className="block lg:hidden bg-gradient-to-b from-[#fa8b02] via-[#eb662b] to-[#fa8b02] rounded-2xl p-5 shadow-lg mb-4 overflow-hidden">
+      <div className="flex items-center gap-2 mb-2">
+        <Icon
+          icon="heroicons-outline:sparkles"
+          className="w-5 h-5 text-white"
+        />
+        <span className="text-[14px] font-bold text-white">
+          {t("landing.tourDiscovery.customizeYourTour")}
+        </span>
+      </div>
+      <p className="text-[12px] text-white/90 leading-[19.5px] max-w-[265px] mb-3">
+        {t("landing.tourDiscovery.customizeDescription")}
+      </p>
+      <div className="flex items-center gap-1">
+        <span className="text-[12px] font-semibold text-white">
+          {t("landing.tourDiscovery.createCustomTour")}
+        </span>
+        <Icon
+          icon="heroicons-outline:chevron-right"
+          className="w-3.5 h-3.5 text-white"
+        />
+      </div>
+    </Link>
   );
 };
 
@@ -575,34 +667,38 @@ const ResultsToolbar = ({ count }: { count: number }) => {
 
   return (
     <div className="flex items-center justify-between py-2 mb-4">
-      <p className="text-sm text-[#05073c]">
+      <p className="text-sm text-[#6a7282] lg:text-[#05073c]">
         {t("landing.tourDiscovery.showing")}{" "}
-        <span className="font-bold">{count}</span>{" "}
+        <span className="font-semibold text-[#05073c]">{count}</span>{" "}
         {t("landing.tourDiscovery.toursLower")}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 lg:gap-2">
         {/* Scheduled Tours Button */}
         <button
           type="button"
-          className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-xs font-medium px-4 py-2 rounded-lg hover:bg-[#d45a24] transition-colors">
+          className="inline-flex items-center gap-2 bg-gradient-to-b from-[#fa8b02] to-[#eb662b] lg:bg-none lg:bg-[#eb662b] text-white text-xs font-semibold lg:font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-lg shadow-md lg:shadow-none hover:opacity-90 transition-opacity">
           <Icon icon="heroicons-outline:calendar" className="w-4 h-4" />
-          {t("landing.tourDiscovery.scheduledTours")}
+          <span className="text-[12px] lg:text-xs">
+            {t("landing.tourDiscovery.scheduledTours")}
+          </span>
         </button>
 
-        {/* Recommended Dropdown */}
+        {/* Recommended Dropdown - compact on mobile */}
         <button
           type="button"
-          className="inline-flex items-center gap-2 bg-white border border-[#f3f4f6] text-[#05073c] text-xs font-medium px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+          className="inline-flex items-center gap-1.5 lg:gap-2 bg-white border border-[#e5e7eb] lg:border-[#f3f4f6] text-[#05073c] text-xs font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-lg hover:bg-gray-50 transition-colors">
           <Icon
             icon="heroicons-outline:sparkles"
             className="w-3.5 h-3.5 text-[#eb662b]"
           />
-          {t("landing.tourDiscovery.recommended")}
+          <span className="hidden lg:inline">
+            {t("landing.tourDiscovery.recommended")}
+          </span>
           <Icon icon="heroicons-outline:chevron-down" className="w-3.5 h-3.5" />
         </button>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center border border-[#f3f4f6] rounded-lg overflow-hidden">
+        {/* View Mode Toggle - hidden on mobile */}
+        <div className="hidden lg:flex items-center border border-[#f3f4f6] rounded-lg overflow-hidden">
           <button
             type="button"
             onClick={() => setViewMode("grid")}
@@ -644,13 +740,13 @@ const Pagination = ({
   return (
     <nav
       aria-label={t("landing.tourDiscovery.pagination")}
-      className="flex items-center justify-center gap-1 mt-10">
+      className="flex items-center justify-center gap-2 mt-10">
       {/* Prev */}
       <button
         type="button"
         disabled={currentPage <= 1}
         onClick={() => onPageChange(currentPage - 1)}
-        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#f3f4f6] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
+        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
         <Icon icon="heroicons-outline:chevron-left" className="w-4 h-4" />
       </button>
 
@@ -662,10 +758,10 @@ const Pagination = ({
             type="button"
             onClick={() => onPageChange(page)}
             aria-current={currentPage === page ? "page" : undefined}
-            className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+            className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
               currentPage === page
-                ? "bg-[#eb662b] text-white"
-                : "border border-[#f3f4f6] text-[#05073c] hover:bg-gray-50"
+                ? "bg-[#fa8b02] text-white"
+                : "border border-[#e5e7eb] text-[#4a5565] hover:bg-gray-50"
             }`}>
             {page}
           </button>
@@ -677,7 +773,7 @@ const Pagination = ({
         type="button"
         disabled={currentPage >= totalPages}
         onClick={() => onPageChange(currentPage + 1)}
-        className="w-9 h-9 flex items-center justify-center rounded-lg border border-[#f3f4f6] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
+        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
         <Icon icon="heroicons-outline:chevron-right" className="w-4 h-4" />
       </button>
     </nav>
@@ -709,6 +805,7 @@ const FloatingButtons = () => (
 export const TourDiscoveryPage = () => {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   return (
     <main
@@ -722,33 +819,41 @@ export const TourDiscoveryPage = () => {
       <HeroBanner />
 
       {/* Search Bar */}
-      <SearchBar />
+      <SearchBar onFilterToggle={() => setIsMobileFilterOpen(true)} />
 
       {/* Page Content */}
-      <div className="max-w-[1152px] mx-auto px-6 py-4">
-        {/* Content: Sidebar + Main */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar */}
-          <TourSidebar />
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            {/* Results Toolbar */}
-            <ResultsToolbar count={SAMPLE_TOURS.length} />
-
-            {/* Tour Grid (2 columns) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {SAMPLE_TOURS.map((tour) => (
-                <TourCard key={tour.id} tour={tour} />
-              ))}
-            </div>
-
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={2}
-              onPageChange={setCurrentPage}
+      <div className="bg-[#f9fafb] lg:bg-transparent">
+        <div className="max-w-[1152px] mx-auto px-6 py-4">
+          {/* Content: Sidebar + Main */}
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Sidebar */}
+            <TourSidebar
+              isMobileOpen={isMobileFilterOpen}
+              onClose={() => setIsMobileFilterOpen(false)}
             />
+
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {/* Customize Your Tour CTA (mobile only) */}
+              <CustomizeTourCTA />
+
+              {/* Results Toolbar */}
+              <ResultsToolbar count={SAMPLE_TOURS.length} />
+
+              {/* Tour Grid (2 columns) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {SAMPLE_TOURS.map((tour) => (
+                  <TourCard key={tour.id} tour={tour} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={2}
+                onPageChange={setCurrentPage}
+              />
+            </div>
           </div>
         </div>
       </div>
