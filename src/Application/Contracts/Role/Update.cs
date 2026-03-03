@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Domain.Enums;
 using FluentValidation;
 
@@ -16,13 +17,13 @@ public sealed class UpdateRoleRequestValidator : AbstractValidator<UpdateRoleReq
     public UpdateRoleRequestValidator()
     {
         RuleFor(x => x.Status)
-            .IsInEnum().WithMessage("Trạng thái role không hợp lệ");
+            .IsInEnum().WithMessage(ValidationMessages.RoleStatusInvalid);
 
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Tên role không được để trống")
-            .MaximumLength(100).WithMessage("Tên role không được quá 100 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.RoleNameRequired)
+            .MaximumLength(100).WithMessage(ValidationMessages.RoleNameMaxLength100);
 
         RuleFor(x => x.Description)
-            .MaximumLength(250).WithMessage("Mô tả không được quá 250 ký tự");
+            .MaximumLength(250).WithMessage(ValidationMessages.DescriptionMaxLength250);
     }
 }

@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using FluentValidation;
 
 namespace Application.Contracts.User;
@@ -8,7 +9,7 @@ public sealed class ChangePasswordRequestValidator : AbstractValidator<ChangePas
 {
     public ChangePasswordRequestValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty().WithMessage("UserId không được để trống");
+        RuleFor(x => x.UserId).NotEmpty().WithMessage(ValidationMessages.UserIdRequired);
     }
 }
 

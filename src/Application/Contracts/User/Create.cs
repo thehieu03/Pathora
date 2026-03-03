@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using FluentValidation;
 
 namespace Application.Contracts.User;
@@ -21,7 +22,7 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
     {
         RuleFor(x => x.Email)
             .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .WithMessage("Địa chỉ email không hợp lệ")
+            .WithMessage(ValidationMessages.EmailInvalid)
             .When(x => !string.IsNullOrEmpty(x.Email));
     }
 }

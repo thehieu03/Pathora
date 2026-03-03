@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using FluentValidation;
 
 namespace Application.Contracts.Identity;
@@ -12,11 +13,11 @@ public sealed class UpdateUserInfoRequestValidator : AbstractValidator<UpdateUse
     public UpdateUserInfoRequestValidator()
     {
         RuleFor(x => x.FullName)
-            .Length(1, 200).WithMessage("Họ và tên quá dài")
+            .Length(1, 200).WithMessage(ValidationMessages.FullNameTooLong)
             .When(x => !string.IsNullOrEmpty(x.FullName));
 
         RuleFor(x => x.Avatar)
-            .MaximumLength(500).WithMessage("Avatar quá dài")
+            .MaximumLength(500).WithMessage(ValidationMessages.AvatarTooLong)
             .When(x => !string.IsNullOrEmpty(x.Avatar));
     }
 }

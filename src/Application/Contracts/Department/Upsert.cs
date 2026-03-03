@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using FluentValidation;
 
 namespace Application.Contracts.Department;
@@ -13,9 +14,9 @@ public sealed class UpdateDepartmentRequestValidator : AbstractValidator<UpdateD
     {
         RuleFor(x => x.DepartmentName)
             .NotEmpty()
-            .WithMessage("Tên phòng ban không được để trống")
+            .WithMessage(ValidationMessages.DepartmentNameRequired)
             .MaximumLength(100)
-            .WithMessage("Tên phòng ban không được quá 100 ký tự");
+            .WithMessage(ValidationMessages.DepartmentNameMaxLength100);
     }
 }
 

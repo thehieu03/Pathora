@@ -1,6 +1,7 @@
 using Domain.CORS;
 using ErrorOr;
 using FluentValidation;
+using Application.Common.Constant;
 using Application.Contracts.Position;
 using Application.Services;
 
@@ -13,8 +14,8 @@ public sealed class CreatePositionCommandValidator : AbstractValidator<CreatePos
     public CreatePositionCommandValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Tên chức vụ không được để trống")
-            .MaximumLength(255).WithMessage("Tên chức vụ không được quá 255 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.PositionNameRequired)
+            .MaximumLength(255).WithMessage(ValidationMessages.PositionNameMaxLength255);
     }
 }
 

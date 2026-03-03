@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using FluentValidation;
 
 namespace Application.Contracts.Position;
@@ -14,10 +15,10 @@ public sealed class CreatePositionRequestValidator : AbstractValidator<CreatePos
     public CreatePositionRequestValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Tên chức vụ không được để trống")
-            .MaximumLength(255).WithMessage("Tên chức vụ không được quá 255 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.PositionNameRequired)
+            .MaximumLength(255).WithMessage(ValidationMessages.PositionNameMaxLength255);
         RuleFor(x => x.Note)
-            .MaximumLength(255).WithMessage("Ghi chú không được quá 255 ký tự");
+            .MaximumLength(255).WithMessage(ValidationMessages.NoteMaxLength255);
     }
 }
 
