@@ -1,14 +1,24 @@
 import React, { useState } from "react";
-import Calendar from "react-calendar";
+import dynamic from "next/dynamic";
 import "react-calendar/dist/Calendar.css";
 
 type CalendarValue = Date | [Date | null, Date | null] | null | string;
+
+const LazyCalendar = dynamic(() => import("react-calendar"), {
+  ssr: false,
+  loading: () => (
+    <div
+      aria-hidden="true"
+      className="h-90 w-full rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse"
+    />
+  ),
+});
 
 const CalendarView = () => {
   const [value, onChange] = useState<CalendarValue>(new Date());
   return (
     <div>
-      <Calendar
+      <LazyCalendar
         onChange={onChange as (value: CalendarValue) => void}
         value={value}
       />

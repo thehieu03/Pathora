@@ -383,6 +383,7 @@ export const HeroSection = () => {
                 tourType === "public" ? "bg-white" : "bg-white/40"
               }`}>
               <FaGlobe
+                suppressHydrationWarning
                 className={`w-5 md:w-6 h-5 md:h-6 ${
                   tourType === "public" ? "text-landing-accent" : "text-white"
                 }`}
@@ -400,6 +401,7 @@ export const HeroSection = () => {
                 tourType === "private" ? "bg-white" : "bg-white/40"
               }`}>
               <FaLock
+                suppressHydrationWarning
                 className={`w-5 md:w-6 h-5 md:h-6 ${
                   tourType === "private" ? "text-landing-accent" : "text-white"
                 }`}
@@ -417,7 +419,7 @@ export const HeroSection = () => {
             <div
               className={`relative w-full md:flex-[1.2] md:min-w-0 ${openField === "people" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={<FaUsers className="w-4 h-4 md:w-5 md:h-5" />}
+                icon={<FaUsers suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.people.label")}
                 placeholder={t("landing.hero.fields.people.placeholder")}
                 rounded="rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
@@ -449,7 +451,7 @@ export const HeroSection = () => {
             <div
               className={`relative w-full md:flex-1 md:min-w-0 ${openField === "date" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={<FaCalendarAlt className="w-4 h-4 md:w-5 md:h-5" />}
+                icon={<FaCalendarAlt suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.date.label")}
                 placeholder={t("landing.hero.fields.date.placeholder")}
                 isOpen={openField === "date"}
@@ -474,7 +476,7 @@ export const HeroSection = () => {
             <div
               className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "destination" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={<FaMapMarkerAlt className="w-4 h-4 md:w-5 md:h-5" />}
+                icon={<FaMapMarkerAlt suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.destination.label")}
                 placeholder={t("landing.hero.fields.destination.placeholder")}
                 isOpen={openField === "destination"}
@@ -496,7 +498,7 @@ export const HeroSection = () => {
             <div
               className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "classification" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={<FaTag className="w-4 h-4 md:w-5 md:h-5" />}
+                icon={<FaTag suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.classification.label")}
                 placeholder={t(
                   "landing.hero.fields.classification.placeholder",

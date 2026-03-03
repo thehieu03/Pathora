@@ -1,6 +1,19 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import world from "@/constant/world-map.json";
-import { VectorMap } from "@south-paw/react-vector-maps";
+
+const VectorMap = dynamic(() =>
+  import("@south-paw/react-vector-maps").then((m) => m.VectorMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        aria-hidden="true"
+        className="h-70 w-full rounded bg-slate-100 dark:bg-slate-800 animate-pulse dash-codevmap"
+      />
+    ),
+  },
+);
 
 const sales = [
   {

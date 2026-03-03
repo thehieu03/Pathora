@@ -9,7 +9,12 @@ import Link from "next/link";
 import Image from "./LandingImage";
 import { usePathname, useRouter } from "next/navigation";
 import { Button, Icon } from "@/components/ui";
-import { AuthModal } from "./AuthModal";
+import dynamic from "next/dynamic";
+
+const AuthModal = dynamic(() =>
+  import("./AuthModal").then((m) => m.AuthModal),
+  { ssr: false }
+);
 import { useTranslation } from "react-i18next";
 import useMobileMenu from "@/hooks/useMobileMenu";
 import useWidth from "@/hooks/useWidth";
@@ -545,6 +550,8 @@ export const LandingHeader = ({
               <Link
                 key={link.labelKey}
                 href={link.href}
+                onMouseEnter={() => router.prefetch(link.href)}
+                onFocus={() => router.prefetch(link.href)}
                 className={`inline-flex w-28 xl:w-36 justify-center overflow-hidden whitespace-nowrap text-ellipsis ${isSolid ? "text-landing-heading" : "text-white"} font-semibold text-sm xl:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 ${isSolid ? "focus-visible:ring-landing-heading" : "focus-visible:ring-white"} rounded ${
                   isActive ? "border-b-2 border-landing-accent" : ""
                 }`}

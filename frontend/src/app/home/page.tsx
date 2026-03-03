@@ -1,18 +1,45 @@
-import React from "react";
+import React, { Suspense } from "react";
+import dynamic from "next/dynamic";
 import {
   LandingHeader,
   HeroSection,
   LatestToursSection,
   FeaturedTripsSection,
-  StatsSection,
-  TrendingDestinationsSection,
-  TopAttractionsSection,
-  ReviewsSection,
-  CTASection,
-  WhyChooseSection,
-  TrustedBrandsSection,
-  LandingFooter,
 } from "@/components/partials/landing";
+
+const StatsSection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.StatsSection)
+);
+const TrendingDestinationsSection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.TrendingDestinationsSection)
+);
+const TopAttractionsSection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.TopAttractionsSection)
+);
+const ReviewsSection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.ReviewsSection)
+);
+const CTASection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.CTASection)
+);
+const WhyChooseSection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.WhyChooseSection)
+);
+const TrustedBrandsSection = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.TrustedBrandsSection)
+);
+const LandingFooter = dynamic(() =>
+  import("@/components/partials/landing").then((m) => m.LandingFooter)
+);
+
+const SectionSkeleton = ({ className }: { className: string }) => {
+  return (
+    <div
+      aria-hidden="true"
+      className={`mx-auto w-full max-w-7xl rounded-xl bg-gray-100 dark:bg-slate-800 animate-pulse ${className}`}
+    />
+  );
+};
 
 export default function Home() {
   return (
@@ -32,18 +59,34 @@ export default function Home() {
         <FeaturedTripsSection />
       </div>
 
-      <StatsSection />
+      <Suspense fallback={<SectionSkeleton className="h-56" />}>
+        <StatsSection />
+      </Suspense>
 
       <div className="flex flex-col gap-16 py-16">
-        <TrendingDestinationsSection />
-        <TopAttractionsSection />
+        <Suspense fallback={<SectionSkeleton className="h-72" />}>
+          <TrendingDestinationsSection />
+        </Suspense>
+        <Suspense fallback={<SectionSkeleton className="h-72" />}>
+          <TopAttractionsSection />
+        </Suspense>
       </div>
 
-      <ReviewsSection />
-      <CTASection />
-      <WhyChooseSection />
-      <TrustedBrandsSection />
-      <LandingFooter />
+      <Suspense fallback={<SectionSkeleton className="h-80" />}>
+        <ReviewsSection />
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton className="h-48" />}>
+        <CTASection />
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton className="h-64" />}>
+        <WhyChooseSection />
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton className="h-64" />}>
+        <TrustedBrandsSection />
+      </Suspense>
+      <Suspense fallback={<SectionSkeleton className="h-56" />}>
+        <LandingFooter />
+      </Suspense>
     </main>
   );
 }
