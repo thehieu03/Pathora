@@ -2,20 +2,14 @@
 FROM node:22-alpine AS base
 WORKDIR /app
 
-# ---- Dependencies ----
-FROM base AS deps
-# libc6-compat needed for some native Node modules on Alpine
-RUN apk add --no-cache libc6-compat
-
-COPY package.json package-lock.json* ./
-RUN npm ci --legacy-peer-deps
-
 # ---- Build ----
 FROM base AS builder
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
+RUN apk add --no-cache libc6-compat
+
 COPY . .
+RUN npm ci --legacy-peer-deps
 
 # Build args → env vars available at build time
 ARG NEXT_PUBLIC_API_GATEWAY

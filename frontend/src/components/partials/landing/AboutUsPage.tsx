@@ -160,7 +160,7 @@ const HeroBanner = () => {
         </span>
 
         {/* Heading */}
-        <h1 className="text-5xl md:text-[60px] font-bold leading-tight text-white">
+        <h1 className="text-4xl md:text-[60px] font-bold leading-tight text-white">
           {t("landing.aboutUs.weAre")}{" "}
           <span className="text-[#fa8b02]">Pathora</span>
         </h1>
