@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Dtos;
 using Domain.CORS;
 using Domain.Enums;
@@ -23,11 +24,11 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
     public CreateTourCommandValidator()
     {
         RuleFor(x => x.TourCode)
-            .NotEmpty().WithMessage("Mã tour không được để trống");
+            .NotEmpty().WithMessage(ValidationMessages.TourCodeRequired);
 
         RuleFor(x => x.TourName)
-            .NotEmpty().WithMessage("Tên tour không được để trống")
-            .MaximumLength(500).WithMessage("Tên tour không được quá 500 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.TourNameRequired)
+            .MaximumLength(500).WithMessage(ValidationMessages.TourNameMaxLength500);
     }
 }
 

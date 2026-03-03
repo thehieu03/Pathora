@@ -1,6 +1,7 @@
 using Domain.CORS;
 using ErrorOr;
 using FluentValidation;
+using Application.Common.Constant;
 using Application.Contracts.Department;
 using Application.Services;
 
@@ -13,8 +14,8 @@ public sealed class CreateDepartmentCommandValidator : AbstractValidator<CreateD
     public CreateDepartmentCommandValidator()
     {
         RuleFor(x => x.DepartmentName)
-            .NotEmpty().WithMessage("Tên phòng ban không được để trống")
-            .MaximumLength(100).WithMessage("Tên phòng ban không được quá 100 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.DepartmentNameRequired)
+            .MaximumLength(100).WithMessage(ValidationMessages.DepartmentNameMaxLength100);
     }
 }
 
