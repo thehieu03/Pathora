@@ -1,5 +1,6 @@
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Enums;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -100,5 +101,168 @@ public class TourRepository(AppDbContext context) : ITourRepository
             tour.IsDeleted = true;
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<List<TourEntity>> FindFeaturedTours(int limit)
+    {
+        return await _context.Tours
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.FromLocation)
+            .Include(t => t.Thumbnail)
+            .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
+            .OrderByDescending(t => t.CreatedOnUtc)
+            .Take(limit)
+            .ToListAsync();
+    }
+
+    public async Task<List<TourEntity>> FindLatestTours(int limit)
+    {
+        return await _context.Tours
+            .Include(t => t.Thumbnail)
+            .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
+            .OrderByDescending(t => t.CreatedOnUtc)
+            .Take(limit)
+            .ToListAsync();
+    }
+
+    public async Task<List<TourEntity>> SearchTours(string? destination, string? classification, int page, int pageSize)
+    {
+        var query = _context.Tours
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.FromLocation)
+            .Include(t => t.Thumbnail)
+            .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(destination))
+        {
+            var destLower = destination.ToLower();
+            query = query.Where(t => t.Classifications
+                .SelectMany(c => c.Plans)
+                .SelectMany(p => p.Activities)
+                .SelectMany(a => a.Routes)
+                .Any(r => r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(destLower) ||
+                          r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(destLower)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(classification))
+        {
+            query = query.Where(t => t.Classifications.Any(c => c.Name.ToLower() == classification.ToLower()));
+        }
+
+        return await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountSearchTours(string? destination, string? classification)
+    {
+        var query = _context.Tours
+            .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(destination))
+        {
+            var destLower = destination.ToLower();
+            query = query.Where(t => t.Classifications
+                .SelectMany(c => c.Plans)
+                .SelectMany(p => p.Activities)
+                .SelectMany(a => a.Routes)
+                .Any(r => r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(destLower) ||
+                          r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(destLower)));
+        }
+
+        if (!string.IsNullOrWhiteSpace(classification))
+        {
+            query = query.Where(t => t.Classifications.Any(c => c.Name.ToLower() == classification.ToLower()));
+        }
+
+        return await query.CountAsync();
+    }
+
+    public async Task<List<(string City, string Country, int ToursCount)>> GetTrendingDestinations(int limit)
+    {
+        var locations = await _context.TourPlanLocations
+            .Include(l => l.TourDayActivity)
+                .ThenInclude(a => a.TourDay)
+                    .ThenInclude(d => d.Classification)
+                        .ThenInclude(c => c.Tour)
+            .Where(l => l.City != null && l.Country != null)
+            .Where(l => l.TourDayActivity != null && l.TourDayActivity.TourDay != null && 
+                        l.TourDayActivity.TourDay.Classification != null &&
+                        l.TourDayActivity.TourDay.Classification.Tour != null &&
+                        l.TourDayActivity.TourDay.Classification.Tour.Status == TourStatus.Active &&
+                        !l.TourDayActivity.TourDay.Classification.Tour.IsDeleted)
+            .GroupBy(l => new { l.City, l.Country })
+            .Select(g => new { g.Key.City, g.Key.Country, ToursCount = g.Select(l => l.TourDayActivity.TourDay.Classification.Tour.Id).Distinct().Count() })
+            .OrderByDescending(x => x.ToursCount)
+            .Take(limit)
+            .ToListAsync();
+
+        return locations.Select(l => (l.City!, l.Country!, l.ToursCount)).ToList();
+    }
+
+    public async Task<List<TourPlanLocationEntity>> GetTopAttractions(int limit)
+    {
+        var attractionTypes = new[] { LocationType.TouristAttraction, LocationType.Museum, LocationType.NationalPark, LocationType.Beach, LocationType.Temple };
+
+        return await _context.TourPlanLocations
+            .Where(l => attractionTypes.Contains(l.LocationType))
+            .Where(l => l.City != null && l.Country != null)
+            .Take(limit)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetTotalActiveTours()
+    {
+        return await _context.Tours
+            .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
+            .CountAsync();
+    }
+
+    public async Task<decimal> GetTotalDistanceKm()
+    {
+        var routes = await _context.TourPlanRoutes
+            .Include(r => r.TourDayActivity)
+                .ThenInclude(a => a.TourDay)
+                    .ThenInclude(d => d.Classification)
+                        .ThenInclude(c => c.Tour)
+            .Where(r => r.DistanceKm != null)
+            .Where(r => r.TourDayActivity != null && r.TourDayActivity.TourDay != null &&
+                        r.TourDayActivity.TourDay.Classification != null &&
+                        r.TourDayActivity.TourDay.Classification.Tour != null &&
+                        r.TourDayActivity.TourDay.Classification.Tour.Status == TourStatus.Active &&
+                        !r.TourDayActivity.TourDay.Classification.Tour.IsDeleted)
+            .ToListAsync();
+
+        return routes.Sum(r => r.DistanceKm ?? 0);
+    }
+
+    public async Task<List<string>> GetAllDestinations()
+    {
+        var destinations = await _context.TourPlanLocations
+            .Include(l => l.TourDayActivity)
+                .ThenInclude(a => a.TourDay)
+                    .ThenInclude(d => d.Classification)
+                        .ThenInclude(c => c.Tour)
+            .Where(l => l.City != null)
+            .Where(l => l.TourDayActivity != null && l.TourDayActivity.TourDay != null &&
+                        l.TourDayActivity.TourDay.Classification != null &&
+                        l.TourDayActivity.TourDay.Classification.Tour != null &&
+                        l.TourDayActivity.TourDay.Classification.Tour.Status == TourStatus.Active &&
+                        !l.TourDayActivity.TourDay.Classification.Tour.IsDeleted)
+            .Select(l => l.City!)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToListAsync();
+
+        return destinations;
     }
 }

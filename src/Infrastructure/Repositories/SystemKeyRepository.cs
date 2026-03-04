@@ -18,4 +18,11 @@ public class SystemKeyRepository(AppDbContext context) : ISystemKeyRepository
             .OrderBy(s => s.SortOrder)
             .ToListAsync();
     }
+
+    public async Task<SystemKey?> FindByCode(string codeKey)
+    {
+        return await _context.SystemKeys
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.CodeKey == codeKey && !s.IsDeleted);
+    }
 }

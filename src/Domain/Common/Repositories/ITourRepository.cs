@@ -11,4 +11,13 @@ public interface ITourRepository
     Task Create(TourEntity tour);
     Task Update(TourEntity tour);
     Task SoftDelete(Guid id);
+    Task<List<TourEntity>> FindFeaturedTours(int limit);
+    Task<List<TourEntity>> FindLatestTours(int limit);
+    Task<List<TourEntity>> SearchTours(string? destination, string? classification, int page, int pageSize);
+    Task<int> CountSearchTours(string? destination, string? classification);
+    Task<List<(string City, string Country, int ToursCount)>> GetTrendingDestinations(int limit);
+    Task<List<TourPlanLocationEntity>> GetTopAttractions(int limit);
+    Task<int> GetTotalActiveTours();
+    Task<decimal> GetTotalDistanceKm();
+    Task<List<string>> GetAllDestinations();
 }
