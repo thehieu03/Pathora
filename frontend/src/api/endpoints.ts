@@ -109,6 +109,27 @@ export interface AuthEndpoints {
   GET_TABS: string;
 }
 
+// Public Home Endpoints Interface
+export interface PublicHomeEndpoints {
+  GET_FEATURED_TOURS: (limit?: number) => string;
+  GET_LATEST_TOURS: (limit?: number) => string;
+  GET_TRENDING_DESTINATIONS: (limit?: number) => string;
+  GET_TOP_ATTRACTIONS: (limit?: number) => string;
+  GET_HOME_STATS: string;
+  GET_TOP_REVIEWS: (limit?: number) => string;
+  SEARCH_TOURS: (params?: SearchToursParams) => string;
+  GET_DESTINATIONS: string;
+}
+
+export interface SearchToursParams {
+  destination?: string;
+  classification?: string;
+  date?: string;
+  people?: number;
+  page?: number;
+  pageSize?: number;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -119,6 +140,7 @@ export interface ApiEndpoints {
   NOTIFICATION: NotificationEndpoints;
   COMMUNICATION: CommunicationEndpoints;
   AUTH: AuthEndpoints;
+  PUBLIC_HOME: PublicHomeEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -222,6 +244,27 @@ export const API_ENDPOINTS: ApiEndpoints = {
     LOGOUT: "/api/auth/logout",
     GET_ME: "/api/auth/me",
     GET_TABS: "/api/auth/tabs",
+  },
+
+  // Public Home
+  PUBLIC_HOME: {
+    GET_FEATURED_TOURS: (limit = 8): string => `/api/public/tours/featured?limit=${limit}`,
+    GET_LATEST_TOURS: (limit = 6): string => `/api/public/tours/latest?limit=${limit}`,
+    GET_TRENDING_DESTINATIONS: (limit = 6): string => `/api/public/destinations/trending?limit=${limit}`,
+    GET_TOP_ATTRACTIONS: (limit = 8): string => `/api/public/attractions/top?limit=${limit}`,
+    GET_HOME_STATS: "/api/public/stats",
+    GET_TOP_REVIEWS: (limit = 6): string => `/api/public/reviews/top?limit=${limit}`,
+    SEARCH_TOURS: (params?: SearchToursParams): string => {
+      const url = new URLSearchParams();
+      if (params?.destination) url.append("destination", params.destination);
+      if (params?.classification) url.append("classification", params.classification);
+      if (params?.date) url.append("date", params.date);
+      if (params?.people) url.append("people", params.people.toString());
+      if (params?.page) url.append("page", params.page.toString());
+      if (params?.pageSize) url.append("pageSize", params.pageSize.toString());
+      return `/api/public/tours/search?${url.toString()}`;
+    },
+    GET_DESTINATIONS: "/api/public/destinations",
   },
 };
 

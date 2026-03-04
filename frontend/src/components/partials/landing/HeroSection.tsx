@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Image from "./LandingImage";
 import { Button, Icon } from "@/components/ui";
 import { useTranslation } from "react-i18next";
@@ -11,6 +12,7 @@ import {
   FaMapMarkerAlt,
   FaTag,
 } from "react-icons/fa";
+import { homeService } from "@/services/homeService";
 
 const HERO_BG =
   "https://www.figma.com/api/mcp/asset/e4c27cca-3e11-49a0-bb16-22b1bdf0f4cc";
@@ -277,6 +279,7 @@ type FieldName = "people" | "date" | "destination" | "classification";
 
 export const HeroSection = () => {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
   const [tourType, setTourType] = useState<TourType>("public");
   const [openField, setOpenField] = useState<FieldName | null>(null);
 
@@ -285,8 +288,24 @@ export const HeroSection = () => {
   const [date, setDate] = useState<Date | null>(null);
   const [destination, setDestination] = useState("");
   const [classification, setClassification] = useState("");
+  const [destinationsList, setDestinationsList] = useState<string[]>(DEFAULT_DESTINATIONS);
 
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Fetch destinations from API
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        const data = await homeService.getDestinations();
+        if (data && data.length > 0) {
+          setDestinationsList(data);
+        }
+      } catch {
+        // Use fallback on error
+      }
+    };
+    fetchDestinations();
+  }, []);
 
   // Click-outside handler
   const handleClickOutside = useCallback((e: MouseEvent) => {
@@ -314,8 +333,8 @@ export const HeroSection = () => {
     returnObjects: true,
   }) as string[];
   const destinations =
-    Array.isArray(translatedDestinations) && translatedDestinations.length > 0
-      ? translatedDestinations
+    destinationsList.length > 0
+      ? destinationsList
       : DEFAULT_DESTINATIONS;
   const classifications =
     Array.isArray(translatedClassifications) &&
@@ -335,6 +354,17 @@ export const HeroSection = () => {
           year: "numeric",
         })
       : "";
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (destination) params.append("destination", destination);
+    if (classification) params.append("classification", classification);
+    if (date) params.append("date", date.toISOString().split("T")[0]);
+    if (people) params.append("people", people.toString());
+    
+    const queryString = params.toString();
+    router.push(`/tours/search${queryString ? `?${queryString}` : ""}`);
+  };
 
   return (
     <section className="relative w-full min-h-150 md:h-189.75">
@@ -519,6 +549,7 @@ export const HeroSection = () => {
 
             <div className="p-3 md:p-0 md:pl-2 w-full md:w-auto md:shrink-0 flex justify-center">
               <Button
+                onClick={handleSearch}
                 className="bg-landing-accent rounded-lg md:rounded-xl h-11 md:h-12 px-4 md:px-5 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:w-full flex items-center justify-center gap-2"
                 ariaLabel={t("landing.hero.searchAria")}>
                 <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">

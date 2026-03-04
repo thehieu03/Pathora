@@ -33,7 +33,7 @@ const CartStep = () => {
   };
   return (
     <div className="space-y-7 bg-white dark:bg-slate-800">
-      <div className="overflow-x-auto border-0">
+      <div className="overflow-x-auto table-responsive border-0">
         <div className="inline-block min-w-full align-middle">
           <div className="overflow-hidden">
             <table className="min-w-full table-fixed divide-y divide-slate-100 dark:divide-slate-700">

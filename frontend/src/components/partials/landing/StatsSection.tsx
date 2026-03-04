@@ -1,9 +1,11 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "./LandingImage";
 import { Button } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
+import { homeService } from "@/services/homeService";
+import { HomeStats } from "@/types/home";
 
 const PEOPLE_ICON =
   "https://www.figma.com/api/mcp/asset/e4a75e02-46bb-4c17-94d3-685688ecf5a2";
@@ -12,29 +14,91 @@ const EXPLORE_IMG =
 const BG_IMG =
   "https://www.figma.com/api/mcp/asset/df0842ed-1963-4245-9b95-9027ab4bf23b";
 
-const stats = [
-  {
-    icon: PEOPLE_ICON,
-    value: "240",
-    labelKey: "landing.stats.items.totalTravellers",
-    color: "text-landing-accent",
-  },
-  {
-    icon: PEOPLE_ICON,
-    value: "3672",
-    labelKey: "landing.stats.items.totalTours",
-    color: "text-landing-heading",
-  },
-  {
-    icon: PEOPLE_ICON,
-    value: "92,842",
-    labelKey: "landing.stats.items.milesCovered",
-    color: "text-landing-heading",
-  },
-];
+const FALLBACK_STATS = {
+  totalTravelers: 240,
+  totalTours: 3672,
+  totalDistanceKm: 92842,
+};
 
 export const StatsSection = () => {
   const { t } = useTranslation();
+  const [stats, setStats] = useState(FALLBACK_STATS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await homeService.getHomeStats();
+        if (data) {
+          setStats(data as HomeStats);
+        }
+      } catch {
+        // Use fallback data on error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000) {
+      return num.toLocaleString();
+    }
+    return num.toString();
+  };
+
+  const statsData = [
+    {
+      icon: PEOPLE_ICON,
+      value: formatNumber(stats.totalTravelers),
+      labelKey: "landing.stats.items.totalTravellers",
+      color: "text-landing-accent",
+    },
+    {
+      icon: PEOPLE_ICON,
+      value: formatNumber(stats.totalTours),
+      labelKey: "landing.stats.items.totalTours",
+      color: "text-landing-heading",
+    },
+    {
+      icon: PEOPLE_ICON,
+      value: formatNumber(stats.totalDistanceKm),
+      labelKey: "landing.stats.items.milesCovered",
+      color: "text-landing-heading",
+    },
+  ];
+
+  if (loading) {
+    return (
+      <section className="w-full bg-white py-8 md:py-16">
+        <SectionContainer>
+          <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-12">
+            <div className="flex-1 flex flex-col gap-4 md:gap-6 w-full">
+              <div className="h-12 w-3/4 bg-gray-200 animate-pulse rounded" />
+              <div className="h-6 w-full bg-gray-200 animate-pulse rounded" />
+              <div className="flex flex-row md:flex-col gap-4 md:gap-5">
+                {[1, 2, 3].map((_, idx) => (
+                  <div key={idx} className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+                    <div>
+                      <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+                      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mt-1" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex-1 relative h-50 md:h-100 w-full lg:block">
+              <div className="absolute right-0 top-0 w-[60%] md:w-75 h-[90%] md:h-95 rounded-xl md:rounded-2xl bg-gray-200 animate-pulse" />
+              <div className="absolute left-0 bottom-0 w-[50%] md:w-65 h-[80%] md:h-80 rounded-xl md:rounded-2xl bg-gray-200 animate-pulse" />
+            </div>
+          </div>
+        </SectionContainer>
+      </section>
+    );
+  }
 
   return (
     <section className="w-full bg-white py-8 md:py-16">
@@ -51,7 +115,7 @@ export const StatsSection = () => {
             </p>
 
             <div className="flex flex-row md:flex-col gap-4 md:gap-5 overflow-x-auto pb-2 md:pb-0">
-              {stats.map((stat, idx) => (
+              {statsData.map((stat, idx) => (
                 <div
                   key={idx}
                   className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-4 bg-white shadow-sm md:shadow-none rounded-lg p-3 md:p-0 min-w-25 md:min-w-0 shrink-0"

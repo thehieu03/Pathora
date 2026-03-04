@@ -1,33 +1,32 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "./LandingImage";
 import { Button } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
 import { useTranslation } from "react-i18next";
+import { homeService } from "@/services/homeService";
+import { TopReview } from "@/types/home";
 
-const AVATAR =
-  "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7";
-
-const REVIEWS = [
+const FALLBACK_REVIEWS = [
   {
-    avatar: AVATAR,
+    avatar: "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
     name: "Jonathan Samuel",
-    roleKey: "landing.reviews.items.0.role",
-    textKey: "landing.reviews.items.0.text",
+    tourName: "Amazing Tour",
+    comment: "This was an incredible experience! The tour was well organized and the guide was very knowledgeable.",
     stars: 5,
   },
   {
-    avatar: AVATAR,
+    avatar: "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
     name: "Joe Wild",
-    roleKey: "landing.reviews.items.1.role",
-    textKey: "landing.reviews.items.1.text",
+    tourName: "Great Adventure",
+    comment: "Had a wonderful time exploring new places. Highly recommend to everyone!",
     stars: 5,
   },
   {
-    avatar: AVATAR,
+    avatar: "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
     name: "Maria Chen",
-    roleKey: "landing.reviews.items.2.role",
-    textKey: "landing.reviews.items.2.text",
+    tourName: "Unforgettable Trip",
+    comment: "Everything was perfect from start to end. Will definitely book again.",
     stars: 5,
   },
 ];
@@ -50,11 +49,71 @@ const QuoteIcon = () => (
 
 export const ReviewsSection = () => {
   const { t } = useTranslation();
+  const [reviews, setReviews] = useState<FallbackReview[]>([]);
   const [current, setCurrent] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const prev = () => setCurrent((c) => (c === 0 ? REVIEWS.length - 1 : c - 1));
-  const next = () => setCurrent((c) => (c === REVIEWS.length - 1 ? 0 : c + 1));
-  const review = REVIEWS[current];
+  interface FallbackReview {
+    avatar: string;
+    name: string;
+    tourName: string;
+    comment: string;
+    stars: number;
+  }
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const data = await homeService.getTopReviews(6);
+        if (data && data.length > 0) {
+          const mapped = data.map((review: TopReview) => ({
+            avatar: review.userAvatar || "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
+            name: review.userName,
+            tourName: review.tourName,
+            comment: review.comment || "Great experience!",
+            stars: review.rating,
+          }));
+          setReviews(mapped);
+        } else {
+          setReviews(FALLBACK_REVIEWS);
+        }
+      } catch {
+        setReviews(FALLBACK_REVIEWS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const prev = () => setCurrent((c) => (c === 0 ? reviews.length - 1 : c - 1));
+  const next = () => setCurrent((c) => (c === reviews.length - 1 ? 0 : c + 1));
+  const review = reviews[current] || FALLBACK_REVIEWS[0];
+
+  if (loading) {
+    return (
+      <section
+        className="w-full bg-white py-16 md:py-20"
+        aria-labelledby="reviews-heading"
+      >
+        <SectionContainer>
+          <div className="text-center mb-12">
+            <div className="h-10 w-64 bg-gray-200 animate-pulse rounded mx-auto" />
+            <div className="h-6 w-96 bg-gray-200 animate-pulse rounded mx-auto mt-4" />
+          </div>
+          <div className="flex justify-center">
+            <div className="max-w-162.5 mx-auto text-center px-4">
+              <div className="h-8 w-20 bg-gray-200 animate-pulse rounded mx-auto mb-6" />
+              <div className="h-20 w-full bg-gray-200 animate-pulse rounded mb-8" />
+              <div className="w-15 h-15 bg-gray-200 rounded-full animate-pulse mx-auto mb-4" />
+              <div className="h-4 w-32 bg-gray-200 animate-pulse rounded mx-auto" />
+            </div>
+          </div>
+        </SectionContainer>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -87,7 +146,7 @@ export const ReviewsSection = () => {
             <QuoteIcon />
 
             <p className="text-landing-body text-base md:text-lg leading-relaxed mb-8">
-              {t(review.textKey)}
+              {review.comment}
             </p>
 
             <div className="flex justify-center mb-4">
@@ -107,7 +166,7 @@ export const ReviewsSection = () => {
             <p className="font-semibold text-landing-heading text-base">
               {review.name}
             </p>
-            <p className="text-landing-body text-sm">{t(review.roleKey)}</p>
+            <p className="text-landing-body text-sm">{review.tourName}</p>
           </div>
 
           <Button
@@ -123,7 +182,7 @@ export const ReviewsSection = () => {
           className="flex justify-center gap-1 mt-10"
           aria-label={t("landing.reviews.reviewSlides")}
         >
-          {REVIEWS.map((_, i) => (
+          {reviews.map((_, i) => (
             <button
               type="button"
               key={i}

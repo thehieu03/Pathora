@@ -4,8 +4,11 @@ import Image from "./LandingImage";
 import { Icon } from "@/components/ui";
 import { SectionContainer, StarRating } from "./shared";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { homeService } from "@/services/homeService";
+import { FeaturedTour } from "@/types/home";
 
-const TRIPS = [
+const FALLBACK_TRIPS = [
   {
     image:
       "https://www.figma.com/api/mcp/asset/cba7aec7-ceed-442e-bb33-847ec178ce1f",
@@ -44,81 +47,126 @@ const TRIPS = [
   },
 ];
 
-const TripCard = ({
-  image,
-  location,
-  title,
-  rating,
-  days,
-  price,
-}: (typeof TRIPS)[0]) => (
-  <TripCardContent
-    image={image}
-    location={location}
-    title={title}
-    rating={rating}
-    days={days}
-    price={price}
-  />
-);
+interface TripCardProps {
+  image: string;
+  location: string;
+  title: string;
+  rating: number;
+  days: number;
+  price: string;
+}
 
-const TripCardContent = ({
-  image,
-  location,
-  title,
-  rating,
-  days,
-  price,
-}: (typeof TRIPS)[0]) => {
-  const { t } = useTranslation();
+const TripCard = ({ image, location, title, rating, days, price }: TripCardProps) => (
+  <Link
+    href="/tours"
+    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-300"
+  >
+    <div className="relative h-53.75 overflow-hidden">
+      <Image
+        src={image}
+        alt={title}
+        fill
+        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+    </div>
 
-  return (
-    <Link
-      href="/tours"
-      className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-300"
-    >
-      <div className="relative h-53.75 overflow-hidden">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+    <div className="p-5 flex flex-col gap-2 flex-1">
+      <div className="flex items-center gap-1 text-landing-body text-base">
+        <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
+        <span className="text-sm truncate">{location}</span>
+      </div>
+      <h3 className="h-11 overflow-hidden text-landing-heading font-medium text-[15px] leading-snug">
+        {title}
+      </h3>
+      <StarRating count={rating} />
+    </div>
+
+    <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
+      <div className="flex w-24 items-center gap-1 text-landing-heading text-xs">
+        <Icon
+          icon="heroicons-outline:calendar"
+          className="w-4 h-4 text-gray-500"
         />
+        <span className="truncate">{days} days</span>
       </div>
-
-      <div className="p-5 flex flex-col gap-2 flex-1">
-        <div className="flex items-center gap-1 text-landing-body text-base">
-          <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
-          <span className="text-sm truncate">{location}</span>
-        </div>
-        <h3 className="h-11 overflow-hidden text-landing-heading font-medium text-[15px] leading-snug">
-          {title}
-        </h3>
-        <StarRating count={rating} />
+      <div className="w-26 text-right text-landing-heading text-sm">
+        <span className="text-gray-500 text-xs font-normal">From </span>
+        <span className="font-medium text-[15px]">{price}</span>
       </div>
-
-      <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
-        <div className="flex w-24 items-center gap-1 text-landing-heading text-xs">
-          <Icon
-            icon="heroicons-outline:calendar"
-            className="w-4 h-4 text-gray-500"
-          />
-          <span className="truncate">{t("landing.featured.days", { count: days })}</span>
-        </div>
-        <div className="w-26 text-right text-landing-heading text-sm">
-          <span className="text-gray-500 text-xs font-normal">
-            {t("landing.featured.from")}{" "}
-          </span>
-          <span className="font-medium text-[15px]">{price}</span>
-        </div>
-      </div>
-    </Link>
-  );
-};
+    </div>
+  </Link>
+);
 
 export const FeaturedTripsSection = () => {
   const { t } = useTranslation();
+  const [trips, setTrips] = useState<FallbackTrip[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  interface FallbackTrip {
+    image: string;
+    location: string;
+    title: string;
+    rating: number;
+    days: number;
+    price: string;
+  }
+
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const data = await homeService.getFeaturedTours(8);
+        if (data && data.length > 0) {
+          const mapped = data.map((tour: FeaturedTour) => ({
+            image: tour.thumbnail || FALLBACK_TRIPS[0].image,
+            location: tour.location || "Unknown",
+            title: tour.tourName,
+            rating: tour.rating || 5,
+            days: tour.durationDays,
+            price: tour.salePrice > 0 ? `$${tour.salePrice.toLocaleString()}` : `$${tour.price.toLocaleString()}`,
+          }));
+          setTrips(mapped);
+        } else {
+          setTrips(FALLBACK_TRIPS);
+        }
+      } catch {
+        setTrips(FALLBACK_TRIPS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTours();
+  }, []);
+
+  if (loading) {
+    return (
+      <SectionContainer>
+        <section className="w-full">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
+              {t("landing.featured.title")}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
+            {[...Array(4)].map((_, idx) => (
+              <div key={idx} className="bg-white border border-landing-border rounded-xl overflow-hidden animate-pulse">
+                <div className="h-53.75 bg-gray-200" />
+                <div className="p-5 flex flex-col gap-2">
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="h-6 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/4" />
+                </div>
+                <div className="px-5 pb-4 border-t border-landing-border pt-2.5">
+                  <div className="h-4 bg-gray-200 rounded w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </SectionContainer>
+    );
+  }
 
   return (
     <SectionContainer>
@@ -130,7 +178,7 @@ export const FeaturedTripsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 lg:gap-6">
-          {TRIPS.map((trip, idx) => (
+          {trips.slice(0, 8).map((trip, idx) => (
             <TripCard key={idx} {...trip} />
           ))}
         </div>

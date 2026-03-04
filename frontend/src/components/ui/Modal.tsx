@@ -104,8 +104,9 @@ const Modal = ({
                     {title}
                   </Dialog.Title>
                   <button
+                    type="button"
                     onClick={closeFn}
-                    className="text-[22px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded text-[22px] focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
                     aria-label="Close modal"
                   >
                     <Icon icon="heroicons-outline:x" />

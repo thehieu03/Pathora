@@ -30,6 +30,43 @@ body {
   font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
 }
 
+html,
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+img,
+picture,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (width < 768px) {
+  h1 {
+    font-size: clamp(1.75rem, 7vw, 2.25rem);
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: clamp(1.25rem, 5vw, 1.5rem);
+    line-height: 1.3;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
 @keyframes landing-aurora {
   0% {
     transform: translate3d(-6%, -4%, 0) scale(1);

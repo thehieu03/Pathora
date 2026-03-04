@@ -29,51 +29,53 @@ const rows = [
 const TotalTable = () => {
   return (
     <div>
-      <table className="w-full border-collapse table-fixed dark:border-slate-700 dark:border">
-        <thead>
-          <tr>
-            <th
-              colSpan={3}
-              className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left"
-            >
-              <span className="block px-6 py-5 font-semibold">ITEM</span>
-            </th>
-            <th className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left">
-              <span className="block px-6 py-5 font-semibold">QTY</span>
-            </th>
-            <th className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left">
-              <span className="block px-6 py-5 font-semibold">PRICE</span>
-            </th>
-            <th className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left">
-              <span className="block px-6 py-5 font-semibold">TOTAL</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((data, index) => (
-            <tr
-              key={index}
-              className="border-b border-slate-100 dark:border-slate-700"
-            >
-              <td
+      <div className="table-responsive">
+        <table className="w-full border-collapse table-fixed dark:border-slate-700 dark:border">
+          <thead>
+            <tr>
+              <th
                 colSpan={3}
-                className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4"
+                className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left"
               >
-                {data.item}
-              </td>
-              <td className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4">
-                {data.qty}
-              </td>
-              <td className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4">
-                {data.price}
-              </td>
-              <td className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4">
-                {data.total}
-              </td>
+                <span className="block px-6 py-5 font-semibold">ITEM</span>
+              </th>
+              <th className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left">
+                <span className="block px-6 py-5 font-semibold">QTY</span>
+              </th>
+              <th className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left">
+                <span className="block px-6 py-5 font-semibold">PRICE</span>
+              </th>
+              <th className="bg-slate-50 dark:bg-slate-700 dark:text-slate-300 text-xs  font-medium leading-4 uppercase text-slate-600 ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left">
+                <span className="block px-6 py-5 font-semibold">TOTAL</span>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((data, index) => (
+              <tr
+                key={index}
+                className="border-b border-slate-100 dark:border-slate-700"
+              >
+                <td
+                  colSpan={3}
+                  className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4"
+                >
+                  {data.item}
+                </td>
+                <td className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4">
+                  {data.qty}
+                </td>
+                <td className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4">
+                  {data.price}
+                </td>
+                <td className="text-slate-900 dark:text-slate-300 text-sm  font-normal ltr:text-left last:ltr:text-right rtl:text-right last:rtl:text-left px-6 py-4">
+                  {data.total}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="md:flex px-6 py-6 items-center">
         <div className="flex-1 text-slate-500 dark:text-slate-300 text-sm">
           Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet

@@ -560,7 +560,7 @@ const CouponPage = () => {
             </Link>
           </div>
         </div>
-        <div className="-mx-6 overflow-x-auto">
+        <div className="-mx-6 overflow-x-auto table-responsive">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden">
               <table
