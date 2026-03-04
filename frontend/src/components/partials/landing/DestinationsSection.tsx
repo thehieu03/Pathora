@@ -1,109 +1,134 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
 import { Badge, Card } from "@/components/ui";
 import { SectionContainer } from "./shared";
 import { useTranslation } from "react-i18next";
+import { homeService } from "@/services/homeService";
+import { TrendingDestination, TopAttraction } from "@/types/home";
 
-const DESTINATIONS = [
+const FALLBACK_DESTINATIONS = [
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/dfe68e43-da11-41a8-b647-e0bdcc2720c4",
+    image: "https://www.figma.com/api/mcp/asset/dfe68e43-da11-41a8-b647-e0bdcc2720c4",
     city: "Paris",
     country: "France",
     toursCount: 12,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/5389dbb9-c81c-4796-b57d-b521bbbe8de1",
+    image: "https://www.figma.com/api/mcp/asset/5389dbb9-c81c-4796-b57d-b521bbbe8de1",
     city: "Singapore",
     country: "Singapore",
     toursCount: 8,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/c51cdf1f-a737-41bc-adf9-7cba8f4be0c3",
+    image: "https://www.figma.com/api/mcp/asset/c51cdf1f-a737-41bc-adf9-7cba8f4be0c3",
     city: "Rome",
     country: "Italy",
     toursCount: 15,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/2c81a72e-438c-43a1-a5e4-9dfdbe595748",
+    image: "https://www.figma.com/api/mcp/asset/2c81a72e-438c-43a1-a5e4-9dfdbe595748",
     city: "Bangkok",
     country: "Thailand",
     toursCount: 10,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/8d79382c-bc93-46a0-a421-d3b11f7366ed",
+    image: "https://www.figma.com/api/mcp/asset/8d79382c-bc93-46a0-a421-d3b11f7366ed",
     city: "Bali",
     country: "Indonesia",
     toursCount: 9,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/daf96572-083c-4601-9e01-4d98b0cf1add",
+    image: "https://www.figma.com/api/mcp/asset/daf96572-083c-4601-9e01-4d98b0cf1add",
     city: "Phuket",
     country: "Thailand",
     toursCount: 7,
   },
 ];
 
-const ATTRACTIONS = [
+const FALLBACK_ATTRACTIONS = [
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/132ea952-f2d5-445e-9fee-4466c6d442e9",
+    image: "https://www.figma.com/api/mcp/asset/132ea952-f2d5-445e-9fee-4466c6d442e9",
     name: "Colosseum",
     location: "Italy",
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/9b513ed4-0c16-46ad-b479-3d582dea018e",
+    image: "https://www.figma.com/api/mcp/asset/9b513ed4-0c16-46ad-b479-3d582dea018e",
     name: "Statue of Liberty",
     location: "New York",
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/0c3cedba-bd30-49bb-8dda-2d1494be1ceb",
+    image: "https://www.figma.com/api/mcp/asset/0c3cedba-bd30-49bb-8dda-2d1494be1ceb",
     name: "Tower of London",
     location: "London",
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/80cb780f-6be5-4a14-8df5-ee5ca9e3c9e0",
+    image: "https://www.figma.com/api/mcp/asset/80cb780f-6be5-4a14-8df5-ee5ca9e3c9e0",
     name: "Vatican Museums",
     location: "Vatican City",
   },
-  {
-    image:
-      "https://www.figma.com/api/mcp/asset/707dd87e-a020-46bb-ba62-b63ac4456083",
-    name: "Stonehenge",
-    location: "England",
-  },
-  {
-    image:
-      "https://www.figma.com/api/mcp/asset/dfe68e43-da11-41a8-b647-e0bdcc2720c4",
-    name: "Antelope Canyon",
-    location: "Arizona",
-  },
-  {
-    image:
-      "https://www.figma.com/api/mcp/asset/5389dbb9-c81c-4796-b57d-b521bbbe8de1",
-    name: "National Memorial",
-    location: "Washington D.C.",
-  },
-  {
-    image:
-      "https://www.figma.com/api/mcp/asset/c51cdf1f-a737-41bc-adf9-7cba8f4be0c3",
-    name: "Louvre",
-    location: "Paris",
-  },
 ];
+
+interface DestinationData {
+  image: string;
+  city: string;
+  country: string;
+  toursCount: number;
+}
+
+interface AttractionData {
+  image: string;
+  name: string;
+  location: string;
+}
 
 export const TrendingDestinationsSection = () => {
   const { t } = useTranslation();
+  const [destinations, setDestinations] = useState<DestinationData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDestinations = async () => {
+      try {
+        const data = await homeService.getTrendingDestinations(6);
+        if (data && data.length > 0) {
+          const mapped = data.map((dest: TrendingDestination) => ({
+            image: dest.imageUrl || FALLBACK_DESTINATIONS[0].image,
+            city: dest.city,
+            country: dest.country,
+            toursCount: dest.toursCount,
+          }));
+          setDestinations(mapped);
+        } else {
+          setDestinations(FALLBACK_DESTINATIONS);
+        }
+      } catch {
+        setDestinations(FALLBACK_DESTINATIONS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDestinations();
+  }, []);
+
+  if (loading) {
+    return (
+      <SectionContainer>
+        <section className="w-full">
+          <div className="mb-8">
+            <div className="h-10 w-64 bg-gray-200 animate-pulse rounded" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[...Array(6)].map((_, idx) => (
+              <div key={idx} className="rounded-xl overflow-hidden aspect-[3/4] bg-gray-200 animate-pulse" />
+            ))}
+          </div>
+        </section>
+      </SectionContainer>
+    );
+  }
 
   return (
     <SectionContainer>
@@ -115,7 +140,7 @@ export const TrendingDestinationsSection = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {DESTINATIONS.map((dest) => (
+          {destinations.map((dest) => (
             <Link
               key={dest.city}
               href="/tours"
@@ -149,6 +174,55 @@ export const TrendingDestinationsSection = () => {
 
 export const TopAttractionsSection = () => {
   const { t } = useTranslation();
+  const [attractions, setAttractions] = useState<AttractionData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAttractions = async () => {
+      try {
+        const data = await homeService.getTopAttractions(8);
+        if (data && data.length > 0) {
+          const mapped = data.map((attr: TopAttraction) => ({
+            image: attr.imageUrl || FALLBACK_ATTRACTIONS[0].image,
+            name: attr.name,
+            location: attr.city && attr.country ? `${attr.city}, ${attr.country}` : attr.location || "Unknown",
+          }));
+          setAttractions(mapped);
+        } else {
+          setAttractions(FALLBACK_ATTRACTIONS);
+        }
+      } catch {
+        setAttractions(FALLBACK_ATTRACTIONS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAttractions();
+  }, []);
+
+  if (loading) {
+    return (
+      <SectionContainer>
+        <section className="w-full">
+          <div className="mb-8">
+            <div className="h-10 w-64 bg-gray-200 animate-pulse rounded" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+            {[...Array(4)].map((_, idx) => (
+              <div key={idx} className="bg-white border border-landing-border rounded-xl p-3 flex items-center gap-3">
+                <div className="w-16 h-16 bg-gray-200 rounded-lg animate-pulse" />
+                <div>
+                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-3 w-16 bg-gray-200 rounded animate-pulse mt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </SectionContainer>
+    );
+  }
 
   return (
     <SectionContainer>
@@ -160,7 +234,7 @@ export const TopAttractionsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {ATTRACTIONS.map((attr) => (
+          {attractions.slice(0, 8).map((attr) => (
             <Link
               key={attr.name}
               href="/tours"

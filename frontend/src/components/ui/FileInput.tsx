@@ -42,7 +42,7 @@ const FileInput = ({
             multiple={multiple}
           />
           <div
-            className={`file-control flex h-10 w-full items-center ${className}`}
+            className={`file-control flex min-h-11 w-full items-center ${className}`}
           >
             {!multiple && (
               <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">

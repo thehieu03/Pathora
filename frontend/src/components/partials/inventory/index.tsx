@@ -981,7 +981,7 @@ const InventoryPage = () => {
             </button>
           </div>
         </div>
-        <div className="-mx-6 overflow-x-auto">
+        <div className="-mx-6 overflow-x-auto table-responsive">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden">
               <table
@@ -1625,7 +1625,7 @@ const InventoryPage = () => {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto table-responsive">
             <table
               className="min-w-full divide-y divide-slate-100 dark:divide-slate-700"
               {...historyTableInstance.getTableProps()}
@@ -1854,7 +1854,7 @@ const InventoryPage = () => {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto table-responsive">
             <table
               className="min-w-full divide-y divide-slate-100 dark:divide-slate-700"
               {...reservationTableInstance.getTableProps()}
