@@ -1,0 +1,16 @@
+namespace Api.Endpoint;
+
+public static class PublicEndpoint
+{
+    public const string Base = "api/public";
+    public const string Tours = "tours";
+    public const string Destinations = "destinations";
+    public const string Attractions = "attractions";
+    public const string Stats = "stats";
+    public const string Reviews = "reviews";
+    public const string Search = "search";
+    public const string Featured = "featured";
+    public const string Latest = "latest";
+    public const string Trending = "trending";
+    public const string Top = "top";
+}

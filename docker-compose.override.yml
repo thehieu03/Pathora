@@ -23,8 +23,6 @@ services:
   redis:
     ports:
       - "6379:6379"
-    volumes:
-      - ./volume/redis:/data
 
   minio:
     command: server /data --console-address ":9001"
@@ -34,8 +32,6 @@ services:
     ports:
       - "9000:9000" # API
       - "9001:9001" # Console UI
-    volumes:
-      - ./volume/minio:/data
 
   portainer:
     # UI: https://localhost:9443 or http://localhost:9002
@@ -46,4 +42,3 @@ services:
       - "9002:9000" # HTTP UI
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./volume/portainer:/data

@@ -65,7 +65,9 @@ services:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
-      - minio-data:/data
+      - type: bind
+        source: ./volume/minio
+        target: /data
     restart: unless-stopped
     logging:
       driver: json-file
@@ -78,6 +80,8 @@ services:
     image: portainer/portainer-ce:latest
     ports:
       - "9443:9443"
+    environment:
+      - PORTAINER_ADMIN_PASSWORD=thehieu12345
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
@@ -90,7 +94,6 @@ services:
 
 volumes:
   redis-data:
-  minio-data:
   portainer-data:
 
 networks:

@@ -1,5 +1,3 @@
-using Domain.Abstractions;
-
 namespace Domain.Entities;
 
 public sealed class UserEntity : Aggregate<Guid>
