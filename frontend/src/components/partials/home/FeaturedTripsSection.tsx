@@ -66,7 +66,7 @@ const TripCard = ({
 }: TripCardProps) => (
   <Link
     href="/tours"
-    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-lg transition-shadow duration-300">
+    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out">
     <div className="relative h-53.75 overflow-hidden">
       <Image
         src={image}

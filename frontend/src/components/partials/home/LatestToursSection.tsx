@@ -136,7 +136,7 @@ export const LatestToursSection = () => {
               href="/tours"
               className="flex flex-row md:flex-col items-center gap-3 md:gap-3 shrink-0 group w-full md:w-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent rounded-lg">
               <div className="relative shrink-0">
-                <div className="relative w-15 h-15 md:w-25 md:h-25 rounded-full overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
+                <div className="relative w-15 h-15 md:w-25 md:h-25 rounded-full overflow-hidden shadow-md group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 ease-out">
                   <Image
                     src={tour.image}
                     alt={tour.title}

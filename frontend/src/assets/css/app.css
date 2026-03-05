@@ -2,15 +2,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-
 @theme {
   --color-primary-50: var(--primary-50);
   --color-primary-100: var(--primary-100);
@@ -101,7 +92,7 @@
   --color-gray-900: var(--gray-900);
 
   --color-landing-heading: #05073c;
-  --color-landing-accent: #FA8B02;
+  --color-landing-accent: #fa8b02;
   --color-landing-accent-hover: #e07a00;
   --color-landing-body: #717171;
   --color-landing-border: #e7e6e6;
@@ -213,11 +204,13 @@ button {
 }
 
 @utility shadow-base {
-  box-shadow: 0px 0px 1px rgba(40, 41, 61, 0.08),
+  box-shadow:
+    0px 0px 1px rgba(40, 41, 61, 0.08),
     0px 0.5px 2px rgba(96, 97, 112, 0.16);
 }
 @utility shadow-base2 {
-  box-shadow: 0px 2px 4px rgba(40, 41, 61, 0.04),
+  box-shadow:
+    0px 2px 4px rgba(40, 41, 61, 0.04),
     0px 8px 16px rgba(96, 97, 112, 0.16);
 }
 
@@ -2763,7 +2756,10 @@ button {
     &.select__option--is-focused {
     @apply bg-secondary-500/30 text-slate-900;
   }
-  .progcoder-app .select__menu .select__menu-list &.select__option--is-selected {
+  .progcoder-app
+    .select__menu
+    .select__menu-list
+    &.select__option--is-selected {
     @apply bg-secondary-900 text-slate-200;
   }
 
@@ -2866,7 +2862,10 @@ button {
     @apply bg-secondary-500/30 text-slate-900;
   }
 
-  .progcoder-app .select__menu .select__menu-list &.select__option--is-selected {
+  .progcoder-app
+    .select__menu
+    .select__menu-list
+    &.select__option--is-selected {
     @apply bg-secondary-900 text-slate-200;
   }
 
@@ -4149,7 +4148,9 @@ button {
 @utility settings-enter-active {
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 @utility settings-exit {
   opacity: 1;
@@ -4157,7 +4158,9 @@ button {
 @utility settings-exit-active {
   opacity: 0;
   transform: scale(0.9);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 .page-content {
   @apply md:pt-6 md:pb-[37px] md:px-6 pt-[15px] px-[15px] pb-24;
@@ -4646,7 +4649,9 @@ button {
 @utility profileAnimation-enter-active {
   opacity: 1;
   transform: translateX(-120px);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 @utility profileAnimation-exit {
   opacity: 1;
@@ -4654,7 +4659,9 @@ button {
 @utility profileAnimation-exit-active {
   opacity: 0;
   transform: translateX(-100%);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 @utility slide-in-left-enter {
   opacity: 0;
@@ -4663,7 +4670,9 @@ button {
 @utility slide-in-left-enter-active {
   opacity: 1;
   transform: translateX(0);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 @utility slide-in-left-exit {
   opacity: 1;
@@ -4671,7 +4680,9 @@ button {
 @utility slide-in-left-exit-active {
   opacity: 0;
   transform: scale(0.9);
-  transition: opacity 300ms, transform 300ms;
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 /*react date range picker*/
 .rdrDateRangePickerWrapper {
