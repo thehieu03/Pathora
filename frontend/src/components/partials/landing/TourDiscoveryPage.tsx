@@ -1,175 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
 import { Icon } from "@/components/ui";
 import { LandingHeader } from "./LandingHeader";
 import { LandingFooter } from "./LandingFooter";
 import { useTranslation } from "react-i18next";
+import { homeService } from "@/services/homeService";
+import { formatCurrency } from "@/utils/format";
+import { SearchTour } from "@/types/home";
 
-/* ── Hero Background ───────────────────────────────────────── */
-const HERO_BG =
-  "https://www.figma.com/api/mcp/asset/6b3bd8ae-6ffb-498d-a62b-9de9ca38cdd4";
-
-/* ── Sample Tour Data ──────────────────────────────────────── */
-interface TourItem {
-  id: number;
-  image: string;
-  location: string;
-  title: string;
-  duration: string;
-  maxPax: number;
-  price: number;
-  category: string;
-  classification: string;
-}
-
-const SAMPLE_TOURS: TourItem[] = [
-  {
-    id: 1,
-    image:
-      "https://www.figma.com/api/mcp/asset/2f522778-a155-437a-b5a2-6142ef1c1bb2",
-    location: "New York, USA",
-    title: "Statue of Liberty & Ellis Island Ferry Access Tour",
-    duration: "1 day",
-    maxPax: 12,
-    price: 35,
-    category: "Cultural Tour",
-    classification: "Budget Tour",
-  },
-  {
-    id: 2,
-    image:
-      "https://www.figma.com/api/mcp/asset/376def41-3ada-46d6-bc15-15a90d47e877",
-    location: "Washington, USA",
-    title: "National Mall Monuments Guided Sunset Walking Tour",
-    duration: "1 day",
-    maxPax: 12,
-    price: 45,
-    category: "Cultural Tour",
-    classification: "Budget Tour",
-  },
-  {
-    id: 3,
-    image:
-      "https://www.figma.com/api/mcp/asset/0b0f78f8-a3d5-455a-8517-d3e9a30ba3ee",
-    location: "Bangkok, Thailand",
-    title: "Floating Market & Temple Day Tour by Long-Tail Boat",
-    duration: "1 day",
-    maxPax: 12,
-    price: 49,
-    category: "Cultural Tour",
-    classification: "Budget Tour",
-  },
-  {
-    id: 4,
-    image:
-      "https://www.figma.com/api/mcp/asset/b8a1b3ef-885e-4918-a4bd-28cc72158758",
-    location: "Rome, Italy",
-    title: "Colosseum, Roman Forum & Palatine Hill Guided Tour",
-    duration: "2 days",
-    maxPax: 12,
-    price: 65,
-    category: "Cultural Tour",
-    classification: "Standard Tour",
-  },
-  {
-    id: 5,
-    image:
-      "https://www.figma.com/api/mcp/asset/f69eee8d-bc64-4c1c-9077-7a16614f5cda",
-    location: "Dubai, UAE",
-    title: "Dubai Desert Safari with BBQ Dinner & Camel Ride",
-    duration: "1 day",
-    maxPax: 12,
-    price: 75,
-    category: "Adventure Tour",
-    classification: "Group Tour",
-  },
-  {
-    id: 6,
-    image:
-      "https://www.figma.com/api/mcp/asset/f5d4fd9b-5ccc-427a-940a-d0f92012d69a",
-    location: "Bali, Indonesia",
-    title: "Sacred Monkey Forest & Tegallalang Rice Terrace Tour",
-    duration: "2 days",
-    maxPax: 12,
-    price: 79,
-    category: "Eco Tour",
-    classification: "Standard Tour",
-  },
-  {
-    id: 7,
-    image:
-      "https://www.figma.com/api/mcp/asset/e0caae3f-56bd-4093-b2ed-66986ad053ae",
-    location: "Paris, France",
-    title: "Louvre Museum Skip-the-Line Guided Tour",
-    duration: "1 day",
-    maxPax: 12,
-    price: 85,
-    category: "Cultural Tour",
-    classification: "Standard Tour",
-  },
-  {
-    id: 8,
-    image:
-      "https://www.figma.com/api/mcp/asset/376def41-3ada-46d6-bc15-15a90d47e877",
-    location: "Tokyo, Japan",
-    title: "Tokyo Night Lights & Street Food Walking Experience",
-    duration: "1 day",
-    maxPax: 12,
-    price: 89,
-    category: "Food Tour",
-    classification: "Standard Tour",
-  },
-  {
-    id: 9,
-    image:
-      "https://www.figma.com/api/mcp/asset/0b0f78f8-a3d5-455a-8517-d3e9a30ba3ee",
-    location: "Phuket, Thailand",
-    title: "Phi Phi Islands Speedboat Snorkeling Day Trip",
-    duration: "1 day",
-    maxPax: 12,
-    price: 95,
-    category: "Adventure Tour",
-    classification: "Group Tour",
-  },
-  {
-    id: 10,
-    image:
-      "https://www.figma.com/api/mcp/asset/b8a1b3ef-885e-4918-a4bd-28cc72158758",
-    location: "Paris, France",
-    title: "Eiffel Tower Summit Access with Champagne Toast",
-    duration: "1 day",
-    maxPax: 12,
-    price: 120,
-    category: "Relaxation Tour",
-    classification: "Premium Tour",
-  },
-  {
-    id: 11,
-    image:
-      "https://www.figma.com/api/mcp/asset/f69eee8d-bc64-4c1c-9077-7a16614f5cda",
-    location: "Singapore, Singapore",
-    title: "Marina Bay Sands Sunset Cruise with Dinner",
-    duration: "1 day",
-    maxPax: 12,
-    price: 149,
-    category: "Relaxation Tour",
-    classification: "VIP / Luxury Tour",
-  },
-  {
-    id: 12,
-    image:
-      "https://www.figma.com/api/mcp/asset/f5d4fd9b-5ccc-427a-940a-d0f92012d69a",
-    location: "London, UK",
-    title: "Tower of London & Crown Jewels Exclusive Tour",
-    duration: "2 days",
-    maxPax: 12,
-    price: 180,
-    category: "Cultural Tour",
-    classification: "Standard Tour",
-  },
-];
+/* ── Sample Tour Data — replaced by API ───────────────────── */
+const PAGE_SIZE = 12;
 
 /* ── Filter Data ───────────────────────────────────────────── */
 const CLASSIFICATION_OPTIONS = [
@@ -199,23 +41,22 @@ const DURATION_OPTIONS = [
   "> 15 Days Tour",
 ];
 
-const PRICE_QUICK_FILTERS = ["Under $100", "$100–$300", "$300–$1k", "$1k+"];
+const PRICE_QUICK_FILTERS = ["< 2tr", "2tr–5tr", "5tr–15tr", "15tr+"];
 
 /* ── Hero Banner ───────────────────────────────────────────── */
 const HeroBanner = () => {
   const { t } = useTranslation();
   return (
     <section className="relative h-[500px] w-full overflow-hidden">
-      <Image
-        src={HERO_BG}
-        alt="Package Tours hero background"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
+      {/* Gradient background instead of external image */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#05073c] via-[#1a1c5e] to-[#2d1b69]" />
+      {/* Decorative elements */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#fa8b02] rounded-full blur-[120px]" />
+        <div className="absolute bottom-10 right-20 w-96 h-96 bg-[#eb662b] rounded-full blur-[150px]" />
+      </div>
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[rgba(5,7,60,0.7)] via-[rgba(5,7,60,0.4)] to-[rgba(5,7,60,0.8)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[rgba(5,7,60,0.3)] via-transparent to-[rgba(5,7,60,0.5)]" />
       {/* Content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
         <span className="inline-block bg-[rgba(250,139,2,0.2)] border border-[rgba(250,139,2,0.4)] text-[#fa8b02] text-xs font-semibold uppercase tracking-[1.2px] px-6 py-1.5 rounded-full mb-4">
@@ -252,22 +93,39 @@ const HeroBanner = () => {
 };
 
 /* ── Full-Width Search Bar ─────────────────────────────────── */
-const SearchBar = ({ onFilterToggle }: { onFilterToggle?: () => void }) => {
+const SearchBar = ({
+  onFilterToggle,
+  searchText,
+  onSearchChange,
+  onSearchSubmit,
+}: {
+  onFilterToggle?: () => void;
+  searchText: string;
+  onSearchChange: (val: string) => void;
+  onSearchSubmit: () => void;
+}) => {
   const { t } = useTranslation();
   return (
     <div className="bg-white border-b border-black/5 shadow-sm lg:border-0 lg:shadow-none">
       <div className="max-w-[1152px] mx-auto px-6 py-3 flex items-center gap-3">
-        <div className="relative flex-1">
+        <form
+          className="relative flex-1"
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSearchSubmit();
+          }}>
           <Icon
             icon="heroicons-outline:search"
             className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99a1af]"
           />
           <input
             type="text"
+            value={searchText}
+            onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t("landing.tourDiscovery.searchFullPlaceholder")}
             className="w-full h-[42px] bg-[#f9fafb] border border-[#e5e7eb] lg:border-[#f3f4f6] rounded-xl lg:rounded-lg pl-11 pr-4 text-sm text-[#05073c] placeholder:text-[#99a1af] focus:outline-none focus:ring-2 focus:ring-[#eb662b]/30 focus:border-[#eb662b] transition-colors"
           />
-        </div>
+        </form>
         {/* Mobile filter button */}
         <button
           type="button"
@@ -353,15 +211,21 @@ const FilterRadioList = ({
 const TourSidebar = ({
   isMobileOpen,
   onClose,
+  onClassificationChange,
+  onDurationChange,
+  onPriceRangeChange,
 }: {
   isMobileOpen?: boolean;
   onClose?: () => void;
+  onClassificationChange?: (value: string) => void;
+  onDurationChange?: (value: string) => void;
+  onPriceRangeChange?: (range: [number, number]) => void;
 }) => {
   const { t } = useTranslation();
   const [classFilters, setClassFilters] = useState<string[]>([]);
   const [catFilters, setCatFilters] = useState<string[]>([]);
   const [durFilters, setDurFilters] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 3000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
   const [activePriceQuick, setActivePriceQuick] = useState<string | null>(null);
 
   const toggleFilter = (
@@ -374,6 +238,23 @@ const TourSidebar = ({
         ? current.filter((f) => f !== option)
         : [...current, option],
     );
+  };
+
+  const handleClassToggle = (option: string) => {
+    const newValue = classFilters.includes(option) ? "" : option;
+    toggleFilter(option, classFilters, setClassFilters);
+    onClassificationChange?.(newValue);
+  };
+
+  const handleDurToggle = (option: string) => {
+    const newValue = durFilters.includes(option) ? "" : option;
+    toggleFilter(option, durFilters, setDurFilters);
+    onDurationChange?.(newValue);
+  };
+
+  const handlePriceRangeChange = (newRange: [number, number]) => {
+    setPriceRange(newRange);
+    onPriceRangeChange?.(newRange);
   };
 
   const sidebarContent = (
@@ -397,7 +278,7 @@ const TourSidebar = ({
           <FilterRadioList
             options={CLASSIFICATION_OPTIONS}
             selected={classFilters}
-            onToggle={(o) => toggleFilter(o, classFilters, setClassFilters)}
+            onToggle={handleClassToggle}
           />
         </FilterSection>
 
@@ -415,7 +296,7 @@ const TourSidebar = ({
           <FilterRadioList
             options={DURATION_OPTIONS}
             selected={durFilters}
-            onToggle={(o) => toggleFilter(o, durFilters, setDurFilters)}
+            onToggle={handleDurToggle}
           />
         </FilterSection>
 
@@ -424,8 +305,8 @@ const TourSidebar = ({
           <div className="flex flex-col gap-3">
             {/* Min/Max labels */}
             <div className="flex items-center justify-between text-[12px] text-[#99a1af]">
-              <span>${priceRange[0]}</span>
-              <span>${priceRange[1].toLocaleString()}</span>
+              <span>{formatCurrency(priceRange[0])}</span>
+              <span>{formatCurrency(priceRange[1])}</span>
             </div>
 
             {/* Slider */}
@@ -433,27 +314,29 @@ const TourSidebar = ({
               <div
                 className="absolute h-full bg-[#eb662b] rounded-full"
                 style={{
-                  left: `${(priceRange[0] / 3000) * 100}%`,
-                  right: `${100 - (priceRange[1] / 3000) * 100}%`,
+                  left: `${(priceRange[0] / 50000000) * 100}%`,
+                  right: `${100 - (priceRange[1] / 50000000) * 100}%`,
                 }}
               />
               <input
                 type="range"
                 min={0}
-                max={3000}
+                max={50000000}
+                step={500000}
                 value={priceRange[0]}
                 onChange={(e) =>
-                  setPriceRange([+e.target.value, priceRange[1]])
+                  handlePriceRangeChange([+e.target.value, priceRange[1]])
                 }
                 className="absolute w-full h-full opacity-0 cursor-pointer"
               />
               <input
                 type="range"
                 min={0}
-                max={3000}
+                max={50000000}
+                step={500000}
                 value={priceRange[1]}
                 onChange={(e) =>
-                  setPriceRange([priceRange[0], +e.target.value])
+                  handlePriceRangeChange([priceRange[0], +e.target.value])
                 }
                 className="absolute w-full h-full opacity-0 cursor-pointer"
               />
@@ -466,7 +349,7 @@ const TourSidebar = ({
                   {t("landing.tourDiscovery.from")}
                 </p>
                 <p className="text-sm font-bold text-[#eb662b]">
-                  ${priceRange[0]}
+                  {formatCurrency(priceRange[0])}
                 </p>
               </div>
               <div className="w-4 h-[1px] bg-[#d1d5db]" />
@@ -475,7 +358,7 @@ const TourSidebar = ({
                   {t("landing.tourDiscovery.to")}
                 </p>
                 <p className="text-sm font-bold text-[#eb662b]">
-                  ${priceRange[1].toLocaleString()}
+                  {formatCurrency(priceRange[1])}
                 </p>
               </div>
             </div>
@@ -581,59 +464,73 @@ const CustomizeTourCTA = () => {
 };
 
 /* ── Tour Card (Grid Style) ────────────────────────────────── */
-const TourCard = ({ tour }: { tour: TourItem }) => {
+const TourCard = ({ tour }: { tour: SearchTour }) => {
   const { t } = useTranslation();
   return (
     <article className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
       {/* Image */}
       <div className="relative w-full h-[192px] overflow-hidden">
-        <Image
-          src={tour.image}
-          alt={tour.title}
-          fill
-          sizes="(max-width: 767px) 100vw, 400px"
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        {/* Category badge on image */}
-        <span className="absolute bottom-3 left-3 bg-black/50 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
-          {tour.category}
-        </span>
+        {tour.thumbnail ? (
+          <Image
+            src={tour.thumbnail}
+            alt={tour.tourName}
+            fill
+            sizes="(max-width: 767px) 100vw, 400px"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <Icon
+              icon="heroicons-outline:photo"
+              className="w-10 h-10 text-gray-400"
+            />
+          </div>
+        )}
+        {/* Classification badge on image */}
+        {tour.classificationName && (
+          <span className="absolute bottom-3 left-3 bg-black/50 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
+            {tour.classificationName}
+          </span>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-4">
-        {/* Location + Classification */}
+        {/* Location */}
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-1 text-[12px] text-[#99a1af]">
-            <Icon icon="heroicons-solid:map-pin" className="w-3 h-3 shrink-0" />
-            <span>{tour.location}</span>
-          </div>
-          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[rgba(106,114,130,0.1)] text-[10px] font-bold text-[#6a7282] px-2 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#99a1af]" />
-            {tour.classification}
-          </span>
+          {tour.location && (
+            <div className="flex items-center gap-1 text-[12px] text-[#99a1af]">
+              <Icon
+                icon="heroicons-solid:map-pin"
+                className="w-3 h-3 shrink-0"
+              />
+              <span>{tour.location}</span>
+            </div>
+          )}
+          {tour.rating && (
+            <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[rgba(106,114,130,0.1)] text-[10px] font-bold text-[#6a7282] px-2 py-0.5 rounded-full">
+              <Icon
+                icon="heroicons-solid:star"
+                className="w-3 h-3 text-[#fa8b02]"
+              />
+              {tour.rating.toFixed(1)}
+            </span>
+          )}
         </div>
 
         {/* Title */}
         <h3 className="text-[14px] font-semibold text-[#05073c] leading-[19px] mb-3 line-clamp-2 min-h-[38px]">
-          {tour.title}
+          {tour.tourName}
         </h3>
 
-        {/* Duration & Max Pax */}
+        {/* Duration */}
         <div className="flex items-center gap-2 mb-3">
           <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
             <Icon
               icon="heroicons-outline:clock"
               className="w-3 h-3 text-[#6a7282]"
             />
-            {tour.duration}
-          </span>
-          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
-            <Icon
-              icon="heroicons-outline:users"
-              className="w-3 h-3 text-[#6a7282]"
-            />
-            {t("landing.tourDiscovery.maxPax", { count: tour.maxPax })}
+            {tour.durationDays} {tour.durationDays === 1 ? "day" : "days"}
           </span>
         </div>
 
@@ -641,9 +538,20 @@ const TourCard = ({ tour }: { tour: TourItem }) => {
         <div className="flex items-center justify-between border-t border-[#f3f4f6] pt-3">
           <p className="text-[12px] text-[#99a1af]">
             <span>{t("landing.tourDiscovery.from")} </span>
-            <span className="text-[14px] font-bold text-[#05073c]">
-              ${tour.price}
-            </span>
+            {tour.salePrice > 0 && tour.salePrice < tour.price ? (
+              <>
+                <span className="text-[14px] font-bold text-[#eb662b]">
+                  {formatCurrency(tour.salePrice)}
+                </span>
+                <span className="ml-1 line-through text-[11px] text-[#99a1af]">
+                  {formatCurrency(tour.price)}
+                </span>
+              </>
+            ) : (
+              <span className="text-[14px] font-bold text-[#05073c]">
+                {formatCurrency(tour.price)}
+              </span>
+            )}
             <span> /pax</span>
           </p>
           <Link
@@ -751,22 +659,40 @@ const Pagination = ({
       </button>
 
       {/* Page Numbers */}
-      {Array.from({ length: Math.min(totalPages, 2) }, (_, i) => i + 1).map(
-        (page) => (
-          <button
-            key={page}
-            type="button"
-            onClick={() => onPageChange(page)}
-            aria-current={currentPage === page ? "page" : undefined}
-            className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
-              currentPage === page
-                ? "bg-[#fa8b02] text-white"
-                : "border border-[#e5e7eb] text-[#4a5565] hover:bg-gray-50"
-            }`}>
-            {page}
-          </button>
-        ),
-      )}
+      {(() => {
+        const pages: (number | string)[] = [];
+        if (totalPages <= 7) {
+          for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+          pages.push(1);
+          if (currentPage > 3) pages.push("...");
+          const start = Math.max(2, currentPage - 1);
+          const end = Math.min(totalPages - 1, currentPage + 1);
+          for (let i = start; i <= end; i++) pages.push(i);
+          if (currentPage < totalPages - 2) pages.push("...");
+          pages.push(totalPages);
+        }
+        return pages.map((page, idx) =>
+          typeof page === "string" ? (
+            <span key={`ellipsis-${idx}`} className="w-9 h-9 flex items-center justify-center text-sm text-[#6a7282]">
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              type="button"
+              onClick={() => onPageChange(page)}
+              aria-current={currentPage === page ? "page" : undefined}
+              className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                currentPage === page
+                  ? "bg-[#fa8b02] text-white"
+                  : "border border-[#e5e7eb] text-[#4a5565] hover:bg-gray-50"
+              }`}>
+              {page}
+            </button>
+          ),
+        );
+      })()}
 
       {/* Next */}
       <button
@@ -801,11 +727,101 @@ const FloatingButtons = () => (
   </div>
 );
 
+/* ── Loading Skeleton ───────────────────────────────────────── */
+const TourCardSkeleton = () => (
+  <div className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm animate-pulse">
+    <div className="w-full h-[192px] bg-gray-200" />
+    <div className="p-4">
+      <div className="h-3 bg-gray-200 rounded w-1/3 mb-2" />
+      <div className="h-4 bg-gray-200 rounded w-full mb-1" />
+      <div className="h-4 bg-gray-200 rounded w-2/3 mb-3" />
+      <div className="h-3 bg-gray-200 rounded w-1/4 mb-3" />
+      <div className="border-t border-[#f3f4f6] pt-3 flex justify-between">
+        <div className="h-4 bg-gray-200 rounded w-1/3" />
+        <div className="w-[26px] h-[26px] bg-gray-200 rounded-[10px]" />
+      </div>
+    </div>
+  </div>
+);
+
 /* ── Main Tour Discovery Page ──────────────────────────────── */
 export const TourDiscoveryPage = () => {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [classificationFilter, setClassificationFilter] = useState("");
+
+  // API state
+  const [tours, setTours] = useState<SearchTour[]>([]);
+  const [totalTours, setTotalTours] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [destinations, setDestinations] = useState<string[]>([]);
+
+  const totalPages = Math.max(1, Math.ceil(totalTours / PAGE_SIZE));
+
+  const fetchTours = useCallback(
+    async (page: number, destination?: string, classification?: string) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await homeService.searchTours({
+          destination: destination || undefined,
+          classification: classification || undefined,
+          page,
+          pageSize: PAGE_SIZE,
+        });
+        if (result) {
+          setTours(result.data || []);
+          setTotalTours(result.total || 0);
+        } else {
+          setTours([]);
+          setTotalTours(0);
+        }
+      } catch {
+        setError(t("landing.tourDiscovery.errorLoading"));
+        setTours([]);
+        setTotalTours(0);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
+
+  // Initial load + fetch destinations
+  useEffect(() => {
+    fetchTours(1);
+    homeService
+      .getDestinations()
+      .then(setDestinations)
+      .catch(() => {});
+  }, [fetchTours]);
+
+  // Refetch when page or filters change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchTours(page, searchText, classificationFilter);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchTours(1, searchText, classificationFilter);
+  };
+
+  const handleClassificationChange = (classification: string) => {
+    setClassificationFilter(
+      classification === classificationFilter ? "" : classification,
+    );
+    setCurrentPage(1);
+    fetchTours(
+      1,
+      searchText,
+      classification === classificationFilter ? "" : classification,
+    );
+  };
 
   return (
     <main
@@ -819,7 +835,12 @@ export const TourDiscoveryPage = () => {
       <HeroBanner />
 
       {/* Search Bar */}
-      <SearchBar onFilterToggle={() => setIsMobileFilterOpen(true)} />
+      <SearchBar
+        onFilterToggle={() => setIsMobileFilterOpen(true)}
+        searchText={searchText}
+        onSearchChange={setSearchText}
+        onSearchSubmit={handleSearch}
+      />
 
       {/* Page Content */}
       <div className="bg-[#f9fafb] lg:bg-transparent">
@@ -830,6 +851,14 @@ export const TourDiscoveryPage = () => {
             <TourSidebar
               isMobileOpen={isMobileFilterOpen}
               onClose={() => setIsMobileFilterOpen(false)}
+              onClassificationChange={handleClassificationChange}
+              onDurationChange={(dur) => {
+                setCurrentPage(1);
+                fetchTours(1, searchText, classificationFilter);
+              }}
+              onPriceRangeChange={() => {
+                setCurrentPage(1);
+              }}
             />
 
             {/* Main Content */}
@@ -838,21 +867,73 @@ export const TourDiscoveryPage = () => {
               <CustomizeTourCTA />
 
               {/* Results Toolbar */}
-              <ResultsToolbar count={SAMPLE_TOURS.length} />
+              <ResultsToolbar count={totalTours} />
 
-              {/* Tour Grid (2 columns) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {SAMPLE_TOURS.map((tour) => (
-                  <TourCard key={tour.id} tour={tour} />
-                ))}
-              </div>
+              {/* Error State */}
+              {error && (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Icon
+                    icon="heroicons-outline:exclamation-circle"
+                    className="w-12 h-12 text-red-400 mb-4"
+                  />
+                  <p className="text-sm text-[#6a7282] mb-4">{error}</p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      fetchTours(currentPage, searchText, classificationFilter)
+                    }
+                    className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                    <Icon
+                      icon="heroicons-outline:arrow-path"
+                      className="w-4 h-4"
+                    />
+                    {t("landing.tourDiscovery.retry") || "Retry"}
+                  </button>
+                </div>
+              )}
 
-              {/* Pagination */}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={2}
-                onPageChange={setCurrentPage}
-              />
+              {/* Loading State */}
+              {loading && !error && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <TourCardSkeleton key={i} />
+                  ))}
+                </div>
+              )}
+
+              {/* Empty State */}
+              {!loading && !error && tours.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <Icon
+                    icon="heroicons-outline:magnifying-glass"
+                    className="w-12 h-12 text-[#99a1af] mb-4"
+                  />
+                  <h3 className="text-lg font-semibold text-[#05073c] mb-2">
+                    {t("landing.tourDiscovery.noResults")}
+                  </h3>
+                  <p className="text-sm text-[#6a7282] max-w-md">
+                    {t("landing.tourDiscovery.noResultsDescription")}
+                  </p>
+                </div>
+              )}
+
+              {/* Tour Grid */}
+              {!loading && !error && tours.length > 0 && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {tours.map((tour) => (
+                      <TourCard key={tour.id} tour={tour} />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                  />
+                </>
+              )}
             </div>
           </div>
         </div>

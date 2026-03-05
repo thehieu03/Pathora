@@ -75,7 +75,7 @@ export const CTASection = () => {
 export const WhyChooseSection = () => {
   const { t } = useTranslation();
   return (
-    <section className="w-full bg-[#f8fafc] py-16 md:py-20">
+    <section className="w-full bg-[#f9fafb] py-16 md:py-20">
       <SectionContainer>
         <div className="text-center mb-14">
           <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">

@@ -54,7 +54,7 @@ export default function Home() {
       </div>
 
       {/* Main content sections */}
-      <div className="flex flex-col gap-16 py-16">
+      <div className="flex flex-col gap-16 py-16 bg-[#f9fafb]">
         <LatestToursSection />
         <FeaturedTripsSection />
       </div>
@@ -63,7 +63,7 @@ export default function Home() {
         <StatsSection />
       </Suspense>
 
-      <div className="flex flex-col gap-16 py-16">
+      <div className="flex flex-col gap-16 py-16 bg-[#f9fafb]">
         <Suspense fallback={<SectionSkeleton className="h-72" />}>
           <TrendingDestinationsSection />
         </Suspense>

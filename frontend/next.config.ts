@@ -50,9 +50,14 @@ const envRemotePatterns = parseRemoteImagePatterns(
   process.env.NEXT_PUBLIC_REMOTE_IMAGE_HOSTS,
 );
 
+const allowUnoptimized = process.env.NEXT_PUBLIC_IMAGES_UNOPTIMIZED === "true";
+
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
+    // When MinIO runs on localhost (private IP), Next.js image optimizer
+    // blocks it. Set NEXT_PUBLIC_IMAGES_UNOPTIMIZED=true to bypass.
+    unoptimized: allowUnoptimized,
     remotePatterns: [
       {
         protocol: "https",

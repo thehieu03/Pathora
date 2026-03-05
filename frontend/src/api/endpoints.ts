@@ -119,6 +119,7 @@ export interface PublicHomeEndpoints {
   GET_TOP_REVIEWS: (limit?: number) => string;
   SEARCH_TOURS: (params?: SearchToursParams) => string;
   GET_DESTINATIONS: string;
+  GET_TOUR_DETAIL: EndpointWithId;
 }
 
 export interface SearchToursParams {
@@ -128,6 +129,15 @@ export interface SearchToursParams {
   people?: number;
   page?: number;
   pageSize?: number;
+}
+
+// Tour Admin Endpoints Interface
+export interface TourEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: string;
+  DELETE: EndpointWithId;
 }
 
 // Main API Endpoints Interface
@@ -141,6 +151,7 @@ export interface ApiEndpoints {
   COMMUNICATION: CommunicationEndpoints;
   AUTH: AuthEndpoints;
   PUBLIC_HOME: PublicHomeEndpoints;
+  TOUR: TourEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -265,6 +276,16 @@ export const API_ENDPOINTS: ApiEndpoints = {
       return `/api/public/tours/search?${url.toString()}`;
     },
     GET_DESTINATIONS: "/api/public/destinations",
+    GET_TOUR_DETAIL: (id: string): string => `/api/public/tours/${id}`,
+  },
+
+  // Tour Admin
+  TOUR: {
+    GET_ALL: "/api/tour/",
+    GET_DETAIL: (id: string): string => `/api/tour/${id}`,
+    CREATE: "/api/tour/",
+    UPDATE: "/api/tour/",
+    DELETE: (id: string): string => `/api/tour/${id}`,
   },
 };
 
