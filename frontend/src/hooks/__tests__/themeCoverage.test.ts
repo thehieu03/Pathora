@@ -9,13 +9,15 @@ const readFile = (relativePath: string): string => {
 
 describe("app theme coverage", () => {
   it("keeps dark mode classes on tours main container", () => {
-    const source = readFile("src/components/partials/landing/TourDiscoveryPage.tsx");
+    const source = readFile(
+      "src/components/partials/tours/TourDiscoveryPage.tsx",
+    );
     expect(source.includes("dark:bg-")).toBe(true);
     expect(source.includes("dark:text-")).toBe(true);
   });
 
   it("uses header-level dark mode toggle in landing flows", () => {
-    const source = readFile("src/components/partials/landing/LandingHeader.tsx");
+    const source = readFile("src/components/partials/shared/LandingHeader.tsx");
     expect(source.includes("useDarkmode")).toBe(true);
     expect(source.includes("Switch to dark mode")).toBe(true);
     expect(source.includes("Switch to light mode")).toBe(true);

@@ -48,17 +48,17 @@ const Pagination = ({
         </li>
 
         {pages.map((page) => (
-          <li key={page}>
-            <button
-              className={`${page === currentPage ? "active" : ""} page-link focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded`}
-              onClick={() => handlePageChange(page)}
-              disabled={page === currentPage}
-              aria-label={`Go to page ${page}`}
-              aria-current={page === currentPage ? "page" : undefined}
-            >
-              {page}
-            </button>
-          </li>
+            <li key={page}>
+              <button
+                className={`${page === currentPage ? "active" : ""} page-link focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded`}
+                onClick={() => handlePageChange(page)}
+                disabled={page === currentPage}
+                aria-label={`Go to page ${page}`}
+                aria-current={page === currentPage ? "page" : undefined}
+              >
+                {page}
+              </button>
+            </li>
         ))}
 
         <li>
