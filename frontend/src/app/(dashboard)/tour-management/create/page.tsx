@@ -1,0 +1,1195 @@
+"use client";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import Card from "@/components/ui/Card";
+import Icon from "@/components/ui/Icon";
+import TextInput from "@/components/ui/TextInput";
+import Select from "@/components/ui/Select";
+import Textarea from "@/components/ui/Textarea";
+import { tourService } from "@/services/tourService";
+
+/* ── Types ──────────────────────────────────────────────────── */
+interface ClassificationForm {
+  name: string;
+  description: string;
+  price: string;
+  salePrice: string;
+  durationDays: string;
+}
+
+interface ActivityForm {
+  activityType: string;
+  title: string;
+  description: string;
+  note: string;
+  estimatedCost: string;
+  isOptional: boolean;
+  startTime: string;
+  endTime: string;
+}
+
+interface DayPlanForm {
+  dayNumber: string;
+  title: string;
+  description: string;
+  activities: ActivityForm[];
+}
+
+interface InsuranceForm {
+  insuranceName: string;
+  insuranceType: string;
+  insuranceProvider: string;
+  coverageDescription: string;
+  coverageAmount: string;
+  coverageFee: string;
+  isOptional: boolean;
+  note: string;
+}
+
+interface BasicInfoForm {
+  tourName: string;
+  shortDescription: string;
+  longDescription: string;
+  seoTitle: string;
+  seoDescription: string;
+  status: string;
+}
+
+/* ── Constants ──────────────────────────────────────────────── */
+const STATUS_OPTIONS = [
+  { value: "1", label: "Active" },
+  { value: "2", label: "Inactive" },
+  { value: "3", label: "Pending" },
+];
+
+const ACTIVITY_TYPE_OPTIONS = [
+  { value: "0", label: "Sightseeing" },
+  { value: "1", label: "Dining" },
+  { value: "2", label: "Shopping" },
+  { value: "3", label: "Adventure" },
+  { value: "4", label: "Relaxation" },
+  { value: "5", label: "Cultural" },
+  { value: "6", label: "Entertainment" },
+  { value: "7", label: "Transportation" },
+  { value: "8", label: "Accommodation" },
+  { value: "9", label: "Free Time" },
+  { value: "99", label: "Other" },
+];
+
+const INSURANCE_TYPE_OPTIONS = [
+  { value: "0", label: "None" },
+  { value: "1", label: "Travel" },
+  { value: "2", label: "Health" },
+  { value: "3", label: "Trip Cancellation" },
+  { value: "4", label: "Baggage Loss" },
+  { value: "5", label: "Personal Liability" },
+  { value: "6", label: "Adventure Sports" },
+];
+
+const STEPS = [
+  { key: "basic", icon: "heroicons:information-circle" },
+  { key: "classifications", icon: "heroicons:tag" },
+  { key: "dayPlans", icon: "heroicons:calendar-days" },
+  { key: "insurance", icon: "heroicons:shield-check" },
+];
+
+/* ── Empty form factories ───────────────────────────────────── */
+const emptyClassification = (): ClassificationForm => ({
+  name: "",
+  description: "",
+  price: "",
+  salePrice: "",
+  durationDays: "",
+});
+
+const emptyActivity = (): ActivityForm => ({
+  activityType: "0",
+  title: "",
+  description: "",
+  note: "",
+  estimatedCost: "",
+  isOptional: false,
+  startTime: "",
+  endTime: "",
+});
+
+const emptyDayPlan = (): DayPlanForm => ({
+  dayNumber: "1",
+  title: "",
+  description: "",
+  activities: [],
+});
+
+const emptyInsurance = (): InsuranceForm => ({
+  insuranceName: "",
+  insuranceType: "1",
+  insuranceProvider: "",
+  coverageDescription: "",
+  coverageAmount: "",
+  coverageFee: "",
+  isOptional: false,
+  note: "",
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Create Tour Page — Multi-step Wizard
+   ══════════════════════════════════════════════════════════════ */
+export default function CreateTourPage() {
+  const { t } = useTranslation();
+  const router = useRouter();
+
+  /* ── Wizard state ─────────────────────────────────────────── */
+  const [currentStep, setCurrentStep] = useState(0);
+  const [saving, setSaving] = useState(false);
+
+  /* ── Step 1: Basic Info ───────────────────────────────────── */
+  const [basicInfo, setBasicInfo] = useState<BasicInfoForm>({
+    tourName: "",
+    shortDescription: "",
+    longDescription: "",
+    seoTitle: "",
+    seoDescription: "",
+    status: "3",
+  });
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+
+  /* ── Step 2: Classifications ──────────────────────────────── */
+  const [classifications, setClassifications] = useState<ClassificationForm[]>([
+    emptyClassification(),
+  ]);
+
+  /* ── Step 3: Day Plans (per classification) ───────────────── */
+  const [dayPlans, setDayPlans] = useState<DayPlanForm[][]>([[]]);
+
+  /* ── Step 4: Insurance (per classification) ───────────────── */
+  const [insurances, setInsurances] = useState<InsuranceForm[][]>([[]]);
+
+  /* ── Validation ───────────────────────────────────────────── */
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateStep = (step: number): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (step === 0) {
+      if (!basicInfo.tourName.trim())
+        newErrors.tourName = t("tourAdmin.required", "Required");
+      if (!basicInfo.shortDescription.trim())
+        newErrors.shortDescription = t("tourAdmin.required", "Required");
+    }
+
+    if (step === 1) {
+      classifications.forEach((cls, i) => {
+        if (!cls.name.trim())
+          newErrors[`cls_${i}_name`] = t("tourAdmin.required", "Required");
+        if (!cls.price || Number(cls.price) <= 0)
+          newErrors[`cls_${i}_price`] = t(
+            "tourAdmin.invalidPrice",
+            "Invalid price",
+          );
+        if (!cls.durationDays || Number(cls.durationDays) <= 0)
+          newErrors[`cls_${i}_duration`] = t(
+            "tourAdmin.invalidDuration",
+            "Invalid duration",
+          );
+      });
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const goNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep((s) => Math.min(s + 1, STEPS.length - 1));
+    }
+  };
+
+  const goPrev = () => setCurrentStep((s) => Math.max(s - 1, 0));
+
+  /* ── Classification CRUD ──────────────────────────────────── */
+  const addClassification = () => {
+    setClassifications((prev) => [...prev, emptyClassification()]);
+    setDayPlans((prev) => [...prev, []]);
+    setInsurances((prev) => [...prev, []]);
+  };
+
+  const removeClassification = (index: number) => {
+    if (classifications.length <= 1) return;
+    setClassifications((prev) => prev.filter((_, i) => i !== index));
+    setDayPlans((prev) => prev.filter((_, i) => i !== index));
+    setInsurances((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const updateClassification = (
+    index: number,
+    field: keyof ClassificationForm,
+    value: string,
+  ) => {
+    setClassifications((prev) =>
+      prev.map((cls, i) => (i === index ? { ...cls, [field]: value } : cls)),
+    );
+  };
+
+  /* ── Day Plan CRUD ────────────────────────────────────────── */
+  const addDayPlan = (clsIndex: number) => {
+    setDayPlans((prev) =>
+      prev.map((plans, i) =>
+        i === clsIndex
+          ? [
+              ...plans,
+              {
+                ...emptyDayPlan(),
+                dayNumber: String(plans.length + 1),
+              },
+            ]
+          : plans,
+      ),
+    );
+  };
+
+  const removeDayPlan = (clsIndex: number, dayIndex: number) => {
+    setDayPlans((prev) =>
+      prev.map((plans, i) =>
+        i === clsIndex ? plans.filter((_, j) => j !== dayIndex) : plans,
+      ),
+    );
+  };
+
+  const updateDayPlan = (
+    clsIndex: number,
+    dayIndex: number,
+    field: keyof DayPlanForm,
+    value: string,
+  ) => {
+    setDayPlans((prev) =>
+      prev.map((plans, i) =>
+        i === clsIndex
+          ? plans.map((day, j) =>
+              j === dayIndex ? { ...day, [field]: value } : day,
+            )
+          : plans,
+      ),
+    );
+  };
+
+  /* ── Activity CRUD ────────────────────────────────────────── */
+  const addActivity = (clsIndex: number, dayIndex: number) => {
+    setDayPlans((prev) =>
+      prev.map((plans, i) =>
+        i === clsIndex
+          ? plans.map((day, j) =>
+              j === dayIndex
+                ? { ...day, activities: [...day.activities, emptyActivity()] }
+                : day,
+            )
+          : plans,
+      ),
+    );
+  };
+
+  const removeActivity = (
+    clsIndex: number,
+    dayIndex: number,
+    actIndex: number,
+  ) => {
+    setDayPlans((prev) =>
+      prev.map((plans, i) =>
+        i === clsIndex
+          ? plans.map((day, j) =>
+              j === dayIndex
+                ? {
+                    ...day,
+                    activities: day.activities.filter((_, k) => k !== actIndex),
+                  }
+                : day,
+            )
+          : plans,
+      ),
+    );
+  };
+
+  const updateActivity = (
+    clsIndex: number,
+    dayIndex: number,
+    actIndex: number,
+    field: keyof ActivityForm,
+    value: string | boolean,
+  ) => {
+    setDayPlans((prev) =>
+      prev.map((plans, i) =>
+        i === clsIndex
+          ? plans.map((day, j) =>
+              j === dayIndex
+                ? {
+                    ...day,
+                    activities: day.activities.map((act, k) =>
+                      k === actIndex ? { ...act, [field]: value } : act,
+                    ),
+                  }
+                : day,
+            )
+          : plans,
+      ),
+    );
+  };
+
+  /* ── Insurance CRUD ───────────────────────────────────────── */
+  const addInsurance = (clsIndex: number) => {
+    setInsurances((prev) =>
+      prev.map((insList, i) =>
+        i === clsIndex ? [...insList, emptyInsurance()] : insList,
+      ),
+    );
+  };
+
+  const removeInsurance = (clsIndex: number, insIndex: number) => {
+    setInsurances((prev) =>
+      prev.map((insList, i) =>
+        i === clsIndex ? insList.filter((_, j) => j !== insIndex) : insList,
+      ),
+    );
+  };
+
+  const updateInsurance = (
+    clsIndex: number,
+    insIndex: number,
+    field: keyof InsuranceForm,
+    value: string | boolean,
+  ) => {
+    setInsurances((prev) =>
+      prev.map((insList, i) =>
+        i === clsIndex
+          ? insList.map((ins, j) =>
+              j === insIndex ? { ...ins, [field]: value } : ins,
+            )
+          : insList,
+      ),
+    );
+  };
+
+  /* ── Submit ───────────────────────────────────────────────── */
+  const handleSubmit = async () => {
+    if (!validateStep(currentStep)) return;
+
+    try {
+      setSaving(true);
+      const formData = new FormData();
+
+      // Basic info
+      formData.append("tourName", basicInfo.tourName);
+      formData.append("shortDescription", basicInfo.shortDescription);
+      formData.append("longDescription", basicInfo.longDescription);
+      formData.append("seoTitle", basicInfo.seoTitle);
+      formData.append("seoDescription", basicInfo.seoDescription);
+      formData.append("status", basicInfo.status);
+
+      // Files
+      if (thumbnail) {
+        formData.append("thumbnail", thumbnail);
+      }
+      images.forEach((img) => {
+        formData.append("images", img);
+      });
+
+      // Classifications with nested day plans, activities, and insurance
+      classifications.forEach((cls, ci) => {
+        const prefix = `classifications[${ci}]`;
+        formData.append(`${prefix}.name`, cls.name);
+        formData.append(`${prefix}.description`, cls.description);
+        formData.append(`${prefix}.price`, cls.price);
+        formData.append(`${prefix}.salePrice`, cls.salePrice || cls.price);
+        formData.append(`${prefix}.durationDays`, cls.durationDays);
+
+        // Day plans
+        const plans = dayPlans[ci] ?? [];
+        plans.forEach((day, di) => {
+          const dayPrefix = `${prefix}.plans[${di}]`;
+          formData.append(`${dayPrefix}.dayNumber`, day.dayNumber);
+          formData.append(`${dayPrefix}.title`, day.title);
+          formData.append(`${dayPrefix}.description`, day.description);
+
+          // Activities
+          day.activities.forEach((act, ai) => {
+            const actPrefix = `${dayPrefix}.activities[${ai}]`;
+            formData.append(`${actPrefix}.activityType`, act.activityType);
+            formData.append(`${actPrefix}.title`, act.title);
+            formData.append(`${actPrefix}.description`, act.description);
+            formData.append(`${actPrefix}.note`, act.note);
+            formData.append(
+              `${actPrefix}.estimatedCost`,
+              act.estimatedCost || "0",
+            );
+            formData.append(`${actPrefix}.isOptional`, String(act.isOptional));
+            formData.append(`${actPrefix}.startTime`, act.startTime);
+            formData.append(`${actPrefix}.endTime`, act.endTime);
+          });
+        });
+
+        // Insurance
+        const ins = insurances[ci] ?? [];
+        ins.forEach((insurance, ii) => {
+          const insPrefix = `${prefix}.insurances[${ii}]`;
+          formData.append(
+            `${insPrefix}.insuranceName`,
+            insurance.insuranceName,
+          );
+          formData.append(
+            `${insPrefix}.insuranceType`,
+            insurance.insuranceType,
+          );
+          formData.append(
+            `${insPrefix}.insuranceProvider`,
+            insurance.insuranceProvider,
+          );
+          formData.append(
+            `${insPrefix}.coverageDescription`,
+            insurance.coverageDescription,
+          );
+          formData.append(
+            `${insPrefix}.coverageAmount`,
+            insurance.coverageAmount || "0",
+          );
+          formData.append(
+            `${insPrefix}.coverageFee`,
+            insurance.coverageFee || "0",
+          );
+          formData.append(
+            `${insPrefix}.isOptional`,
+            String(insurance.isOptional),
+          );
+          formData.append(`${insPrefix}.note`, insurance.note);
+        });
+      });
+
+      await tourService.createTour(formData);
+      toast.success(t("tourAdmin.createSuccess", "Tour created successfully!"));
+      router.push("/tour-management");
+    } catch (error) {
+      console.error("Failed to create tour:", error);
+      toast.error(t("tourAdmin.createError", "Failed to create tour"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  /* ══════════════════════════════════════════════════════════
+     Render
+     ══════════════════════════════════════════════════════════ */
+  return (
+    <div>
+      {/* Step indicator */}
+      <div className="mb-6">
+        <div className="flex items-center justify-center gap-2">
+          {STEPS.map((step, i) => (
+            <React.Fragment key={step.key}>
+              {i > 0 && (
+                <div
+                  className={`h-px w-8 ${i <= currentStep ? "bg-slate-900 dark:bg-slate-400" : "bg-slate-200 dark:bg-slate-700"}`}
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  if (i < currentStep) setCurrentStep(i);
+                }}
+                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  i === currentStep
+                    ? "bg-slate-900 text-white dark:bg-slate-600"
+                    : i < currentStep
+                      ? "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300 hover:bg-slate-300"
+                      : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
+                }`}>
+                <Icon icon={step.icon} className="size-4" />
+                <span className="hidden sm:inline">
+                  {t(`tourAdmin.step.${step.key}`, step.key)}
+                </span>
+                <span className="sm:hidden">{i + 1}</span>
+              </button>
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Step 1: Basic Info ───────────────────────────── */}
+      {currentStep === 0 && (
+        <div className="grid grid-cols-12 gap-5">
+          <div className="col-span-12 lg:col-span-8">
+            <Card
+              title={t("tourAdmin.basicInfo", "Basic Information")}
+              className="mb-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <TextInput
+                    label={t("tourAdmin.tourName", "Tour Name")}
+                    value={basicInfo.tourName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setBasicInfo((prev) => ({
+                        ...prev,
+                        tourName: e.target.value,
+                      }))
+                    }
+                    placeholder={t(
+                      "tourAdmin.tourNamePlaceholder",
+                      "Enter tour name",
+                    )}
+                  />
+                  {errors.tourName && (
+                    <p className="text-danger-500 text-sm mt-1">
+                      {errors.tourName}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <Textarea
+                  label={t("tourAdmin.shortDescription", "Short Description")}
+                  value={basicInfo.shortDescription}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setBasicInfo((prev) => ({
+                      ...prev,
+                      shortDescription: e.target.value,
+                    }))
+                  }
+                  row={2}
+                  placeholder={t(
+                    "tourAdmin.shortDescPlaceholder",
+                    "Brief tour description",
+                  )}
+                />
+                {errors.shortDescription && (
+                  <p className="text-danger-500 text-sm mt-1">
+                    {errors.shortDescription}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <Textarea
+                  label={t("tourAdmin.longDescription", "Long Description")}
+                  value={basicInfo.longDescription}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setBasicInfo((prev) => ({
+                      ...prev,
+                      longDescription: e.target.value,
+                    }))
+                  }
+                  row={5}
+                  placeholder={t(
+                    "tourAdmin.longDescPlaceholder",
+                    "Detailed tour description",
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <TextInput
+                  label={t("tourAdmin.seoTitle", "SEO Title")}
+                  value={basicInfo.seoTitle}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setBasicInfo((prev) => ({
+                      ...prev,
+                      seoTitle: e.target.value,
+                    }))
+                  }
+                />
+                <TextInput
+                  label={t("tourAdmin.seoDescription", "SEO Description")}
+                  value={basicInfo.seoDescription}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setBasicInfo((prev) => ({
+                      ...prev,
+                      seoDescription: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+
+              <div className="mt-4">
+                <Select
+                  label={t("tourAdmin.status", "Status")}
+                  value={basicInfo.status}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    setBasicInfo((prev) => ({
+                      ...prev,
+                      status: e.target.value,
+                    }))
+                  }
+                  options={STATUS_OPTIONS}
+                />
+              </div>
+            </Card>
+          </div>
+
+          <div className="col-span-12 lg:col-span-4">
+            <Card title={t("tourAdmin.media", "Media")} className="mb-5">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                  {t("tourAdmin.thumbnail", "Thumbnail")}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
+                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                />
+                {thumbnail && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    {thumbnail.name}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                  {t("tourAdmin.images", "Gallery Images")}
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setImages(Array.from(e.target.files ?? []))}
+                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                />
+                {images.length > 0 && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    {images.length}{" "}
+                    {t("tourAdmin.filesSelected", "file(s) selected")}
+                  </p>
+                )}
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* ── Step 2: Classifications ──────────────────────── */}
+      {currentStep === 1 && (
+        <Card
+          title={t("tourAdmin.classifications", "Classifications / Packages")}
+          headerSlot={
+            <button
+              type="button"
+              className="btn btn-dark btn-sm inline-flex items-center gap-1"
+              onClick={addClassification}>
+              <Icon icon="heroicons:plus" className="size-4" />
+              {t("tourAdmin.addClassification", "Add")}
+            </button>
+          }>
+          <div className="flex flex-col gap-4">
+            {classifications.map((cls, ci) => (
+              <div
+                key={ci}
+                className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
+                {classifications.length > 1 && (
+                  <button
+                    type="button"
+                    className="absolute top-3 right-3 text-danger-500 hover:text-danger-700"
+                    onClick={() => removeClassification(ci)}>
+                    <Icon icon="heroicons:x-mark" className="size-5" />
+                  </button>
+                )}
+                <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                  {t("tourAdmin.classification", "Classification")} #{ci + 1}
+                </h5>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <TextInput
+                      label={t("tourAdmin.name", "Name")}
+                      value={cls.name}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updateClassification(ci, "name", e.target.value)
+                      }
+                      placeholder="Standard / Luxury"
+                    />
+                    {errors[`cls_${ci}_name`] && (
+                      <p className="text-danger-500 text-sm mt-1">
+                        {errors[`cls_${ci}_name`]}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <TextInput
+                      type="number"
+                      label={t("tourAdmin.price", "Price ($)")}
+                      value={cls.price}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updateClassification(ci, "price", e.target.value)
+                      }
+                    />
+                    {errors[`cls_${ci}_price`] && (
+                      <p className="text-danger-500 text-sm mt-1">
+                        {errors[`cls_${ci}_price`]}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <TextInput
+                      type="number"
+                      label={t("tourAdmin.salePrice", "Sale Price ($)")}
+                      value={cls.salePrice}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updateClassification(ci, "salePrice", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                  <div>
+                    <TextInput
+                      type="number"
+                      label={t("tourAdmin.durationDays", "Duration (days)")}
+                      value={cls.durationDays}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updateClassification(ci, "durationDays", e.target.value)
+                      }
+                    />
+                    {errors[`cls_${ci}_duration`] && (
+                      <p className="text-danger-500 text-sm mt-1">
+                        {errors[`cls_${ci}_duration`]}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Textarea
+                      label={t("tourAdmin.description", "Description")}
+                      value={cls.description}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        updateClassification(ci, "description", e.target.value)
+                      }
+                      row={1}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* ── Step 3: Day Plans ────────────────────────────── */}
+      {currentStep === 2 && (
+        <div className="flex flex-col gap-5">
+          {classifications.map((cls, ci) => (
+            <Card
+              key={ci}
+              title={`${cls.name || `Classification #${ci + 1}`} — ${t("tourAdmin.dayPlans", "Day Plans")}`}
+              headerSlot={
+                <button
+                  type="button"
+                  className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
+                  onClick={() => addDayPlan(ci)}>
+                  <Icon icon="heroicons:plus" className="size-4" />
+                  {t("tourAdmin.addDay", "Add Day")}
+                </button>
+              }>
+              {(dayPlans[ci] ?? []).length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">
+                  {t(
+                    "tourAdmin.noDayPlans",
+                    "No day plans yet. Click 'Add Day' to start.",
+                  )}
+                </p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {(dayPlans[ci] ?? []).map((day, di) => (
+                    <div
+                      key={di}
+                      className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h6 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                          {t("tourAdmin.day", "Day")} {day.dayNumber}
+                        </h6>
+                        <button
+                          type="button"
+                          className="text-danger-500 hover:text-danger-700"
+                          onClick={() => removeDayPlan(ci, di)}>
+                          <Icon icon="heroicons:x-mark" className="size-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                        <TextInput
+                          type="number"
+                          label={t("tourAdmin.dayNumber", "Day #")}
+                          value={day.dayNumber}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateDayPlan(ci, di, "dayNumber", e.target.value)
+                          }
+                        />
+                        <TextInput
+                          label={t("tourAdmin.dayTitle", "Title")}
+                          value={day.title}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateDayPlan(ci, di, "title", e.target.value)
+                          }
+                          placeholder={t(
+                            "tourAdmin.dayTitlePlaceholder",
+                            "e.g. Arrival & City Tour",
+                          )}
+                        />
+                        <TextInput
+                          label={t("tourAdmin.dayDescription", "Description")}
+                          value={day.description}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateDayPlan(ci, di, "description", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      {/* Activities */}
+                      <div className="ml-4 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                            {t("tourAdmin.activities", "Activities")}
+                          </span>
+                          <button
+                            type="button"
+                            className="btn btn-outline-dark btn-xs inline-flex items-center gap-1"
+                            onClick={() => addActivity(ci, di)}>
+                            <Icon icon="heroicons:plus" className="size-3" />
+                            {t("tourAdmin.addActivity", "Add")}
+                          </button>
+                        </div>
+
+                        {day.activities.length === 0 && (
+                          <p className="text-xs text-slate-400 py-2">
+                            {t("tourAdmin.noActivities", "No activities")}
+                          </p>
+                        )}
+
+                        {day.activities.map((act, ai) => (
+                          <div
+                            key={ai}
+                            className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 mb-2 relative">
+                            <button
+                              type="button"
+                              className="absolute top-2 right-2 text-danger-500"
+                              onClick={() => removeActivity(ci, di, ai)}>
+                              <Icon
+                                icon="heroicons:x-mark"
+                                className="size-3.5"
+                              />
+                            </button>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              <Select
+                                label={t("tourAdmin.type", "Type")}
+                                value={act.activityType}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLSelectElement>,
+                                ) =>
+                                  updateActivity(
+                                    ci,
+                                    di,
+                                    ai,
+                                    "activityType",
+                                    e.target.value,
+                                  )
+                                }
+                                options={ACTIVITY_TYPE_OPTIONS}
+                              />
+                              <TextInput
+                                label={t("tourAdmin.actTitle", "Title")}
+                                value={act.title}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateActivity(
+                                    ci,
+                                    di,
+                                    ai,
+                                    "title",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                              <TextInput
+                                label={t("tourAdmin.startTime", "Start")}
+                                value={act.startTime}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateActivity(
+                                    ci,
+                                    di,
+                                    ai,
+                                    "startTime",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="09:00"
+                              />
+                              <TextInput
+                                label={t("tourAdmin.endTime", "End")}
+                                value={act.endTime}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateActivity(
+                                    ci,
+                                    di,
+                                    ai,
+                                    "endTime",
+                                    e.target.value,
+                                  )
+                                }
+                                placeholder="12:00"
+                              />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                              <TextInput
+                                label={t(
+                                  "tourAdmin.actDescription",
+                                  "Description",
+                                )}
+                                value={act.description}
+                                onChange={(
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) =>
+                                  updateActivity(
+                                    ci,
+                                    di,
+                                    ai,
+                                    "description",
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                              <div className="flex items-end gap-3">
+                                <TextInput
+                                  type="number"
+                                  label={t("tourAdmin.cost", "Est. Cost ($)")}
+                                  value={act.estimatedCost}
+                                  onChange={(
+                                    e: React.ChangeEvent<HTMLInputElement>,
+                                  ) =>
+                                    updateActivity(
+                                      ci,
+                                      di,
+                                      ai,
+                                      "estimatedCost",
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                                <label className="flex items-center gap-1.5 text-xs text-slate-600 pb-2 whitespace-nowrap">
+                                  <input
+                                    type="checkbox"
+                                    checked={act.isOptional}
+                                    onChange={(e) =>
+                                      updateActivity(
+                                        ci,
+                                        di,
+                                        ai,
+                                        "isOptional",
+                                        e.target.checked,
+                                      )
+                                    }
+                                    className="rounded border-slate-300"
+                                  />
+                                  {t("tourAdmin.optional", "Optional")}
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* ── Step 4: Insurance ────────────────────────────── */}
+      {currentStep === 3 && (
+        <div className="flex flex-col gap-5">
+          {classifications.map((cls, ci) => (
+            <Card
+              key={ci}
+              title={`${cls.name || `Classification #${ci + 1}`} — ${t("tourAdmin.insurance", "Insurance")}`}
+              headerSlot={
+                <button
+                  type="button"
+                  className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
+                  onClick={() => addInsurance(ci)}>
+                  <Icon icon="heroicons:plus" className="size-4" />
+                  {t("tourAdmin.addInsurance", "Add")}
+                </button>
+              }>
+              {(insurances[ci] ?? []).length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">
+                  {t(
+                    "tourAdmin.noInsurance",
+                    "No insurance options. Click 'Add' to create one.",
+                  )}
+                </p>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {(insurances[ci] ?? []).map((ins, ii) => (
+                    <div
+                      key={ii}
+                      className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
+                      <button
+                        type="button"
+                        className="absolute top-3 right-3 text-danger-500"
+                        onClick={() => removeInsurance(ci, ii)}>
+                        <Icon icon="heroicons:x-mark" className="size-4" />
+                      </button>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <TextInput
+                          label={t("tourAdmin.insuranceName", "Name")}
+                          value={ins.insuranceName}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateInsurance(
+                              ci,
+                              ii,
+                              "insuranceName",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <Select
+                          label={t("tourAdmin.insuranceType", "Type")}
+                          value={ins.insuranceType}
+                          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            updateInsurance(
+                              ci,
+                              ii,
+                              "insuranceType",
+                              e.target.value,
+                            )
+                          }
+                          options={INSURANCE_TYPE_OPTIONS}
+                        />
+                        <TextInput
+                          label={t("tourAdmin.provider", "Provider")}
+                          value={ins.insuranceProvider}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateInsurance(
+                              ci,
+                              ii,
+                              "insuranceProvider",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="mt-3">
+                        <Textarea
+                          label={t(
+                            "tourAdmin.coverageDesc",
+                            "Coverage Description",
+                          )}
+                          value={ins.coverageDescription}
+                          onChange={(
+                            e: React.ChangeEvent<HTMLTextAreaElement>,
+                          ) =>
+                            updateInsurance(
+                              ci,
+                              ii,
+                              "coverageDescription",
+                              e.target.value,
+                            )
+                          }
+                          row={2}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                        <TextInput
+                          type="number"
+                          label={t("tourAdmin.coverageAmount", "Coverage ($)")}
+                          value={ins.coverageAmount}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateInsurance(
+                              ci,
+                              ii,
+                              "coverageAmount",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <TextInput
+                          type="number"
+                          label={t("tourAdmin.coverageFee", "Fee ($)")}
+                          value={ins.coverageFee}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                            updateInsurance(
+                              ci,
+                              ii,
+                              "coverageFee",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <label className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300 self-end pb-2">
+                          <input
+                            type="checkbox"
+                            checked={ins.isOptional}
+                            onChange={(e) =>
+                              updateInsurance(
+                                ci,
+                                ii,
+                                "isOptional",
+                                e.target.checked,
+                              )
+                            }
+                            className="rounded border-slate-300"
+                          />
+                          {t("tourAdmin.optional", "Optional")}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* ── Navigation Buttons ───────────────────────────── */}
+      <div className="mt-6 flex items-center justify-between">
+        <button
+          type="button"
+          className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
+          onClick={() =>
+            currentStep === 0 ? router.push("/tour-management") : goPrev()
+          }>
+          <Icon icon="heroicons:arrow-left" className="size-4" />
+          {currentStep === 0
+            ? t("tourAdmin.backToList", "Back to List")
+            : t("tourAdmin.previous", "Previous")}
+        </button>
+
+        {currentStep < STEPS.length - 1 ? (
+          <button
+            type="button"
+            className="btn btn-dark btn-sm inline-flex items-center gap-1"
+            onClick={goNext}>
+            {t("tourAdmin.next", "Next")}
+            <Icon icon="heroicons:arrow-right" className="size-4" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-dark btn-sm inline-flex items-center gap-1"
+            disabled={saving}
+            onClick={handleSubmit}>
+            {saving && (
+              <Icon
+                icon="heroicons:arrow-path"
+                className="size-4 animate-spin"
+              />
+            )}
+            <Icon icon="heroicons:check" className="size-4" />
+            {t("tourAdmin.createTour", "Create Tour")}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
