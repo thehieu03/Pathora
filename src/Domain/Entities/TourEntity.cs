@@ -17,8 +17,8 @@ public class TourEntity : Aggregate<Guid>
     public static string GenerateTourCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
-        var randomPart = Random.Shared.Next(10000, 99999).ToString();
-        return $"TOUR-{datePart}-{randomPart}";
+        var uniquePart = Guid.CreateVersion7().ToString("N")[..8];
+        return $"TOUR-{datePart}-{uniquePart}";
     }
 
     public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
