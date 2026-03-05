@@ -88,7 +88,6 @@ public sealed class TourControllerTests
                 response, "/api/tour", StubFileService());
 
         var actionResult = await controller.Create(
-            tourCode: "TOUR-001",
             tourName: "Tour Đà Nẵng",
             shortDescription: "Mô tả ngắn",
             longDescription: "Mô tả dài",
@@ -104,7 +103,7 @@ public sealed class TourControllerTests
             expectedInstance: "/api/tour",
             expectedData: response);
         Assert.NotNull(probe.CapturedRequest);
-        Assert.Equal("TOUR-001", probe.CapturedRequest.TourCode);
+        Assert.Equal("Tour Đà Nẵng", probe.CapturedRequest.TourName);
     }
 
     [Fact]
@@ -117,7 +116,6 @@ public sealed class TourControllerTests
 
         var actionResult = await controller.Update(
             id: tourId,
-            tourCode: "TOUR-001",
             tourName: "Tour Đà Nẵng",
             shortDescription: "Mô tả ngắn",
             longDescription: "Mô tả dài",

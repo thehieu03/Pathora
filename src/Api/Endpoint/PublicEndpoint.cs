@@ -13,4 +13,5 @@ public static class PublicEndpoint
     public const string Latest = "latest";
     public const string Trending = "trending";
     public const string Top = "top";
+    public const string Detail = "{id:guid}";
 }

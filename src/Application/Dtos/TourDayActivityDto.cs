@@ -14,6 +14,8 @@ public sealed record TourDayActivityDto(
     bool IsOptional,
     TimeOnly? StartTime,
     TimeOnly? EndTime,
+    List<TourPlanRouteDto> Routes,
+    TourPlanAccommodationDto? Accommodation,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,

@@ -6,6 +6,7 @@ public sealed record TourDayDto(
     int DayNumber,
     string Title,
     string? Description,
+    List<TourDayActivityDto> Activities,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,

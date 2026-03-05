@@ -8,6 +8,8 @@ public sealed record TourClassificationDto(
     decimal SalePrice,
     string Description,
     int DurationDays,
+    List<TourDayDto> Plans,
+    List<TourInsuranceDto> Insurances,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,
