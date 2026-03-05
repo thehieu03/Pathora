@@ -1,2 +1,16 @@
 docs/plans/
 openspec/
+
+# AI tools / coding agents
+*.ai.*
+*.cursorrules
+.cursor/
+.windsurf/
+.claude/
+.agent/
+.agents/
+.aider*
+.kilocode/
+.kiro/
+.github/copilot-instructions.md
+.vscode/mcp.json
