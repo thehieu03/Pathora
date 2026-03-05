@@ -157,7 +157,7 @@ export const TrendingDestinationsSection = () => {
             <Link
               key={dest.city}
               href="/tours"
-              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl transition-shadow duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
+              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
               <Image
                 src={dest.image}
                 alt={dest.city}
@@ -257,7 +257,7 @@ export const TopAttractionsSection = () => {
               href="/tours"
               className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent rounded-xl">
               <Card
-                className="bg-white! border border-landing-border rounded-xl! hover:shadow-md transition-shadow duration-300"
+                className="bg-white! border border-landing-border rounded-xl! hover:shadow-lg hover:-translate-y-1 transition-all duration-300 hover:border-landing-accent"
                 bodyClass="p-3 flex items-center gap-3">
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
                   <Image

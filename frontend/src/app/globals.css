@@ -38,6 +38,10 @@ body {
   overflow-x: clip;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 img,
 picture,
 video,
