@@ -32,14 +32,10 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
 
     public async Task<ErrorOr<Guid>> Create(CreateTourCommand request)
     {
-        if (await _tourRepository.ExistsByTourCode(request.TourCode))
-            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{request.TourCode}' đã tồn tại");
-
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : new ImageEntity();
         var images = request.Images?.Select(ToImageEntity).ToList() ?? [];
 
         var tour = TourEntity.Create(
-            request.TourCode,
             request.TourName,
             request.ShortDescription,
             request.LongDescription,
@@ -60,14 +56,13 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
 
-        if (await _tourRepository.ExistsByTourCode(request.TourCode, request.Id))
-            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{request.TourCode}' đã tồn tại");
+        if (await _tourRepository.ExistsByTourCode(tour.TourCode, request.Id))
+            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{tour.TourCode}' đã tồn tại");
 
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : null;
         var images = request.Images?.Select(ToImageEntity).ToList();
 
         tour.Update(
-            request.TourCode,
             request.TourName,
             request.ShortDescription,
             request.LongDescription,

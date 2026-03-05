@@ -58,7 +58,7 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
         {
             img.ToTable("TourImages");
             img.WithOwner().HasForeignKey("TourId");
-            img.Property<int>("Id").ValueGeneratedOnAdd();
+            img.Property<int>("Id").ValueGeneratedOnAdd().UseIdentityAlwaysColumn();
             img.HasKey("Id");
             img.Property(i => i.FileId).HasMaxLength(200);
             img.Property(i => i.OriginalFileName).HasMaxLength(500);

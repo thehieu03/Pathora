@@ -18,24 +18,30 @@ internal static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddAuthentication(options =>
+        var authBuilder = services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
             .AddCookie(IdentityConstants.ExternalScheme)
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddGoogle(options =>
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var googleClientId = configuration["Authentication:Google:ClientId"];
+        var googleClientSecret = configuration["Authentication:Google:ClientSecret"];
+
+        if (!string.IsNullOrWhiteSpace(googleClientId) && !string.IsNullOrWhiteSpace(googleClientSecret))
+        {
+            authBuilder.AddGoogle(options =>
             {
-                options.ClientId = configuration["Authentication:Google:ClientId"] ??
-                                   throw new InvalidOperationException("Invalid Google Client ID");
-                options.ClientSecret = configuration["Authentication:Google:ClientSecret"] ??
-                                       throw new InvalidOperationException("Invalid Google Client Secret");
+                options.ClientId = googleClientId;
+                options.ClientSecret = googleClientSecret;
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
-            })
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+            });
+        }
+
+        authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -75,4 +81,3 @@ internal static class DependencyInjection
         return services;
     }
 }
-

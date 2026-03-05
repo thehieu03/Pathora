@@ -9,7 +9,6 @@ using Application.Services;
 namespace Application.Features.Tour.Commands;
 
 public sealed record CreateTourCommand(
-    string TourCode,
     string TourName,
     string ShortDescription,
     string LongDescription,
@@ -23,9 +22,6 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
 {
     public CreateTourCommandValidator()
     {
-        RuleFor(x => x.TourCode)
-            .NotEmpty().WithMessage(ValidationMessages.TourCodeRequired);
-
         RuleFor(x => x.TourName)
             .NotEmpty().WithMessage(ValidationMessages.TourNameRequired)
             .MaximumLength(500).WithMessage(ValidationMessages.TourNameMaxLength500);

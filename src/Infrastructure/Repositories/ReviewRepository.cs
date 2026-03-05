@@ -14,7 +14,7 @@ public class ReviewRepository(AppDbContext context) : IReviewRepository
         return await _context.Reviews
             .Include(r => r.User)
             .Include(r => r.Tour)
-            .Where(r => r.IsApproved)
+            .Where(r => r.IsApproved && !r.User.IsDeleted && !r.Tour.IsDeleted)
             .OrderByDescending(r => r.Rating)
             .ThenByDescending(r => r.CreatedOnUtc)
             .Take(limit)

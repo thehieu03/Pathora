@@ -14,6 +14,7 @@ public sealed record TourDto(
     bool IsDeleted,
     ImageDto Thumbnail,
     List<ImageDto> Images,
+    List<TourClassificationDto> Classifications,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,

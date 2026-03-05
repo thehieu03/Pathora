@@ -8,7 +8,6 @@ namespace Application.Features.Tour.Commands;
 
 public sealed record UpdateTourCommand(
     Guid Id,
-    string TourCode,
     string TourName,
     string ShortDescription,
     string LongDescription,

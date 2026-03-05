@@ -1,6 +1,7 @@
 using Application.Common.Interfaces;
 using Domain.Common.Models;
 using Infrastructure.Exceptions;
+using Microsoft.Extensions.Configuration;
 using Minio;
 using Minio.DataModel.Args;
 using System.Text.Json;
@@ -11,14 +12,22 @@ public sealed class MinIOCloudService : IMinIOCloudService
 {
     private readonly IMinioClient _minioClient;
     private readonly string _publicBaseUrl;
-    public MinIOCloudService(IMinioClient minioClient)
+    public MinIOCloudService(IMinioClient minioClient, IConfiguration configuration)
     {
         _minioClient = minioClient;
-        var raw = minioClient.Config.Endpoint;
-        var scheme = minioClient.Config.Secure ? "https" : "http";
-        _publicBaseUrl = raw.StartsWith("http://") || raw.StartsWith("https://")
-            ? raw.TrimEnd('/')
-            : $"{scheme}://{raw.TrimEnd('/')}";
+        var publicUrl = configuration["MinIO:PublicUrl"];
+        if (!string.IsNullOrEmpty(publicUrl))
+        {
+            _publicBaseUrl = publicUrl.TrimEnd('/');
+        }
+        else
+        {
+            var raw = minioClient.Config.Endpoint;
+            var scheme = minioClient.Config.Secure ? "https" : "http";
+            _publicBaseUrl = raw.StartsWith("http://") || raw.StartsWith("https://")
+                ? raw.TrimEnd('/')
+                : $"{scheme}://{raw.TrimEnd('/')}";
+        }
     }
     public async Task<string> GetShareLinkAsync(string bucketName, string objectName, int expireTime)
     {

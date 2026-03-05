@@ -33,7 +33,6 @@ public class TourController(IFileService fileService) : BaseApiController
     [HttpPost]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create(
-        [FromForm] string tourCode,
         [FromForm] string tourName,
         [FromForm] string shortDescription,
         [FromForm] string longDescription,
@@ -49,7 +48,7 @@ public class TourController(IFileService fileService) : BaseApiController
             : null;
 
         var command = new CreateTourCommand(
-            tourCode, tourName, shortDescription, longDescription,
+            tourName, shortDescription, longDescription,
             seoTitle, seoDescription, status, thumbnailDto, imageDtos);
 
         var result = await Sender.Send(command);
@@ -60,7 +59,6 @@ public class TourController(IFileService fileService) : BaseApiController
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(
         [FromForm] Guid id,
-        [FromForm] string tourCode,
         [FromForm] string tourName,
         [FromForm] string shortDescription,
         [FromForm] string longDescription,
@@ -76,7 +74,7 @@ public class TourController(IFileService fileService) : BaseApiController
             : null;
 
         var command = new UpdateTourCommand(
-            id, tourCode, tourName, shortDescription, longDescription,
+            id, tourName, shortDescription, longDescription,
             seoTitle, seoDescription, status, thumbnailDto, imageDtos);
 
         var result = await Sender.Send(command);
