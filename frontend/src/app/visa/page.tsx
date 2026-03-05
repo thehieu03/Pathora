@@ -3,8 +3,7 @@ import dynamic from "next/dynamic";
 import VisaLoading from "./loading";
 
 const VisaApplicationPage = dynamic(
-  () =>
-    import("@/components/partials/landing").then((m) => m.VisaApplicationPage),
+  () => import("@/components/partials/visa").then((m) => m.VisaApplicationPage),
   { loading: () => <VisaLoading /> },
 );
 

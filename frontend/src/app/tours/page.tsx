@@ -2,8 +2,8 @@ import React from "react";
 import dynamic from "next/dynamic";
 import ToursLoading from "./loading";
 
-const TourDiscoveryPage = dynamic(() =>
-  import("@/components/partials/landing").then((m) => m.TourDiscoveryPage),
+const TourDiscoveryPage = dynamic(
+  () => import("@/components/partials/tours").then((m) => m.TourDiscoveryPage),
   { loading: () => <ToursLoading /> },
 );
 

@@ -26,9 +26,8 @@ describe("dark style presence", () => {
 
   it("has dark styles in layout/navigation areas", () => {
     const targets = [
-      "src/components/partials/sidebar/index.tsx",
-      "src/components/partials/header/index.tsx",
-      "src/components/partials/footer/index.tsx",
+      "src/components/partials/shared/LandingHeader.tsx",
+      "src/components/partials/shared/LandingFooter.tsx",
       "src/app/home/page.tsx",
     ];
 

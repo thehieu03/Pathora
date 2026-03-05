@@ -49,6 +49,7 @@ yarn-error.log*
 next-env.d.ts
 
 # AI tools
+.agent
 .agents
 .claude
 .kilocode
@@ -59,3 +60,6 @@ next-env.d.ts
 CLAUDE.md
 skills
 skills-lock.json
+
+# OpenSpec
+openspec/
