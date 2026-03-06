@@ -1,4 +1,5 @@
 using Api;
+using Api.Middleware;
 using Api.Configuration;
 using Api.Swagger.Extensions;
 using Application;
@@ -39,6 +40,7 @@ if (!app.Environment.IsDevelopment())
 app.UseExceptionHandler(_ => { });
 
 app.UseCors();
+app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

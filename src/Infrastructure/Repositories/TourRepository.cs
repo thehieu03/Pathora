@@ -33,6 +33,30 @@ public class TourRepository(AppDbContext context) : ITourRepository
             .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 
+    public async Task<TourEntity?> FindByIdReadOnly(Guid id)
+    {
+        return await _context.Tours
+            .AsNoTracking()
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(d => d.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.FromLocation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(d => d.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.ToLocation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(d => d.Activities)
+                        .ThenInclude(a => a.Accommodation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Insurances)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+    }
+
     public async Task<List<TourEntity>> FindAll(string? searchText, int pageNumber, int pageSize)
     {
         var query = _context.Tours.AsNoTracking().Where(t => !t.IsDeleted);
@@ -106,6 +130,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
     public async Task<List<TourEntity>> FindFeaturedTours(int limit)
     {
         return await _context.Tours
+            .AsNoTracking()
             .Include(t => t.Classifications)
                 .ThenInclude(c => c.Plans)
                     .ThenInclude(p => p.Activities)
@@ -115,12 +140,14 @@ public class TourRepository(AppDbContext context) : ITourRepository
             .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
             .OrderByDescending(t => t.CreatedOnUtc)
             .Take(limit)
+            .AsSplitQuery()
             .ToListAsync();
     }
 
     public async Task<List<TourEntity>> FindLatestTours(int limit)
     {
         return await _context.Tours
+            .AsNoTracking()
             .Include(t => t.Thumbnail)
             .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
             .OrderByDescending(t => t.CreatedOnUtc)
@@ -131,6 +158,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
     public async Task<List<TourEntity>> SearchTours(string? destination, string? classification, int page, int pageSize)
     {
         var query = _context.Tours
+            .AsNoTracking()
             .Include(t => t.Classifications)
                 .ThenInclude(c => c.Plans)
                     .ThenInclude(p => p.Activities)
@@ -157,6 +185,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
         }
 
         return await query
+            .AsSplitQuery()
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();
@@ -190,20 +219,17 @@ public class TourRepository(AppDbContext context) : ITourRepository
     public async Task<List<(string City, string Country, int ToursCount)>> GetTrendingDestinations(int limit)
     {
         var locations = await _context.TourPlanLocations
-            .Include(l => l.TourDayActivity)
-                .ThenInclude(a => a.TourDay)
-                    .ThenInclude(d => d.Classification)
-                        .ThenInclude(c => c.Tour)
             .Where(l => l.City != null && l.Country != null)
-            .Where(l => l.TourDayActivity != null && l.TourDayActivity.TourDay != null && 
+            .Where(l => l.TourDayActivity != null && l.TourDayActivity.TourDay != null &&
                         l.TourDayActivity.TourDay.Classification != null &&
                         l.TourDayActivity.TourDay.Classification.Tour != null &&
                         l.TourDayActivity.TourDay.Classification.Tour.Status == TourStatus.Active &&
                         !l.TourDayActivity.TourDay.Classification.Tour.IsDeleted)
             .GroupBy(l => new { l.City, l.Country })
-            .Select(g => new { g.Key.City, g.Key.Country, ToursCount = g.Select(l => l.TourDayActivity.TourDay.Classification.Tour.Id).Distinct().Count() })
+            .Select(g => new { g.Key.City, g.Key.Country, ToursCount = g.Select(l => l.TourDayActivity!.TourDay!.Classification!.Tour!.Id).Distinct().Count() })
             .OrderByDescending(x => x.ToursCount)
             .Take(limit)
+            .AsNoTracking()
             .ToListAsync();
 
         return locations.Select(l => (l.City!, l.Country!, l.ToursCount)).ToList();
@@ -214,6 +240,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
         var attractionTypes = new[] { LocationType.TouristAttraction, LocationType.Museum, LocationType.NationalPark, LocationType.Beach, LocationType.Temple };
 
         return await _context.TourPlanLocations
+            .AsNoTracking()
             .Where(l => attractionTypes.Contains(l.LocationType))
             .Where(l => l.City != null && l.Country != null)
             .Take(limit)
@@ -229,29 +256,19 @@ public class TourRepository(AppDbContext context) : ITourRepository
 
     public async Task<decimal> GetTotalDistanceKm()
     {
-        var routes = await _context.TourPlanRoutes
-            .Include(r => r.TourDayActivity)
-                .ThenInclude(a => a.TourDay)
-                    .ThenInclude(d => d.Classification)
-                        .ThenInclude(c => c.Tour)
+        return await _context.TourPlanRoutes
             .Where(r => r.DistanceKm != null)
             .Where(r => r.TourDayActivity != null && r.TourDayActivity.TourDay != null &&
                         r.TourDayActivity.TourDay.Classification != null &&
                         r.TourDayActivity.TourDay.Classification.Tour != null &&
                         r.TourDayActivity.TourDay.Classification.Tour.Status == TourStatus.Active &&
                         !r.TourDayActivity.TourDay.Classification.Tour.IsDeleted)
-            .ToListAsync();
-
-        return routes.Sum(r => r.DistanceKm ?? 0);
+            .SumAsync(r => r.DistanceKm ?? 0);
     }
 
     public async Task<List<string>> GetAllDestinations()
     {
-        var destinations = await _context.TourPlanLocations
-            .Include(l => l.TourDayActivity)
-                .ThenInclude(a => a.TourDay)
-                    .ThenInclude(d => d.Classification)
-                        .ThenInclude(c => c.Tour)
+        return await _context.TourPlanLocations
             .Where(l => l.City != null)
             .Where(l => l.TourDayActivity != null && l.TourDayActivity.TourDay != null &&
                         l.TourDayActivity.TourDay.Classification != null &&
@@ -261,8 +278,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
             .Select(l => l.City!)
             .Distinct()
             .OrderBy(c => c)
+            .AsNoTracking()
             .ToListAsync();
-
-        return destinations;
     }
 }

@@ -1,5 +1,7 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public sealed class TourDayActivityEntity : Aggregate<Guid>
 {
     public Guid TourDayId { get; set; }
@@ -11,6 +13,7 @@ public sealed class TourDayActivityEntity : Aggregate<Guid>
     public string? Note { get; set; }
     public decimal? EstimatedCost { get; set; }
     public bool IsOptional { get; set; }
+    public Dictionary<string, TourDayActivityTranslationData> Translations { get; set; } = [];
 
     // Time
     public TimeOnly? StartTime { get; set; }

@@ -1,5 +1,7 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourPlanRouteEntity : Aggregate<Guid>
 {
     public int Order { get; set; }
@@ -15,6 +17,7 @@ public class TourPlanRouteEntity : Aggregate<Guid>
     public decimal? Price { get; set; }
     public string? BookingReference { get; set; }
     public string? Note { get; set; }
+    public Dictionary<string, TourPlanRouteTranslationData> Translations { get; set; } = [];
     public TourDayActivityEntity TourDayActivity { get; set; } = null!;
 
     public static TourPlanRouteEntity Create(int order, TransportationType transportationType, string performedBy, string? transportationName = null, string? transportationNote = null, TimeOnly? estimatedDepartureTime = null, TimeOnly? estimatedArrivalTime = null, int? durationMinutes = null, decimal? distanceKm = null, decimal? price = null, string? bookingReference = null, string? note = null)

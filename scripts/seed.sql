@@ -24,24 +24,24 @@ DELETE FROM "Departments";
 DELETE FROM "Positions";
 DELETE FROM "FileMetadatas";
 DELETE FROM "Mails";
-DELETE FROM "logErrors";
+DELETE FROM "LogErrors";
 
 -- ------------------------------------------------------------
 -- 1. Departments
 -- ------------------------------------------------------------
 INSERT INTO "Departments" ("Id", "ParentId", "Name", "Level", "IsDeleted", "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc")
 VALUES
-    ('019527a0-0000-7000-8000-000000000020', NULL                                       'Công ty TNHH Pathora', 1, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000021', '019527a0-0000-7000-8000-000000000020'     'Phòng Kinh doanh', 2, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000022', '019527a0-0000-7000-8000-000000000020'     'Phòng Kỹ thuật', 2, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000023', '019527a0-0000-7000-8000-000000000020'     'Phòng Hành chính - HR', 2, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000024', '019527a0-0000-7000-8000-000000000020'     'Phòng Kế toán', 2, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000025', '019527a0-0000-7000-8000-000000000020'     'Phòng Tour & Điều hành', 2, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000026', '019527a0-0000-7000-8000-000000000020'     'Phòng Marketing', 2, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000027', '019527a0-0000-7000-8000-000000000021'     'Tổ Kinh doanh trong nước', 3, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000028', '019527a0-0000-7000-8000-000000000021'     'Tổ Kinh doanh quốc tế', 3, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-000000000029', '019527a0-0000-7000-8000-000000000025'     'Tổ Điều hành tour', 3, FALSE, 'system', NOW(), 'system', NOW()),
-    ('019527a0-0000-7000-8000-00000000002a', '019527a0-0000-7000-8000-000000000025'     'Tổ Hướng dẫn viên', 3, FALSE, 'system', NOW(), 'system', NOW())
+    ('019527a0-0000-7000-8000-000000000020', NULL,                                       'Công ty TNHH Pathora', 1, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000021', '019527a0-0000-7000-8000-000000000020',     'Phòng Kinh doanh', 2, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000022', '019527a0-0000-7000-8000-000000000020',     'Phòng Kỹ thuật', 2, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000023', '019527a0-0000-7000-8000-000000000020',     'Phòng Hành chính - HR', 2, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000024', '019527a0-0000-7000-8000-000000000020',     'Phòng Kế toán', 2, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000025', '019527a0-0000-7000-8000-000000000020',     'Phòng Tour & Điều hành', 2, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000026', '019527a0-0000-7000-8000-000000000020',     'Phòng Marketing', 2, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000027', '019527a0-0000-7000-8000-000000000021',     'Tổ Kinh doanh trong nước', 3, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000028', '019527a0-0000-7000-8000-000000000021',     'Tổ Kinh doanh quốc tế', 3, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-000000000029', '019527a0-0000-7000-8000-000000000025',     'Tổ Điều hành tour', 3, FALSE, 'system', NOW(), 'system', NOW()),
+    ('019527a0-0000-7000-8000-00000000002a', '019527a0-0000-7000-8000-000000000025',     'Tổ Hướng dẫn viên', 3, FALSE, 'system', NOW(), 'system', NOW())
 ON CONFLICT DO NOTHING;
 
 -- ------------------------------------------------------------

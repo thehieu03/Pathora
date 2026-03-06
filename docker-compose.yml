@@ -67,9 +67,7 @@ services:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
-      - type: bind
-        source: ./volume/minio
-        target: /data
+      - minio-data:/data
     restart: unless-stopped
     logging:
       driver: json-file
@@ -97,6 +95,7 @@ services:
 volumes:
   redis-data:
   portainer-data:
+  minio-data:
 
 networks:
   default:

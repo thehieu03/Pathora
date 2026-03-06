@@ -68,5 +68,10 @@ public class TourPlanAccommodationConfiguration : IEntityTypeConfiguration<TourP
 
         builder.Property(a => a.Note)
             .HasMaxLength(1000);
+
+        builder.Property(a => a.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex("TourDayActivityId");
     }
 }

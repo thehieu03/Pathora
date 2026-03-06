@@ -1,5 +1,7 @@
 ﻿namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourEntity : Aggregate<Guid>
 {
     public string TourCode { get; set; } = null!;
@@ -12,6 +14,7 @@ public class TourEntity : Aggregate<Guid>
     public TourStatus Status { get; set; } = TourStatus.Pending;
     public ImageEntity Thumbnail { get; set; } = null!;
     public List<ImageEntity> Images { get; set; } = [];
+    public Dictionary<string, TourTranslationData> Translations { get; set; } = [];
     public List<TourClassificationEntity> Classifications { get; set; } = [];
 
     public static string GenerateTourCode()

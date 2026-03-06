@@ -32,6 +32,11 @@ public class TourDayActivityConfiguration : IEntityTypeConfiguration<TourDayActi
         builder.Property(a => a.Note)
             .HasMaxLength(1000);
 
+        builder.Property(a => a.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex(a => a.TourDayId);
+
         builder.Property(a => a.EstimatedCost)
             .HasColumnType("numeric(18,2)");
 

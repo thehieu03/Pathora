@@ -50,5 +50,11 @@ public class TourPlanLocationConfiguration : IEntityTypeConfiguration<TourPlanLo
 
         builder.Property(l => l.Note)
             .HasMaxLength(1000);
+
+        builder.Property(l => l.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex(l => new { l.City, l.Country });
+        builder.HasIndex(l => l.LocationType);
     }
 }

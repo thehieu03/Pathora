@@ -1,8 +1,11 @@
+using System.Text.Json;
+
 using Api.Endpoint;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
 using Application.Services;
+using Domain.Entities.Translations;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -40,16 +43,18 @@ public class TourController(IFileService fileService) : BaseApiController
         [FromForm] string? seoDescription,
         [FromForm] TourStatus status,
         IFormFile? thumbnail,
-        [FromForm] List<IFormFile>? images)
+        [FromForm] List<IFormFile>? images,
+        [FromForm] string? translations = null)
     {
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
             ? await UploadFiles(images)
             : null;
+        var translationData = ParseTranslations(translations);
 
         var command = new CreateTourCommand(
             tourName, shortDescription, longDescription,
-            seoTitle, seoDescription, status, thumbnailDto, imageDtos);
+            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData);
 
         var result = await Sender.Send(command);
         return HandleResult(result);
@@ -66,16 +71,18 @@ public class TourController(IFileService fileService) : BaseApiController
         [FromForm] string? seoDescription,
         [FromForm] TourStatus status,
         IFormFile? thumbnail,
-        [FromForm] List<IFormFile>? images)
+        [FromForm] List<IFormFile>? images,
+        [FromForm] string? translations = null)
     {
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
             ? await UploadFiles(images)
             : null;
+        var translationData = ParseTranslations(translations);
 
         var command = new UpdateTourCommand(
             id, tourName, shortDescription, longDescription,
-            seoTitle, seoDescription, status, thumbnailDto, imageDtos);
+            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData);
 
         var result = await Sender.Send(command);
         return HandleResult(result);
@@ -105,5 +112,27 @@ public class TourController(IFileService fileService) : BaseApiController
             result.Add(await UploadSingleFile(file));
         }
         return result;
+    }
+
+    private static Dictionary<string, TourTranslationData>? ParseTranslations(string? translations)
+    {
+        if (string.IsNullOrWhiteSpace(translations))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, TourTranslationData>>(
+                translations,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 }
