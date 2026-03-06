@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Common.Contracts;
+using Application.Common.Interfaces;
 using Application.Contracts.Role;
 using Application.Services;
 using Domain.CORS;
@@ -7,7 +9,11 @@ using ErrorOr;
 namespace Application.Features.Role.Queries;
 
 public sealed record GetAllRolesQuery()
-    : IQuery<ErrorOr<PaginatedListWithPermissions<RoleVm>>>;
+    : IQuery<ErrorOr<PaginatedListWithPermissions<RoleVm>>>, ICacheable
+{
+    public string CacheKey => $"{Common.CacheKey.Role}:all";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
+}
 
 public sealed class GetAllRolesQueryHandler(IRoleService roleService)
     : IQueryHandler<GetAllRolesQuery, ErrorOr<PaginatedListWithPermissions<RoleVm>>>

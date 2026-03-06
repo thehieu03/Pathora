@@ -9,5 +9,7 @@ public static class CacheKey
     public const string FunctionCategory = nameof(FunctionCategory);
     public const string Role = nameof(Role);
     public const string Position = nameof(Position);
+    public const string Department = nameof(Department);
+    public const string Tour = nameof(Tour);
 }
 

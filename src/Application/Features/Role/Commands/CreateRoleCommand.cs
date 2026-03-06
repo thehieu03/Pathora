@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Common.Constant;
+using Application.Common.Interfaces;
 using Application.Contracts.Role;
 using Application.Services;
 using Domain.CORS;
@@ -7,7 +9,10 @@ using FluentValidation;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<Guid>>;
+public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
+}
 
 public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
 {

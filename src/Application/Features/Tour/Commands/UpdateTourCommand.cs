@@ -1,3 +1,5 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Application.Dtos;
 using Domain.CORS;
 using Domain.Entities.Translations;
@@ -17,7 +19,10 @@ public sealed record UpdateTourCommand(
     TourStatus Status,
     ImageInputDto? Thumbnail = null,
     List<ImageInputDto>? Images = null,
-    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Success>>;
+    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
+}
 
 public sealed class UpdateTourCommandHandler(ITourService tourService)
     : ICommandHandler<UpdateTourCommand, ErrorOr<Success>>

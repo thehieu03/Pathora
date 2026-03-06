@@ -1,3 +1,5 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Domain.CORS;
 using ErrorOr;
 using FluentValidation;
@@ -7,7 +9,10 @@ using Application.Services;
 
 namespace Application.Features.Position.Commands;
 
-public sealed record CreatePositionCommand(string Name, int Level, string? Note, int? Type) : ICommand<ErrorOr<Success>>;
+public sealed record CreatePositionCommand(string Name, int Level, string? Note, int? Type) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Position];
+}
 
 public sealed class CreatePositionCommandValidator : AbstractValidator<CreatePositionCommand>
 {

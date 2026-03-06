@@ -1,10 +1,15 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Domain.CORS;
 using ErrorOr;
 using Application.Services;
 
 namespace Application.Features.Tour.Commands;
 
-public sealed record DeleteTourCommand(Guid Id) : ICommand<ErrorOr<Success>>;
+public sealed record DeleteTourCommand(Guid Id) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
+}
 
 public sealed class DeleteTourCommandHandler(ITourService tourService)
     : ICommandHandler<DeleteTourCommand, ErrorOr<Success>>

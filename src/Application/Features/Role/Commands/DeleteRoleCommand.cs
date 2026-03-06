@@ -1,3 +1,5 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Domain.CORS;
 using ErrorOr;
 using Application.Contracts.Role;
@@ -5,7 +7,10 @@ using Application.Services;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record DeleteRoleCommand(string RoleId) : ICommand<ErrorOr<Success>>;
+public sealed record DeleteRoleCommand(string RoleId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
+}
 
 public sealed class DeleteRoleCommandHandler(IRoleService roleService)
     : ICommandHandler<DeleteRoleCommand, ErrorOr<Success>>
