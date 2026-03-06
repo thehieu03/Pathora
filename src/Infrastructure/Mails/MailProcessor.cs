@@ -40,30 +40,30 @@ public sealed class MailProcessor : BackgroundService
             var mailRepository = scope.ServiceProvider.GetRequiredService<IMailRepository>();
             var mailClient = scope.ServiceProvider.GetRequiredService<IMailClient>();
 
-            //var mailsResult = await mailRepository.FindPending();
-            //if (mailsResult.IsError)
-            //{
-            //    _logger.LogError("Error getting pending mails: {Error}", mailsResult);
-            //    await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
-            //    continue;
-            //}
+            var mailsResult = await mailRepository.FindPending();
+            if (mailsResult.IsError)
+            {
+                _logger.LogError("Error getting pending mails: {Error}", mailsResult);
+                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                continue;
+            }
 
-            //var sendTasks = mailsResult.Value.Select(async mail =>
-            //{
-            //    await _semaphore.WaitAsync(stoppingToken);
-            //    try
-            //    {
-            //        using var innerScope = _scopeFactory.CreateScope();
-            //        var innerRepository = innerScope.ServiceProvider.GetRequiredService<IMailRepository>();
-            //        await SendAsync(innerRepository, mailClient, mail);
-            //    }
-            //    finally
-            //    {
-            //        _semaphore.Release();
-            //    }
-            //});
+            var sendTasks = mailsResult.Value.Select(async mail =>
+            {
+                await _semaphore.WaitAsync(stoppingToken);
+                try
+                {
+                    using var innerScope = _scopeFactory.CreateScope();
+                    var innerRepository = innerScope.ServiceProvider.GetRequiredService<IMailRepository>();
+                    await SendAsync(innerRepository, mailClient, mail);
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
+            });
 
-            //await Task.WhenAll(sendTasks);
+            await Task.WhenAll(sendTasks);
 
 
             await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
@@ -96,7 +96,7 @@ public sealed class MailProcessor : BackgroundService
     {
         var message = new MimeMessage();
 
-        message.From.Add(new MailboxAddress("EGOV System", "system@egov.com"));
+        message.From.Add(new MailboxAddress("Pathora System", "no-reply@yourdomain.com"));
         message.To.Add(MailboxAddress.Parse(record.To));
         message.Subject = record.Subject;
         message.Body = _mailBodyBuilder.BuildBody(record.Template, record.Body);

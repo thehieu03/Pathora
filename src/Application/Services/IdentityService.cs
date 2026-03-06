@@ -2,8 +2,10 @@ using Application.Common.Interfaces;
 using Application.Contracts.Identity;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Mails;
 using Domain.UnitOfWork;
 using ErrorOr;
+using System.Text.Json;
 
 namespace Application.Services;
 
@@ -20,6 +22,7 @@ public interface IIdentityService
     Task<ErrorOr<UserInfoVm>> GetUserInfo();
     Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request);
     Task<ErrorOr<List<TabVm>>> GetTabs();
+    Task<ErrorOr<Success>> ConfirmRegister(ConfirmRegisterRequest request);
 }
 
 public class IdentityService(
@@ -29,7 +32,10 @@ public class IdentityService(
     IPasswordHasher passwordHasher,
     IUserService userService,
     IUserRepository userRepository,
-    IRoleRepository roleRepository)
+    IRoleRepository roleRepository,
+    IRegisterRepository registerRepository,
+    IMailRepository mailRepository
+    )
     : IIdentityService
 {
     private readonly IUser _user = user;
@@ -39,17 +45,52 @@ public class IdentityService(
     private readonly IUserService _userService = userService;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IRoleRepository _roleRepository = roleRepository;
+    private readonly IRegisterRepository _registerRepository = registerRepository;
+    private readonly IMailRepository mailRepository = mailRepository;
 
     public async Task<ErrorOr<Success>> Register(RegisterRequest request)
     {
+        await _unitOfWork.BeginTransactionAsync();
         var isUnique = await _userRepository.IsEmailUnique(request.Email);
         if (!isUnique)
             return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+        try
+        {
+            var registerRepo = _unitOfWork.GenericRepository<RegisterEntity>();
+           
 
-        var hashedPassword = _passwordHasher.HashPassword(request.Password);
-        var userEntity = UserEntity.Create(request.Username, request.FullName, request.Email, hashedPassword, request.Email);
+            var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
-        await _userRepository.Create(userEntity);
+
+            var userEntity = new RegisterEntity
+            {
+                Email = request.Email,
+                Username = request.Username,
+                FullName = request.FullName,
+                Password = hashedPassword
+            };
+            await registerRepo.AddAsync(userEntity);
+            var mailRepo = _unitOfWork.GenericRepository<MailEntity>();
+
+            var mailEntity = new MailEntity
+            {
+                To = request.Email,
+                Subject = "Chào mừng đến với hệ thống",
+                Body = JsonSerializer.Serialize(new RegisterMail("https://pathora-be.duckdns.org/swagger/index.html",request.Email,180.ToString())),
+                Template = nameof(RegisterMail),
+            };
+
+            await mailRepo.AddAsync(mailEntity);
+
+        }
+        catch(Exception) 
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+        }
+        finally 
+        {
+            await _unitOfWork.CommitTransactionAsync();
+        }
         return Result.Success;
     }
 
