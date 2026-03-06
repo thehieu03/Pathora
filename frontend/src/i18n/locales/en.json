@@ -1618,6 +1618,14 @@
     "previous": "Previous",
     "next": "Next",
     "createTour": "Create Tour",
-    "updateTour": "Update Tour"
+    "updateTour": "Update Tour",
+    "langTabs": {
+      "vi": "Tiếng Việt",
+      "en": "English",
+      "required": "Required",
+      "viContent": "Vietnamese Content",
+      "enContent": "English Content (Optional)",
+      "translationHint": "Vietnamese is required. English translation is optional."
+    }
   }
 }

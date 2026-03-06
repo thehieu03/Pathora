@@ -8,6 +8,9 @@ import Icon from "@/components/ui/Icon";
 import TextInput from "@/components/ui/TextInput";
 import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
+import LanguageTabs, {
+  type SupportedLanguage,
+} from "@/components/ui/LanguageTabs";
 import { tourService } from "@/services/tourService";
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -55,6 +58,14 @@ interface BasicInfoForm {
   seoTitle: string;
   seoDescription: string;
   status: string;
+}
+
+interface TranslationFields {
+  tourName: string;
+  shortDescription: string;
+  longDescription: string;
+  seoTitle: string;
+  seoDescription: string;
 }
 
 /* ── Constants ──────────────────────────────────────────────── */
@@ -143,6 +154,7 @@ export default function CreateTourPage() {
   /* ── Wizard state ─────────────────────────────────────────── */
   const [currentStep, setCurrentStep] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [activeLang, setActiveLang] = useState<SupportedLanguage>("vi");
 
   /* ── Step 1: Basic Info ───────────────────────────────────── */
   const [basicInfo, setBasicInfo] = useState<BasicInfoForm>({
@@ -152,6 +164,13 @@ export default function CreateTourPage() {
     seoTitle: "",
     seoDescription: "",
     status: "3",
+  });
+  const [enTranslation, setEnTranslation] = useState<TranslationFields>({
+    tourName: "",
+    shortDescription: "",
+    longDescription: "",
+    seoTitle: "",
+    seoDescription: "",
   });
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [images, setImages] = useState<File[]>([]);
@@ -386,6 +405,42 @@ export default function CreateTourPage() {
       formData.append("seoDescription", basicInfo.seoDescription);
       formData.append("status", basicInfo.status);
 
+      // Translations — Vietnamese auto-populated from basicInfo
+      formData.append("translations[vi][TourName]", basicInfo.tourName);
+      formData.append(
+        "translations[vi][ShortDescription]",
+        basicInfo.shortDescription,
+      );
+      formData.append(
+        "translations[vi][LongDescription]",
+        basicInfo.longDescription,
+      );
+      formData.append("translations[vi][SEOTitle]", basicInfo.seoTitle);
+      formData.append(
+        "translations[vi][SEODescription]",
+        basicInfo.seoDescription,
+      );
+      if (
+        enTranslation.tourName ||
+        enTranslation.shortDescription ||
+        enTranslation.longDescription
+      ) {
+        formData.append("translations[en][TourName]", enTranslation.tourName);
+        formData.append(
+          "translations[en][ShortDescription]",
+          enTranslation.shortDescription,
+        );
+        formData.append(
+          "translations[en][LongDescription]",
+          enTranslation.longDescription,
+        );
+        formData.append("translations[en][SEOTitle]", enTranslation.seoTitle);
+        formData.append(
+          "translations[en][SEODescription]",
+          enTranslation.seoDescription,
+        );
+      }
+
       // Files
       if (thumbnail) {
         formData.append("thumbnail", thumbnail);
@@ -520,93 +575,188 @@ export default function CreateTourPage() {
             <Card
               title={t("tourAdmin.basicInfo", "Basic Information")}
               className="mb-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <TextInput
-                    label={t("tourAdmin.tourName", "Tour Name")}
-                    value={basicInfo.tourName}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        tourName: e.target.value,
-                      }))
-                    }
-                    placeholder={t(
-                      "tourAdmin.tourNamePlaceholder",
-                      "Enter tour name",
+              <div className="mb-4">
+                <LanguageTabs
+                  activeLanguage={activeLang}
+                  onChange={setActiveLang}
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  {t(
+                    "tourAdmin.langTabs.translationHint",
+                    "Vietnamese is required. English translation is optional.",
+                  )}
+                </p>
+              </div>
+
+              {/* ── Vietnamese Content ── */}
+              {activeLang === "vi" && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <TextInput
+                        label={t("tourAdmin.tourName", "Tour Name")}
+                        value={basicInfo.tourName}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setBasicInfo((prev) => ({
+                            ...prev,
+                            tourName: e.target.value,
+                          }))
+                        }
+                        placeholder={t(
+                          "tourAdmin.tourNamePlaceholder",
+                          "Enter tour name",
+                        )}
+                      />
+                      {errors.tourName && (
+                        <p className="text-danger-500 text-sm mt-1">
+                          {errors.tourName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <Textarea
+                      label={t(
+                        "tourAdmin.shortDescription",
+                        "Short Description",
+                      )}
+                      value={basicInfo.shortDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          shortDescription: e.target.value,
+                        }))
+                      }
+                      row={2}
+                      placeholder={t(
+                        "tourAdmin.shortDescPlaceholder",
+                        "Brief tour description",
+                      )}
+                    />
+                    {errors.shortDescription && (
+                      <p className="text-danger-500 text-sm mt-1">
+                        {errors.shortDescription}
+                      </p>
                     )}
-                  />
-                  {errors.tourName && (
-                    <p className="text-danger-500 text-sm mt-1">
-                      {errors.tourName}
-                    </p>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              <div className="mt-4">
-                <Textarea
-                  label={t("tourAdmin.shortDescription", "Short Description")}
-                  value={basicInfo.shortDescription}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setBasicInfo((prev) => ({
-                      ...prev,
-                      shortDescription: e.target.value,
-                    }))
-                  }
-                  row={2}
-                  placeholder={t(
-                    "tourAdmin.shortDescPlaceholder",
-                    "Brief tour description",
-                  )}
-                />
-                {errors.shortDescription && (
-                  <p className="text-danger-500 text-sm mt-1">
-                    {errors.shortDescription}
-                  </p>
-                )}
-              </div>
+                  <div className="mt-4">
+                    <Textarea
+                      label={t("tourAdmin.longDescription", "Long Description")}
+                      value={basicInfo.longDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          longDescription: e.target.value,
+                        }))
+                      }
+                      row={5}
+                      placeholder={t(
+                        "tourAdmin.longDescPlaceholder",
+                        "Detailed tour description",
+                      )}
+                    />
+                  </div>
 
-              <div className="mt-4">
-                <Textarea
-                  label={t("tourAdmin.longDescription", "Long Description")}
-                  value={basicInfo.longDescription}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    setBasicInfo((prev) => ({
-                      ...prev,
-                      longDescription: e.target.value,
-                    }))
-                  }
-                  row={5}
-                  placeholder={t(
-                    "tourAdmin.longDescPlaceholder",
-                    "Detailed tour description",
-                  )}
-                />
-              </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <TextInput
+                      label={t("tourAdmin.seoTitle", "SEO Title")}
+                      value={basicInfo.seoTitle}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          seoTitle: e.target.value,
+                        }))
+                      }
+                    />
+                    <TextInput
+                      label={t("tourAdmin.seoDescription", "SEO Description")}
+                      value={basicInfo.seoDescription}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          seoDescription: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </>
+              )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <TextInput
-                  label={t("tourAdmin.seoTitle", "SEO Title")}
-                  value={basicInfo.seoTitle}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setBasicInfo((prev) => ({
-                      ...prev,
-                      seoTitle: e.target.value,
-                    }))
-                  }
-                />
-                <TextInput
-                  label={t("tourAdmin.seoDescription", "SEO Description")}
-                  value={basicInfo.seoDescription}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setBasicInfo((prev) => ({
-                      ...prev,
-                      seoDescription: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+              {/* ── English Content ── */}
+              {activeLang === "en" && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <TextInput
+                        label={`${t("tourAdmin.tourName", "Tour Name")} (EN)`}
+                        value={enTranslation.tourName}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEnTranslation((prev) => ({
+                            ...prev,
+                            tourName: e.target.value,
+                          }))
+                        }
+                        placeholder="Enter tour name in English"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <Textarea
+                      label={`${t("tourAdmin.shortDescription", "Short Description")} (EN)`}
+                      value={enTranslation.shortDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          shortDescription: e.target.value,
+                        }))
+                      }
+                      row={2}
+                      placeholder="Brief tour description in English"
+                    />
+                  </div>
+
+                  <div className="mt-4">
+                    <Textarea
+                      label={`${t("tourAdmin.longDescription", "Long Description")} (EN)`}
+                      value={enTranslation.longDescription}
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          longDescription: e.target.value,
+                        }))
+                      }
+                      row={5}
+                      placeholder="Detailed tour description in English"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <TextInput
+                      label={`${t("tourAdmin.seoTitle", "SEO Title")} (EN)`}
+                      value={enTranslation.seoTitle}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          seoTitle: e.target.value,
+                        }))
+                      }
+                    />
+                    <TextInput
+                      label={`${t("tourAdmin.seoDescription", "SEO Description")} (EN)`}
+                      value={enTranslation.seoDescription}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          seoDescription: e.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="mt-4">
                 <Select

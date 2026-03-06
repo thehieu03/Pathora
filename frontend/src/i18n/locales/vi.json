@@ -1618,6 +1618,14 @@
     "previous": "Trước",
     "next": "Tiếp",
     "createTour": "Tạo Tour",
-    "updateTour": "Cập nhật Tour"
+    "updateTour": "Cập nhật Tour",
+    "langTabs": {
+      "vi": "Tiếng Việt",
+      "en": "English",
+      "required": "Bắt buộc",
+      "viContent": "Nội dung Tiếng Việt",
+      "enContent": "Nội dung Tiếng Anh (Tùy chọn)",
+      "translationHint": "Tiếng Việt là bắt buộc. Bản dịch Tiếng Anh là tùy chọn."
+    }
   }
 }

@@ -13,6 +13,7 @@ import {
   FaTag,
 } from "react-icons/fa";
 import { homeService } from "@/services/homeService";
+import Spline from "@splinetool/react-spline";
 
 const HERO_BG =
   "https://www.figma.com/api/mcp/asset/e4c27cca-3e11-49a0-bb16-22b1bdf0f4cc";
@@ -382,6 +383,9 @@ export const HeroSection = () => {
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-black/25" />
+        <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen md:opacity-60">
+          <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
+        </div>
         <div
           className="pointer-events-none absolute -top-28 -left-24 h-96 w-96 rounded-full bg-cyan-300/30 blur-3xl motion-safe:animate-[landing-aurora_12s_ease-in-out_infinite] motion-reduce:animate-none"
           aria-hidden="true"

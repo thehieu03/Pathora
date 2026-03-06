@@ -8,6 +8,7 @@ import axios, {
 import { ToastPosition } from "react-toastify";
 import { handleResponseError, waitForRetry } from "./responseInterceptor";
 import { showErrorToast } from "./showErrorToast";
+import { getCurrentApiLanguage } from "./languageHeader";
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
@@ -85,6 +86,7 @@ const attachInterceptors = (instance: AxiosInstance): void => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+      config.headers["Accept-Language"] = getCurrentApiLanguage();
 
       return config;
     },

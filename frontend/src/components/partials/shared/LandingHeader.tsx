@@ -13,9 +13,9 @@ import { Button, Icon } from "@/components/ui";
 import dynamic from "next/dynamic";
 import { Transition, TransitionChild } from "@headlessui/react";
 
-const AuthModal = dynamic(() =>
-  import("./AuthModal").then((m) => m.AuthModal),
-  { ssr: false }
+const AuthModal = dynamic(
+  () => import("./AuthModal").then((m) => m.AuthModal),
+  { ssr: false },
 );
 import { useTranslation } from "react-i18next";
 import useMobileMenu from "@/hooks/useMobileMenu";
@@ -222,8 +222,7 @@ const MobileSidebar = ({
           enterTo="opacity-100"
           leave="transition-opacity duration-200 ease-in"
           leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
+          leaveTo="opacity-0">
           <button
             type="button"
             className="absolute inset-0 bg-black/40"
@@ -239,8 +238,7 @@ const MobileSidebar = ({
           enterTo="translate-x-0"
           leave="transform transition duration-200 ease-in"
           leaveFrom="translate-x-0"
-          leaveTo="-translate-x-full"
-        >
+          leaveTo="-translate-x-full">
           <div
             ref={panelRef}
             id={dialogId}
@@ -258,7 +256,9 @@ const MobileSidebar = ({
                 iconClass="text-[20px] text-gray-700"
                 ariaLabel={t("landing.a11y.closeMenu")}
               />
-              <h2 id={menuTitleId} className="text-xl font-medium text-gray-900">
+              <h2
+                id={menuTitleId}
+                className="text-xl font-medium text-gray-900">
                 {t("landing.sidebar.dashboard")}
               </h2>
             </div>
@@ -291,7 +291,9 @@ const MobileSidebar = ({
                         type="button"
                         onClick={() =>
                           setExpandedItem(
-                            expandedItem === item.labelKey ? null : item.labelKey,
+                            expandedItem === item.labelKey
+                              ? null
+                              : item.labelKey,
                           )
                         }
                         className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent focus-visible:ring-inset"
@@ -576,7 +578,17 @@ export const LandingHeader = ({
                   isActive ? "border-b-2 border-landing-accent" : ""
                 }`}
                 aria-current={isActive ? "page" : undefined}>
-                {t(link.labelKey)}
+                {mounted
+                  ? t(link.labelKey)
+                  : link.labelKey === "landing.nav.home"
+                    ? "Home"
+                    : link.labelKey === "landing.nav.aboutUs"
+                      ? "About Us"
+                      : link.labelKey === "landing.nav.tourPackages"
+                        ? "Tours"
+                        : link.labelKey === "landing.nav.ourPolicies"
+                          ? "Docs"
+                          : ""}
               </Link>
             );
           })}

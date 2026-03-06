@@ -126,10 +126,19 @@ export interface TourDto {
   thumbnail: ImageDto;
   images: ImageDto[];
   classifications: TourClassificationDto[];
+  translations?: Record<string, TourTranslationData>;
   createdBy: string | null;
   createdOnUtc: string;
   lastModifiedBy: string | null;
   lastModifiedOnUtc: string | null;
+}
+
+export interface TourTranslationData {
+  tourName: string;
+  shortDescription: string;
+  longDescription: string;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
 }
 
 // Tour admin list view model
