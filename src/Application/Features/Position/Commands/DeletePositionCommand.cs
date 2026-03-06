@@ -1,10 +1,15 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Domain.CORS;
 using ErrorOr;
 using Application.Services;
 
 namespace Application.Features.Position.Commands;
 
-public sealed record DeletePositionCommand(Guid Id) : ICommand<ErrorOr<Success>>;
+public sealed record DeletePositionCommand(Guid Id) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Position];
+}
 
 public sealed class DeletePositionCommandHandler(IPositionService positionService)
     : ICommandHandler<DeletePositionCommand, ErrorOr<Success>>

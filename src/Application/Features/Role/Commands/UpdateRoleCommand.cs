@@ -1,3 +1,5 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Domain.CORS;
 using Domain.Enums;
 using ErrorOr;
@@ -6,7 +8,10 @@ using Application.Services;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record UpdateRoleCommand(string RoleId, string Name, string Description, RoleStatus Status, int Type, IEnumerable<int> FunctionIds) : ICommand<ErrorOr<Success>>;
+public sealed record UpdateRoleCommand(string RoleId, string Name, string Description, RoleStatus Status, int Type, IEnumerable<int> FunctionIds) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
+}
 
 public sealed class UpdateRoleCommandHandler(IRoleService roleService)
     : ICommandHandler<UpdateRoleCommand, ErrorOr<Success>>

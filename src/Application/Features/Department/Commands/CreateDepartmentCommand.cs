@@ -1,3 +1,5 @@
+using Application.Common;
+using Application.Common.Interfaces;
 using Domain.CORS;
 using ErrorOr;
 using FluentValidation;
@@ -7,7 +9,10 @@ using Application.Services;
 
 namespace Application.Features.Department.Commands;
 
-public sealed record CreateDepartmentCommand(Guid? DepartmentParentId, string DepartmentName) : ICommand<ErrorOr<Guid>>;
+public sealed record CreateDepartmentCommand(Guid? DepartmentParentId, string DepartmentName) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Department];
+}
 
 public sealed class CreateDepartmentCommandValidator : AbstractValidator<CreateDepartmentCommand>
 {
