@@ -6,9 +6,8 @@ using Application.Features.Tour.Queries;
 using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Entities.Translations;
 using ErrorOr;
-
-
 
 namespace Application.Services;
 
@@ -21,25 +20,22 @@ public interface ITourService
     Task<ErrorOr<TourDto>> GetDetail(Guid id);
 }
 
-public class TourService(ITourRepository tourRepository, IUser user, IMapper mapper) : ITourService
+public class TourService(ITourRepository tourRepository, IUser user, IMapper mapper, ILanguageContext? languageContext = null) : ITourService
 {
     private readonly ITourRepository _tourRepository = tourRepository;
     private readonly IUser _user = user;
     private readonly IMapper _mapper = mapper;
+    private readonly ILanguageContext _languageContext = languageContext ?? new FallbackLanguageContext();
 
     private static ImageEntity ToImageEntity(ImageInputDto dto) =>
         ImageEntity.Create(dto.FileId, dto.OriginalFileName, dto.FileName, dto.PublicURL);
 
     public async Task<ErrorOr<Guid>> Create(CreateTourCommand request)
     {
-        if (await _tourRepository.ExistsByTourCode(request.TourCode))
-            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{request.TourCode}' đã tồn tại");
-
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : new ImageEntity();
         var images = request.Images?.Select(ToImageEntity).ToList() ?? [];
 
         var tour = TourEntity.Create(
-            request.TourCode,
             request.TourName,
             request.ShortDescription,
             request.LongDescription,
@@ -49,6 +45,7 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
             request.SEODescription,
             thumbnail,
             images);
+        tour.Translations = NormalizeTranslations(request.Translations);
 
         await _tourRepository.Create(tour);
         return tour.Id;
@@ -60,14 +57,13 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
 
-        if (await _tourRepository.ExistsByTourCode(request.TourCode, request.Id))
-            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{request.TourCode}' đã tồn tại");
+        if (await _tourRepository.ExistsByTourCode(tour.TourCode, request.Id))
+            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{tour.TourCode}' đã tồn tại");
 
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : null;
         var images = request.Images?.Select(ToImageEntity).ToList();
 
         tour.Update(
-            request.TourCode,
             request.TourName,
             request.ShortDescription,
             request.LongDescription,
@@ -77,6 +73,7 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
             request.SEODescription,
             thumbnail,
             images);
+        MergeTranslations(tour, request.Translations);
 
         await _tourRepository.Update(tour);
         return Result.Success;
@@ -96,23 +93,71 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
     {
         var tours = await _tourRepository.FindAll(request.SearchText, request.PageNumber, request.PageSize);
         var total = await _tourRepository.CountAll(request.SearchText);
+        var currentLanguage = _languageContext.CurrentLanguage;
 
-        var tourVms = tours.Select(t => new TourVm(
-            t.Id,
-            t.TourCode,
-            t.TourName,
-            t.ShortDescription,
-            t.Status.ToString(),
-            t.CreatedOnUtc)).ToList();
+        var tourVms = tours.Select(t =>
+        {
+            var translated = t.ResolveTranslation(currentLanguage);
+            return new TourVm(
+                t.Id,
+                t.TourCode,
+                translated.TourName,
+                translated.ShortDescription,
+                t.Status.ToString(),
+                t.CreatedOnUtc);
+        }).ToList();
 
         return new PaginatedList<TourVm>(total, tourVms);
     }
 
     public async Task<ErrorOr<TourDto>> GetDetail(Guid id)
     {
-        var tour = await _tourRepository.FindById(id);
+        var tour = await _tourRepository.FindByIdReadOnly(id);
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+
+        tour.ApplyResolvedTranslations(_languageContext.CurrentLanguage);
         return _mapper.Map<TourDto>(tour);
+    }
+
+    private static Dictionary<string, TourTranslationData> NormalizeTranslations(
+        Dictionary<string, TourTranslationData>? translations)
+    {
+        var result = new Dictionary<string, TourTranslationData>(StringComparer.OrdinalIgnoreCase);
+        if (translations is null || translations.Count == 0)
+        {
+            return result;
+        }
+
+        foreach (var translation in translations)
+        {
+            if (string.IsNullOrWhiteSpace(translation.Key) || translation.Value is null)
+            {
+                continue;
+            }
+
+            result[translation.Key.ToLowerInvariant()] = translation.Value;
+        }
+
+        return result;
+    }
+
+    private static void MergeTranslations(TourEntity tour, Dictionary<string, TourTranslationData>? translations)
+    {
+        if (translations is null || translations.Count == 0)
+        {
+            return;
+        }
+
+        var normalized = NormalizeTranslations(translations);
+        foreach (var translation in normalized)
+        {
+            tour.Translations[translation.Key] = translation.Value;
+        }
+    }
+
+    private sealed class FallbackLanguageContext : ILanguageContext
+    {
+        public string CurrentLanguage { get; set; } = ILanguageContext.DefaultLanguage;
     }
 }

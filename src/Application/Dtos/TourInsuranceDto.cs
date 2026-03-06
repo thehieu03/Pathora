@@ -3,7 +3,7 @@ using Domain.Enums;
 namespace Application.Dtos;
 
 public sealed record TourInsuranceDto(
-    Guid TourInsuranceId,
+    Guid Id,
     string InsuranceName,
     InsuranceType InsuranceType,
     string InsuranceProvider,
@@ -11,5 +11,9 @@ public sealed record TourInsuranceDto(
     decimal CoverageAmount,
     decimal CoverageFee,
     bool IsOptional,
-    string? Note
+    string? Note,
+    string? CreatedBy,
+    DateTimeOffset CreatedOnUtc,
+    string? LastModifiedBy,
+    DateTimeOffset? LastModifiedOnUtc
 );

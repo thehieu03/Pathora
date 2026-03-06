@@ -26,7 +26,7 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.HasIndex(u => u.Email)
             .IsUnique();
 
-        builder.Property(u => u.Avatar)
+        builder.Property(u => u.AvatarUrl)
             .HasMaxLength(500);
 
         builder.Property(u => u.Password)
@@ -37,6 +37,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.Property(u => u.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(u => u.IsDeleted);
+
+        builder.HasIndex(u => u.Username);
+
+        builder.HasIndex(u => u.CreatedOnUtc);
 
         builder.HasMany<UserRoleEntity>()
             .WithOne()

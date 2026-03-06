@@ -31,5 +31,9 @@ public class SystemKeyConfiguration : IEntityTypeConfiguration<SystemKey>
 
         builder.Property(sk => sk.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(sk => sk.CodeKey);
+
+        builder.HasIndex(sk => new { sk.ParentId, sk.IsDeleted });
     }
 }

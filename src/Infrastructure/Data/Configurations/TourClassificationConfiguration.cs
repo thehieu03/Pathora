@@ -30,12 +30,17 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
         builder.Property(c => c.Description)
             .IsRequired();
 
+        builder.Property(c => c.Translations)
+            .ConfigureTranslationsJsonb();
+
         builder.Property(c => c.DurationDays)
             .IsRequired();
 
+        builder.HasIndex(c => c.TourId);
+
         builder.HasMany(c => c.Plans)
             .WithOne(d => d.Classification)
-            .HasForeignKey(d => d.TourDayId)
+            .HasForeignKey(d => d.TourClassificationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

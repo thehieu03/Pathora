@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Contracts.Identity;
 using Domain.CORS;
 using ErrorOr;
@@ -13,11 +14,11 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
     public LoginCommandValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email là bắt buộc")
-            .EmailAddress().WithMessage("Địa chỉ email không hợp lệ");
+            .NotEmpty().WithMessage(ValidationMessages.EmailRequired)
+            .EmailAddress().WithMessage(ValidationMessages.EmailInvalid);
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Mật khẩu là bắt buộc");
+            .NotEmpty().WithMessage(ValidationMessages.PasswordRequired);
     }
 }
 

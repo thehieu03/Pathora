@@ -1,5 +1,7 @@
+using Application.Common.Constant;
 using Application.Dtos;
 using Domain.CORS;
+using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
 using FluentValidation;
@@ -8,7 +10,6 @@ using Application.Services;
 namespace Application.Features.Tour.Commands;
 
 public sealed record CreateTourCommand(
-    string TourCode,
     string TourName,
     string ShortDescription,
     string LongDescription,
@@ -16,18 +17,16 @@ public sealed record CreateTourCommand(
     string? SEODescription,
     TourStatus Status,
     ImageInputDto? Thumbnail = null,
-    List<ImageInputDto>? Images = null) : ICommand<ErrorOr<Guid>>;
+    List<ImageInputDto>? Images = null,
+    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Guid>>;
 
 public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCommand>
 {
     public CreateTourCommandValidator()
     {
-        RuleFor(x => x.TourCode)
-            .NotEmpty().WithMessage("Mã tour không được để trống");
-
         RuleFor(x => x.TourName)
-            .NotEmpty().WithMessage("Tên tour không được để trống")
-            .MaximumLength(500).WithMessage("Tên tour không được quá 500 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.TourNameRequired)
+            .MaximumLength(500).WithMessage(ValidationMessages.TourNameMaxLength500);
     }
 }
 

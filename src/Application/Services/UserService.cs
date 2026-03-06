@@ -60,7 +60,7 @@ public class UserService(
             var roles = rolesMap.TryGetValue(u.Id, out var r)
                 ? r.Select(x => x.Name).ToList()
                 : new List<string>();
-            return new UserVm(u.Id, u.Avatar, u.Username, u.FullName, u.Email,
+            return new UserVm(u.Id, u.AvatarUrl, u.Username, u.FullName, u.Email,
                 string.Empty, roles, new Dictionary<string, bool>());
         }).ToList();
 
@@ -83,7 +83,7 @@ public class UserService(
             userEntity.Username,
             userEntity.FullName,
             userEntity.Email,
-            userEntity.Avatar,
+            userEntity.AvatarUrl,
             roles,
             []);
     }

@@ -4,9 +4,10 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__Default: "Host=18.143.220.111;Port=5432;Database=Pathora;Username=root;Password=123abc@A"
+      ConnectionStrings__Default: "Host=34.87.55.176;Port=3306;Database=Pathora;Username=postgres;Password=123abc@A"
       Redis__ConnectionString: "redis:6379"
       MinIO__Endpoint: "minio:9000"
+      MinIO__PublicUrl: "http://localhost:9000"
       MinIO__AccessKey: "minioadmin"
       MinIO__SecretKey: "minioadmin123"
       MinIO__UseSSL: "false"
@@ -23,8 +24,6 @@ services:
   redis:
     ports:
       - "6379:6379"
-    volumes:
-      - ./volume/redis:/data
 
   minio:
     command: server /data --console-address ":9001"
@@ -34,8 +33,6 @@ services:
     ports:
       - "9000:9000" # API
       - "9001:9001" # Console UI
-    volumes:
-      - ./volume/minio:/data
 
   portainer:
     # UI: https://localhost:9443 or http://localhost:9002
@@ -46,4 +43,3 @@ services:
       - "9002:9000" # HTTP UI
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./volume/portainer:/data

@@ -29,6 +29,8 @@ internal static class DependencyInjection
 
         services.AddScoped<ITourRepository, TourRepository>();
 
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegisterRepository, RegisterRepository>();
 

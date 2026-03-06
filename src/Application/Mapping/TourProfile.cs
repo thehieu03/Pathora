@@ -15,12 +15,11 @@ public sealed class TourProfile : Profile
         CreateMap<TourClassificationEntity, TourClassificationDto>();
 
         CreateMap<TourDayEntity, TourDayDto>()
-            .ForMember(dest => dest.ClassificationId, opt => opt.MapFrom(src => src.TourDayId));
+            .ForMember(dest => dest.ClassificationId, opt => opt.MapFrom(src => src.TourClassificationId));
 
         CreateMap<TourDayActivityEntity, TourDayActivityDto>();
 
-        CreateMap<TourInsuranceEntity, TourInsuranceDto>()
-            .ForMember(dest => dest.CoverageDescription, opt => opt.MapFrom(src => src.CoverageDesciption));
+        CreateMap<TourInsuranceEntity, TourInsuranceDto>();
 
         CreateMap<TourPlanLocationEntity, TourPlanLocationDto>();
 

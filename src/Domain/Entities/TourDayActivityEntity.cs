@@ -1,5 +1,7 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public sealed class TourDayActivityEntity : Aggregate<Guid>
 {
     public Guid TourDayId { get; set; }
@@ -7,20 +9,23 @@ public sealed class TourDayActivityEntity : Aggregate<Guid>
     public int Order { get; set; }
     public TourDayActivityType ActivityType { get; set; }
     public string Title { get; set; } = null!;
-    public string? Description { get; set; } = null!;
+    public string? Description { get; set; }
     public string? Note { get; set; }
+    public decimal? EstimatedCost { get; set; }
+    public bool IsOptional { get; set; }
+    public Dictionary<string, TourDayActivityTranslationData> Translations { get; set; } = [];
 
     // Time
-    public TimeOnly? StartTime { get; set; } = null!;
-    public TimeOnly? EndTime { get; set; } = null!;
+    public TimeOnly? StartTime { get; set; }
+    public TimeOnly? EndTime { get; set; }
 
     // Route
     public List<TourPlanRouteEntity> Routes { get; set; } = [];
 
     // Accommodation
-    public TourPlanAccommodationEntity? Accommodation { get; set; } = null!;
+    public TourPlanAccommodationEntity? Accommodation { get; set; }
 
-    public static TourDayActivityEntity Create(Guid tourDayId, int order, TourDayActivityType activityType, string title, string performedBy, string? description = null, string? note = null, TimeOnly? startTime = null, TimeOnly? endTime = null)
+    public static TourDayActivityEntity Create(Guid tourDayId, int order, TourDayActivityType activityType, string title, string performedBy, string? description = null, string? note = null, TimeOnly? startTime = null, TimeOnly? endTime = null, decimal? estimatedCost = null, bool isOptional = false)
     {
         return new TourDayActivityEntity
         {
@@ -31,6 +36,8 @@ public sealed class TourDayActivityEntity : Aggregate<Guid>
             Title = title,
             Description = description,
             Note = note,
+            EstimatedCost = estimatedCost,
+            IsOptional = isOptional,
             StartTime = startTime,
             EndTime = endTime,
             CreatedBy = performedBy,
@@ -40,13 +47,15 @@ public sealed class TourDayActivityEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(int order, TourDayActivityType activityType, string title, string performedBy, string? description = null, string? note = null, TimeOnly? startTime = null, TimeOnly? endTime = null)
+    public void Update(int order, TourDayActivityType activityType, string title, string performedBy, string? description = null, string? note = null, TimeOnly? startTime = null, TimeOnly? endTime = null, decimal? estimatedCost = null, bool isOptional = false)
     {
         Order = order;
         ActivityType = activityType;
         Title = title;
         Description = description;
         Note = note;
+        EstimatedCost = estimatedCost;
+        IsOptional = isOptional;
         StartTime = startTime;
         EndTime = endTime;
         LastModifiedBy = performedBy;

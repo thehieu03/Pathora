@@ -44,7 +44,34 @@ public class TourPlanAccommodationConfiguration : IEntityTypeConfiguration<TourP
         builder.Property(a => a.ContactPhone)
             .HasMaxLength(50);
 
+        builder.Property(a => a.NumberOfRooms);
+
+        builder.Property(a => a.NumberOfNights);
+
+        builder.Property(a => a.TotalPrice)
+            .HasColumnType("numeric(18,2)");
+
+        builder.Property(a => a.City)
+            .HasMaxLength(200);
+
+        builder.Property(a => a.Website)
+            .HasMaxLength(500);
+
+        builder.Property(a => a.ImageUrl)
+            .HasMaxLength(1000);
+
+        builder.Property(a => a.Latitude)
+            .HasColumnType("numeric(10,7)");
+
+        builder.Property(a => a.Longitude)
+            .HasColumnType("numeric(10,7)");
+
         builder.Property(a => a.Note)
             .HasMaxLength(1000);
+
+        builder.Property(a => a.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex("TourDayActivityId");
     }
 }

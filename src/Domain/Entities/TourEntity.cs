@@ -1,5 +1,7 @@
 ﻿namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourEntity : Aggregate<Guid>
 {
     public string TourCode { get; set; } = null!;
@@ -12,14 +14,22 @@ public class TourEntity : Aggregate<Guid>
     public TourStatus Status { get; set; } = TourStatus.Pending;
     public ImageEntity Thumbnail { get; set; } = null!;
     public List<ImageEntity> Images { get; set; } = [];
+    public Dictionary<string, TourTranslationData> Translations { get; set; } = [];
     public List<TourClassificationEntity> Classifications { get; set; } = [];
 
-    public static TourEntity Create(string tourCode, string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
+    public static string GenerateTourCode()
+    {
+        var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
+        var uniquePart = Guid.CreateVersion7().ToString("N")[..8];
+        return $"TOUR-{datePart}-{uniquePart}";
+    }
+
+    public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
     {
         return new TourEntity
         {
             Id = Guid.CreateVersion7(),
-            TourCode = tourCode,
+            TourCode = GenerateTourCode(),
             TourName = tourName,
             ShortDescription = shortDescription,
             LongDescription = longDescription,
@@ -35,9 +45,8 @@ public class TourEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(string tourCode, string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
+    public void Update(string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
     {
-        TourCode = tourCode;
         TourName = tourName;
         ShortDescription = shortDescription;
         LongDescription = longDescription;

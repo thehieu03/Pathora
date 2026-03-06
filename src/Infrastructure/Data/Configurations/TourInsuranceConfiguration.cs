@@ -11,7 +11,7 @@ public class TourInsuranceConfiguration : IEntityTypeConfiguration<TourInsurance
     {
         builder.ToTable("TourInsurances");
 
-        builder.HasKey(i => i.TourInsuranceId);
+        builder.HasKey(i => i.Id);
 
         builder.Property(i => i.InsuranceName)
             .IsRequired()
@@ -25,7 +25,7 @@ public class TourInsuranceConfiguration : IEntityTypeConfiguration<TourInsurance
             .IsRequired()
             .HasMaxLength(300);
 
-        builder.Property(i => i.CoverageDesciption)
+        builder.Property(i => i.CoverageDescription)
             .IsRequired()
             .HasMaxLength(2000);
 
@@ -43,6 +43,8 @@ public class TourInsuranceConfiguration : IEntityTypeConfiguration<TourInsurance
 
         builder.Property<Guid>("TourClassificationId")
             .IsRequired();
+
+        builder.HasIndex("TourClassificationId");
 
         builder.HasOne(i => i.TourClassification)
             .WithMany(c => c.Insurances)

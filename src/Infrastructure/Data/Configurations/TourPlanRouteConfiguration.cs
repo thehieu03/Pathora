@@ -35,8 +35,21 @@ public class TourPlanRouteConfiguration : IEntityTypeConfiguration<TourPlanRoute
         builder.Property(r => r.Price)
             .HasColumnType("numeric(18,2)");
 
+        builder.Property(r => r.DistanceKm)
+            .HasColumnType("numeric(10,2)");
+
+        builder.Property(r => r.BookingReference)
+            .HasMaxLength(200);
+
         builder.Property(r => r.Note)
             .HasMaxLength(1000);
+
+        builder.Property(r => r.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex("TourDayActivityId");
+        builder.HasIndex("FromLocationId");
+        builder.HasIndex("ToLocationId");
 
         builder.HasOne(r => r.FromLocation)
             .WithMany()

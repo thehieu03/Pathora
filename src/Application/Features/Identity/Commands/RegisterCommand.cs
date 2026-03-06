@@ -1,6 +1,7 @@
 using Domain.CORS;
 using ErrorOr;
 using FluentValidation;
+using Application.Common.Constant;
 using Application.Contracts.Identity;
 using Application.Services;
 
@@ -13,19 +14,19 @@ public sealed class RegisterCommandValidator : AbstractValidator<RegisterCommand
     public RegisterCommandValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email là bắt buộc")
+            .NotEmpty().WithMessage(ValidationMessages.EmailRequired)
             .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .WithMessage("Địa chỉ email không hợp lệ");
+            .WithMessage(ValidationMessages.EmailInvalid);
 
         RuleFor(x => x.FullName)
-            .NotEmpty().WithMessage("Tên không được để trống");
+            .NotEmpty().WithMessage(ValidationMessages.FullNameRequired);
 
         RuleFor(x => x.Username)
-            .NotEmpty().WithMessage("Tên người dùng không được để trống");
+            .NotEmpty().WithMessage(ValidationMessages.UsernameRequired);
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Mật khẩu là bắt buộc")
-            .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.PasswordRequired)
+            .MinimumLength(6).WithMessage(ValidationMessages.PasswordMinLength6);
     }
 }
 

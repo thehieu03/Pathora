@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using FluentValidation;
 
 namespace Application.Contracts.User;
@@ -15,7 +16,7 @@ public sealed class UpdateUserRequestValidator : AbstractValidator<UpdateUserReq
     public UpdateUserRequestValidator()
     {
         RuleFor(x => x.FullName)
-            .Length(1, 200).WithMessage("Họ và tên quá dài")
+            .Length(1, 200).WithMessage(ValidationMessages.FullNameTooLong)
             .When(x => !string.IsNullOrEmpty(x.FullName));
     }
 }

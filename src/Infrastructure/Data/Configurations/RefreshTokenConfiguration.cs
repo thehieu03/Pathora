@@ -22,6 +22,8 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshTokenEn
         builder.Property(rt => rt.ExpiresOnUtc)
             .IsRequired();
 
+        builder.HasIndex(rt => rt.ExpiresOnUtc);
+
         builder.HasOne<UserEntity>()
             .WithMany()
             .HasForeignKey(rt => rt.UserId)

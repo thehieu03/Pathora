@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Contracts.User;
 using Domain.CORS;
 using ErrorOr;
@@ -18,12 +19,12 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
     public CreateUserCommandValidator()
     {
         RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email là bắt buộc")
+            .NotEmpty().WithMessage(ValidationMessages.EmailRequired)
             .Matches(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
-            .WithMessage("Địa chỉ email không hợp lệ");
+            .WithMessage(ValidationMessages.EmailInvalid);
 
         RuleFor(x => x.FullName)
-            .NotEmpty().WithMessage("Họ và tên là bắt buộc");
+            .NotEmpty().WithMessage(ValidationMessages.FullNameAndLastNameRequired);
     }
 }
 

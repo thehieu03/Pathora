@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Contracts.Role;
 using Application.Services;
 using Domain.CORS;
@@ -13,11 +14,11 @@ public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCom
     public CreateRoleCommandValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Tên role không được để trống")
-            .MaximumLength(100).WithMessage("Tên role không được quá 100 ký tự");
+            .NotEmpty().WithMessage(ValidationMessages.RoleNameRequired)
+            .MaximumLength(100).WithMessage(ValidationMessages.RoleNameMaxLength100);
 
         RuleFor(x => x.Description)
-            .MaximumLength(250).WithMessage("Mô tả không được quá 250 ký tự");
+            .MaximumLength(250).WithMessage(ValidationMessages.DescriptionMaxLength250);
     }
 }
 

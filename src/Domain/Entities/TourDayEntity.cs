@@ -1,12 +1,15 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public sealed class TourDayEntity : Aggregate<Guid>
 {
-    public Guid TourDayId { get; set; }
+    public Guid TourClassificationId { get; set; }
     public TourClassificationEntity Classification { get; set; } = null!;
     public int DayNumber { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; } = null!;
+    public Dictionary<string, TourDayTranslationData> Translations { get; set; } = [];
     public List<TourDayActivityEntity> Activities { get; set; } = [];
 
     public static TourDayEntity Create(Guid classificationId, int dayNumber, string title, string performedBy, string? description = null)
@@ -14,7 +17,7 @@ public sealed class TourDayEntity : Aggregate<Guid>
         return new TourDayEntity
         {
             Id = Guid.CreateVersion7(),
-            TourDayId = classificationId,
+            TourClassificationId = classificationId,
             DayNumber = dayNumber,
             Title = title,
             Description = description,

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace Domain.Entities;
 
-namespace Domain.Entities;
+using Domain.Entities.Translations;
 
 public class TourPlanLocationEntity : Aggregate<Guid>
 {
-    public Guid LocationId { get; set; }
     public string LocationName { get; set; } = null!;
-    public string LocationDescription { get; set; } = null!;
+    public string? LocationDescription { get; set; }
     public LocationType LocationType { get; set; }
     public string? Address { get; set; }
     public string? City { get; set; }
@@ -16,15 +13,18 @@ public class TourPlanLocationEntity : Aggregate<Guid>
     public decimal? Latitude { get; set; }
     public decimal? Longitude { get; set; }
     public decimal? EntranceFee { get; set; }
+    public TimeOnly? OpeningHours { get; set; }
+    public TimeOnly? ClosingHours { get; set; }
+    public int? EstimatedDurationMinutes { get; set; }
     public string? Note { get; set; }
+    public Dictionary<string, TourPlanLocationTranslationData> Translations { get; set; } = [];
     public TourDayActivityEntity TourDayActivity { get; set; } = null!;
 
-    public static TourPlanLocationEntity Create(string locationName, string locationDescription, LocationType locationType, string performedBy, string? address = null, string? city = null, string? country = null, decimal? latitude = null, decimal? longitude = null, decimal? entranceFee = null, string? note = null)
+    public static TourPlanLocationEntity Create(string locationName, LocationType locationType, string performedBy, string? locationDescription = null, string? address = null, string? city = null, string? country = null, decimal? latitude = null, decimal? longitude = null, decimal? entranceFee = null, TimeOnly? openingHours = null, TimeOnly? closingHours = null, int? estimatedDurationMinutes = null, string? note = null)
     {
         return new TourPlanLocationEntity
         {
             Id = Guid.CreateVersion7(),
-            LocationId = Guid.CreateVersion7(),
             LocationName = locationName,
             LocationDescription = locationDescription,
             LocationType = locationType,
@@ -34,6 +34,9 @@ public class TourPlanLocationEntity : Aggregate<Guid>
             Latitude = latitude,
             Longitude = longitude,
             EntranceFee = entranceFee,
+            OpeningHours = openingHours,
+            ClosingHours = closingHours,
+            EstimatedDurationMinutes = estimatedDurationMinutes,
             Note = note,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
@@ -42,7 +45,7 @@ public class TourPlanLocationEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(string locationName, string locationDescription, LocationType locationType, string performedBy, string? address = null, string? city = null, string? country = null, decimal? latitude = null, decimal? longitude = null, decimal? entranceFee = null, string? note = null)
+    public void Update(string locationName, LocationType locationType, string performedBy, string? locationDescription = null, string? address = null, string? city = null, string? country = null, decimal? latitude = null, decimal? longitude = null, decimal? entranceFee = null, TimeOnly? openingHours = null, TimeOnly? closingHours = null, int? estimatedDurationMinutes = null, string? note = null)
     {
         LocationName = locationName;
         LocationDescription = locationDescription;
@@ -53,6 +56,9 @@ public class TourPlanLocationEntity : Aggregate<Guid>
         Latitude = latitude;
         Longitude = longitude;
         EntranceFee = entranceFee;
+        OpeningHours = openingHours;
+        ClosingHours = closingHours;
+        EstimatedDurationMinutes = estimatedDurationMinutes;
         Note = note;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;

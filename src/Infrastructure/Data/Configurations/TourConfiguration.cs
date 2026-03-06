@@ -36,6 +36,9 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
         builder.Property(t => t.SEODescription)
             .HasMaxLength(500);
 
+        builder.Property(t => t.Translations)
+            .ConfigureTranslationsJsonb();
+
         builder.Property(t => t.Status)
             .HasConversion<string>()
             .HasMaxLength(50)
@@ -43,6 +46,9 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
 
         builder.Property(t => t.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(t => new { t.Status, t.IsDeleted });
+        builder.HasIndex(t => t.CreatedOnUtc);
 
         // Thumbnail là owned entity, lưu inline trong bảng Tours
         builder.OwnsOne(t => t.Thumbnail, thumb =>
@@ -58,7 +64,7 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
         {
             img.ToTable("TourImages");
             img.WithOwner().HasForeignKey("TourId");
-            img.Property<int>("Id").ValueGeneratedOnAdd();
+            img.Property<int>("Id").ValueGeneratedOnAdd().UseIdentityAlwaysColumn();
             img.HasKey("Id");
             img.Property(i => i.FileId).HasMaxLength(200);
             img.Property(i => i.OriginalFileName).HasMaxLength(500);
