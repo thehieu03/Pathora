@@ -25,5 +25,7 @@ public class OtpConfiguration : IEntityTypeConfiguration<OtpEntity>
 
         builder.Property(o => o.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(o => o.ExpiryDate);
     }
 }

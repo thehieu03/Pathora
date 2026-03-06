@@ -44,6 +44,8 @@ public class TourInsuranceConfiguration : IEntityTypeConfiguration<TourInsurance
         builder.Property<Guid>("TourClassificationId")
             .IsRequired();
 
+        builder.HasIndex("TourClassificationId");
+
         builder.HasOne(i => i.TourClassification)
             .WithMany(c => c.Insurances)
             .HasForeignKey("TourClassificationId")

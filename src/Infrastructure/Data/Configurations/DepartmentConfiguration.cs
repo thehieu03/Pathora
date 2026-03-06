@@ -22,6 +22,8 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<DepartmentEntity
         builder.Property(d => d.IsDeleted)
             .HasDefaultValue(false);
 
+        builder.HasIndex(d => d.IsDeleted);
+
         builder.HasOne<DepartmentEntity>()
             .WithMany()
             .HasForeignKey(d => d.ParentId)
