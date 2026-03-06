@@ -564,6 +564,10 @@ namespace Infrastructure.Data.Migrations
                     b.Property<Guid>("TourId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TourId");
@@ -627,6 +631,10 @@ namespace Infrastructure.Data.Migrations
                     b.Property<Guid>("TourDayId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TourDayId");
@@ -666,6 +674,10 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<Guid>("TourClassificationId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -729,10 +741,18 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedOnUtc");
 
                     b.HasIndex("TourCode")
                         .IsUnique();
+
+                    b.HasIndex("Status", "IsDeleted");
 
                     b.ToTable("Tours", (string)null);
                 });
@@ -887,6 +907,10 @@ namespace Infrastructure.Data.Migrations
                     b.Property<Guid>("TourDayActivityId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("Website")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -968,9 +992,17 @@ namespace Infrastructure.Data.Migrations
                     b.Property<Guid>("TourDayActivityId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("LocationType");
+
                     b.HasIndex("TourDayActivityId");
+
+                    b.HasIndex("City", "Country");
 
                     b.ToTable("TourPlanLocations", (string)null);
                 });
@@ -1027,6 +1059,10 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<Guid>("TourDayActivityId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Translations")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("TransportationName")
                         .HasMaxLength(300)

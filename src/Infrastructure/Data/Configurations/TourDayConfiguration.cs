@@ -25,6 +25,11 @@ public class TourDayConfiguration : IEntityTypeConfiguration<TourDayEntity>
         builder.Property(d => d.Description)
             .HasMaxLength(2000);
 
+        builder.Property(d => d.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex(d => d.TourClassificationId);
+
         builder.HasMany(d => d.Activities)
             .WithOne(a => a.TourDay)
             .HasForeignKey(a => a.TourDayId)

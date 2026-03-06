@@ -1,5 +1,7 @@
 ﻿namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourEntity : Aggregate<Guid>
 {
     public string TourCode { get; set; } = null!;
@@ -12,13 +14,14 @@ public class TourEntity : Aggregate<Guid>
     public TourStatus Status { get; set; } = TourStatus.Pending;
     public ImageEntity Thumbnail { get; set; } = null!;
     public List<ImageEntity> Images { get; set; } = [];
+    public Dictionary<string, TourTranslationData> Translations { get; set; } = [];
     public List<TourClassificationEntity> Classifications { get; set; } = [];
 
     public static string GenerateTourCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
-        var randomPart = Random.Shared.Next(10000, 99999).ToString();
-        return $"TOUR-{datePart}-{randomPart}";
+        var uniquePart = Guid.CreateVersion7().ToString("N")[..8];
+        return $"TOUR-{datePart}-{uniquePart}";
     }
 
     public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)

@@ -1,5 +1,7 @@
 ﻿namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourPlanLocationEntity : Aggregate<Guid>
 {
     public string LocationName { get; set; } = null!;
@@ -15,6 +17,7 @@ public class TourPlanLocationEntity : Aggregate<Guid>
     public TimeOnly? ClosingHours { get; set; }
     public int? EstimatedDurationMinutes { get; set; }
     public string? Note { get; set; }
+    public Dictionary<string, TourPlanLocationTranslationData> Translations { get; set; } = [];
     public TourDayActivityEntity TourDayActivity { get; set; } = null!;
 
     public static TourPlanLocationEntity Create(string locationName, LocationType locationType, string performedBy, string? locationDescription = null, string? address = null, string? city = null, string? country = null, decimal? latitude = null, decimal? longitude = null, decimal? entranceFee = null, TimeOnly? openingHours = null, TimeOnly? closingHours = null, int? estimatedDurationMinutes = null, string? note = null)

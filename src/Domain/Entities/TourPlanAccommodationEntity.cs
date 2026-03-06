@@ -1,5 +1,7 @@
 ﻿namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourPlanAccommodationEntity : Aggregate<Guid>
 {
     public string AccommodationName { get; set; } = null!;
@@ -21,6 +23,7 @@ public class TourPlanAccommodationEntity : Aggregate<Guid>
     public decimal? Latitude { get; set; }
     public decimal? Longitude { get; set; }
     public string? Note { get; set; }
+    public Dictionary<string, TourPlanAccommodationTranslationData> Translations { get; set; } = [];
     public TourDayActivityEntity TourDayActivity { get; set; } = null!;
 
     public static TourPlanAccommodationEntity Create(string accommodationName, RoomType roomType, int roomCapacity, MealType mealsIncluded, string performedBy, TimeOnly? checkInTime = null, TimeOnly? checkOutTime = null, decimal? roomPrice = null, int? numberOfRooms = null, int? numberOfNights = null, decimal? totalPrice = null, string? specialRequest = null, string? address = null, string? city = null, string? contactPhone = null, string? website = null, string? imageUrl = null, decimal? latitude = null, decimal? longitude = null, string? note = null)

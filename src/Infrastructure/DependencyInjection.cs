@@ -1,6 +1,8 @@
+using Application.Common.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Files;
 using Infrastructure.Identity;
+using Infrastructure.Localization;
 using Infrastructure.Mails;
 using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +22,18 @@ public static class DependencyInjection
         return services
            .AddDbContext<AppDbContext>(options =>
             {
-                options.UseNpgsql(configuration.GetConnectionString("Default"));
+                options.UseNpgsql(configuration.GetConnectionString("Default"), npgsqlOptions =>
+                {
+                    npgsqlOptions.CommandTimeout(120);
+                    npgsqlOptions.EnableRetryOnFailure(3);
+                });
                 // hoặc MySQL, PostgreSQL...
             })
             .AddIdentityServices(configuration)
             .AddMailService(configuration)
             .AddFileService(configuration)
             .AddCacheService(configuration)
+            .AddScoped<ILanguageContext, LanguageContext>()
             .AddRepositories(configuration);
     }
 

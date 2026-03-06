@@ -44,6 +44,13 @@ public class TourPlanRouteConfiguration : IEntityTypeConfiguration<TourPlanRoute
         builder.Property(r => r.Note)
             .HasMaxLength(1000);
 
+        builder.Property(r => r.Translations)
+            .ConfigureTranslationsJsonb();
+
+        builder.HasIndex("TourDayActivityId");
+        builder.HasIndex("FromLocationId");
+        builder.HasIndex("ToLocationId");
+
         builder.HasOne(r => r.FromLocation)
             .WithMany()
             .HasForeignKey("FromLocationId")

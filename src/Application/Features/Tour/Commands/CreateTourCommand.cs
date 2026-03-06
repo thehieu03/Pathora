@@ -1,6 +1,7 @@
 using Application.Common.Constant;
 using Application.Dtos;
 using Domain.CORS;
+using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
 using FluentValidation;
@@ -16,7 +17,8 @@ public sealed record CreateTourCommand(
     string? SEODescription,
     TourStatus Status,
     ImageInputDto? Thumbnail = null,
-    List<ImageInputDto>? Images = null) : ICommand<ErrorOr<Guid>>;
+    List<ImageInputDto>? Images = null,
+    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Guid>>;
 
 public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCommand>
 {
