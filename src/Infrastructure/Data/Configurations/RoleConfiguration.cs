@@ -32,6 +32,8 @@ public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
         builder.Property(r => r.IsDeleted)
             .HasDefaultValue(false);
 
+        builder.HasIndex(r => new { r.Status, r.IsDeleted });
+
         builder.HasMany<UserRoleEntity>()
             .WithOne()
             .HasForeignKey(ur => ur.RoleId)

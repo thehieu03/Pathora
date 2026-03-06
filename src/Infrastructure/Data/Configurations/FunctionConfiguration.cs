@@ -32,5 +32,7 @@ public class FunctionConfiguration : IEntityTypeConfiguration<Function>
 
         builder.Property(f => f.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(f => new { f.CategoryId, f.IsDeleted });
     }
 }

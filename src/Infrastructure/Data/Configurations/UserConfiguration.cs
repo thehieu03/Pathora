@@ -38,6 +38,12 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.IsDeleted)
             .HasDefaultValue(false);
 
+        builder.HasIndex(u => u.IsDeleted);
+
+        builder.HasIndex(u => u.Username);
+
+        builder.HasIndex(u => u.CreatedOnUtc);
+
         builder.HasMany<UserRoleEntity>()
             .WithOne()
             .HasForeignKey(ur => ur.UserId)

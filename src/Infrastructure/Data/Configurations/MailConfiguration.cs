@@ -36,5 +36,9 @@ public class MailConfiguration : IEntityTypeConfiguration<MailEntity>
 
         builder.Property(m => m.CreatedAt)
             .IsRequired();
+
+        builder.HasIndex(m => m.Status);
+
+        builder.HasIndex(m => m.CreatedAt);
     }
 }

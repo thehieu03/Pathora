@@ -33,5 +33,9 @@ public class FileMetadataConfiguration : IEntityTypeConfiguration<FileMetadataEn
 
         builder.Property(f => f.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(f => f.LinkedEntityId);
+
+        builder.HasIndex(f => f.IsDeleted);
     }
 }

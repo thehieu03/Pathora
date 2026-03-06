@@ -24,5 +24,7 @@ public class PositionConfiguration : IEntityTypeConfiguration<PositionEntity>
 
         builder.Property(p => p.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(p => p.IsDeleted);
     }
 }

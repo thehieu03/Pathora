@@ -12,6 +12,8 @@ public class LogErrorConfiguration : IEntityTypeConfiguration<LogError>
 
         // 3. Cấu hình thuộc tính Content
         builder.Property(le => le.Content)
-            .IsRequired(); 
+            .IsRequired();
+
+        builder.HasIndex(le => le.CreatedOnUtc);
     }
 }
