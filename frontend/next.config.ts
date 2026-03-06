@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
 
 type RemotePattern = {
   protocol: "http" | "https";
@@ -69,4 +70,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const analyze = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
+export default analyze(nextConfig);

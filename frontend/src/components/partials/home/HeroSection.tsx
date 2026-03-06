@@ -4,276 +4,29 @@ import { useRouter } from "next/navigation";
 import Image from "../shared/LandingImage";
 import { Button, Icon } from "@/components/ui";
 import { useTranslation } from "react-i18next";
-import {
-  FaGlobe,
-  FaLock,
-  FaUsers,
-  FaCalendarAlt,
-  FaMapMarkerAlt,
-  FaTag,
-} from "react-icons/fa";
+import { FaGlobe, FaLock, FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaTag } from "react-icons/fa";
 import { homeService } from "@/services/homeService";
-import Spline from "@splinetool/react-spline";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import dynamic from "next/dynamic";
+import {
+  CalendarDropdown,
+  ListDropdown,
+  NumberDropdown,
+  SelectField,
+  DEFAULT_DESTINATIONS,
+  DEFAULT_CLASSIFICATIONS,
+  DEFAULT_WEEKDAYS,
+} from "./HeroSearchBar";
+
+const Spline = dynamic(() => import("@splinetool/react-spline"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-gradient-to-br from-cyan-900/20 to-fuchsia-900/20 animate-pulse" />
+  ),
+});
 
 const HERO_BG =
   "https://www.figma.com/api/mcp/asset/e4c27cca-3e11-49a0-bb16-22b1bdf0f4cc";
-
-/* ── Calendar helpers ──────────────────────────────────────── */
-
-function getDaysInMonth(year: number, month: number) {
-  return new Date(year, month + 1, 0).getDate();
-}
-function getFirstDayOfMonth(year: number, month: number) {
-  const d = new Date(year, month, 1).getDay();
-  return d === 0 ? 6 : d - 1; // Monday = 0
-}
-
-/* ── Destination / Classification data ─────────────────────── */
-const DEFAULT_DESTINATIONS = [
-  "Ho Chi Minh City",
-  "Ha Noi",
-  "Da Nang",
-  "Moscow",
-  "New York",
-  "California",
-];
-const DEFAULT_CLASSIFICATIONS = ["Standard", "VIP", "Luxury"];
-const DEFAULT_WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const PEOPLE_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
-
-/* ── Calendar Dropdown ─────────────────────────────────────── */
-const CalendarDropdown = ({
-  value,
-  onChange,
-  locale,
-  weekdayLabels,
-  previousMonthLabel,
-  nextMonthLabel,
-}: {
-  value: Date | null;
-  onChange: (d: Date) => void;
-  locale: string;
-  weekdayLabels: string[];
-  previousMonthLabel: string;
-  nextMonthLabel: string;
-}) => {
-  const today = new Date();
-  const [viewYear, setViewYear] = useState(
-    value?.getFullYear() ?? today.getFullYear(),
-  );
-  const [viewMonth, setViewMonth] = useState(
-    value?.getMonth() ?? today.getMonth(),
-  );
-
-  const daysInMonth = getDaysInMonth(viewYear, viewMonth);
-  const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
-
-  const prevMonth = () => {
-    if (viewMonth === 0) {
-      setViewMonth(11);
-      setViewYear((y) => y - 1);
-    } else setViewMonth((m) => m - 1);
-  };
-  const nextMonth = () => {
-    if (viewMonth === 11) {
-      setViewMonth(0);
-      setViewYear((y) => y + 1);
-    } else setViewMonth((m) => m + 1);
-  };
-
-  const isSelected = (day: number) =>
-    value &&
-    value.getDate() === day &&
-    value.getMonth() === viewMonth &&
-    value.getFullYear() === viewYear;
-  const monthLabel = new Intl.DateTimeFormat(locale, { month: "long" }).format(
-    new Date(viewYear, viewMonth, 1),
-  );
-  const resolvedWeekdayLabels =
-    weekdayLabels.length === 7 ? weekdayLabels : DEFAULT_WEEKDAYS;
-
-  return (
-    <div className="p-4 w-80 max-w-[calc(100vw-2rem)]">
-      {/* Month navigation */}
-      <div className="flex items-center justify-between mb-3">
-        <button
-          type="button"
-          onClick={prevMonth}
-          aria-label={previousMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
-          <Icon
-            icon="heroicons-outline:chevron-left"
-            className="w-4 h-4 text-gray-600"
-          />
-        </button>
-        <span className="text-sm font-semibold text-gray-900">
-          {monthLabel} {viewYear}
-        </span>
-        <button
-          type="button"
-          onClick={nextMonth}
-          aria-label={nextMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
-          <Icon
-            icon="heroicons-outline:chevron-right"
-            className="w-4 h-4 text-gray-600"
-          />
-        </button>
-      </div>
-
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 mb-1">
-        {resolvedWeekdayLabels.map((wd) => (
-          <span
-            key={wd}
-            className="text-[11px] text-center text-gray-400 font-medium">
-            {wd}
-          </span>
-        ))}
-      </div>
-
-      {/* Day grid */}
-      <div className="grid grid-cols-7 gap-y-0.5">
-        {Array.from({ length: firstDay }).map((_, i) => (
-          <span key={`e-${i}`} />
-        ))}
-        {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
-          <button
-            type="button"
-            key={day}
-            onClick={() => onChange(new Date(viewYear, viewMonth, day))}
-            className={`w-11 h-11 mx-auto rounded-full text-sm flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
-              isSelected(day)
-                ? "bg-landing-accent text-white font-bold"
-                : "text-gray-700 hover:bg-gray-100"
-            }`}>
-            {day}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-/* ── List Dropdown ─────────────────────────────────────────── */
-const ListDropdown = ({
-  items,
-  value,
-  onChange,
-}: {
-  items: string[];
-  value: string;
-  onChange: (v: string) => void;
-}) => (
-  <div className="py-2 min-w-50 max-h-60 overflow-y-auto">
-    {items.map((item) => (
-      <button
-        type="button"
-        key={item}
-        onClick={() => onChange(item)}
-        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
-          value === item
-            ? "bg-landing-accent/10 text-landing-accent font-medium"
-            : "text-gray-700 hover:bg-gray-50"
-        }`}>
-        {item}
-      </button>
-    ))}
-  </div>
-);
-
-/* ── Number Dropdown ───────────────────────────────────────── */
-const NumberDropdown = ({
-  value,
-  onChange,
-  singleLabel,
-  pluralLabel,
-}: {
-  value: number | null;
-  onChange: (v: number) => void;
-  singleLabel: string;
-  pluralLabel: string;
-}) => (
-  <div className="py-2 min-w-45 max-h-60 overflow-y-auto">
-    {PEOPLE_OPTIONS.map((num) => (
-      <button
-        type="button"
-        key={num}
-        onClick={() => onChange(num)}
-        className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
-          value === num
-            ? "bg-landing-accent/10 text-landing-accent font-medium"
-            : "text-gray-700 hover:bg-gray-50"
-        }`}>
-        {num} {num === 1 ? singleLabel : pluralLabel}
-      </button>
-    ))}
-  </div>
-);
-
-/* ── SelectField ───────────────────────────────────────────── */
-type SelectFieldProps = {
-  icon: React.ReactNode;
-  label: string;
-  placeholder: string;
-  rounded?: string;
-  isOpen: boolean;
-  onToggle: () => void;
-  displayValue?: string;
-  children?: React.ReactNode;
-};
-
-const SelectField = ({
-  icon,
-  label,
-  placeholder,
-  rounded,
-  isOpen,
-  onToggle,
-  displayValue,
-  children,
-}: SelectFieldProps) => (
-  <div className="relative w-full h-full">
-    <button
-      type="button"
-      onClick={onToggle}
-      aria-expanded={isOpen}
-      aria-haspopup={children ? "listbox" : undefined}
-      className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white w-full text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${rounded ?? ""} ${
-        isOpen ? "ring-2 ring-landing-accent/30" : ""
-      }`}>
-      <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 flex items-center justify-center text-landing-accent">
-        {icon}
-      </div>
-      <div className="flex min-w-0 flex-col gap-0.5 md:gap-1 w-full">
-        <span className="text-[#333] font-semibold text-xs md:text-sm leading-tight truncate w-full block">
-          {label}
-        </span>
-        <div className="flex min-w-0 items-center justify-between gap-1 w-full opacity-70">
-          <span
-            className={`text-[10px] md:text-xs font-normal truncate flex-1 ${
-              displayValue ? "text-[#333]" : "text-[#333] opacity-80"
-            }`}>
-            {displayValue || placeholder}
-          </span>
-          <Icon
-            icon="heroicons-outline:chevron-down"
-            className={`w-3 h-3 md:w-4 md:h-4 shrink-0 text-[#333] transition-transform ${
-              isOpen ? "rotate-180" : ""
-            }`}
-          />
-        </div>
-      </div>
-    </button>
-
-    {/* Dropdown panel */}
-    {isOpen && children && (
-      <div className="absolute top-full left-0 right-0 md:left-auto md:right-auto md:min-w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-        {children}
-      </div>
-    )}
-  </div>
-);
 
 type TourType = "public" | "private";
 type FieldName = "people" | "date" | "destination" | "classification";
@@ -310,24 +63,12 @@ export const HeroSection = () => {
   }, []);
 
   // Click-outside handler
-  const handleClickOutside = useCallback((e: MouseEvent) => {
-    if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-      setOpenField(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (openField) document.addEventListener("mousedown", handleClickOutside);
-    else document.removeEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openField, handleClickOutside]);
+  const closeDropdowns = useCallback(() => setOpenField(null), []);
+  useClickOutside(searchRef, closeDropdowns);
 
   const toggleField = (name: FieldName) =>
     setOpenField((prev) => (prev === name ? null : name));
   const locale = (i18n.resolvedLanguage || i18n.language || "en").toLowerCase();
-  const translatedDestinations = t("landing.hero.destinations", {
-    returnObjects: true,
-  }) as string[];
   const translatedClassifications = t("landing.hero.classifications", {
     returnObjects: true,
   }) as string[];
@@ -449,127 +190,54 @@ export const HeroSection = () => {
           </div>
 
           <div className="bg-white rounded-bl-xl rounded-br-xl rounded-tr-xl flex flex-col md:flex-row items-stretch md:items-center gap-0 w-full">
-            <div
-              className={`relative w-full md:flex-[1.2] md:min-w-0 ${openField === "people" ? "z-20" : "z-0"}`}>
+            <div className={`relative w-full md:flex-[1.2] md:min-w-0 ${openField === "people" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={
-                  <FaUsers
-                    suppressHydrationWarning
-                    className="w-4 h-4 md:w-5 md:h-5"
-                  />
-                }
+                icon={<FaUsers suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.people.label")}
                 placeholder={t("landing.hero.fields.people.placeholder")}
                 rounded="rounded-t-xl md:rounded-l-xl md:rounded-tr-none"
                 isOpen={openField === "people"}
                 onToggle={() => toggleField("people")}
-                displayValue={
-                  people
-                    ? `${people} ${
-                        people === 1
-                          ? t("landing.hero.fields.people.single")
-                          : t("landing.hero.fields.people.plural")
-                      }`
-                    : ""
-                }>
-                <NumberDropdown
-                  value={people}
-                  onChange={(v) => {
-                    setPeople(v);
-                    setOpenField(null);
-                  }}
-                  singleLabel={t("landing.hero.fields.people.single")}
-                  pluralLabel={t("landing.hero.fields.people.plural")}
-                />
+                displayValue={people ? `${people} ${people === 1 ? t("landing.hero.fields.people.single") : t("landing.hero.fields.people.plural")}` : ""}>
+                <NumberDropdown value={people} onChange={(v) => { setPeople(v); setOpenField(null); }} singleLabel={t("landing.hero.fields.people.single")} pluralLabel={t("landing.hero.fields.people.plural")} />
               </SelectField>
             </div>
-
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
-
-            <div
-              className={`relative w-full md:flex-1 md:min-w-0 ${openField === "date" ? "z-20" : "z-0"}`}>
+            <div className={`relative w-full md:flex-1 md:min-w-0 ${openField === "date" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={
-                  <FaCalendarAlt
-                    suppressHydrationWarning
-                    className="w-4 h-4 md:w-5 md:h-5"
-                  />
-                }
+                icon={<FaCalendarAlt suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.date.label")}
                 placeholder={t("landing.hero.fields.date.placeholder")}
                 isOpen={openField === "date"}
                 onToggle={() => toggleField("date")}
                 displayValue={formatDate(date)}>
-                <CalendarDropdown
-                  value={date}
-                  onChange={(d) => {
-                    setDate(d);
-                    setOpenField(null);
-                  }}
-                  locale={locale}
-                  weekdayLabels={weekdays}
-                  previousMonthLabel={t("landing.hero.calendar.previousMonth")}
-                  nextMonthLabel={t("landing.hero.calendar.nextMonth")}
-                />
+                <CalendarDropdown value={date} onChange={(d) => { setDate(d); setOpenField(null); }} locale={locale} weekdayLabels={weekdays} previousMonthLabel={t("landing.hero.calendar.previousMonth")} nextMonthLabel={t("landing.hero.calendar.nextMonth")} />
               </SelectField>
             </div>
-
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
-
-            <div
-              className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "destination" ? "z-20" : "z-0"}`}>
+            <div className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "destination" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={
-                  <FaMapMarkerAlt
-                    suppressHydrationWarning
-                    className="w-4 h-4 md:w-5 md:h-5"
-                  />
-                }
+                icon={<FaMapMarkerAlt suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.destination.label")}
                 placeholder={t("landing.hero.fields.destination.placeholder")}
                 isOpen={openField === "destination"}
                 onToggle={() => toggleField("destination")}
                 displayValue={destination}>
-                <ListDropdown
-                  items={destinations}
-                  value={destination}
-                  onChange={(v) => {
-                    setDestination(v);
-                    setOpenField(null);
-                  }}
-                />
+                <ListDropdown items={destinations} value={destination} onChange={(v) => { setDestination(v); setOpenField(null); }} />
               </SelectField>
             </div>
-
             <div className="w-full h-px md:w-px md:h-12.5 bg-gray-200 shrink-0" />
-
-            <div
-              className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "classification" ? "z-20" : "z-0"}`}>
+            <div className={`relative w-full md:flex-[1.1] md:min-w-0 ${openField === "classification" ? "z-20" : "z-0"}`}>
               <SelectField
-                icon={
-                  <FaTag
-                    suppressHydrationWarning
-                    className="w-4 h-4 md:w-5 md:h-5"
-                  />
-                }
+                icon={<FaTag suppressHydrationWarning className="w-4 h-4 md:w-5 md:h-5" />}
                 label={t("landing.hero.fields.classification.label")}
-                placeholder={t(
-                  "landing.hero.fields.classification.placeholder",
-                )}
+                placeholder={t("landing.hero.fields.classification.placeholder")}
                 isOpen={openField === "classification"}
                 onToggle={() => toggleField("classification")}
                 displayValue={classification}>
-                <ListDropdown
-                  items={classifications}
-                  value={classification}
-                  onChange={(v) => {
-                    setClassification(v);
-                    setOpenField(null);
-                  }}
-                />
+                <ListDropdown items={classifications} value={classification} onChange={(v) => { setClassification(v); setOpenField(null); }} />
               </SelectField>
             </div>
-
             <div className="p-3 md:p-0 md:pl-2 w-full md:w-auto md:shrink-0 flex justify-center">
               <Button
                 onClick={handleSearch}
@@ -578,11 +246,7 @@ export const HeroSection = () => {
                 <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">
                   {t("landing.hero.exploreTours")}
                 </span>
-                <Icon
-                  icon="heroicons-outline:search"
-                  className="w-4 h-4 md:w-5 md:h-5 text-white"
-                  aria-hidden="true"
-                />
+                <Icon icon="heroicons-outline:search" className="w-4 h-4 md:w-5 md:h-5 text-white" aria-hidden="true" />
               </Button>
             </div>
           </div>

@@ -1,21 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getCurrentApiLanguage } from "../../api/languageHeader";
+import { getCookie } from "@/utils/cookie";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
-
-const getCookie = (
-  name: string,
-  cookieSource?: string | null,
-): string | null => {
-  const cookieValue =
-    cookieSource ?? (typeof window !== "undefined" ? document.cookie : null);
-  if (!cookieValue) return null;
-
-  const value = `; ${cookieValue}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(";").shift() ?? null;
-  return null;
-};
 
 export const prepareApiHeaders = (
   headers: Headers,

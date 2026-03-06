@@ -9,6 +9,7 @@ import { ToastPosition } from "react-toastify";
 import { handleResponseError, waitForRetry } from "./responseInterceptor";
 import { showErrorToast } from "./showErrorToast";
 import { getCurrentApiLanguage } from "./languageHeader";
+import { getCookie } from "@/utils/cookie";
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
@@ -46,19 +47,6 @@ export interface ApiErrorResponse {
 export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   baseURL?: string;
 }
-
-const getCookie = (name: string): string | null => {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return parts.pop()?.split(";").shift() || null;
-  }
-  return null;
-};
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
