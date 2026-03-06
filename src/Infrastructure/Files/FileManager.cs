@@ -1,5 +1,5 @@
 using Application.Common.Interfaces;
-using Domain.Common.Models;
+using Common.Models;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;

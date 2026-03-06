@@ -1,6 +1,6 @@
 using Application.Common;
-using Application.Common.Interfaces;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Contracts.Position;
 using Application.Services;
@@ -20,5 +20,6 @@ public sealed class UpdatePositionCommandHandler(IPositionService positionServic
         return await positionService.UpdateAsync(new UpdatePositionRequest(request.Id, request.Name, request.Level, request.Note, request.Type));
     }
 }
+
 
 

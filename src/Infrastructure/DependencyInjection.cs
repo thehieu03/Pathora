@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Files;
 using Infrastructure.Identity;

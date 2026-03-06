@@ -1,5 +1,5 @@
 using Api.Controllers;
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Department;
 using Application.Features.Department.Commands;
 using Application.Features.Department.Queries;

@@ -1,8 +1,8 @@
 using Application.Common;
 using Application.Common.Constant;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Dtos;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
@@ -43,5 +43,6 @@ public sealed class CreateTourCommandHandler(ITourService tourService)
         return await tourService.Create(request);
     }
 }
+
 
 

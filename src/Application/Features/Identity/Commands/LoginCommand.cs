@@ -1,6 +1,6 @@
 using Application.Common.Constant;
 using Application.Contracts.Identity;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 using Application.Services;
@@ -30,5 +30,6 @@ public sealed class LoginCommandHandler(IIdentityService identityService)
         return await identityService.Login(new LoginRequest(request.Email, request.Password));
     }
 }
+
 
 

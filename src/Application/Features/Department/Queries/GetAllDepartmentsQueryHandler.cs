@@ -1,7 +1,7 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Department;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Department.Queries;
@@ -14,4 +14,5 @@ public sealed class GetAllDepartmentsQueryHandler(IDepartmentService departmentS
         return await departmentService.GetAll();
     }
 }
+
 

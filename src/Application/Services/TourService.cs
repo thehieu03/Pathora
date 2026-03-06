@@ -1,5 +1,5 @@
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;

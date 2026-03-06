@@ -1,6 +1,6 @@
 using Application.Common;
-using Application.Common.Interfaces;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Services;
 
@@ -19,5 +19,6 @@ public sealed class DeleteDepartmentCommandHandler(IDepartmentService department
         return await departmentService.Delete(request.Id);
     }
 }
+
 
 

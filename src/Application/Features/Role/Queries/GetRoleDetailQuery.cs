@@ -1,6 +1,6 @@
 using Application.Contracts.Role;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Role.Queries;
@@ -15,4 +15,5 @@ public sealed class GetRoleDetailQueryHandler(IRoleService roleService)
         return await roleService.GetDetail(new GetRoleDetailRequest(request.RoleId));
     }
 }
+
 

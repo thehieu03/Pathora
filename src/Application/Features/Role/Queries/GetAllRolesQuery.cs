@@ -1,9 +1,9 @@
 using Application.Common;
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
 using Application.Contracts.Role;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Role.Queries;
@@ -23,4 +23,5 @@ public sealed class GetAllRolesQueryHandler(IRoleService roleService)
         return await roleService.GetAll(new GetAllRoleRequest());
     }
 }
+
 

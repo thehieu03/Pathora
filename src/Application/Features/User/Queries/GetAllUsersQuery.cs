@@ -1,6 +1,6 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.User;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.User.Queries;
@@ -10,4 +10,5 @@ public sealed record GetAllUsersQuery(
     string? TextSearch,
     int PageNumber = 1,
     int PageSize = 10) : IQuery<ErrorOr<PaginatedListWithPermissions<UserVm>>>;
+
 

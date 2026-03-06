@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ZiggyCreatures.Caching.Fusion;

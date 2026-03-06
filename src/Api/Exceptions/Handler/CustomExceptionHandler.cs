@@ -1,6 +1,7 @@
 using Api.Exceptions;
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using Domain.Constant;
+using Common.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 

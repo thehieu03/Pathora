@@ -1,6 +1,6 @@
 using Application.Common;
-using Application.Common.Interfaces;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Contracts.Department;
 using Application.Services;
@@ -20,5 +20,6 @@ public sealed class UpdateDepartmentCommandHandler(IDepartmentService department
         return await departmentService.Update(new UpdateDepartmentRequest(request.DepartmentId, request.DepartmentParentId, request.DepartmentName));
     }
 }
+
 
 

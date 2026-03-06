@@ -1,6 +1,6 @@
 using Application.Common;
-using Application.Common.Interfaces;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Contracts.Role;
 using Application.Services;
@@ -20,5 +20,6 @@ public sealed class DeleteRoleCommandHandler(IRoleService roleService)
         return await roleService.Delete(new DeleteRoleRequest(request.RoleId));
     }
 }
+
 
 

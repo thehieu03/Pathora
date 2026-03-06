@@ -1,7 +1,7 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Position;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Position.Queries;
@@ -14,4 +14,5 @@ public sealed class GetAllPositionsQueryHandler(IPositionService positionService
         return await positionService.GetAllAsync(new GetAllPositionRequest(request.PageNumber, request.PageSize, request.SearchText));
     }
 }
+
 

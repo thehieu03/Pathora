@@ -1,4 +1,4 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Role;
 using Application.Features.Role.Queries;
 using Application.Services;

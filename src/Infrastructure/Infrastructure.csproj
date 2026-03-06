@@ -31,6 +31,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\..\Share\Common\Common.csproj" />
+    <ProjectReference Include="..\..\Share\Contracts\Contracts.csproj" />
   </ItemGroup>
 
 </Project>

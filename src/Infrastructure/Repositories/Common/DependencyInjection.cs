@@ -1,5 +1,6 @@
 
 using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.UnitOfWork;
 using Microsoft.Extensions.Configuration;

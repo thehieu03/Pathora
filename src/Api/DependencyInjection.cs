@@ -3,7 +3,7 @@ using Api.Infrastructure;
 using Api.Swagger.Extensions;
 using ApiExceptionHandler = Api.Exceptions.Handler.CustomExceptionHandler;
 using Application.Common.Constant;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenTelemetry;

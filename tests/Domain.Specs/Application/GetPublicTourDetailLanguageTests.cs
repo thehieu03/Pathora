@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Features.Public.Queries;
 using Application.Mapping;
 using AutoMapper;

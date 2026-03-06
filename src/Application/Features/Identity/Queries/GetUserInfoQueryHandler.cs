@@ -1,6 +1,6 @@
 using Application.Contracts.Identity;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Identity.Queries;
@@ -13,4 +13,5 @@ public sealed class GetUserInfoQueryHandler(IIdentityService identityService)
         return await identityService.GetUserInfo();
     }
 }
+
 

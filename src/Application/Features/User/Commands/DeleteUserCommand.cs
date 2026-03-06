@@ -1,4 +1,4 @@
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Services;
 
@@ -14,5 +14,6 @@ public sealed class DeleteUserCommandHandler(IUserService userService)
         return await userService.Delete(request.Id);
     }
 }
+
 
 

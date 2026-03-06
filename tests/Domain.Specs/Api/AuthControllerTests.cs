@@ -2,7 +2,7 @@ using Api.Controllers;
 using Application.Contracts.Identity;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Http;

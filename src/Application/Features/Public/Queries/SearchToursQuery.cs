@@ -1,6 +1,6 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Public;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Public.Queries;
@@ -12,3 +12,4 @@ public sealed record SearchToursQuery(
     int? People,
     int Page = 1,
     int PageSize = 10) : IQuery<ErrorOr<PaginatedList<SearchTourVm>>>;
+

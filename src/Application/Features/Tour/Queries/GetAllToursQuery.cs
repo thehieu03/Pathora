@@ -1,5 +1,5 @@
-using Application.Common.Contracts;
-using Domain.CORS;
+using Contracts;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Tour.Queries;
@@ -14,4 +14,5 @@ public sealed record TourVm(
     string ShortDescription,
     string Status,
     DateTimeOffset CreatedOnUtc);
+
 

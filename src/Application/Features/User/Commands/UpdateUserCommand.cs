@@ -1,5 +1,5 @@
 using Application.Contracts.User;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Services;
 
@@ -21,5 +21,6 @@ public sealed class UpdateUserCommandHandler(IUserService userService)
             request.Id, request.Departments, request.RoleIds, request.FullName, request.Avatar));
     }
 }
+
 
 

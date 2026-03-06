@@ -1,7 +1,7 @@
 using Application.Common;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Contracts.Public;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Public.Queries;
@@ -11,3 +11,4 @@ public sealed record GetFeaturedToursQuery(int Limit = 8) : IQuery<ErrorOr<List<
     public string CacheKey => $"{Common.CacheKey.Tour}:featured:{Limit}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
+

@@ -1,6 +1,6 @@
 using Application.Common;
-using Application.Common.Interfaces;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using Domain.Enums;
 using ErrorOr;
 using Application.Contracts.Role;
@@ -22,5 +22,6 @@ public sealed class UpdateRoleCommandHandler(IRoleService roleService)
             request.RoleId, request.Name, request.Description, request.Status, request.Type, request.FunctionIds));
     }
 }
+
 
 

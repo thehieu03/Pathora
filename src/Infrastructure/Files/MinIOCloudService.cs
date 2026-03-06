@@ -1,5 +1,6 @@
 using Application.Common.Interfaces;
-using Domain.Common.Models;
+using Contracts.Interfaces;
+using Common.Models;
 using Infrastructure.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Minio;

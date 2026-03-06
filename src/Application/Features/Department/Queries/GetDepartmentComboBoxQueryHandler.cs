@@ -1,6 +1,6 @@
 using Application.Contracts.Department;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Department.Queries;
@@ -13,4 +13,5 @@ public sealed class GetDepartmentComboBoxQueryHandler(IDepartmentService departm
         return await departmentService.GetAllForComboBox();
     }
 }
+
 

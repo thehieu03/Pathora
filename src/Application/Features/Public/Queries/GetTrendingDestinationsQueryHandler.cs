@@ -1,5 +1,5 @@
 using Application.Contracts.Public;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using ErrorOr;
 
@@ -23,3 +23,4 @@ public sealed class GetTrendingDestinationsQueryHandler(ITourRepository tourRepo
         return result;
     }
 }
+

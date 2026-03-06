@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/Share/">
+    <Project Path="Share/BuildingBlocks/BuildingBlocks.csproj" />
+    <Project Path="Share/Common/Common.csproj" />
+    <Project Path="Share/Contracts/Contracts.csproj" />
+    <Project Path="Share/EventSourcing/EventSourcing.csproj" />
+  </Folder>
   <Folder Name="/SolutionItems/">
     <File Path=".dockerignore" />
     <File Path=".gitlab-ci.yml" />

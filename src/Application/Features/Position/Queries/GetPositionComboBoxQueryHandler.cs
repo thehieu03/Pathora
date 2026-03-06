@@ -1,6 +1,6 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Position.Queries;
@@ -13,4 +13,5 @@ public sealed class GetPositionComboBoxQueryHandler(IPositionService positionSer
         return await positionService.GetComboboxAsync();
     }
 }
+
 

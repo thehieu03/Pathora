@@ -1,6 +1,6 @@
 using Application.Common;
-using Application.Common.Interfaces;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 using Application.Common.Constant;
@@ -32,5 +32,6 @@ public sealed class CreatePositionCommandHandler(IPositionService positionServic
         return await positionService.CreateAsync(new CreatePositionRequest(request.Name, request.Level, request.Note, request.Type));
     }
 }
+
 
 

@@ -1,7 +1,7 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.User;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.User.Queries;
@@ -15,4 +15,5 @@ public sealed class GetAllUsersQueryHandler(IUserService userService)
             request.DepartmentId, request.TextSearch, request.PageNumber, request.PageSize));
     }
 }
+
 

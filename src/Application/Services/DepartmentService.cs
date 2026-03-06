@@ -1,5 +1,5 @@
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
 using Application.Contracts.Department;
 using Domain.Common.Repositories;
 using Domain.Entities;

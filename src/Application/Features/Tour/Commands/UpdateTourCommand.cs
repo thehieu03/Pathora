@@ -1,7 +1,7 @@
 using Application.Common;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Dtos;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
@@ -32,5 +32,6 @@ public sealed class UpdateTourCommandHandler(ITourService tourService)
         return await tourService.Update(request);
     }
 }
+
 
 

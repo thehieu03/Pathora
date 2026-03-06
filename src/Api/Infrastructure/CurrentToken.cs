@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 
 namespace Api.Infrastructure;
 

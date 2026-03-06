@@ -1,8 +1,8 @@
 using Application.Common;
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
 using Application.Contracts.Position;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Position.Queries;
@@ -13,4 +13,5 @@ public sealed record GetAllPositionsQuery(int PageNumber = 1, int PageSize = 10,
     public string CacheKey => $"{Common.CacheKey.Position}:all:{PageNumber}:{PageSize}:{SearchText}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
 }
+
 

@@ -1,5 +1,5 @@
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Application.Contracts.Role;
 using Domain.Constant;

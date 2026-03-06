@@ -1,4 +1,4 @@
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Contracts.Identity;
 using Application.Services;
@@ -15,5 +15,6 @@ public sealed class LogoutCommandHandler(IIdentityService identityService)
         return await identityService.Logout(new LogoutRequest(request.RefreshToken));
     }
 }
+
 
 

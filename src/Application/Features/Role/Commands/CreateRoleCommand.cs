@@ -1,9 +1,9 @@
 using Application.Common;
 using Application.Common.Constant;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Contracts.Role;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 
@@ -35,4 +35,5 @@ public sealed class CreateRoleCommandHandler(IRoleService roleService)
         return await roleService.Create(new CreateRoleRequest(request.Name, request.Description, request.Type, request.FunctionIds ?? []));
     }
 }
+
 

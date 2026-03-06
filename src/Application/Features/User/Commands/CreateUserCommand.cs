@@ -1,6 +1,6 @@
 using Application.Common.Constant;
 using Application.Contracts.User;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 using Application.Services;
@@ -37,5 +37,6 @@ public sealed class CreateUserCommandHandler(IUserService userService)
             request.Departments, request.RoleIds, request.Email, request.FullName, request.Avatar));
     }
 }
+
 
 

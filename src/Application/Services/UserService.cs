@@ -1,6 +1,6 @@
-using Application.Common;
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Common.Generators;
+using Contracts;
+using Contracts.Interfaces;
 using Application.Contracts.User;
 using Domain.Common.Repositories;
 using Domain.Entities;

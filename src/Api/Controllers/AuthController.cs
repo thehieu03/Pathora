@@ -1,5 +1,5 @@
 using Api.Endpoint;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
 using Infrastructure.Data;

@@ -1,6 +1,6 @@
 using Application.Contracts.User;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.User.Queries;
@@ -13,4 +13,5 @@ public sealed class GetUserDetailQueryHandler(IUserService userService)
         return await userService.GetDetail(request.Id);
     }
 }
+
 

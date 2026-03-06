@@ -1,5 +1,5 @@
 using Api.Middleware;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace Domain.Specs.Api;

@@ -1,7 +1,7 @@
 using System.Reflection;
 using Application.Common.Behaviors;
 using Application.Services;
-using Domain.Behaviors;
+using BuildingBlocks.Behaviors;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,5 @@
 using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Contracts.Identity;
 using Domain.Common.Repositories;
 using Domain.Entities;

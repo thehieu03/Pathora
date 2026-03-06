@@ -1,5 +1,5 @@
 using Application.Contracts.Identity;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Services;
 
@@ -15,5 +15,6 @@ public sealed class RefreshCommandHandler(IIdentityService identityService)
         return await identityService.Refresh(new RefreshTokenRequest(request.RefreshToken));
     }
 }
+
 
 

@@ -1,5 +1,5 @@
 using Application.Contracts.Public;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using ErrorOr;
 
@@ -25,3 +25,4 @@ public sealed class GetTopReviewsQueryHandler(IReviewRepository reviewRepository
         return result;
     }
 }
+

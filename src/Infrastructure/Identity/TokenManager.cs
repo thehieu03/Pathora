@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Application.Common;
 using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.UnitOfWork;

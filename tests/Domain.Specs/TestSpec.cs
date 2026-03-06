@@ -1,4 +1,4 @@
-﻿using Domain.ApiModel;
+using Contracts.ModelResponse;
 
 namespace Domain.Specs;
 

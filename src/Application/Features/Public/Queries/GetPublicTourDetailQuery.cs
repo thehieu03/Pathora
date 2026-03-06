@@ -1,9 +1,9 @@
 using Application.Dtos;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities.Translations;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Enums;
 using ErrorOr;
 
@@ -32,3 +32,4 @@ public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourReposito
         public string CurrentLanguage { get; set; } = ILanguageContext.DefaultLanguage;
     }
 }
+

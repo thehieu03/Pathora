@@ -1,6 +1,6 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Public;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using ErrorOr;
@@ -63,3 +63,4 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
             : null;
     }
 }
+

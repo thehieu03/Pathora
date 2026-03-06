@@ -1,4 +1,4 @@
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using Application.Common;
 using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

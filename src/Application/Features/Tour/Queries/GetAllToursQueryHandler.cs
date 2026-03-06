@@ -1,6 +1,6 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Tour.Queries;
@@ -13,4 +13,5 @@ public sealed class GetAllToursQueryHandler(ITourService tourService)
         return await tourService.GetAll(request);
     }
 }
+
 
