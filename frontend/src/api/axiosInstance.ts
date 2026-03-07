@@ -51,6 +51,7 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30000,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
@@ -62,7 +63,7 @@ const onUnauthorized = (): void => {
       "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   }
   if (typeof window !== "undefined") {
-    window.location.href = "/login";
+    window.location.href = "/";
   }
 };
 

@@ -22,6 +22,7 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl,
+    credentials: "include",
     prepareHeaders: (headers) => prepareApiHeaders(headers),
   }),
   tagTypes: ["Products", "Orders", "Customers", "Dashboard", "events", "Auth"],

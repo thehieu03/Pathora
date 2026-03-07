@@ -107,6 +107,7 @@ export interface AuthEndpoints {
   LOGOUT: string;
   GET_ME: string;
   GET_TABS: string;
+  GOOGLE_LOGIN: string;
 }
 
 // Public Home Endpoints Interface
@@ -255,6 +256,7 @@ export const API_ENDPOINTS: ApiEndpoints = {
     LOGOUT: "/api/auth/logout",
     GET_ME: "/api/auth/me",
     GET_TABS: "/api/auth/tabs",
+    GOOGLE_LOGIN: "/api/auth/google-login",
   },
 
   // Public Home

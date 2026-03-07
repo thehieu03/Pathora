@@ -8,8 +8,10 @@ WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
 
-COPY . .
+COPY package.json package-lock.json ./
 RUN npm ci --legacy-peer-deps
+
+COPY . .
 
 # Build args → env vars available at build time
 ARG NEXT_PUBLIC_API_GATEWAY

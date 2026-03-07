@@ -32,8 +32,6 @@ import {
   FiSun,
   FiMoon,
   FiSliders,
-  FiUser,
-  FiLock,
   FiLogOut,
 } from "react-icons/fi";
 
@@ -53,14 +51,6 @@ const navLinks = [
 ];
 
 const sidebarLinks = [
-  {
-    labelKey: "landing.sidebar.userProfile",
-    icon: "heroicons-outline:user",
-    children: [
-      { labelKey: "landing.sidebar.profile", href: "/profile" },
-      { labelKey: "landing.sidebar.bookingHistory", href: "/bookings" },
-    ],
-  },
   { labelKey: "landing.nav.home", href: "/", icon: "heroicons-outline:home" },
   {
     labelKey: "landing.sidebar.tourDiscovery",
@@ -158,9 +148,6 @@ const MobileSidebar = ({
 }) => {
   const { t, i18n } = useTranslation();
   const { isAuth, user } = useSelector((state: RootState) => state.auth);
-  const [expandedItem, setExpandedItem] = useState<string | null>(
-    "landing.sidebar.userProfile",
-  );
   const panelRef = useRef<HTMLDivElement>(null);
   const normalizedLanguage = (i18n.resolvedLanguage || i18n.language || "en")
     .toLowerCase()
@@ -285,65 +272,18 @@ const MobileSidebar = ({
             <nav className="flex-1 overflow-y-auto py-2" aria-label="Sidebar">
               {sidebarLinks.map((item) => (
                 <div key={item.labelKey}>
-                  {item.children ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedItem(
-                            expandedItem === item.labelKey
-                              ? null
-                              : item.labelKey,
-                          )
-                        }
-                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent focus-visible:ring-inset"
-                        aria-label={t(item.labelKey)}
-                        aria-expanded={expandedItem === item.labelKey}
-                        aria-controls={`sidebar-submenu-${item.labelKey.replaceAll(".", "-")}`}>
-                        <Icon
-                          icon={item.icon}
-                          className="w-6 h-6 text-gray-600 shrink-0"
-                        />
-                        <span className="flex-1 text-base text-gray-900">
-                          {t(item.labelKey)}
-                        </span>
-                        <Icon
-                          icon="heroicons-outline:chevron-down"
-                          className={`w-5 h-5 text-gray-400 transition-transform ${
-                            expandedItem === item.labelKey ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-                      {expandedItem === item.labelKey && (
-                        <div
-                          id={`sidebar-submenu-${item.labelKey.replaceAll(".", "-")}`}
-                          className="pl-12">
-                          {item.children.map((child) => (
-                            <Link
-                              key={child.labelKey}
-                              href={child.href}
-                              onClick={onClose}
-                              className="block px-4 py-2.5 text-base text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
-                              {t(child.labelKey)}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <Link
-                      href={item.href!}
-                      onClick={onClose}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
-                      <Icon
-                        icon={item.icon}
-                        className="w-6 h-6 text-gray-600 shrink-0"
-                      />
-                      <span className="text-base text-gray-900">
-                        {t(item.labelKey)}
-                      </span>
-                    </Link>
-                  )}
+                  <Link
+                    href={item.href}
+                    onClick={onClose}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
+                    <Icon
+                      icon={item.icon}
+                      className="w-6 h-6 text-gray-600 shrink-0"
+                    />
+                    <span className="text-base text-gray-900">
+                      {t(item.labelKey)}
+                    </span>
+                  </Link>
                 </div>
               ))}
             </nav>
@@ -762,27 +702,6 @@ export const LandingHeader = ({
                 </div>
 
                 {/* Menu items */}
-                <div className="py-1">
-                  <Link
-                    href="/profile"
-                    onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
-                    <FiUser className="w-4 h-4 shrink-0" />
-                    <span>
-                      {t("landing.userMenu.profile") || "Thông tin cá nhân"}
-                    </span>
-                  </Link>
-                  <Link
-                    href="/profile/change-password"
-                    onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-landing-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
-                    <FiLock className="w-4 h-4 shrink-0" />
-                    <span>
-                      {t("landing.userMenu.changePassword") || "Đổi mật khẩu"}
-                    </span>
-                  </Link>
-                </div>
-
                 <div className="border-t border-gray-100 py-1">
                   <button
                     type="button"

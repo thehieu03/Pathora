@@ -9,6 +9,8 @@ import {
   useRegisterMutation,
 } from "@/store/api/auth/authApiSlice";
 
+const GOOGLE_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_GATEWAY}/api/auth/google-login`;
+
 type AuthView = "signup" | "login" | "forgot";
 
 type AuthModalProps = {
@@ -249,6 +251,7 @@ const SignUpView = ({
         </span>
         <button
           type="button"
+          onClick={() => { window.location.href = GOOGLE_LOGIN_URL; }}
           className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
           <FcGoogle className="w-6 h-6" aria-hidden="true" />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">
@@ -381,6 +384,7 @@ const LoginView = ({
         </span>
         <button
           type="button"
+          onClick={() => { window.location.href = GOOGLE_LOGIN_URL; }}
           className="w-full flex items-center justify-center gap-2.5 border border-[#333]/20 rounded-full px-6 py-2.5 hover:bg-gray-50 transition-colors">
           <FcGoogle className="w-6 h-6" aria-hidden="true" />
           <span className="font-semibold text-base sm:text-lg text-[#333]/40">

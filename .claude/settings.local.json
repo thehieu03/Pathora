@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find /d/DoAn/pathora/frontend/src -type d -name \"\\(auth\\)\" -o -type d -name \"\\(dashboard\\)\")"
+      "Bash(find /d/DoAn/pathora/frontend/src -type d -name \"\\(auth\\)\" -o -type d -name \"\\(dashboard\\)\")",
+      "Bash(openspec instructions:*)"
     ]
   }
 }
