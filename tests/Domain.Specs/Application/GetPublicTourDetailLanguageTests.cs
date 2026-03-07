@@ -34,7 +34,7 @@ public sealed class GetPublicTourDetailLanguageTests
             ShortDescription = "English short",
             LongDescription = "English long"
         };
-        _tourRepository.FindById(tour.Id).Returns(tour);
+        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper, _languageContext);
         var result = await handler.Handle(new GetPublicTourDetailQuery(tour.Id), CancellationToken.None);

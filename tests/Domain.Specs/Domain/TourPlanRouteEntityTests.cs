@@ -53,4 +53,49 @@ public sealed class TourPlanRouteEntityTests
         Assert.Equal(45, entity.DurationMinutes);
         Assert.Equal("editor", entity.LastModifiedBy);
     }
+
+    [Fact]
+    public void Create_WhenOrderIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourPlanRouteEntity.Create(0, TransportationType.Bus, "admin"));
+    }
+
+    [Fact]
+    public void Create_WhenArrivalIsBeforeDeparture_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            TourPlanRouteEntity.Create(
+                1, TransportationType.Bus, "admin",
+                estimatedDepartureTime: new TimeOnly(10, 0),
+                estimatedArrivalTime: new TimeOnly(9, 0)));
+    }
+
+    [Fact]
+    public void Create_WhenDistanceOrPriceIsNegative_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourPlanRouteEntity.Create(1, TransportationType.Bus, "admin", distanceKm: -1m));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourPlanRouteEntity.Create(1, TransportationType.Bus, "admin", price: -1m));
+    }
+
+    [Fact]
+    public void Update_WhenArrivalIsBeforeDeparture_ShouldThrowAndKeepCurrentState()
+    {
+        var entity = TourPlanRouteEntity.Create(
+            1, TransportationType.Bus, "admin",
+            estimatedDepartureTime: new TimeOnly(8, 0),
+            estimatedArrivalTime: new TimeOnly(9, 0));
+
+        Assert.Throws<ArgumentException>(() =>
+            entity.Update(
+                1, TransportationType.Bus, "editor",
+                estimatedDepartureTime: new TimeOnly(11, 0),
+                estimatedArrivalTime: new TimeOnly(10, 0)));
+
+        Assert.Equal(new TimeOnly(8, 0), entity.EstimatedDepartureTime);
+        Assert.Equal(new TimeOnly(9, 0), entity.EstimatedArrivalTime);
+    }
 }

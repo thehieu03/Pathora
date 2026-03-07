@@ -2,7 +2,7 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class PositionEntity : Aggregate<Guid>
+public class PositionEntity : Aggregate<Guid>
 {
     public PositionEntity()
     {
@@ -47,4 +47,3 @@ public sealed class PositionEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-

@@ -22,6 +22,10 @@ public static class DependencyInjection
         return services
            .AddDbContext<AppDbContext>(options =>
             {
+                options.UseLazyLoadingProxies(proxyOptions =>
+                {
+                    proxyOptions.IgnoreNonVirtualNavigations();
+                });
                 options.UseNpgsql(configuration.GetConnectionString("Default"), npgsqlOptions =>
                 {
                     npgsqlOptions.CommandTimeout(120);
@@ -52,4 +56,3 @@ public static class DependencyInjection
         return services;
     }
 }
-

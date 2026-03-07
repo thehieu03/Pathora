@@ -3,9 +3,9 @@ namespace Domain.Entities;
 public class ReviewEntity : Entity<Guid>
 {
     public Guid UserId { get; set; }
-    public UserEntity User { get; set; } = null!;
+    public virtual UserEntity User { get; set; } = null!;
     public Guid TourId { get; set; }
-    public TourEntity Tour { get; set; } = null!;
+    public virtual TourEntity Tour { get; set; } = null!;
     public int Rating { get; set; }
     public string? Comment { get; set; }
     public bool IsApproved { get; set; } = false;

@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public sealed class DepartmentEntity : Aggregate<Guid>
+public class DepartmentEntity : Aggregate<Guid>
 {
     public DepartmentEntity()
     {
@@ -42,4 +42,3 @@ public sealed class DepartmentEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-

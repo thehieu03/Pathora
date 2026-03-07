@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities;
 
-public sealed class ImageEntity
+public class ImageEntity
 {
     public string? FileId { get; set; }
     public string? OriginalFileName { get; set; }

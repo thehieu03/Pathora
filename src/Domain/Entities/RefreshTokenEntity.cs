@@ -2,7 +2,7 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class RefreshTokenEntity : Aggregate<Guid>
+public class RefreshTokenEntity : Aggregate<Guid>
 {
     public RefreshTokenEntity()
     {
@@ -28,4 +28,3 @@ public sealed class RefreshTokenEntity : Aggregate<Guid>
         };
     }
 }
-

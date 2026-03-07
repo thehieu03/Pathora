@@ -40,7 +40,6 @@ public class AuthController : BaseApiController
         var result = await Sender.Send(command);
         return HandleResult(result);
     }
-
     [Authorize]
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()

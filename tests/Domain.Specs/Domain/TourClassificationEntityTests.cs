@@ -47,4 +47,33 @@ public sealed class TourClassificationEntityTests
         Assert.Equal(5, entity.DurationDays);
         Assert.Equal("editor", entity.LastModifiedBy);
     }
+
+    [Fact]
+    public void Create_WhenSalePriceExceedsPrice_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourClassificationEntity.Create(
+                Guid.CreateVersion7(), "VIP", 1000m, 1200m, "desc", 3, "admin"));
+    }
+
+    [Fact]
+    public void Create_WhenDurationDaysIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourClassificationEntity.Create(
+                Guid.CreateVersion7(), "VIP", 1000m, 900m, "desc", 0, "admin"));
+    }
+
+    [Fact]
+    public void Update_WhenInvalidValuesProvided_ShouldThrowAndKeepCurrentState()
+    {
+        var entity = TourClassificationEntity.Create(
+            Guid.CreateVersion7(), "VIP", 1000m, 900m, "desc", 3, "admin");
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            entity.Update("VIP", 500m, 900m, "desc", 3, "editor"));
+
+        Assert.Equal(1000m, entity.Price);
+        Assert.Equal(900m, entity.SalePrice);
+    }
 }

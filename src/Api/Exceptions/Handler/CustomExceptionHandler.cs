@@ -37,6 +37,13 @@ public sealed class CustomExceptionHandler(
                 MessageCode.BadRequest,
                 includeInnerEx ? exception.GetType().Name : string.Empty
             ),
+            ArgumentException =>
+            (
+                exception.Message,
+                context.Response.StatusCode = StatusCodes.Status400BadRequest,
+                MessageCode.BadRequest,
+                includeInnerEx ? exception.GetType().Name : string.Empty
+            ),
             NotFoundException =>
             (
                 exception.Message,
@@ -83,6 +90,10 @@ public sealed class CustomExceptionHandler(
         else if (exception is NotFoundException notFoundException)
         {
             errors.Add(new ErrorResult(notFoundException.Message, notFoundException.Details!));
+        }
+        else if (exception is ArgumentException argumentException)
+        {
+            errors.Add(new ErrorResult(argumentException.Message, argumentException.ParamName ?? string.Empty));
         }
         else
         {

@@ -2,7 +2,7 @@ using Domain.Abstractions;
 
 namespace Domain.Entities;
 
-public sealed class FileMetadataEntity : Aggregate<Guid>
+public class FileMetadataEntity : Aggregate<Guid>
 {
     public FileMetadataEntity()
     {
@@ -41,4 +41,3 @@ public sealed class FileMetadataEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-

@@ -13,47 +13,12 @@ public class TourRepository(AppDbContext context) : ITourRepository
     public async Task<TourEntity?> FindById(Guid id)
     {
         return await _context.Tours
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Plans)
-                    .ThenInclude(d => d.Activities)
-                        .ThenInclude(a => a.Routes)
-                            .ThenInclude(r => r.FromLocation)
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Plans)
-                    .ThenInclude(d => d.Activities)
-                        .ThenInclude(a => a.Routes)
-                            .ThenInclude(r => r.ToLocation)
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Plans)
-                    .ThenInclude(d => d.Activities)
-                        .ThenInclude(a => a.Accommodation)
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Insurances)
-            .AsSplitQuery()
             .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 
     public async Task<TourEntity?> FindByIdReadOnly(Guid id)
     {
         return await _context.Tours
-            .AsNoTracking()
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Plans)
-                    .ThenInclude(d => d.Activities)
-                        .ThenInclude(a => a.Routes)
-                            .ThenInclude(r => r.FromLocation)
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Plans)
-                    .ThenInclude(d => d.Activities)
-                        .ThenInclude(a => a.Routes)
-                            .ThenInclude(r => r.ToLocation)
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Plans)
-                    .ThenInclude(d => d.Activities)
-                        .ThenInclude(a => a.Accommodation)
-            .Include(t => t.Classifications)
-                .ThenInclude(c => c.Insurances)
-            .AsSplitQuery()
             .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 

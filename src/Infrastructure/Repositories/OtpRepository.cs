@@ -31,7 +31,10 @@ public class OtpRepository(AppDbContext context) : IOtpRepository
     {
         var otp = await _context.Set<OtpEntity>()
             .AsNoTracking()
-            .FirstOrDefaultAsync(o => o.Email == email && !o.IsDeleted);
+            .FirstOrDefaultAsync(o =>
+                o.Email == email &&
+                !o.IsDeleted &&
+                o.ExpiryDate > DateTimeOffset.UtcNow);
         return otp;
     }
 }

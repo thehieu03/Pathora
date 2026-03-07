@@ -4,6 +4,8 @@ using Domain.Entities.Translations;
 
 public class TourEntity : Aggregate<Guid>
 {
+    private static int _tourCodeSequence = Random.Shared.Next(0, 100000);
+
     public string TourCode { get; set; } = null!;
     public string TourName { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
@@ -15,13 +17,13 @@ public class TourEntity : Aggregate<Guid>
     public ImageEntity Thumbnail { get; set; } = null!;
     public List<ImageEntity> Images { get; set; } = [];
     public Dictionary<string, TourTranslationData> Translations { get; set; } = [];
-    public List<TourClassificationEntity> Classifications { get; set; } = [];
+    public virtual List<TourClassificationEntity> Classifications { get; set; } = [];
 
     public static string GenerateTourCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
-        var uniquePart = Guid.CreateVersion7().ToString("N")[..8];
-        return $"TOUR-{datePart}-{uniquePart}";
+        var sequence = Interlocked.Increment(ref _tourCodeSequence) % 100000;
+        return $"TOUR-{datePart}-{sequence:00000}";
     }
 
     public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
@@ -55,6 +57,7 @@ public class TourEntity : Aggregate<Guid>
         Status = status;
         if (thumbnail is not null)
         {
+            Thumbnail ??= new ImageEntity();
             Thumbnail.FileId = thumbnail.FileId;
             Thumbnail.OriginalFileName = thumbnail.OriginalFileName;
             Thumbnail.FileName = thumbnail.FileName;

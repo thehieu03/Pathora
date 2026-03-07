@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public sealed class UserRoleEntity
+public class UserRoleEntity
 {
     public Guid UserId { get; set; }
     public Guid RoleId { get; set; }
@@ -10,4 +10,3 @@ public sealed class UserRoleEntity
         return new UserRoleEntity { UserId = userId, RoleId = roleId };
     }
 }
-

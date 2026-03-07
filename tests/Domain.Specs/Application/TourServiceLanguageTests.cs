@@ -65,7 +65,7 @@ public sealed class TourServiceLanguageTests
             LongDescription = "Mô tả dài vi"
         };
 
-        _tourRepository.FindById(tour.Id).Returns(tour);
+        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
 
         var result = await _sut.GetDetail(tour.Id);
 

@@ -59,4 +59,46 @@ public sealed class TourDayActivityEntityTests
         Assert.True(entity.IsOptional);
         Assert.Equal("editor", entity.LastModifiedBy);
     }
+
+    [Fact]
+    public void Create_WhenOrderIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourDayActivityEntity.Create(
+                Guid.CreateVersion7(), 0, TourDayActivityType.Sightseeing, "Invalid", "admin"));
+    }
+
+    [Fact]
+    public void Create_WhenEndTimeIsBeforeStartTime_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            TourDayActivityEntity.Create(
+                Guid.CreateVersion7(), 1, TourDayActivityType.Sightseeing, "Invalid", "admin",
+                startTime: new TimeOnly(12, 0), endTime: new TimeOnly(10, 0)));
+    }
+
+    [Fact]
+    public void Create_WhenEstimatedCostIsNegative_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            TourDayActivityEntity.Create(
+                Guid.CreateVersion7(), 1, TourDayActivityType.Sightseeing, "Invalid", "admin",
+                estimatedCost: -1m));
+    }
+
+    [Fact]
+    public void Update_WhenEndTimeIsBeforeStartTime_ShouldThrowAndKeepCurrentState()
+    {
+        var entity = TourDayActivityEntity.Create(
+            Guid.CreateVersion7(), 1, TourDayActivityType.Sightseeing, "Original", "admin",
+            startTime: new TimeOnly(8, 0), endTime: new TimeOnly(9, 0));
+
+        Assert.Throws<ArgumentException>(() =>
+            entity.Update(
+                1, TourDayActivityType.Sightseeing, "Original", "editor",
+                startTime: new TimeOnly(10, 0), endTime: new TimeOnly(9, 0)));
+
+        Assert.Equal(new TimeOnly(8, 0), entity.StartTime);
+        Assert.Equal(new TimeOnly(9, 0), entity.EndTime);
+    }
 }

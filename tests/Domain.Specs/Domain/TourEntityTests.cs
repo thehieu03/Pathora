@@ -124,6 +124,21 @@ public sealed class TourEntityTests
     }
 
     [Fact]
+    public void Update_WithNewThumbnail_WhenCurrentThumbnailIsMissing_ShouldNotThrow()
+    {
+        var tour = TourEntity.Create("Tour", "Short", "Long", "tester");
+        tour.Thumbnail = null!;
+        var newThumb = ImageEntity.Create("new", "new.jpg", "new.jpg", "http://cdn/new.jpg");
+
+        var exception = Record.Exception(() =>
+            tour.Update("Tour", "Short", "Long", TourStatus.Active, "editor", thumbnail: newThumb));
+
+        Assert.Null(exception);
+        Assert.NotNull(tour.Thumbnail);
+        Assert.Equal("new", tour.Thumbnail.FileId);
+    }
+
+    [Fact]
     public void Update_WithNullThumbnail_ShouldKeepExistingThumbnail()
     {
         var thumb = ImageEntity.Create("keep", "keep.jpg", "keep.jpg", "http://cdn/keep.jpg");

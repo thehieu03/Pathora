@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Data;
 
-public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext> {
-    public AppDbContext CreateDbContext(string[] args) {
+public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
+{
+    public AppDbContext CreateDbContext(string[] args)
+    {
         var basePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Api");
 
         var configuration = new ConfigurationBuilder()
@@ -18,7 +20,12 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext> {
         var connectionString = configuration.GetConnectionString("Default");
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder
+            .UseLazyLoadingProxies(proxyOptions =>
+            {
+                proxyOptions.IgnoreNonVirtualNavigations();
+            })
+            .UseNpgsql(connectionString);
 
         return new AppDbContext(optionsBuilder.Options);
     }

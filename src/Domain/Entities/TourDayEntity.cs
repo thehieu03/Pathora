@@ -2,15 +2,15 @@ namespace Domain.Entities;
 
 using Domain.Entities.Translations;
 
-public sealed class TourDayEntity : Aggregate<Guid>
+public class TourDayEntity : Aggregate<Guid>
 {
     public Guid TourClassificationId { get; set; }
-    public TourClassificationEntity Classification { get; set; } = null!;
+    public virtual TourClassificationEntity Classification { get; set; } = null!;
     public int DayNumber { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; } = null!;
     public Dictionary<string, TourDayTranslationData> Translations { get; set; } = [];
-    public List<TourDayActivityEntity> Activities { get; set; } = [];
+    public virtual List<TourDayActivityEntity> Activities { get; set; } = [];
 
     public static TourDayEntity Create(Guid classificationId, int dayNumber, string title, string performedBy, string? description = null)
     {
@@ -37,4 +37,3 @@ public sealed class TourDayEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-

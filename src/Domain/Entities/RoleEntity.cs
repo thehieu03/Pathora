@@ -3,7 +3,7 @@ using Domain.Constant;
 
 namespace Domain.Entities;
 
-public sealed class RoleEntity : Aggregate<Guid>
+public class RoleEntity : Aggregate<Guid>
 {
     public RoleEntity()
     {
@@ -48,4 +48,3 @@ public sealed class RoleEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-

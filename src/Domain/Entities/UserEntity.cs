@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public sealed class UserEntity : Aggregate<Guid>
+public class UserEntity : Aggregate<Guid>
 {
     public UserEntity()
     {
@@ -12,7 +12,7 @@ public sealed class UserEntity : Aggregate<Guid>
     public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }
     public string? AvatarUrl { get; set; }
-    public UserStatus? Status { get; set; } = UserStatus.Active;
+    public UserStatus Status { get; set; } = UserStatus.Active;
     public VerifyStatus VerifyStatus { get; set; } = VerifyStatus.Unverified;
     public string? Password { get; set; } = null!;
     public bool ForcePasswordChange { get; set; }
@@ -58,4 +58,3 @@ public sealed class UserEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-
