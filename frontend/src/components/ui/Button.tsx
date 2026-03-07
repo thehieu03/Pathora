@@ -16,6 +16,7 @@ type ButtonProps = {
   link?: string;
   onClick?: () => void;
   ariaLabel?: string;
+  suppressHydrationWarning?: boolean;
 };
 
 const LoadingSpinner = ({ loadingClass }: { loadingClass?: string }) => (
@@ -81,7 +82,8 @@ const ButtonContent = ({
   return null;
 };
 
-const Button = ({
+const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(({
+
   text,
   type = "button",
   isLoading,
@@ -95,7 +97,9 @@ const Button = ({
   link,
   onClick,
   ariaLabel,
-}: ButtonProps) => {
+  suppressHydrationWarning,
+
+}, ref) => {
   const baseClasses = `btn inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
     disabled || isLoading ? "pointer-events-none" : ""
   } ${disabled ? "cursor-not-allowed opacity-40" : ""} ${className}`;
@@ -104,10 +108,12 @@ const Button = ({
     return (
       <Link
         href={link}
+        ref={ref as any}
         className={baseClasses}
         onClick={onClick}
         aria-label={ariaLabel}
-        aria-disabled={disabled || isLoading}>
+        aria-disabled={disabled || isLoading}
+        suppressHydrationWarning={suppressHydrationWarning}>
         <ButtonContent
           text={text}
           isLoading={isLoading}
@@ -123,12 +129,14 @@ const Button = ({
 
   return (
     <button
+      ref={ref as any}
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}
       className={baseClasses}
       aria-label={ariaLabel}
-      aria-busy={isLoading}>
+      aria-busy={isLoading}
+      suppressHydrationWarning={suppressHydrationWarning}>
       <ButtonContent
         text={text}
         isLoading={isLoading}
@@ -140,6 +148,8 @@ const Button = ({
       </ButtonContent>
     </button>
   );
-};
+});
+
+Button.displayName = 'Button';
 
 export default Button;

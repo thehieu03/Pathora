@@ -1,4 +1,5 @@
 "use client";
+import Checkbox from "@/components/ui/Checkbox";
 import Button from "@/components/ui/Button";
 import React, { useState } from "react";
 import Link from "next/link";
@@ -447,16 +448,17 @@ export function CheckoutPage() {
                   {/* Checkboxes */}
                   <div className="border-t border-gray-200 mt-5 pt-4 flex flex-col gap-3">
                     <Checkbox
-                      value={agreeTerms}
-                      onChange={() => setAgreeTerms(!agreeTerms)}
-                      activeClass="!bg-orange-500 !ring-orange-500 !border-orange-500"
-                      label={}
-                    />
-                    <Checkbox
                       value={acknowledgeInfo}
                       onChange={() => setAcknowledgeInfo(!acknowledgeInfo)}
                       activeClass="!bg-orange-500 !ring-orange-500 !border-orange-500"
-                      label={}
+                      label={
+                        <span className="text-xs text-gray-600 font-medium leading-4">
+                          {t("landing.checkout.acknowledgePrefix")}{" "}
+                          <span className="font-semibold text-orange-500">
+                            {t("landing.checkout.importantInfoLink")}
+                          </span>{" "}
+                        </span>
+                      }
                     />
                   </div>
                 </div>

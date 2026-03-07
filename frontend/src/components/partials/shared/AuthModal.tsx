@@ -1,5 +1,6 @@
 "use client";
-import Button from "@/components/ui/Button";
+import Checkbox from "@/components/ui/Checkbox";
+import TextInput from "@/components/ui/TextInput";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useTranslation } from "react-i18next";
@@ -219,7 +220,18 @@ const SignUpView = ({
           value={agreed}
           onChange={() => setAgreed(!agreed)}
           activeClass="!bg-landing-accent !ring-landing-accent !border-landing-accent"
-          label={}
+          label={
+            <span className="text-sm text-[#333]/60 leading-normal">
+              {t("landing.auth.agreeWith")}{" "}
+              <a href="/terms" className="text-landing-accent hover:underline">
+                {t("landing.auth.terms")}
+              </a>{" "}
+              {t("landing.auth.and")}{" "}
+              <a href="/privacy" className="text-landing-accent hover:underline">
+                {t("landing.auth.privacy")}
+              </a>
+            </span>
+          }
         />
       </div>
 

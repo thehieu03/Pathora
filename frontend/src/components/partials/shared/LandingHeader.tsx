@@ -1,5 +1,4 @@
 "use client";
-import Button from "@/components/ui/Button";
 import React, {
   Fragment,
   useState,
@@ -540,7 +539,6 @@ export const LandingHeader = ({
               browser extensions (e.g. Dark Reader) from mutating the SSR HTML */}
           <Button
             type="button"
-            suppressHydrationWarning
             onClick={() => setDarkMode(!isDark)}
             className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
             aria-label={
