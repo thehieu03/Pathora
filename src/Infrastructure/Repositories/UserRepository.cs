@@ -23,6 +23,13 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
     }
 
+    public async Task<UserEntity?> FindByGoogleId(string googleId)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.GoogleId == googleId && !u.IsDeleted);
+    }
+
     public async Task Create(UserEntity user)
     {
         await _dbContext.Users.AddAsync(user);

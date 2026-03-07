@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using Application.Common;
 using Application.Common.Interfaces;
+using Common.Authentication;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,6 +40,7 @@ internal static class DependencyInjection
                 options.ClientSecret = googleClientSecret;
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
         }
 
@@ -59,6 +61,18 @@ internal static class DependencyInjection
 
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+                    {
+                        var token = AuthTokenResolver.Resolve(
+                            context.Request.Headers.Authorization.ToString(),
+                            context.Request.Cookies["access_token"]);
+                        if (!string.IsNullOrWhiteSpace(token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
                     OnTokenValidated = async context =>
                     {
                         var jti = context.Principal?.FindFirst("jti")?.Value;

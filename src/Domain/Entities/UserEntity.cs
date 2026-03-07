@@ -15,6 +15,7 @@ public class UserEntity : Aggregate<Guid>
     public UserStatus Status { get; set; } = UserStatus.Active;
     public VerifyStatus VerifyStatus { get; set; } = VerifyStatus.Unverified;
     public string? Password { get; set; } = null!;
+    public string? GoogleId { get; set; }
     public bool ForcePasswordChange { get; set; }
     public bool IsDeleted { get; set; } = false;
 
@@ -49,6 +50,30 @@ public class UserEntity : Aggregate<Guid>
         ForcePasswordChange = forcePasswordChange;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void LinkGoogle(string googleId, string performedBy)
+    {
+        GoogleId = googleId;
+        LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public static UserEntity CreateFromGoogle(string googleId, string email, string? fullName, string? avatarUrl)
+    {
+        return new UserEntity
+        {
+            Username = email,
+            FullName = fullName,
+            Email = email,
+            AvatarUrl = avatarUrl,
+            GoogleId = googleId,
+            Password = null,
+            CreatedBy = "google",
+            LastModifiedBy = "google",
+            CreatedOnUtc = DateTimeOffset.UtcNow,
+            LastModifiedOnUtc = DateTimeOffset.UtcNow
+        };
     }
 
     public void SoftDelete(string performedBy)

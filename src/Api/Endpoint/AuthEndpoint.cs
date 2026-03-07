@@ -10,4 +10,6 @@ public static class AuthEndpoint
     public const string Me = "me";
     public const string Tabs = "tabs";
     public const string DevResetPassword = "dev-reset-password";
+    public const string GoogleLogin = "google-login";
+    public const string GoogleCallback = "google-callback";
 }

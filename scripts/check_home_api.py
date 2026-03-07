@@ -13,7 +13,7 @@ import psycopg2
 # ── Configuration ────────────────────────────────────────────────────────────
 
 API_BASE_URL = "http://localhost:8080"
-DB_CONNECTION = "host=34.87.55.176 port=80 dbname=Pathora user=postgres password=123abc@A"
+DB_CONNECTION = "host=34.87.55.176 port=3306 dbname=Pathora user=postgres password=123abc@A"
 
 ENDPOINTS = [
     {

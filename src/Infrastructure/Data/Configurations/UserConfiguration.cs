@@ -33,7 +33,15 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .IsRequired();
 
         builder.Property(u => u.Password)
-            .IsRequired();
+            .IsRequired(false);
+
+        builder.Property(u => u.GoogleId)
+            .HasMaxLength(255)
+            .IsRequired(false);
+
+        builder.HasIndex(u => u.GoogleId)
+            .IsUnique()
+            .HasFilter("\"GoogleId\" IS NOT NULL");
 
         builder.Property(u => u.ForcePasswordChange)
             .HasDefaultValue(false);

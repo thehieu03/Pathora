@@ -72,9 +72,38 @@ public class IdentityService(
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    public Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request)
+    public async Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request)
     {
-        throw new NotImplementedException();
+        // 1. Try to find user by GoogleId
+        var userEntity = await _userRepository.FindByGoogleId(request.ProviderKey);
+
+        if (userEntity is null)
+        {
+            // 2. Try to find user by email — link the GoogleId
+            userEntity = await _userRepository.FindByEmail(request.ProviderEmail);
+            if (userEntity is not null)
+            {
+                userEntity.LinkGoogle(request.ProviderKey, "google");
+                await _userRepository.Update(userEntity);
+            }
+            else
+            {
+                // 3. Create a new user from Google info
+                userEntity = UserEntity.CreateFromGoogle(
+                    request.ProviderKey,
+                    request.ProviderEmail,
+                    request.FullName,
+                    null);
+                await _userRepository.Create(userEntity);
+            }
+        }
+
+        var tokenResult = await _tokenManager.GenerateToken(userEntity);
+        if (tokenResult.IsError)
+            return tokenResult.Errors;
+
+        var (accessToken, refreshToken) = tokenResult.Value;
+        return new ExternalLoginResponse(accessToken, refreshToken);
     }
 
     public async Task<ErrorOr<RefreshTokenResponse>> Refresh(RefreshTokenRequest request)

@@ -7,6 +7,7 @@ public interface IUserRepository
 {
     Task<UserEntity?> FindByEmail(string email);
     Task<UserEntity?> FindById(Guid id);
+    Task<UserEntity?> FindByGoogleId(string googleId);
     Task Create(UserEntity user);
     Task Update(UserEntity user);
     Task SoftDelete(Guid id);
