@@ -8,6 +8,9 @@ import Icon from "@/components/ui/Icon";
 import TextInput from "@/components/ui/TextInput";
 import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
+import FileInput from "@/components/ui/FileInput";
+import Checkbox from "@/components/ui/Checkbox";
+import Button from "@/components/ui/Button";
 import LanguageTabs, {
   type SupportedLanguage,
 } from "@/components/ui/LanguageTabs";
@@ -545,7 +548,7 @@ export default function CreateTourPage() {
                   className={`h-px w-8 ${i <= currentStep ? "bg-slate-900 dark:bg-slate-400" : "bg-slate-200 dark:bg-slate-700"}`}
                 />
               )}
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   if (i < currentStep) setCurrentStep(i);
@@ -562,7 +565,7 @@ export default function CreateTourPage() {
                   {t(`tourAdmin.step.${step.key}`, step.key)}
                 </span>
                 <span className="sm:hidden">{i + 1}</span>
-              </button>
+              </Button>
             </React.Fragment>
           ))}
         </div>
@@ -780,12 +783,7 @@ export default function CreateTourPage() {
                 <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                   {t("tourAdmin.thumbnail", "Thumbnail")}
                 </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
-                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
-                />
+                <FileInput name="thumbnail" onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)} />
                 {thumbnail && (
                   <p className="text-xs text-slate-500 mt-1">
                     {thumbnail.name}
@@ -796,13 +794,7 @@ export default function CreateTourPage() {
                 <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                   {t("tourAdmin.images", "Gallery Images")}
                 </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => setImages(Array.from(e.target.files ?? []))}
-                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
-                />
+                <FileInput name="images" multiple onChange={(e) => setImages(Array.from(e.target.files ?? []))} />
                 {images.length > 0 && (
                   <p className="text-xs text-slate-500 mt-1">
                     {images.length}{" "}
@@ -820,13 +812,13 @@ export default function CreateTourPage() {
         <Card
           title={t("tourAdmin.classifications", "Classifications / Packages")}
           headerSlot={
-            <button
+            <Button
               type="button"
               className="btn btn-dark btn-sm inline-flex items-center gap-1"
               onClick={addClassification}>
               <Icon icon="heroicons:plus" className="size-4" />
               {t("tourAdmin.addClassification", "Add")}
-            </button>
+            </Button>
           }>
           <div className="flex flex-col gap-4">
             {classifications.map((cls, ci) => (
@@ -834,12 +826,12 @@ export default function CreateTourPage() {
                 key={ci}
                 className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
                 {classifications.length > 1 && (
-                  <button
+                  <Button
                     type="button"
                     className="absolute top-3 right-3 text-danger-500 hover:text-danger-700"
                     onClick={() => removeClassification(ci)}>
                     <Icon icon="heroicons:x-mark" className="size-5" />
-                  </button>
+                  </Button>
                 )}
                 <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
                   {t("tourAdmin.classification", "Classification")} #{ci + 1}
@@ -927,13 +919,13 @@ export default function CreateTourPage() {
               key={ci}
               title={`${cls.name || `Classification #${ci + 1}`} — ${t("tourAdmin.dayPlans", "Day Plans")}`}
               headerSlot={
-                <button
+                <Button
                   type="button"
                   className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
                   onClick={() => addDayPlan(ci)}>
                   <Icon icon="heroicons:plus" className="size-4" />
                   {t("tourAdmin.addDay", "Add Day")}
-                </button>
+                </Button>
               }>
               {(dayPlans[ci] ?? []).length === 0 ? (
                 <p className="text-sm text-slate-400 text-center py-4">
@@ -952,12 +944,12 @@ export default function CreateTourPage() {
                         <h6 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                           {t("tourAdmin.day", "Day")} {day.dayNumber}
                         </h6>
-                        <button
+                        <Button
                           type="button"
                           className="text-danger-500 hover:text-danger-700"
                           onClick={() => removeDayPlan(ci, di)}>
                           <Icon icon="heroicons:x-mark" className="size-4" />
-                        </button>
+                        </Button>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                         <TextInput
@@ -994,13 +986,13 @@ export default function CreateTourPage() {
                           <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
                             {t("tourAdmin.activities", "Activities")}
                           </span>
-                          <button
+                          <Button
                             type="button"
                             className="btn btn-outline-dark btn-xs inline-flex items-center gap-1"
                             onClick={() => addActivity(ci, di)}>
                             <Icon icon="heroicons:plus" className="size-3" />
                             {t("tourAdmin.addActivity", "Add")}
-                          </button>
+                          </Button>
                         </div>
 
                         {day.activities.length === 0 && (
@@ -1013,7 +1005,7 @@ export default function CreateTourPage() {
                           <div
                             key={ai}
                             className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 mb-2 relative">
-                            <button
+                            <Button
                               type="button"
                               className="absolute top-2 right-2 text-danger-500"
                               onClick={() => removeActivity(ci, di, ai)}>
@@ -1021,8 +1013,8 @@ export default function CreateTourPage() {
                                 icon="heroicons:x-mark"
                                 className="size-3.5"
                               />
-                            </button>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            </Button>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
                               <Select
                                 label={t("tourAdmin.type", "Type")}
                                 value={act.activityType}
@@ -1123,23 +1115,7 @@ export default function CreateTourPage() {
                                     )
                                   }
                                 />
-                                <label className="flex items-center gap-1.5 text-xs text-slate-600 pb-2 whitespace-nowrap">
-                                  <input
-                                    type="checkbox"
-                                    checked={act.isOptional}
-                                    onChange={(e) =>
-                                      updateActivity(
-                                        ci,
-                                        di,
-                                        ai,
-                                        "isOptional",
-                                        e.target.checked,
-                                      )
-                                    }
-                                    className="rounded border-slate-300"
-                                  />
-                                  {t("tourAdmin.optional", "Optional")}
-                                </label>
+                                <Checkbox label={t("tourAdmin.optional", "Optional")} value={act.isOptional} onChange={() => updateActivity(ci, di, ai, "isOptional", !act.isOptional)} />
                               </div>
                             </div>
                           </div>
@@ -1162,13 +1138,13 @@ export default function CreateTourPage() {
               key={ci}
               title={`${cls.name || `Classification #${ci + 1}`} — ${t("tourAdmin.insurance", "Insurance")}`}
               headerSlot={
-                <button
+                <Button
                   type="button"
                   className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
                   onClick={() => addInsurance(ci)}>
                   <Icon icon="heroicons:plus" className="size-4" />
                   {t("tourAdmin.addInsurance", "Add")}
-                </button>
+                </Button>
               }>
               {(insurances[ci] ?? []).length === 0 ? (
                 <p className="text-sm text-slate-400 text-center py-4">
@@ -1183,12 +1159,12 @@ export default function CreateTourPage() {
                     <div
                       key={ii}
                       className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
-                      <button
+                      <Button
                         type="button"
                         className="absolute top-3 right-3 text-danger-500"
                         onClick={() => removeInsurance(ci, ii)}>
                         <Icon icon="heroicons:x-mark" className="size-4" />
-                      </button>
+                      </Button>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <TextInput
                           label={t("tourAdmin.insuranceName", "Name")}
@@ -1248,7 +1224,7 @@ export default function CreateTourPage() {
                           row={2}
                         />
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-3">
                         <TextInput
                           type="number"
                           label={t("tourAdmin.coverageAmount", "Coverage ($)")}
@@ -1303,7 +1279,7 @@ export default function CreateTourPage() {
 
       {/* ── Navigation Buttons ───────────────────────────── */}
       <div className="mt-6 flex items-center justify-between">
-        <button
+        <Button
           type="button"
           className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
           onClick={() =>
@@ -1313,18 +1289,18 @@ export default function CreateTourPage() {
           {currentStep === 0
             ? t("tourAdmin.backToList", "Back to List")
             : t("tourAdmin.previous", "Previous")}
-        </button>
+        </Button>
 
         {currentStep < STEPS.length - 1 ? (
-          <button
+          <Button
             type="button"
             className="btn btn-dark btn-sm inline-flex items-center gap-1"
             onClick={goNext}>
             {t("tourAdmin.next", "Next")}
             <Icon icon="heroicons:arrow-right" className="size-4" />
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
             type="button"
             className="btn btn-dark btn-sm inline-flex items-center gap-1"
             disabled={saving}
@@ -1337,7 +1313,7 @@ export default function CreateTourPage() {
             )}
             <Icon icon="heroicons:check" className="size-4" />
             {t("tourAdmin.createTour", "Create Tour")}
-          </button>
+          </Button>
         )}
       </div>
     </div>

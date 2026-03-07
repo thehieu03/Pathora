@@ -124,7 +124,7 @@ export const HeroSection = () => {
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-black/25" />
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen md:opacity-60">
+        <div className="hidden md:block absolute inset-0 z-0 pointer-events-none opacity-40 mix-blend-screen md:opacity-60">
           <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
         </div>
         <div

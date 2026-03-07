@@ -20,7 +20,7 @@ const Card = ({
   className = " ",
   bodyClass = "p-6",
   noBorder,
-  titleClass = "text-slate-900 dark:text-white",
+  titleClass = "text-foreground",
   ...props
 }: CardProps) => {
   const [skin] = useSkin();
@@ -28,10 +28,10 @@ const Card = ({
   return (
     <div
       {...props}
-      className={`card rounded-md bg-white dark:bg-slate-800 ${
+      className={`card rounded-lg bg-card text-card-foreground ${
         skin === "bordered"
-          ? "border border-slate-200 dark:border-slate-700"
-          : "shadow-base"
+          ? "border border-border"
+          : "shadow-sm"
       } ${className}`}
     >
       {(title || subtitle) && (

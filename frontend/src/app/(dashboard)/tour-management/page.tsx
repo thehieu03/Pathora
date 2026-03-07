@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import Card from "@/components/ui/Card";
 import Icon from "@/components/ui/Icon";
 import Tooltip from "@/components/ui/Tooltip";
+import Button from "@/components/ui/Button";
 import TextInput from "@/components/ui/TextInput";
 import Modal from "@/components/ui/Modal";
 import {
@@ -181,23 +182,23 @@ export default function TourListPage() {
               content={t("tourAdmin.edit", "Edit")}
               placement="top"
               arrow>
-              <button
+              <Button
                 type="button"
                 className="action-btn"
                 onClick={() => router.push(`/tour-management/${row?.cell?.value}/edit`)}>
                 <Icon icon="heroicons:pencil-square" />
-              </button>
+              </Button>
             </Tooltip>
             <Tooltip
               content={t("tourAdmin.delete", "Delete")}
               placement="top"
               arrow>
-              <button
+              <Button
                 type="button"
                 className="action-btn"
                 onClick={() => handleDeleteClick(row?.row?.original)}>
                 <Icon icon="heroicons:trash" />
-              </button>
+              </Button>
             </Tooltip>
           </div>
         ),
@@ -240,20 +241,20 @@ export default function TourListPage() {
               onChange={setSearchText}
               placeholder={t("tourAdmin.search", "Search tours...")}
             />
-            <button
+            <Button
               type="button"
               className="btn btn-outline-dark btn-sm inline-flex items-center gap-1"
               onClick={fetchTours}>
               <Icon icon="heroicons:arrow-path" className="size-4" />
               {t("tourAdmin.refresh", "Refresh")}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               className="btn btn-dark btn-sm inline-flex items-center gap-1"
               onClick={() => router.push("/tour-management/create")}>
               <Icon icon="heroicons:plus" className="size-4" />
               {t("tourAdmin.addTour", "Add Tour")}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -362,7 +363,7 @@ export default function TourListPage() {
               </div>
               <ul className="flex items-center gap-1">
                 <li>
-                  <button
+                  <Button
                     type="button"
                     disabled={!canPrev}
                     onClick={() => setCurrentPage((p) => p - 1)}
@@ -372,7 +373,7 @@ export default function TourListPage() {
                         : "text-slate-300 cursor-not-allowed"
                     }`}>
                     <Icon icon="heroicons:chevron-left" className="size-4" />
-                  </button>
+                  </Button>
                 </li>
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
                   .filter(
@@ -387,7 +388,7 @@ export default function TourListPage() {
                         <li className="text-sm text-slate-400">…</li>
                       )}
                       <li>
-                        <button
+                        <Button
                           type="button"
                           onClick={() => setCurrentPage(p)}
                           className={`size-8 flex items-center justify-center rounded text-sm font-medium transition-colors ${
@@ -396,12 +397,12 @@ export default function TourListPage() {
                               : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
                           }`}>
                           {p}
-                        </button>
+                        </Button>
                       </li>
                     </React.Fragment>
                   ))}
                 <li>
-                  <button
+                  <Button
                     type="button"
                     disabled={!canNext}
                     onClick={() => setCurrentPage((p) => p + 1)}
@@ -411,7 +412,7 @@ export default function TourListPage() {
                         : "text-slate-300 cursor-not-allowed"
                     }`}>
                     <Icon icon="heroicons:chevron-right" className="size-4" />
-                  </button>
+                  </Button>
                 </li>
               </ul>
             </div>
@@ -442,13 +443,13 @@ export default function TourListPage() {
             &ldquo;{itemToDelete?.tourName}&rdquo;
           </p>
           <div className="flex items-center justify-center gap-3">
-            <button
+            <Button
               type="button"
               className="btn btn-outline-dark btn-sm"
               onClick={() => setDeleteModalOpen(false)}>
               {t("tourAdmin.cancel", "Cancel")}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               className="btn btn-danger btn-sm"
               disabled={deleting}
@@ -462,7 +463,7 @@ export default function TourListPage() {
                 <Icon icon="heroicons:trash" className="size-4 mr-1" />
               )}
               {t("tourAdmin.confirmDeleteBtn", "Delete")}
-            </button>
+            </Button>
           </div>
         </div>
       </Modal>

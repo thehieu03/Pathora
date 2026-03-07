@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -414,7 +415,7 @@ export function BookingHistoryPage() {
                   </span>
                 </div>
                 {filters.map((f) => (
-                  <button
+                  <Button
                     key={f.key}
                     type="button"
                     onClick={() => setActiveFilter(f.key)}
@@ -424,7 +425,7 @@ export function BookingHistoryPage() {
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}>
                     {f.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -475,14 +476,14 @@ export function BookingHistoryPage() {
           className="size-11 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <Icon icon="mdi:facebook" className="size-5 text-blue-600" />
         </a>
-        <button
+        <Button
           type="button"
           className="size-11 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <Icon
             icon="heroicons:chat-bubble-oval-left-ellipsis"
             className="size-5 text-gray-600"
           />
-        </button>
+        </Button>
       </div>
     </>
   );
@@ -587,20 +588,20 @@ function BookingCard({
           {(showPayRemaining || showAddParticipants || showVisaStatus) && (
             <div className="flex items-center gap-2 flex-wrap mt-4">
               {showPayRemaining && (
-                <button
+                <Button
                   type="button"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-[#fa8b02] to-[#eb662b] text-white text-xs font-semibold hover:opacity-90 transition-opacity">
                   <Icon icon="heroicons:currency-dollar" className="size-4" />
                   {t("landing.bookings.payRemaining")}
-                </button>
+                </Button>
               )}
               {showAddParticipants && (
-                <button
+                <Button
                   type="button"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 text-slate-700 text-xs font-semibold hover:bg-gray-50 transition-colors">
                   <Icon icon="heroicons:users" className="size-4" />
                   {t("landing.bookings.addParticipants")}
-                </button>
+                </Button>
               )}
               {showVisaStatus && (
                 <Link
@@ -630,12 +631,12 @@ function BookingCard({
               )}
             </div>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-gray-200 text-xs font-semibold text-slate-700 hover:bg-gray-50 transition-colors">
                 <Icon icon="heroicons:arrow-down-tray" className="size-3.5" />
                 {t("landing.bookings.invoice")}
-              </button>
+              </Button>
               <Link
                 href={`/bookings/${booking.id}`}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#05073c] text-white text-xs font-semibold hover:bg-[#05073c]/90 transition-colors">

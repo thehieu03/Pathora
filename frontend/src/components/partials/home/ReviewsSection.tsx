@@ -186,7 +186,7 @@ export const ReviewsSection = () => {
           className="flex justify-center gap-1 mt-10"
           aria-label={t("landing.reviews.reviewSlides")}>
           {reviews.map((_, i) => (
-            <button
+            <Button
               type="button"
               key={i}
               onClick={() => setCurrent(i)}
@@ -200,7 +200,7 @@ export const ReviewsSection = () => {
                     : "bg-landing-border w-2.5"
                 }`}
               />
-            </button>
+            </Button>
           ))}
         </div>
       </SectionContainer>

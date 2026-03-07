@@ -45,10 +45,10 @@ export default function LanguageTabs({
           key={code}
           type="button"
           onClick={() => onChange(code)}
-          className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1 active:scale-95 ${
             activeLanguage === code
               ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
-              : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+              : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white"
           }`}>
           <span className="text-base">{flag}</span>
           <span>{t(labelKey, fallback)}</span>

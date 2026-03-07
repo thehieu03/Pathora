@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "../shared/LandingImage";
@@ -84,21 +85,21 @@ function GuestRow({
         )}
       </div>
       <div className="flex items-center gap-2">
-        <button
+        <Button
           type="button"
           onClick={onDecrement}
           className="bg-gray-100 rounded-[10px] size-7 flex items-center justify-center hover:bg-gray-200 transition-colors">
           <Icon icon="heroicons:minus" className="size-3.5 text-gray-600" />
-        </button>
+        </Button>
         <span className="text-sm font-semibold text-[#05073c] w-5 text-center">
           {value}
         </span>
-        <button
+        <Button
           type="button"
           onClick={onIncrement}
           className="bg-gray-100 rounded-[10px] size-7 flex items-center justify-center hover:bg-gray-200 transition-colors">
           <Icon icon="heroicons:plus" className="size-3.5 text-gray-600" />
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -139,7 +140,7 @@ function ItineraryDayCard({ day }: { day: TourDayDto }) {
 
   return (
     <div className="border border-gray-100 rounded-2xl overflow-hidden">
-      <button
+      <Button
         type="button"
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
@@ -162,7 +163,7 @@ function ItineraryDayCard({ day }: { day: TourDayDto }) {
           icon={expanded ? "heroicons:chevron-up" : "heroicons:chevron-down"}
           className="size-4 text-gray-400"
         />
-      </button>
+      </Button>
 
       {expanded && day.activities.length > 0 && (
         <div className="px-5 pb-5 flex flex-col gap-3">
@@ -553,7 +554,7 @@ export function TourDetailPage() {
                 "Failed to load tour details. Please try again.",
               )}
             </p>
-            <button
+            <Button
               type="button"
               onClick={() => {
                 setLoading(true);
@@ -563,7 +564,7 @@ export function TourDetailPage() {
               className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:bg-orange-600 transition-colors">
               <Icon icon="heroicons:arrow-path" className="size-4" />
               {t("landing.tourDetail.retry", "Try Again")}
-            </button>
+            </Button>
           </div>
         </div>
         <LandingFooter />
@@ -603,16 +604,16 @@ export function TourDetailPage() {
               {t("landing.tourDetail.allTours")}
             </Link>
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
                 className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors">
                 <Icon icon="heroicons:heart" className="size-5 text-white" />
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors">
                 <Icon icon="heroicons:share" className="size-5 text-white" />
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -755,7 +756,7 @@ export function TourDetailPage() {
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
               {/* Tab bar */}
               <div className="flex border-b border-gray-100">
-                <button
+                <Button
                   type="button"
                   onClick={() => setActiveTab("overview")}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors border-b-[1.6px] ${
@@ -768,8 +769,8 @@ export function TourDetailPage() {
                     className="size-4"
                   />
                   {t("landing.tourDetail.overview")}
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={() => setActiveTab("itinerary")}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors border-b-[1.6px] ${
@@ -779,7 +780,7 @@ export function TourDetailPage() {
                   }`}>
                   <Icon icon="heroicons:document-text" className="size-4" />
                   {t("landing.tourDetail.itinerary")}
-                </button>
+                </Button>
               </div>
 
               {/* Tab content */}
@@ -913,7 +914,7 @@ export function TourDetailPage() {
                     </span>
                     <div className="flex flex-col gap-2">
                       {classifications.map((cls, i) => (
-                        <button
+                        <Button
                           key={cls.id}
                           type="button"
                           onClick={() => setSelectedPackage(i)}
@@ -943,7 +944,7 @@ export function TourDetailPage() {
                               </span>
                             )}
                           </div>
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   </div>
@@ -1063,7 +1064,7 @@ export function TourDetailPage() {
 
                 {/* Request Booking Button */}
                 <div className="relative group/book">
-                  <button
+                  <Button
                     type="button"
                     disabled={!canBook}
                     className={`w-full py-3 rounded-[14px] text-sm font-bold text-white transition-all ${
@@ -1072,7 +1073,7 @@ export function TourDetailPage() {
                         : "bg-orange-500/50 shadow-[0px_4px_6px_0px_#ffd6a8,0px_2px_4px_0px_#ffd6a8] cursor-not-allowed"
                     }`}>
                     {t("landing.tourDetail.requestBooking")}
-                  </button>
+                  </Button>
                   {!canBook && !departureDate && (
                     <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover/book:opacity-100 transition-opacity pointer-events-none">
                       {t("landing.tourDetail.selectDateFirst")}
@@ -1105,11 +1106,11 @@ export function TourDetailPage() {
                   </span>
                 </div>
               </div>
-              <button
+              <Button
                 type="button"
                 className="w-full border border-gray-200 rounded-[14px] py-2.5 text-sm font-semibold text-[#05073c] hover:bg-gray-50 transition-colors">
                 {t("landing.tourDetail.contactUs")}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -1122,14 +1123,14 @@ export function TourDetailPage() {
           className="bg-[#1877f2] rounded-full size-11 flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity">
           <Icon icon="ri:facebook-fill" className="size-5 text-white" />
         </a>
-        <button
+        <Button
           type="button"
           className="bg-orange-500 rounded-full size-11 flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity">
           <Icon
             icon="heroicons:chat-bubble-oval-left"
             className="size-5 text-white"
           />
-        </button>
+        </Button>
       </div>
 
       {/* ── Footer ─────────────────────────────────────────── */}

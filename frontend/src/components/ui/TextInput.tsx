@@ -76,7 +76,7 @@ const TextInput = ({
   };
 
   const renderInput = () => {
-    const inputClasses = `form-control py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:placeholder:text-slate-400 ${error ? "has-error" : ""} ${className}`;
+    const inputClasses = `form-control w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground hover:border-ring/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${error ? "has-error ring-destructive border-destructive focus-visible:ring-destructive" : ""} ${className}`;
 
     if (isMask) {
       return (
@@ -145,7 +145,7 @@ const TextInput = ({
           {hasicon && type === "password" && (
             <button
               type="button"
-              className="text-secondary-500 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+              className="text-muted-foreground hover:text-foreground cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded transition-colors"
               onClick={() => setOpen(!open)}
               aria-label={open ? "Hide password" : "Show password"}
             >
@@ -154,12 +154,12 @@ const TextInput = ({
           )}
 
           {error && (
-            <span className="text-danger-500" aria-hidden="true">
+            <span className="text-destructive" aria-hidden="true">
               <Icon icon="heroicons-outline:information-circle" />
             </span>
           )}
           {validate && (
-            <span className="text-success-500" aria-hidden="true">
+            <span className="text-green-500" aria-hidden="true">
               <Icon icon="bi:check-lg" />
             </span>
           )}
@@ -173,8 +173,8 @@ const TextInput = ({
           aria-live="polite"
           className={`mt-2 ${
             msgTooltip
-              ? "bg-danger-500 inline-block rounded-sm px-2 py-1 text-[10px] text-white"
-              : "text-danger-500 block text-sm"
+              ? "bg-destructive inline-block rounded-sm px-2 py-1 text-[10px] text-destructive-foreground"
+              : "text-destructive block text-sm font-medium"
           }`}
         >
           {error.message}
@@ -185,8 +185,8 @@ const TextInput = ({
         <div
           className={`mt-2 ${
             msgTooltip
-              ? "bg-success-500 inline-block rounded-sm px-2 py-1 text-[10px] text-white"
-              : "text-success-500 block text-sm"
+              ? "bg-green-500 inline-block rounded-sm px-2 py-1 text-[10px] text-white"
+              : "text-green-500 block text-sm font-medium"
           }`}
         >
           {validate}

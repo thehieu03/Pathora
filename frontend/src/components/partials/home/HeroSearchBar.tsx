@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, { useState } from "react";
 import { Icon } from "@/components/ui";
 
@@ -80,7 +81,7 @@ export const CalendarDropdown = ({
     <div className="p-4 w-80 max-w-[calc(100vw-2rem)]">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-3">
-        <button
+        <Button
           type="button"
           onClick={prevMonth}
           aria-label={previousMonthLabel}
@@ -89,11 +90,11 @@ export const CalendarDropdown = ({
             icon="heroicons-outline:chevron-left"
             className="w-4 h-4 text-gray-600"
           />
-        </button>
+        </Button>
         <span className="text-sm font-semibold text-gray-900">
           {monthLabel} {viewYear}
         </span>
-        <button
+        <Button
           type="button"
           onClick={nextMonth}
           aria-label={nextMonthLabel}
@@ -102,7 +103,7 @@ export const CalendarDropdown = ({
             icon="heroicons-outline:chevron-right"
             className="w-4 h-4 text-gray-600"
           />
-        </button>
+        </Button>
       </div>
 
       {/* Weekday headers */}
@@ -122,7 +123,7 @@ export const CalendarDropdown = ({
           <span key={`e-${i}`} />
         ))}
         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
-          <button
+          <Button
             type="button"
             key={day}
             onClick={() => onChange(new Date(viewYear, viewMonth, day))}
@@ -132,7 +133,7 @@ export const CalendarDropdown = ({
                 : "text-gray-700 hover:bg-gray-100"
             }`}>
             {day}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -151,7 +152,7 @@ export const ListDropdown = ({
 }) => (
   <div className="py-2 min-w-50 max-h-60 overflow-y-auto">
     {items.map((item) => (
-      <button
+      <Button
         type="button"
         key={item}
         onClick={() => onChange(item)}
@@ -161,7 +162,7 @@ export const ListDropdown = ({
             : "text-gray-700 hover:bg-gray-50"
         }`}>
         {item}
-      </button>
+      </Button>
     ))}
   </div>
 );
@@ -180,7 +181,7 @@ export const NumberDropdown = ({
 }) => (
   <div className="py-2 min-w-45 max-h-60 overflow-y-auto">
     {PEOPLE_OPTIONS.map((num) => (
-      <button
+      <Button
         type="button"
         key={num}
         onClick={() => onChange(num)}
@@ -190,7 +191,7 @@ export const NumberDropdown = ({
             : "text-gray-700 hover:bg-gray-50"
         }`}>
         {num} {num === 1 ? singleLabel : pluralLabel}
-      </button>
+      </Button>
     ))}
   </div>
 );
@@ -218,7 +219,7 @@ export const SelectField = ({
   children,
 }: SelectFieldProps) => (
   <div className="relative w-full h-full">
-    <button
+    <Button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
@@ -248,7 +249,7 @@ export const SelectField = ({
           />
         </div>
       </div>
-    </button>
+    </Button>
 
     {/* Dropdown panel */}
     {isOpen && children && (

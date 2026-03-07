@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
@@ -381,7 +382,7 @@ export function BookingDetailPage() {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 {/* Tab header */}
                 <div className="flex border-b border-gray-100">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setActiveTab("overview")}
                     className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-colors ${
@@ -394,8 +395,8 @@ export function BookingDetailPage() {
                       className="size-4"
                     />
                     {t("landing.bookingDetail.overview")}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     onClick={() => setActiveTab("itinerary")}
                     className={`flex-1 flex items-center justify-center gap-2 py-4 text-sm font-semibold transition-colors ${
@@ -405,7 +406,7 @@ export function BookingDetailPage() {
                     }`}>
                     <Icon icon="heroicons:document-text" className="size-4" />
                     {t("landing.bookingDetail.itinerary")}
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Tab content */}
@@ -585,7 +586,7 @@ export function BookingDetailPage() {
                 {/* Action Buttons */}
                 <div className="flex flex-col gap-2 mt-4">
                   {showPayRemaining && (
-                    <button
+                    <Button
                       type="button"
                       className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#00c950] text-white text-sm font-bold shadow-sm hover:bg-[#00b347] transition-colors">
                       <Icon
@@ -593,11 +594,11 @@ export function BookingDetailPage() {
                         className="size-4"
                       />
                       {t("landing.bookingDetail.payRemainingBalance")}
-                    </button>
+                    </Button>
                   )}
 
                   {showVisaStatus && (
-                    <button
+                    <Button
                       type="button"
                       className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 text-sm font-bold hover:bg-blue-100 transition-colors">
                       <Icon
@@ -605,16 +606,16 @@ export function BookingDetailPage() {
                         className="size-4"
                       />
                       {t("landing.bookingDetail.visaStatus")}
-                    </button>
+                    </Button>
                   )}
 
                   {showCancelBooking && (
-                    <button
+                    <Button
                       type="button"
                       className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-red-500 text-red-500 text-sm font-bold hover:bg-red-50 transition-colors">
                       <Icon icon="heroicons:x-circle" className="size-4" />
                       {t("landing.bookingDetail.cancelBooking")}
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -686,14 +687,14 @@ export function BookingDetailPage() {
           className="size-11 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <Icon icon="mdi:facebook" className="size-5 text-blue-600" />
         </a>
-        <button
+        <Button
           type="button"
           className="size-11 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <Icon
             icon="heroicons:chat-bubble-oval-left-ellipsis"
             className="size-5 text-gray-600"
           />
-        </button>
+        </Button>
       </div>
     </>
   );

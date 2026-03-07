@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "../shared/LandingImage";
@@ -127,7 +128,7 @@ const SearchBar = ({
           />
         </form>
         {/* Mobile filter button */}
-        <button
+        <Button
           type="button"
           onClick={onFilterToggle}
           className="lg:hidden inline-flex items-center gap-2 h-[42px] bg-white border border-[#e5e7eb] rounded-xl px-4 text-sm font-medium text-[#4a5565] hover:bg-gray-50 transition-colors shrink-0">
@@ -136,7 +137,7 @@ const SearchBar = ({
             className="w-4 h-4"
           />
           {t("landing.tourDiscovery.filtersLabel")}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -155,7 +156,7 @@ const FilterSection = ({
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
     <div className="border-b border-[#f3f4f6] pb-4">
-      <button
+      <Button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-full py-3">
@@ -170,7 +171,7 @@ const FilterSection = ({
           }
           className="w-4 h-4 text-[#05073c]"
         />
-      </button>
+      </Button>
       {isOpen && <div className="pb-1">{children}</div>}
     </div>
   );
@@ -366,7 +367,7 @@ const TourSidebar = ({
             {/* Quick price buttons */}
             <div className="flex flex-wrap gap-1.5">
               {PRICE_QUICK_FILTERS.map((label) => (
-                <button
+                <Button
                   key={label}
                   type="button"
                   onClick={() =>
@@ -380,7 +381,7 @@ const TourSidebar = ({
                       : "bg-white text-[#6a7282] border-[#f3f4f6] hover:border-[#eb662b]"
                   }`}>
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -412,7 +413,7 @@ const TourSidebar = ({
               <span className="text-sm font-semibold text-[#05073c]">
                 {t("landing.tourDiscovery.filtersLabel")}
               </span>
-              <button
+              <Button
                 type="button"
                 onClick={onClose}
                 aria-label="Close filters"
@@ -421,7 +422,7 @@ const TourSidebar = ({
                   icon="heroicons-outline:x-mark"
                   className="w-5 h-5 text-[#05073c]"
                 />
-              </button>
+              </Button>
             </div>
             <div className="p-4">{sidebarContent}</div>
           </aside>
@@ -582,17 +583,17 @@ const ResultsToolbar = ({ count }: { count: number }) => {
       </p>
       <div className="flex items-center gap-2 lg:gap-2">
         {/* Scheduled Tours Button */}
-        <button
+        <Button
           type="button"
           className="inline-flex items-center gap-2 bg-gradient-to-b from-[#fa8b02] to-[#eb662b] lg:bg-none lg:bg-[#eb662b] text-white text-xs font-semibold lg:font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-lg shadow-md lg:shadow-none hover:opacity-90 transition-opacity">
           <Icon icon="heroicons-outline:calendar" className="w-4 h-4" />
           <span className="text-[12px] lg:text-xs">
             {t("landing.tourDiscovery.scheduledTours")}
           </span>
-        </button>
+        </Button>
 
         {/* Recommended Dropdown - compact on mobile */}
-        <button
+        <Button
           type="button"
           className="inline-flex items-center gap-1.5 lg:gap-2 bg-white border border-[#e5e7eb] lg:border-[#f3f4f6] text-[#05073c] text-xs font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-lg hover:bg-gray-50 transition-colors">
           <Icon
@@ -603,11 +604,11 @@ const ResultsToolbar = ({ count }: { count: number }) => {
             {t("landing.tourDiscovery.recommended")}
           </span>
           <Icon icon="heroicons-outline:chevron-down" className="w-3.5 h-3.5" />
-        </button>
+        </Button>
 
         {/* View Mode Toggle - hidden on mobile */}
         <div className="hidden lg:flex items-center border border-[#f3f4f6] rounded-lg overflow-hidden">
-          <button
+          <Button
             type="button"
             onClick={() => setViewMode("grid")}
             className={`w-9 h-9 flex items-center justify-center transition-colors ${
@@ -616,8 +617,8 @@ const ResultsToolbar = ({ count }: { count: number }) => {
                 : "bg-white text-[#6a7282] hover:bg-gray-50"
             }`}>
             <Icon icon="heroicons-outline:squares-2x2" className="w-4 h-4" />
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => setViewMode("list")}
             className={`w-9 h-9 flex items-center justify-center transition-colors ${
@@ -626,7 +627,7 @@ const ResultsToolbar = ({ count }: { count: number }) => {
                 : "bg-white text-[#6a7282] hover:bg-gray-50"
             }`}>
             <Icon icon="heroicons-outline:bars-3" className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -650,13 +651,13 @@ const Pagination = ({
       aria-label={t("landing.tourDiscovery.pagination")}
       className="flex items-center justify-center gap-2 mt-10">
       {/* Prev */}
-      <button
+      <Button
         type="button"
         disabled={currentPage <= 1}
         onClick={() => onPageChange(currentPage - 1)}
         className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
         <Icon icon="heroicons-outline:chevron-left" className="w-4 h-4" />
-      </button>
+      </Button>
 
       {/* Page Numbers */}
       {(() => {
@@ -680,7 +681,7 @@ const Pagination = ({
               ...
             </span>
           ) : (
-            <button
+            <Button
               key={page}
               type="button"
               onClick={() => onPageChange(page)}
@@ -691,19 +692,19 @@ const Pagination = ({
                   : "border border-[#e5e7eb] text-[#4a5565] hover:bg-gray-50"
               }`}>
               {page}
-            </button>
+            </Button>
           ),
         );
       })()}
 
       {/* Next */}
-      <button
+      <Button
         type="button"
         disabled={currentPage >= totalPages}
         onClick={() => onPageChange(currentPage + 1)}
         className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
         <Icon icon="heroicons-outline:chevron-right" className="w-4 h-4" />
-      </button>
+      </Button>
     </nav>
   );
 };
@@ -717,7 +718,7 @@ const FloatingButtons = () => (
       className="w-11 h-11 bg-[#1877f2] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
       <Icon icon="ri:facebook-fill" className="w-5 h-5" />
     </a>
-    <button
+    <Button
       type="button"
       aria-label="Chat"
       className="w-11 h-11 bg-[#eb662b] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
@@ -725,7 +726,7 @@ const FloatingButtons = () => (
         icon="heroicons-outline:chat-bubble-oval-left"
         className="w-5 h-5"
       />
-    </button>
+    </Button>
   </div>
 );
 
@@ -879,7 +880,7 @@ export const TourDiscoveryPage = () => {
                     className="w-12 h-12 text-red-400 mb-4"
                   />
                   <p className="text-sm text-[#6a7282] mb-4">{error}</p>
-                  <button
+                  <Button
                     type="button"
                     onClick={() =>
                       fetchTours(currentPage, searchText, classificationFilter)
@@ -890,7 +891,7 @@ export const TourDiscoveryPage = () => {
                       className="w-4 h-4"
                     />
                     {t("landing.tourDiscovery.retry") || "Retry"}
-                  </button>
+                  </Button>
                 </div>
               )}
 

@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, {
   Fragment,
   useState,
@@ -210,7 +211,7 @@ const MobileSidebar = ({
           leave="transition-opacity duration-200 ease-in"
           leaveFrom="opacity-100"
           leaveTo="opacity-0">
-          <button
+          <Button
             type="button"
             className="absolute inset-0 bg-black/40"
             onClick={onClose}
@@ -294,7 +295,7 @@ const MobileSidebar = ({
                   {t("landing.language.title")}
                 </span>
                 <div className="flex rounded-full border border-gray-300 p-0.5">
-                  <button
+                  <Button
                     type="button"
                     className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
                       normalizedLanguage === "en"
@@ -305,8 +306,8 @@ const MobileSidebar = ({
                     aria-pressed={normalizedLanguage === "en"}
                     aria-label="Change language to English">
                     EN
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
                     className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
                       normalizedLanguage === "vi"
@@ -317,7 +318,7 @@ const MobileSidebar = ({
                     aria-pressed={normalizedLanguage === "vi"}
                     aria-label="Change language to Vietnamese">
                     VI
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -537,7 +538,7 @@ export const LandingHeader = ({
         <div className="hidden md:flex items-center gap-2 xl:gap-3 justify-self-end">
           {/* Dark mode toggle — render icon only after mount to prevent
               browser extensions (e.g. Dark Reader) from mutating the SSR HTML */}
-          <button
+          <Button
             type="button"
             suppressHydrationWarning
             onClick={() => setDarkMode(!isDark)}
@@ -554,10 +555,10 @@ export const LandingHeader = ({
             ) : (
               <span className="w-4 h-4 xl:w-5 xl:h-5" />
             )}
-          </button>
+          </Button>
 
           {/* Live mode (customizer) toggle */}
-          <button
+          <Button
             type="button"
             onClick={() => dispatch(handleCustomizer(!customizerOpen))}
             className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${
@@ -573,11 +574,11 @@ export const LandingHeader = ({
             ) : (
               <span className="w-4 h-4 xl:w-5 xl:h-5" />
             )}
-          </button>
+          </Button>
 
           {/* Language switcher */}
           <div className="relative" ref={languageMenuRef}>
-            <button
+            <Button
               type="button"
               suppressHydrationWarning
               className={`min-h-11 flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
@@ -606,7 +607,7 @@ export const LandingHeader = ({
               ) : (
                 <span className="w-3.5 h-3.5" />
               )}
-            </button>
+            </Button>
             <div
               id={languageMenuId}
               role="menu"
@@ -618,7 +619,7 @@ export const LandingHeader = ({
               {languages.map((lang) => {
                 const isActive = lang.code === normalizedLanguage;
                 return (
-                  <button
+                  <Button
                     key={lang.code}
                     type="button"
                     onClick={() => {
@@ -634,7 +635,7 @@ export const LandingHeader = ({
                     {isActive && (
                       <FiCheck suppressHydrationWarning className="w-4 h-4" />
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -643,7 +644,7 @@ export const LandingHeader = ({
           {/* Avatar dropdown — shown when logged in */}
           {clientIsAuth && (
             <div className="relative" ref={userMenuRef}>
-              <button
+              <Button
                 type="button"
                 onClick={() => {
                   setUserMenuOpen((prev) => !prev);
@@ -665,7 +666,7 @@ export const LandingHeader = ({
                     {userInitial}
                   </span>
                 )}
-              </button>
+              </Button>
 
               {/* Dropdown */}
               <div
@@ -703,13 +704,13 @@ export const LandingHeader = ({
 
                 {/* Menu items */}
                 <div className="border-t border-gray-100 py-1">
-                  <button
+                  <Button
                     type="button"
                     onClick={handleLogout}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer">
                     <FiLogOut className="w-4 h-4 shrink-0" />
                     <span>{t("common.signOut") || "Đăng xuất"}</span>
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -731,7 +732,7 @@ export const LandingHeader = ({
         </div>
 
         {/* Hamburger — mobile (< 768px) */}
-        <button
+        <Button
           ref={menuButtonRef}
           type="button"
           className={`md:hidden justify-self-end w-11 h-11 flex items-center justify-center bg-transparent rounded focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "text-landing-heading focus-visible:ring-landing-heading" : "text-white focus-visible:ring-white"}`}
@@ -740,7 +741,7 @@ export const LandingHeader = ({
           aria-expanded={mobileMenuOpen}
           aria-controls="landing-mobile-menu">
           <Icon icon="heroicons-outline:menu" className="w-7 h-7" />
-        </button>
+        </Button>
       </header>
 
       <MobileSidebar

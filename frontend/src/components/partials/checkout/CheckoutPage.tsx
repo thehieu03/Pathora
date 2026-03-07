@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, { useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui";
@@ -138,7 +139,7 @@ function PaymentOption({
   onClick: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       className={`w-full flex items-center gap-3 px-4 py-4 rounded-xl border-2 transition-colors ${
@@ -170,7 +171,7 @@ function PaymentOption({
           {description}
         </span>
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -335,7 +336,7 @@ export function CheckoutPage() {
                   {/* Payment Option (Full vs Deposit) */}
                   <div className="mt-4 flex flex-col gap-3">
                     {/* Full Payment */}
-                    <button
+                    <Button
                       type="button"
                       onClick={() => setPaymentOption("full")}
                       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-colors ${
@@ -366,10 +367,10 @@ export function CheckoutPage() {
                       <span className="text-sm font-bold text-slate-900">
                         {fmt(totalPrice)}
                       </span>
-                    </button>
+                    </Button>
 
                     {/* Deposit 30% */}
-                    <button
+                    <Button
                       type="button"
                       onClick={() => setPaymentOption("deposit")}
                       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-colors ${
@@ -401,7 +402,7 @@ export function CheckoutPage() {
                       <span className="text-sm font-bold text-slate-900">
                         {fmt(depositAmount)}
                       </span>
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -582,7 +583,7 @@ export function CheckoutPage() {
                   </div>
 
                   {/* Confirm Booking Button */}
-                  <button
+                  <Button
                     type="button"
                     disabled={!canConfirm}
                     className={`w-full h-12 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all ${
@@ -592,7 +593,7 @@ export function CheckoutPage() {
                     }`}>
                     {t("landing.checkout.confirmBooking")}
                     <Icon icon="heroicons:chevron-right" className="size-4" />
-                  </button>
+                  </Button>
 
                   <p className="text-center text-[10px] text-gray-400 mt-3">
                     {t("landing.checkout.secureBookingNote")}

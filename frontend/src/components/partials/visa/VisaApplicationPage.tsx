@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui";
@@ -110,7 +111,7 @@ function ParticipantCard({
   const initial = participant.name.charAt(0);
 
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       className={`w-full text-left px-5 py-5 border-b border-gray-900/10 last:border-b-0 transition-colors hover:bg-gray-50 ${
@@ -138,7 +139,7 @@ function ParticipantCard({
           <StatusBadge status={participant.status} label={statusLabel} />
         </div>
       </div>
-    </button>
+    </Button>
   );
 }
 
@@ -301,7 +302,7 @@ export function VisaApplicationPage() {
                   </span>
                 </div>
                 {filters.map((f) => (
-                  <button
+                  <Button
                     key={f.key}
                     type="button"
                     onClick={() => setActiveFilter(f.key)}
@@ -311,7 +312,7 @@ export function VisaApplicationPage() {
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}>
                     {f.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -328,12 +329,12 @@ export function VisaApplicationPage() {
                   <h2 className="text-lg font-bold text-white">
                     {t("landing.visa.participants")} ({filtered.length})
                   </h2>
-                  <button
+                  <Button
                     type="button"
                     className="flex items-center gap-1.5 text-xs font-medium text-white/80 hover:text-white transition-colors">
                     <Icon icon="heroicons:arrow-path" className="size-3.5" />
                     {t("landing.visa.refresh")}
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Participant list */}

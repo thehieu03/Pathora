@@ -24,8 +24,7 @@ const LoadingSpinner = ({ loadingClass }: { loadingClass?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
+    aria-hidden="true">
     <circle
       className="opacity-25"
       cx="12"
@@ -61,8 +60,7 @@ const ButtonContent = ({
       <span className="flex items-center">
         {icon && (
           <span
-            className={`${iconPosition === "right" ? "order-1 ltr:ml-2 rtl:mr-2" : ""} ${text && iconPosition === "left" ? "ltr:mr-2 rtl:ml-2" : ""} ${iconClass}`}
-          >
+            className={`${iconPosition === "right" ? "order-1 ltr:ml-2 rtl:mr-2" : ""} ${text && iconPosition === "left" ? "ltr:mr-2 rtl:ml-2" : ""} ${iconClass}`}>
             <Icon icon={icon} aria-hidden="true" />
           </span>
         )}
@@ -88,7 +86,7 @@ const Button = ({
   type = "button",
   isLoading,
   disabled,
-  className = "bg-primary-500 text-white dark:bg-primary-500 dark:text-white",
+  className = "bg-primary text-primary-foreground hover:bg-primary/90",
   children,
   icon,
   loadingClass = "unset-classname",
@@ -98,7 +96,7 @@ const Button = ({
   onClick,
   ariaLabel,
 }: ButtonProps) => {
-  const baseClasses = `btn inline-flex items-center justify-center ${
+  const baseClasses = `btn inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
     disabled || isLoading ? "pointer-events-none" : ""
   } ${disabled ? "cursor-not-allowed opacity-40" : ""} ${className}`;
 
@@ -109,16 +107,14 @@ const Button = ({
         className={baseClasses}
         onClick={onClick}
         aria-label={ariaLabel}
-        aria-disabled={disabled || isLoading}
-      >
+        aria-disabled={disabled || isLoading}>
         <ButtonContent
           text={text}
           isLoading={isLoading}
           icon={icon}
           iconPosition={iconPosition}
           iconClass={iconClass}
-          loadingClass={loadingClass}
-        >
+          loadingClass={loadingClass}>
           {children}
         </ButtonContent>
       </Link>
@@ -132,16 +128,14 @@ const Button = ({
       disabled={disabled || isLoading}
       className={baseClasses}
       aria-label={ariaLabel}
-      aria-busy={isLoading}
-    >
+      aria-busy={isLoading}>
       <ButtonContent
         text={text}
         isLoading={isLoading}
         icon={icon}
         iconPosition={iconPosition}
         iconClass={iconClass}
-        loadingClass={loadingClass}
-      >
+        loadingClass={loadingClass}>
         {children}
       </ButtonContent>
     </button>
