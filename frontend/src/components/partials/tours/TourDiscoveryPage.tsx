@@ -119,12 +119,12 @@ const SearchBar = ({
             icon="heroicons-outline:search"
             className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#99a1af]"
           />
-          <input
+          <TextInput
             type="text"
             value={searchText}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t("landing.tourDiscovery.searchFullPlaceholder")}
-            className="w-full h-[42px] bg-[#f9fafb] border border-[#e5e7eb] lg:border-[#f3f4f6] rounded-xl lg:rounded-lg pl-11 pr-4 text-sm text-[#05073c] placeholder:text-[#99a1af] focus:outline-none focus:ring-2 focus:ring-[#eb662b]/30 focus:border-[#eb662b] transition-colors"
+            className="!h-[42px] !bg-[#f9fafb] !border-[#e5e7eb] lg:!border-[#f3f4f6] !rounded-xl lg:!rounded-lg !pl-11 !pr-4 !text-sm !text-[#05073c] placeholder:!text-[#99a1af] focus:!ring-[#eb662b]/30 focus:!border-[#eb662b] transition-colors"
           />
         </form>
         {/* Mobile filter button */}

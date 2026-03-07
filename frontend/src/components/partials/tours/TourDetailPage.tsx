@@ -992,11 +992,11 @@ export function TourDetailPage() {
                       icon="heroicons:calendar"
                       className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400"
                     />
-                    <input
+                    <TextInput
                       type="date"
                       value={departureDate}
                       onChange={(e) => setDepartureDate(e.target.value)}
-                      className="w-full border border-gray-200 rounded-[14px] pl-9 pr-3 py-2.5 text-sm text-[#05073c] focus:outline-none focus:border-orange-500 transition-colors"
+                      className="!border-gray-200 !rounded-[14px] !pl-9 !pr-3 !py-2.5 !text-sm !text-[#05073c] focus:!border-orange-500 transition-colors"
                     />
                   </div>
                   <p className="text-[10px] text-gray-400">

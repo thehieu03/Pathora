@@ -446,39 +446,18 @@ export function CheckoutPage() {
 
                   {/* Checkboxes */}
                   <div className="border-t border-gray-200 mt-5 pt-4 flex flex-col gap-3">
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={agreeTerms}
-                        onChange={(e) => setAgreeTerms(e.target.checked)}
-                        className="mt-0.5 size-5 shrink-0 rounded border-gray-300 text-orange-500 focus:ring-orange-500 accent-orange-500"
-                      />
-                      <span className="text-xs text-gray-600 font-medium leading-4">
-                        {t("landing.checkout.agreeTermsPrefix")}{" "}
-                        <span className="font-semibold text-orange-500">
-                          {t("landing.checkout.cancellationPolicyLink")}
-                        </span>{" "}
-                        {t("landing.checkout.and")}{" "}
-                        <span className="font-semibold text-orange-500">
-                          {t("landing.checkout.paymentTermsLink")}
-                        </span>
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={acknowledgeInfo}
-                        onChange={(e) => setAcknowledgeInfo(e.target.checked)}
-                        className="mt-0.5 size-5 shrink-0 rounded border-gray-300 text-orange-500 focus:ring-orange-500 accent-orange-500"
-                      />
-                      <span className="text-xs text-gray-600 font-medium leading-4">
-                        {t("landing.checkout.acknowledgePrefix")}{" "}
-                        <span className="font-semibold text-orange-500">
-                          {t("landing.checkout.importantInfoLink")}
-                        </span>{" "}
-                        {t("landing.checkout.acknowledgeSuffix")}
-                      </span>
-                    </label>
+                    <Checkbox
+                      value={agreeTerms}
+                      onChange={() => setAgreeTerms(!agreeTerms)}
+                      activeClass="!bg-orange-500 !ring-orange-500 !border-orange-500"
+                      label={}
+                    />
+                    <Checkbox
+                      value={acknowledgeInfo}
+                      onChange={() => setAcknowledgeInfo(!acknowledgeInfo)}
+                      activeClass="!bg-orange-500 !ring-orange-500 !border-orange-500"
+                      label={}
+                    />
                   </div>
                 </div>
               </div>

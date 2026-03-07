@@ -80,16 +80,14 @@ const InputField = ({
       {label}
     </label>
     <div className="relative">
-      <input
+      <TextInput
         id={id ?? name}
         type={type}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full bg-white border border-[#333]/20 rounded-lg px-6 py-3.5 text-base text-[#333] placeholder:text-[#333]/50 focus:outline-none focus:border-landing-accent focus-visible:ring-2 focus-visible:ring-landing-accent/40 transition-colors ${
-          trailing ? "pr-12" : ""
-        }`}
+        className={`!bg-white !border-[#333]/20 !rounded-lg !px-6 !py-3.5 !text-base !text-[#333] placeholder:!text-[#333]/50 focus:!border-landing-accent focus-visible:!ring-landing-accent/40 transition-colors ${trailing ? "!pr-12" : ""}`}
       />
       {trailing}
     </div>
@@ -217,24 +215,12 @@ const SignUpView = ({
         />
 
         {/* Terms */}
-        <label className="flex items-start gap-2.5 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            className="mt-0.5 w-4.5 h-4.5 rounded border border-[#333]/20 accent-landing-accent shrink-0"
-          />
-          <span className="text-sm text-[#333]/60 leading-normal">
-            {t("landing.auth.agreeWith")}{" "}
-            <a href="/terms" className="text-landing-accent hover:underline">
-              {t("landing.auth.terms")}
-            </a>{" "}
-            {t("landing.auth.and")}{" "}
-            <a href="/privacy" className="text-landing-accent hover:underline">
-              {t("landing.auth.privacy")}
-            </a>
-          </span>
-        </label>
+        <Checkbox
+          value={agreed}
+          onChange={() => setAgreed(!agreed)}
+          activeClass="!bg-landing-accent !ring-landing-accent !border-landing-accent"
+          label={}
+        />
       </div>
 
       {/* Actions */}
