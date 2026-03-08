@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Icon from "@/components/ui/Icon";
+import { sanitizeHtml } from "@/utils/sanitize";
 
 type AccordionItem = {
   title: string;
@@ -74,7 +75,7 @@ const Accordion = ({ items, className = "space-y-5" }: AccordionProps) => {
               >
                 <div
                   className="px-8 py-4"
-                  dangerouslySetInnerHTML={{ __html: item.content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(item.content) }}
                 />
               </div>
             )}

@@ -22,6 +22,8 @@ import {
   RoomTypeMap,
   MealTypeMap,
   InsuranceTypeMap,
+  TourInstanceVm,
+  TourInstanceStatusMap,
 } from "@/types/tour";
 
 /* ══════════════════════════════════════════════════════════════
@@ -409,6 +411,159 @@ function ReviewsSection() {
               ))}
             </div>
           </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Scheduled Departures Section ─────────────────────────── */
+function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
+  const { t } = useTranslation();
+  const [instances, setInstances] = useState<TourInstanceVm[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    homeService
+      .getAvailablePublicInstances(undefined, 1, 50)
+      .then((data) => {
+        const filtered = (data?.data ?? []).filter(
+          (inst: TourInstanceVm) => inst.tourId === tourId,
+        );
+        setInstances(filtered);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [tourId]);
+
+  if (loading) {
+    return (
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 animate-pulse">
+        <div className="h-5 w-56 bg-gray-200 rounded mb-4" />
+        <div className="h-24 bg-gray-100 rounded" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="p-6">
+        <h3 className="text-base font-bold text-[#05073c] mb-4 flex items-center gap-2">
+          <Icon
+            icon="heroicons:calendar-days"
+            className="size-5 text-orange-500"
+          />
+          {t("tourInstance.scheduledDepartures")}
+        </h3>
+
+        {instances.length === 0 ? (
+          <div className="text-center py-8">
+            <Icon
+              icon="heroicons:calendar"
+              className="size-10 text-gray-300 mx-auto mb-3"
+            />
+            <p className="text-sm text-gray-500">
+              {t("tourInstance.noScheduledDepartures")}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {instances.map((instance) => {
+              const statusInfo = TourInstanceStatusMap[instance.status] ?? {
+                label: instance.status,
+                bg: "bg-gray-100",
+                text: "text-gray-600",
+                dot: "bg-gray-400",
+              };
+              const spotsLeft =
+                instance.maxParticipants - instance.registeredParticipants;
+              const startDateStr = new Date(
+                instance.startDate,
+              ).toLocaleDateString("vi-VN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              });
+              const endDateStr = new Date(
+                instance.endDate,
+              ).toLocaleDateString("vi-VN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              });
+
+              return (
+                <div
+                  key={instance.id}
+                  className="border border-gray-100 rounded-xl p-4 hover:border-orange-200 transition-colors"
+                >
+                  {/* Header: dates + status */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="bg-orange-50 rounded-lg p-2">
+                        <Icon
+                          icon="heroicons:calendar"
+                          className="size-4 text-orange-500"
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-[#05073c]">
+                          {startDateStr} — {endDateStr}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          {instance.durationDays} {t("tourInstance.days")} &bull;{" "}
+                          {instance.classificationName}
+                        </span>
+                      </div>
+                    </div>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${statusInfo.bg} ${statusInfo.text}`}
+                    >
+                      <span
+                        className={`size-1.5 rounded-full ${statusInfo.dot}`}
+                      />
+                      {statusInfo.label}
+                    </span>
+                  </div>
+
+                  {/* Info row */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {/* Price */}
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-orange-500">
+                          {formatCurrency(instance.price)}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          {t("tourInstance.perPersonShort")}
+                        </span>
+                      </div>
+                      {/* Spots */}
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-[#05073c]">
+                          {spotsLeft}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          {t("tourInstance.spotsAvailable")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Book button */}
+                    {spotsLeft > 0 &&
+                      instance.status === "available" && (
+                        <Button
+                          type="button"
+                          className="bg-orange-500 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-orange-600 transition-colors"
+                        >
+                          {t("tourInstance.bookNow")}
+                        </Button>
+                      )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
@@ -897,6 +1052,9 @@ export function TourDetailPage() {
 
             {/* Reviews Section */}
             <ReviewsSection />
+
+            {/* Scheduled Departures */}
+            {tourId && <ScheduledDeparturesSection tourId={tourId} />}
           </div>
 
           {/* ── Right Sidebar ────────────────────────────── */}

@@ -219,3 +219,98 @@ export const InsuranceTypeMap: Record<number, string> = {
   5: "Personal Liability",
   6: "Adventure Sports",
 };
+
+export const LocationTypeMap: Record<number, string> = {
+  0: "City",
+  1: "Historical Site",
+  2: "Natural Wonder",
+  3: "Temple/University",
+  4: "Beach",
+  5: "Museum",
+  6: "Market",
+  7: "Restaurant",
+  8: "Hotel",
+  9: "Airport",
+  10: "Train Station",
+  11: "Bus Station",
+  12: "Port",
+  99: "Other",
+};
+
+// ── Tour Instance Types ────────────────────────────────────────
+
+export interface TourInstanceVm {
+  id: string;
+  tourId: string;
+  tourName: string;
+  tourCode: string;
+  classificationName: string;
+  location: string;
+  thumbnail: ImageDto | null;
+  startDate: string;
+  endDate: string;
+  durationDays: number;
+  registeredParticipants: number;
+  maxParticipants: number;
+  minParticipants: number;
+  price: number;
+  status: string;
+  instanceType: string;
+}
+
+export interface TourInstanceGuideDto {
+  name: string;
+  avatarUrl: string | null;
+  languages: string[];
+  experience: string;
+}
+
+export interface DynamicPricingDto {
+  minParticipants: number;
+  maxParticipants: number;
+  pricePerPerson: number;
+}
+
+export interface TourInstanceDto {
+  id: string;
+  tourId: string;
+  tourName: string;
+  tourCode: string;
+  classificationId: string;
+  classificationName: string;
+  location: string;
+  thumbnail: ImageDto | null;
+  startDate: string;
+  endDate: string;
+  durationDays: number;
+  registeredParticipants: number;
+  maxParticipants: number;
+  minParticipants: number;
+  price: number;
+  salePrice: number;
+  status: string;
+  instanceType: string;
+  category: string;
+  rating: number;
+  totalBookings: number;
+  revenue: number;
+  confirmationDeadline: string | null;
+  guide: TourInstanceGuideDto | null;
+  includedServices: string[];
+  dynamicPricing: DynamicPricingDto[];
+}
+
+export interface TourInstanceStats {
+  totalInstances: number;
+  available: number;
+  confirmed: number;
+  soldOut: number;
+}
+
+export const TourInstanceStatusMap: Record<string, { label: string; bg: string; text: string; dot: string }> = {
+  available: { label: "Available", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
+  confirmed: { label: "Confirmed", bg: "bg-green-100", text: "text-green-700", dot: "bg-green-500" },
+  sold_out: { label: "Sold Out", bg: "bg-red-100", text: "text-red-700", dot: "bg-red-500" },
+  cancelled: { label: "Cancelled", bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
+  completed: { label: "Completed", bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
+};

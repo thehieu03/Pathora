@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { homeService } from "@/services/homeService";
 import { formatCurrency } from "@/utils/format";
 import { SearchTour } from "@/types/home";
+import { TourInstanceVm, TourInstanceStatusMap } from "@/types/tour";
 
 /* ── Sample Tour Data — replaced by API ───────────────────── */
 const PAGE_SIZE = 12;
@@ -748,6 +749,128 @@ const TourCardSkeleton = () => (
   </div>
 );
 
+/* ── Scheduled Tour Instance Card ──────────────────────────── */
+const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
+  const { t } = useTranslation();
+
+  const statusKey = instance.status.toLowerCase().replace(/\s+/g, "_");
+  const statusConfig = TourInstanceStatusMap[statusKey] ?? {
+    label: instance.status,
+    bg: "bg-slate-100",
+    text: "text-slate-600",
+    dot: "bg-slate-400",
+  };
+
+  const spotsLeft = instance.maxParticipants - instance.registeredParticipants;
+
+  const formatDate = (dateStr: string) =>
+    new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
+  return (
+    <article className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
+      {/* Image */}
+      <div className="relative w-full h-[180px] overflow-hidden">
+        {instance.thumbnail?.publicURL ? (
+          <Image
+            src={instance.thumbnail.publicURL}
+            alt={instance.tourName}
+            fill
+            sizes="(max-width: 767px) 100vw, 400px"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-[#05073c] to-[#1a1c5e] flex items-center justify-center">
+            <Icon
+              icon="heroicons-outline:calendar-days"
+              className="w-10 h-10 text-white/40"
+            />
+          </div>
+        )}
+        {/* Status badge */}
+        <span
+          className={`absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${statusConfig.bg} ${statusConfig.text}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`} />
+          {statusConfig.label}
+        </span>
+        {/* Date badge */}
+        <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+          <Icon icon="heroicons-outline:calendar" className="w-3 h-3" />
+          {formatDate(instance.startDate)}
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        {/* Location & Classification */}
+        <div className="flex items-center justify-between mb-2">
+          {instance.location && (
+            <div className="flex items-center gap-1 text-[12px] text-[#99a1af]">
+              <Icon
+                icon="heroicons-solid:map-pin"
+                className="w-3 h-3 shrink-0"
+              />
+              <span>{instance.location}</span>
+            </div>
+          )}
+          {instance.classificationName && (
+            <span className="text-[10px] font-semibold text-[#6a7282] bg-[#f9fafb] border border-[#f3f4f6] px-2 py-0.5 rounded-full">
+              {instance.classificationName}
+            </span>
+          )}
+        </div>
+
+        {/* Title */}
+        <h3 className="text-[14px] font-semibold text-[#05073c] leading-[19px] mb-2 line-clamp-2 min-h-[38px]">
+          {instance.tourName}
+        </h3>
+
+        {/* Duration & Spots */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
+            <Icon
+              icon="heroicons-outline:clock"
+              className="w-3 h-3 text-[#6a7282]"
+            />
+            {instance.durationDays} {instance.durationDays === 1 ? "day" : "days"}
+          </span>
+          <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
+            <Icon
+              icon="heroicons-outline:user-group"
+              className="w-3 h-3 text-[#6a7282]"
+            />
+            {spotsLeft > 0
+              ? `${spotsLeft} ${t("tourInstance.spotsLeft", "spots left")}`
+              : t("tourInstance.soldOut", "Sold out")}
+          </span>
+        </div>
+
+        {/* Price + Arrow */}
+        <div className="flex items-center justify-between border-t border-[#f3f4f6] pt-3">
+          <p className="text-[12px] text-[#99a1af]">
+            <span>{t("landing.tourDiscovery.from")} </span>
+            <span className="text-[14px] font-bold text-[#eb662b]">
+              {formatCurrency(instance.price)}
+            </span>
+            <span> /pax</span>
+          </p>
+          <Link
+            href={`/tours/${instance.tourId}?instanceId=${instance.id}`}
+            className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors">
+            <Icon
+              icon="heroicons-outline:arrow-right"
+              className="w-3.5 h-3.5 text-[#eb662b] group-hover/arrow:text-white transition-colors"
+            />
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+};
+
 /* ── Main Tour Discovery Page ──────────────────────────────── */
 export const TourDiscoveryPage = () => {
   const { t } = useTranslation();
@@ -762,6 +885,10 @@ export const TourDiscoveryPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [destinations, setDestinations] = useState<string[]>([]);
+
+  // Scheduled tour instances state
+  const [scheduledInstances, setScheduledInstances] = useState<TourInstanceVm[]>([]);
+  const [scheduledLoading, setScheduledLoading] = useState(true);
 
   const totalPages = Math.max(1, Math.ceil(totalTours / PAGE_SIZE));
 
@@ -794,13 +921,22 @@ export const TourDiscoveryPage = () => {
     [t],
   );
 
-  // Initial load + fetch destinations
+  // Initial load + fetch destinations + scheduled instances
   useEffect(() => {
     fetchTours(1);
     homeService
       .getDestinations()
       .then(setDestinations)
       .catch(() => {});
+    // Fetch upcoming scheduled tours
+    setScheduledLoading(true);
+    homeService
+      .getAvailablePublicInstances(undefined, 1, 6)
+      .then((result) => {
+        if (result) setScheduledInstances(result.data ?? []);
+      })
+      .catch(() => {})
+      .finally(() => setScheduledLoading(false));
   }, [fetchTours]);
 
   // Refetch when page or filters change
@@ -869,6 +1005,33 @@ export const TourDiscoveryPage = () => {
             <div className="flex-1 min-w-0">
               {/* Customize Your Tour CTA (mobile only) */}
               <CustomizeTourCTA />
+
+              {/* ── Upcoming Scheduled Tours Section ── */}
+              {!scheduledLoading && scheduledInstances.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        icon="heroicons-outline:calendar-days"
+                        className="w-5 h-5 text-[#eb662b]"
+                      />
+                      <h2 className="text-lg font-bold text-[#05073c]">
+                        {t("tourInstance.upcomingScheduledTours", "Upcoming Scheduled Tours")}
+                      </h2>
+                    </div>
+                    <Link
+                      href="/tours?tab=scheduled"
+                      className="text-xs font-semibold text-[#eb662b] hover:underline">
+                      {t("tourInstance.viewAll", "View All")}
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {scheduledInstances.slice(0, 3).map((instance) => (
+                      <ScheduledTourCard key={instance.id} instance={instance} />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Results Toolbar */}
               <ResultsToolbar count={totalTours} />

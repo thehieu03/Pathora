@@ -27,6 +27,12 @@ export default function RootLayout({
         suppressHydrationWarning
         className="light antialiased"
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-primary"
+        >
+          Skip to main content
+        </a>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

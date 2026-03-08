@@ -71,11 +71,12 @@ const Modal = ({
 
   const renderModal = (isOpen: boolean, closeFn: () => void) => (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-99999"
-        onClose={!disableBackdrop ? closeFn : () => {}}
-      >
+        <Dialog
+          as="div"
+          className="relative z-99999"
+          onClose={!disableBackdrop ? closeFn : () => {}}
+          aria-labelledby="modal-title"
+        >
         {!disableBackdrop && (
           <TransitionChild as={Fragment} {...transitionClasses}>
             <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs backdrop-filter" />
@@ -99,6 +100,7 @@ const Modal = ({
                 >
                   <Dialog.Title
                     as="h2"
+                    id="modal-title"
                     className="text-base font-medium leading-6 tracking-wider text-white capitalize"
                   >
                     {title}

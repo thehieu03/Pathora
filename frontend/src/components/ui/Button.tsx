@@ -108,7 +108,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
     return (
       <Link
         href={link}
-        ref={ref as any}
+        ref={ref as unknown as React.Ref<HTMLAnchorElement>}
         className={baseClasses}
         onClick={onClick}
         aria-label={ariaLabel}
@@ -129,7 +129,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
 
   return (
     <button
-      ref={ref as any}
+      ref={ref as unknown as React.Ref<HTMLButtonElement>}
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}

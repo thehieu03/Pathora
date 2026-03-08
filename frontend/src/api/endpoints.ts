@@ -141,6 +141,21 @@ export interface TourEndpoints {
   DELETE: EndpointWithId;
 }
 
+// Tour Instance Endpoints Interface
+export interface TourInstanceEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: EndpointWithId;
+  DELETE: EndpointWithId;
+}
+
+// Public Tour Instance Endpoints Interface
+export interface PublicTourInstanceEndpoints {
+  GET_AVAILABLE: string;
+  GET_DETAIL: EndpointWithId;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -153,6 +168,8 @@ export interface ApiEndpoints {
   AUTH: AuthEndpoints;
   PUBLIC_HOME: PublicHomeEndpoints;
   TOUR: TourEndpoints;
+  TOUR_INSTANCE: TourInstanceEndpoints;
+  PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -288,6 +305,21 @@ export const API_ENDPOINTS: ApiEndpoints = {
     CREATE: "/api/tour/",
     UPDATE: "/api/tour/",
     DELETE: (id: string): string => `/api/tour/${id}`,
+  },
+
+  // Tour Instance
+  TOUR_INSTANCE: {
+    GET_ALL: "/api/tour-instance/",
+    GET_DETAIL: (id: string): string => `/api/tour-instance/${id}`,
+    CREATE: "/api/tour-instance/",
+    UPDATE: (id: string): string => `/api/tour-instance/${id}`,
+    DELETE: (id: string): string => `/api/tour-instance/${id}`,
+  },
+
+  // Public Tour Instance
+  PUBLIC_TOUR_INSTANCE: {
+    GET_AVAILABLE: "/api/public/tour-instances/available",
+    GET_DETAIL: (id: string): string => `/api/public/tour-instances/${id}`,
   },
 };
 

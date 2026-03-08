@@ -17,6 +17,7 @@ import {
   TopReview,
   SearchTourResponse,
 } from "@/types/home";
+import { TourInstanceVm, PaginatedResponse } from "@/types/tour";
 import { extractItems, extractResult } from "@/utils/apiResponse";
 
 export const homeService = {
@@ -81,5 +82,28 @@ export const homeService = {
       API_ENDPOINTS.PUBLIC_HOME.GET_DESTINATIONS
     );
     return extractItems<string>(response.data);
+  },
+
+  getAvailablePublicInstances: async (
+    destination?: string,
+    page = 1,
+    pageSize = 6,
+  ) => {
+    const params = new URLSearchParams();
+    if (destination) params.append("destination", destination);
+    params.append("page", page.toString());
+    params.append("pageSize", pageSize.toString());
+
+    const response = await api.get<
+      ApiResponse<PaginatedResponse<TourInstanceVm>>
+    >(`${API_ENDPOINTS.PUBLIC_TOUR_INSTANCE.GET_AVAILABLE}?${params.toString()}`);
+    return extractResult<PaginatedResponse<TourInstanceVm>>(response.data);
+  },
+
+  getPublicInstanceDetail: async (id: string) => {
+    const response = await api.get<ApiResponse<TourInstanceVm>>(
+      API_ENDPOINTS.PUBLIC_TOUR_INSTANCE.GET_DETAIL(id)
+    );
+    return extractResult<TourInstanceVm>(response.data);
   },
 };

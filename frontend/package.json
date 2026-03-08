@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run --pool=threads --maxWorkers=1 --no-file-parallelism"
+    "test": "vitest run --pool=threads --maxWorkers=1 --no-file-parallelism",
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -19,6 +20,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.67",
+    "@types/dompurify": "^3.0.5",
     "apexcharts": "^5.6.0",
     "axios": "^1.13.5",
     "chart.js": "^4.5.1",
@@ -26,6 +28,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
+    "dompurify": "^3.3.2",
     "flatpickr": "^4.6.13",
     "framer-motion": "^12.34.3",
     "i18next": "^25.8.13",
