@@ -33,13 +33,12 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
     public async Task Create(UserEntity user)
     {
         await _dbContext.Users.AddAsync(user);
-        await _dbContext.SaveChangesAsync();
     }
 
-    public async Task Update(UserEntity user)
+    public Task Update(UserEntity user)
     {
         _dbContext.Users.Update(user);
-        await _dbContext.SaveChangesAsync();
+        return Task.CompletedTask;
     }
 
     public async Task SoftDelete(Guid id)
@@ -48,7 +47,6 @@ public class UserRepository(AppDbContext dbContext) : IUserRepository
         if (user != null)
         {
             user.IsDeleted = true;
-            await _dbContext.SaveChangesAsync();
         }
     }
 

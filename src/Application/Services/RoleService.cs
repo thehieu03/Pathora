@@ -36,6 +36,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
         var result = await _roleRepository.Create(role);
         if (result.IsError) return result.Errors;
 
+        await _uow.SaveChangeAsync();
         return role.Id;
     }
 
@@ -49,7 +50,11 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
         var role = roleResult.Value;
         role.Update(request.Name, request.Description, request.Type, request.Status, _user.Id ?? string.Empty);
 
-        return await _roleRepository.Update(role);
+        var result = await _roleRepository.Update(role);
+        if (result.IsError) return result.Errors;
+
+        await _uow.SaveChangeAsync();
+        return Result.Success;
     }
 
     public async Task<ErrorOr<Success>> Delete(DeleteRoleRequest request)
@@ -61,7 +66,11 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
 
         var role = roleResult.Value;
         role.SoftDelete(_user.Id ?? string.Empty);
-        return await _roleRepository.Update(role);
+        var result = await _roleRepository.Update(role);
+        if (result.IsError) return result.Errors;
+
+        await _uow.SaveChangeAsync();
+        return Result.Success;
     }
 
     public async Task<ErrorOr<PaginatedListWithPermissions<RoleVm>>> GetAll(GetAllRoleRequest request)

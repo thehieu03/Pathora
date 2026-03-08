@@ -36,10 +36,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseExceptionHandler(_ => { });
 
+app.UseResponseCompression();
+
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
 app.UseCors();
 app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.UseSerilogRequestLogging();
 

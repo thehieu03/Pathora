@@ -9,12 +9,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Api.Controllers;
 
 [Route(AuthEndpoint.Base)]
+[EnableRateLimiting("auth-strict")]
 public class AuthController : BaseApiController
 {
     [HttpPost(AuthEndpoint.Login)]
@@ -76,9 +78,10 @@ public class AuthController : BaseApiController
         [FromBody] DevResetPasswordRequest request,
         [FromServices] AppDbContext db,
         [FromServices] IPasswordHasher hasher,
-        [FromServices] IWebHostEnvironment env)
+        [FromServices] IWebHostEnvironment env,
+        [FromServices] IConfiguration configuration)
     {
-        if (!env.IsDevelopment())
+        if (!env.IsDevelopment() || !configuration.GetValue<bool>("Dev:EnableDevEndpoints"))
             return NotFound();
 
         var user = await db.Users

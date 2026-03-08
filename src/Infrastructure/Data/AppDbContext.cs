@@ -67,6 +67,8 @@ public class AppDbContext : DbContext
     public DbSet<RoleFunctionEntity> RoleFunctions => Set<RoleFunctionEntity>();
     public DbSet<RegisterEntity> Registers => Set<RegisterEntity>();
     public DbSet<ReviewEntity> Reviews => Set<ReviewEntity>();
+    public DbSet<TourInstanceEntity> TourInstances => Set<TourInstanceEntity>();
+    public DbSet<DynamicPricingTierEntity> TourInstancePricingTiers => Set<DynamicPricingTierEntity>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

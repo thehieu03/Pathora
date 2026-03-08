@@ -14,15 +14,13 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
     public async Task<ErrorOr<Success>> Create(RoleEntity role)
     {
         await _context.Roles.AddAsync(role);
-        await _context.SaveChangesAsync();
         return Result.Success;
     }
 
-    public async Task<ErrorOr<Success>> Update(RoleEntity role)
+    public Task<ErrorOr<Success>> Update(RoleEntity role)
     {
         _context.Roles.Update(role);
-        await _context.SaveChangesAsync();
-        return Result.Success;
+        return Task.FromResult<ErrorOr<Success>>(Result.Success);
     }
 
     public async Task<ErrorOr<Success>> AddUser(Guid userId, List<Guid> roleIds)
@@ -33,7 +31,6 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
             RoleId = roleId
         }).ToList();
         await _context.UserRoles.AddRangeAsync(userRoles);
-        await _context.SaveChangesAsync();
         return Result.Success;
     }
 
@@ -41,7 +38,6 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
     {
         var userRoles = await _context.UserRoles.Where(ur => ur.UserId == userId).ToListAsync();
         _context.UserRoles.RemoveRange(userRoles);
-        await _context.SaveChangesAsync();
         return Result.Success;
     }
 

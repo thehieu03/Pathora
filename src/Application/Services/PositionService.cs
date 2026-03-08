@@ -4,6 +4,7 @@ using Domain.Common.Repositories;
 using Application.Contracts.Position;
 using Domain.Constant;
 using Domain.Entities;
+using Domain.UnitOfWork;
 using ErrorOr;
 
 namespace Application.Services;
@@ -17,12 +18,13 @@ public interface IPositionService
     Task<ErrorOr<List<LookupVm>>> GetComboboxAsync();
 }
 
-public class PositionService(IPositionRepository positionRepository, IRoleService roleService, IUser user)
+public class PositionService(IPositionRepository positionRepository, IRoleService roleService, IUser user, IUnitOfWork unitOfWork)
     : IPositionService
 {
     private readonly IPositionRepository _positionRepository = positionRepository;
     private readonly IRoleService _roleService = roleService;
     private readonly IUser _user = user;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<ErrorOr<Success>> CreateAsync(CreatePositionRequest request)
     {
@@ -31,6 +33,7 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
         var result = await _positionRepository.Upsert(position);
         if (result.IsError) return result.Errors;
 
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 
@@ -44,7 +47,11 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
         var position = positionResult.Value;
         position.SoftDelete(_user.Id ?? string.Empty);
 
-        return await _positionRepository.Upsert(position);
+        var result = await _positionRepository.Upsert(position);
+        if (result.IsError) return result.Errors;
+
+        await _unitOfWork.SaveChangeAsync();
+        return Result.Success;
     }
 
     public async Task<ErrorOr<PaginatedListWithPermissions<PositionVm>>> GetAllAsync(GetAllPositionRequest request)
@@ -90,6 +97,10 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
         var position = positionResult.Value;
         position.Update(request.Name, request.Level, _user.Id ?? string.Empty, request.Note, request.Type);
 
-        return await _positionRepository.Upsert(position);
+        var result = await _positionRepository.Upsert(position);
+        if (result.IsError) return result.Errors;
+
+        await _unitOfWork.SaveChangeAsync();
+        return Result.Success;
     }
 }

@@ -4,6 +4,8 @@ public static class PublicEndpoint
 {
     public const string Base = "api/public";
     public const string Tours = "tours";
+    public const string TourInstances = "tour-instances";
+    public const string Available = "available";
     public const string Destinations = "destinations";
     public const string Attractions = "attractions";
     public const string Stats = "stats";

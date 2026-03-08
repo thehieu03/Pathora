@@ -7,6 +7,7 @@ using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Entities.Translations;
+using Domain.UnitOfWork;
 using ErrorOr;
 
 namespace Application.Services;
@@ -20,10 +21,16 @@ public interface ITourService
     Task<ErrorOr<TourDto>> GetDetail(Guid id);
 }
 
-public class TourService(ITourRepository tourRepository, IUser user, IMapper mapper, ILanguageContext? languageContext = null) : ITourService
+public class TourService(
+    ITourRepository tourRepository,
+    IUser user,
+    IUnitOfWork unitOfWork,
+    IMapper mapper,
+    ILanguageContext? languageContext = null) : ITourService
 {
     private readonly ITourRepository _tourRepository = tourRepository;
     private readonly IUser _user = user;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IMapper _mapper = mapper;
     private readonly ILanguageContext _languageContext = languageContext ?? new FallbackLanguageContext();
 
@@ -48,6 +55,7 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
         tour.Translations = NormalizeTranslations(request.Translations);
 
         await _tourRepository.Create(tour);
+        await _unitOfWork.SaveChangeAsync();
         return tour.Id;
     }
 
@@ -76,6 +84,7 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
         MergeTranslations(tour, request.Translations);
 
         await _tourRepository.Update(tour);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 
@@ -86,6 +95,7 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
 
         await _tourRepository.SoftDelete(id);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 
@@ -112,7 +122,7 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
 
     public async Task<ErrorOr<TourDto>> GetDetail(Guid id)
     {
-        var tour = await _tourRepository.FindByIdReadOnly(id);
+        var tour = await _tourRepository.FindById(id, asNoTracking: true);
         if (tour is null)
             return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
 

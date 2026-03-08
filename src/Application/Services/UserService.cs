@@ -156,6 +156,7 @@ public class UserService(
         var newPassword = PasswordGenerator.Generate();
         userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
         await _userRepository.Update(userEntity);
+        await _unitOfWork.SaveChangeAsync();
 
         return Result.Success;
     }
@@ -169,6 +170,7 @@ public class UserService(
         // Dùng entity method để đảm bảo LastModifiedBy/LastModifiedOnUtc được set
         userEntity.SoftDelete(_user.Id ?? string.Empty);
         await _userRepository.Update(userEntity);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 

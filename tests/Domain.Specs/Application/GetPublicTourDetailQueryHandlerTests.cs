@@ -25,7 +25,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
     {
         // Arrange
         var tour = BuildActiveTour();
-        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
 
@@ -51,7 +51,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
     {
         // Arrange
         var id = Guid.CreateVersion7();
-        _tourRepository.FindByIdReadOnly(id).Returns((TourEntity?)null);
+        _tourRepository.FindById(id, Arg.Any<bool>()).Returns((TourEntity?)null);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
 
@@ -71,7 +71,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
         // Arrange
         var tour = BuildActiveTour();
         tour.IsDeleted = true;
-        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
 
@@ -91,7 +91,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
         // Arrange
         var tour = BuildActiveTour();
         tour.Status = TourStatus.Inactive;
-        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
 
@@ -111,7 +111,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
         // Arrange
         var tour = BuildActiveTour();
         tour.Status = TourStatus.Rejected;
-        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
 
@@ -130,7 +130,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
     {
         // Arrange
         var tour = BuildActiveTour();
-        _tourRepository.FindByIdReadOnly(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
 

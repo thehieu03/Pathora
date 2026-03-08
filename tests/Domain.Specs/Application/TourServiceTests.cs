@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.UnitOfWork;
 using NSubstitute;
 
 namespace Domain.Specs.Application;
@@ -14,13 +15,14 @@ public sealed class TourServiceTests
 {
     private readonly ITourRepository _tourRepository = Substitute.For<ITourRepository>();
     private readonly IUser _user = Substitute.For<IUser>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly ITourService _sut;
 
     public TourServiceTests()
     {
         _user.Id.Returns("test-user");
-        _sut = new TourService(_tourRepository, _user, _mapper);
+        _sut = new TourService(_tourRepository, _user, _unitOfWork, _mapper);
     }
 
     // ── Create ──────────────────────────────────────────────

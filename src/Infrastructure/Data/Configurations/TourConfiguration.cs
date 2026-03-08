@@ -49,6 +49,8 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
 
         builder.HasIndex(t => new { t.Status, t.IsDeleted });
         builder.HasIndex(t => t.CreatedOnUtc);
+        builder.HasIndex(t => t.IsDeleted)
+            .HasFilter("\"IsDeleted\" = false");
 
         // Thumbnail là owned entity, lưu inline trong bảng Tours
         builder.OwnsOne(t => t.Thumbnail, thumb =>

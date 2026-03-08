@@ -51,7 +51,8 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.HasIndex(u => u.IsDeleted);
 
-        builder.HasIndex(u => u.Username);
+        builder.HasIndex(u => u.Username)
+            .IsUnique();
 
         builder.HasIndex(u => u.CreatedOnUtc);
 

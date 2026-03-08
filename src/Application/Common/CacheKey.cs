@@ -11,5 +11,6 @@ public static class CacheKey
     public const string Position = nameof(Position);
     public const string Department = nameof(Department);
     public const string Tour = nameof(Tour);
+    public const string TourInstance = nameof(TourInstance);
 }
 
