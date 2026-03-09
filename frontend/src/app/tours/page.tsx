@@ -1,16 +1,12 @@
-import React, { Suspense } from "react";
-import dynamic from "next/dynamic";
+import React from "react";
+import { TourDiscoveryPage } from "@/components/partials/tours";
 import ToursLoading from "./loading";
-
-const TourDiscoveryPage = dynamic(
-  () => import("@/components/partials/tours").then((m) => m.TourDiscoveryPage),
-  { loading: () => <ToursLoading /> },
-);
+import { ClientOnly } from "@/components/utils/ClientOnly";
 
 export default function ToursPage() {
   return (
-    <Suspense fallback={<ToursLoading />}>
+    <ClientOnly fallback={<ToursLoading />}>
       <TourDiscoveryPage />
-    </Suspense>
+    </ClientOnly>
   );
 }

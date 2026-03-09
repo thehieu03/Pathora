@@ -578,7 +578,8 @@ const TourCard = ({ tour }: { tour: SearchTour }) => {
           </p>
           <Link
             href={`/tours/${tour.id}`}
-            className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors">
+            aria-label={`View details for ${tour.tourName}`}
+            className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b]">
             <Icon
               icon="heroicons-outline:arrow-right"
               className="w-3.5 h-3.5 text-[#eb662b] group-hover/arrow:text-white transition-colors"
@@ -695,7 +696,8 @@ const ResultsToolbar = ({
           <Button
             type="button"
             onClick={() => setGridView("grid")}
-            className={`w-9 h-9 flex items-center justify-center transition-colors ${
+            aria-label="Grid view"
+            className={`w-9 h-9 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b] ${
               gridView === "grid"
                 ? "bg-[#eb662b] text-white"
                 : "bg-white text-[#6a7282] hover:bg-gray-50"
@@ -705,7 +707,8 @@ const ResultsToolbar = ({
           <Button
             type="button"
             onClick={() => setGridView("list")}
-            className={`w-9 h-9 flex items-center justify-center transition-colors ${
+            aria-label="List view"
+            className={`w-9 h-9 flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b] ${
               gridView === "list"
                 ? "bg-[#eb662b] text-white"
                 : "bg-white text-[#6a7282] hover:bg-gray-50"
@@ -739,7 +742,8 @@ const Pagination = ({
         type="button"
         disabled={currentPage <= 1}
         onClick={() => onPageChange(currentPage - 1)}
-        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
+        aria-label="Previous page"
+        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b]">
         <Icon icon="heroicons-outline:chevron-left" className="w-4 h-4" />
       </Button>
 
@@ -750,11 +754,11 @@ const Pagination = ({
           for (let i = 1; i <= totalPages; i++) pages.push(i);
         } else {
           pages.push(1);
-          if (currentPage > 3) pages.push("...");
+          if (currentPage > 3) pages.push("…");
           const start = Math.max(2, currentPage - 1);
           const end = Math.min(totalPages - 1, currentPage + 1);
           for (let i = start; i <= end; i++) pages.push(i);
-          if (currentPage < totalPages - 2) pages.push("...");
+          if (currentPage < totalPages - 2) pages.push("…");
           pages.push(totalPages);
         }
         return pages.map((page, idx) =>
@@ -786,7 +790,8 @@ const Pagination = ({
         type="button"
         disabled={currentPage >= totalPages}
         onClick={() => onPageChange(currentPage + 1)}
-        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors">
+        aria-label="Next page"
+        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#e5e7eb] text-[#6a7282] hover:bg-gray-50 disabled:opacity-40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b]">
         <Icon icon="heroicons-outline:chevron-right" className="w-4 h-4" />
       </Button>
     </nav>
@@ -833,7 +838,7 @@ const TourCardSkeleton = () => (
 
 /* ── Scheduled Tour Instance Card ──────────────────────────── */
 const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const statusKey = instance.status.toLowerCase().replace(/\s+/g, "_");
   const statusConfig = TourInstanceStatusMap[statusKey] ?? {
@@ -845,12 +850,22 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
 
   const spotsLeft = instance.maxParticipants - instance.registeredParticipants;
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+  const formatDate = (dateStr: string) => {
+    try {
+      return new Intl.DateTimeFormat(i18n.language || "en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(new Date(dateStr));
+    } catch {
+      // Fallback if i18n.language is somehow invalid
+      return new Date(dateStr).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
+  };
 
   return (
     <motion.article 
@@ -944,7 +959,8 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
           </p>
           <Link
             href={`/tours/${instance.tourId}?instanceId=${instance.id}`}
-            className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors">
+            aria-label={`View details for ${instance.tourName}`}
+            className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b]">
             <Icon
               icon="heroicons-outline:arrow-right"
               className="w-3.5 h-3.5 text-[#eb662b] group-hover/arrow:text-white transition-colors"
