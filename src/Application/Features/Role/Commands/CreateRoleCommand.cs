@@ -11,7 +11,7 @@ namespace Application.Features.Role.Commands;
 
 public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<int>>, ICacheInvalidator
 {
-    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role, CacheKey.User];
 }
 
 public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
@@ -35,5 +35,3 @@ public sealed class CreateRoleCommandHandler(IRoleService roleService)
         return await roleService.Create(new CreateRoleRequest(request.Name, request.Description, request.Type, request.FunctionIds ?? []));
     }
 }
-
-

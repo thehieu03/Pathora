@@ -16,6 +16,7 @@ public class UserEntity : Aggregate<Guid>
     public VerifyStatus VerifyStatus { get; set; } = VerifyStatus.Unverified;
     public string? Password { get; set; } = null!;
     public string? GoogleId { get; set; }
+    public decimal Balance { get; set; } = 0m;
     public bool ForcePasswordChange { get; set; }
     public bool IsDeleted { get; set; } = false;
 
@@ -28,6 +29,7 @@ public class UserEntity : Aggregate<Guid>
             Email = email,
             AvatarUrl = avatar,
             Password = hashedPassword,
+            Balance = 0m,
             ForcePasswordChange = forcePasswordChange,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
@@ -69,6 +71,7 @@ public class UserEntity : Aggregate<Guid>
             AvatarUrl = avatarUrl,
             GoogleId = googleId,
             Password = null,
+            Balance = 0m,
             CreatedBy = "google",
             LastModifiedBy = "google",
             CreatedOnUtc = DateTimeOffset.UtcNow,

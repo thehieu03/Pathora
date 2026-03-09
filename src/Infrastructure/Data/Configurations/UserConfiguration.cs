@@ -39,6 +39,10 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
             .HasMaxLength(255)
             .IsRequired(false);
 
+        builder.Property(u => u.Balance)
+            .HasPrecision(18, 2)
+            .HasDefaultValue(0m);
+
         builder.HasIndex(u => u.GoogleId)
             .IsUnique()
             .HasFilter("\"GoogleId\" IS NOT NULL");

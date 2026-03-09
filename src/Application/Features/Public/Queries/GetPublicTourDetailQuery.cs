@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.Common;
 using Application.Common.Constant;
 using Contracts.Interfaces;
 using AutoMapper;
@@ -10,7 +11,11 @@ using ErrorOr;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetPublicTourDetailQuery(Guid Id) : IQuery<ErrorOr<TourDto>>;
+public sealed record GetPublicTourDetailQuery(Guid Id) : IQuery<ErrorOr<TourDto>>, ICacheable
+{
+    public string CacheKey => $"{Common.CacheKey.Tour}:public:detail:{Id}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourRepository, IMapper mapper, ILanguageContext? languageContext = null)
     : IQueryHandler<GetPublicTourDetailQuery, ErrorOr<TourDto>>

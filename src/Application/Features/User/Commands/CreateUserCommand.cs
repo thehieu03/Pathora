@@ -1,5 +1,7 @@
+using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.User;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
@@ -12,7 +14,10 @@ public sealed record CreateUserCommand(
     List<int> RoleIds,
     string Email,
     string FullName,
-    string Avatar) : ICommand<ErrorOr<Guid>>;
+    string Avatar) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.User];
+}
 
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
@@ -37,6 +42,3 @@ public sealed class CreateUserCommandHandler(IUserService userService)
             request.Departments, request.RoleIds, request.Email, request.FullName, request.Avatar));
     }
 }
-
-
-
