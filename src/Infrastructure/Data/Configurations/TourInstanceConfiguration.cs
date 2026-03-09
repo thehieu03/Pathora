@@ -12,6 +12,16 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
 
         builder.HasKey(t => t.Id);
 
+        // Instance identity
+        builder.Property(t => t.TourInstanceCode)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(t => t.Title)
+            .IsRequired()
+            .HasMaxLength(500);
+
+        // Denormalized from Tour
         builder.Property(t => t.TourName)
             .IsRequired()
             .HasMaxLength(300);
@@ -27,9 +37,7 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
         builder.Property(t => t.Location)
             .HasMaxLength(500);
 
-        builder.Property(t => t.Category)
-            .HasMaxLength(200);
-
+        // Status & Type
         builder.Property(t => t.InstanceType)
             .HasConversion<string>()
             .HasMaxLength(50)
@@ -40,28 +48,43 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(t => t.CancellationReason)
+            .HasMaxLength(1000);
+
+        // Schedule
         builder.Property(t => t.StartDate).IsRequired();
         builder.Property(t => t.EndDate).IsRequired();
         builder.Property(t => t.DurationDays).IsRequired();
 
-        builder.Property(t => t.MinParticipants).IsRequired();
-        builder.Property(t => t.MaxParticipants).IsRequired();
-        builder.Property(t => t.RegisteredParticipants).HasDefaultValue(0);
+        // Participants
+        builder.Property(t => t.MinParticipation).IsRequired();
+        builder.Property(t => t.MaxParticipation).IsRequired();
+        builder.Property(t => t.CurrentParticipation).HasDefaultValue(0);
 
-        builder.Property(t => t.Price)
+        // Pricing
+        builder.Property(t => t.BasePrice)
             .HasColumnType("numeric(18,2)")
             .IsRequired();
 
-        builder.Property(t => t.SalePrice)
+        builder.Property(t => t.SellingPrice)
             .HasColumnType("numeric(18,2)")
             .IsRequired();
 
+        builder.Property(t => t.OperatingCost)
+            .HasColumnType("numeric(18,2)")
+            .IsRequired();
+
+        // Soft delete
         builder.Property(t => t.IsDeleted)
             .HasDefaultValue(false);
 
         // IncludedServices as JSON column
         builder.Property(t => t.IncludedServices)
             .HasColumnType("jsonb");
+
+        // Translations as JSONB column
+        builder.Property(t => t.Translations)
+            .ConfigureTranslationsJsonb();
 
         // Guide as owned JSON column
         builder.OwnsOne(t => t.Guide, guide =>
@@ -78,7 +101,21 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
             thumb.Property(i => i.PublicURL).HasColumnName("Thumbnail_PublicURL").HasMaxLength(1000);
         });
 
+        // Images lưu trong bảng riêng TourInstanceImages
+        builder.OwnsMany(t => t.Images, img =>
+        {
+            img.ToTable("TourInstanceImages");
+            img.WithOwner().HasForeignKey("TourInstanceId");
+            img.Property<int>("Id").ValueGeneratedOnAdd().UseIdentityAlwaysColumn();
+            img.HasKey("Id");
+            img.Property(i => i.FileId).HasMaxLength(200);
+            img.Property(i => i.OriginalFileName).HasMaxLength(500);
+            img.Property(i => i.FileName).HasMaxLength(500);
+            img.Property(i => i.PublicURL).HasMaxLength(1000);
+        });
+
         // Indexes
+        builder.HasIndex(t => t.TourInstanceCode).IsUnique();
         builder.HasIndex(t => new { t.Status, t.InstanceType });
         builder.HasIndex(t => t.TourId);
         builder.HasIndex(t => t.StartDate);

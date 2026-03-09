@@ -13,10 +13,33 @@ public class TourRepository(AppDbContext context) : ITourRepository
     public async Task<TourEntity?> FindById(Guid id, bool asNoTracking = false)
     {
         var query = asNoTracking
-            ? _context.Tours.AsNoTracking()
+            ? BuildTourDetailQueryNoTracking()
             : _context.Tours;
         
         return await query.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+    }
+
+    private IQueryable<TourEntity> BuildTourDetailQueryNoTracking()
+    {
+        return _context.Tours
+            .AsNoTracking()
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.FromLocation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.ToLocation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Accommodation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Insurances)
+            .AsSplitQuery();
     }
 
     public async Task<List<TourEntity>> FindAll(string? searchText, int pageNumber, int pageSize)

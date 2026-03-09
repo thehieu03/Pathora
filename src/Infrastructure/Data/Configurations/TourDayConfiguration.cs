@@ -12,7 +12,7 @@ public class TourDayConfiguration : IEntityTypeConfiguration<TourDayEntity>
 
         builder.HasKey(d => d.Id);
 
-        builder.Property(d => d.TourClassificationId)
+        builder.Property(d => d.ClassificationId)
             .IsRequired();
 
         builder.Property(d => d.DayNumber)
@@ -28,7 +28,7 @@ public class TourDayConfiguration : IEntityTypeConfiguration<TourDayEntity>
         builder.Property(d => d.Translations)
             .ConfigureTranslationsJsonb();
 
-        builder.HasIndex(d => d.TourClassificationId);
+        builder.HasIndex(d => d.ClassificationId);
 
         builder.HasMany(d => d.Activities)
             .WithOne(a => a.TourDay)

@@ -12,6 +12,9 @@
 -- CLEANUP: Delete all data EXCEPT account tables
 -- Order: child → parent (respect FK constraints)
 -- ============================================================
+DELETE FROM "TourInstancePricingTiers";
+DELETE FROM "TourInstanceImages";
+DELETE FROM "TourInstances";
 DELETE FROM "TourPlanRoutes";
 DELETE FROM "TourPlanLocations";
 DELETE FROM "TourPlanAccommodations";
@@ -76,7 +79,7 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 INSERT INTO "Tours" (
     "Id", "TourCode", "TourName", "ShortDescription", "LongDescription",
-    "Status", "IsDeleted",
+    "Status", "TourScope", "CustomerSegment", "IsDeleted",
     "SEOTitle", "SEODescription",
     "Thumbnail_FileId", "Thumbnail_OriginalFileName", "Thumbnail_FileName", "Thumbnail_PublicURL",
     "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc"
@@ -88,7 +91,7 @@ VALUES
      'Hà Nội - Hạ Long 3 Ngày 2 Đêm',
      'Khám phá vịnh Hạ Long huyền bí với hàng nghìn đảo đá vôi kỳ vĩ.',
      'Tour Hà Nội - Hạ Long 3N2Đ đưa bạn qua cung đường ven biển thơ mộng, thăm các hang động nổi tiếng như hang Sửng Sốt, Thiên Cung, trải nghiệm chèo kayak và tắm biển tại bãi Ti Tốp.',
-     'Active', FALSE,
+     'Active', 'Domestic', 'Group', FALSE,
      'Tour Hà Nội Hạ Long 3N2Đ - Khám phá vịnh di sản',
      'Tour Hà Nội - Hạ Long 3 ngày 2 đêm giá tốt. Ngủ thuyền, khám phá hang động, chèo kayak.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-bay.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -101,7 +104,7 @@ VALUES
      'Đà Nẵng - Hội An - Bà Nà 4 Ngày 3 Đêm',
      'Hành trình miền Trung quyến rũ: phố cổ Hội An, cầu Vàng Bà Nà và biển Mỹ Khê.',
      'Khởi hành từ Đà Nẵng, tour đưa du khách tham quan cầu Vàng trên đỉnh Bà Nà Hills, dạo phố cổ Hội An về đêm lung linh đèn lồng, thăm thánh địa Mỹ Sơn và thư giãn tại biển Mỹ Khê.',
-     'Active', FALSE,
+     'Active', 'Domestic', 'Group', FALSE,
      'Tour Đà Nẵng Hội An 4N3Đ - Cầu Vàng & Phố cổ',
      'Tour Đà Nẵng - Hội An 4 ngày 3 đêm. Cầu Vàng Bà Nà, phố cổ Hội An, biển Mỹ Khê.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'da-nang-hoi-an.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -114,7 +117,7 @@ VALUES
      'Phú Quốc Đảo Ngọc 5 Ngày 4 Đêm',
      'Thiên đường biển đảo Phú Quốc - biển xanh, cát trắng, nắng vàng.',
      'Tour Phú Quốc 5N4Đ bao gồm tham quan Vinpearl Safari, lặn ngắm san hô tại quần đảo An Thới, thăm làng chài Hàm Ninh. Nghỉ dưỡng resort 4 sao ven biển.',
-     'Active', FALSE,
+     'Active', 'Domestic', 'FIT', FALSE,
      'Tour Phú Quốc 5N4Đ - Đảo Ngọc nghỉ dưỡng',
      'Tour Phú Quốc 5 ngày 4 đêm. Safari, lặn biển, resort 4 sao.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'phu-quoc.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -127,7 +130,7 @@ VALUES
      'Sapa - Bản Cát Cát - Fansipan 3 Ngày 2 Đêm',
      'Chinh phục nóc nhà Đông Dương, trekking bản làng và ngắm ruộng bậc thang.',
      'Tour Sapa 3N2Đ chinh phục đỉnh Fansipan bằng cáp treo, trekking bản Cát Cát ngắm thác nước, tham quan ruộng bậc thang Mường Hoa mùa lúa chín.',
-     'Active', FALSE,
+     'Active', 'Domestic', 'Group', FALSE,
      'Tour Sapa Fansipan 3N2Đ - Trekking bản làng',
      'Tour Sapa 3 ngày 2 đêm. Fansipan cáp treo, bản Cát Cát, ruộng bậc thang.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'sapa.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -140,7 +143,7 @@ VALUES
      'TP.HCM - Cần Thơ - Phú Quốc 5 Ngày 4 Đêm',
      'Hành trình miền Tây sông nước kết hợp nghỉ dưỡng đảo ngọc Phú Quốc.',
      'Tour kết hợp khám phá miền Tây sông nước: chợ nổi Cái Răng, vườn trái cây, làng nghề đan lát và chèo xuồng trên kênh rạch. Bay ra Phú Quốc nghỉ dưỡng.',
-     'Pending', FALSE,
+     'Pending', 'Domestic', 'Group', FALSE,
      'Tour TP.HCM Cần Thơ Phú Quốc 5N4Đ',
      'Tour miền Tây + Phú Quốc 5 ngày 4 đêm. Chợ nổi Cái Răng, resort biển.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'hcm-cantho-phuquoc.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -153,7 +156,7 @@ VALUES
      'Bangkok - Pattaya 4 Days 3 Nights',
      'Explore the vibrant Thai capital and the stunning beaches of Pattaya.',
      'Discover Bangkoks magnificent Grand Palace and Wat Pho, shop at Chatuchak Weekend Market, then head to Pattaya for beach relaxation and Coral Island adventures.',
-     'Active', FALSE,
+     'Active', 'International', 'Group', FALSE,
      'Bangkok Pattaya Tour 4D3N - Temples & Beaches',
      'Bangkok Pattaya 4 days 3 nights tour. Grand Palace, Coral Island, Thai street food.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'bangkok-pattaya.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -166,7 +169,7 @@ VALUES
      'Tokyo - Osaka Cherry Blossom 5 Days 4 Nights',
      'Experience Japans iconic cherry blossoms from Tokyo to Osaka via Shinkansen.',
      'Visit Sensō-ji Temple, Tokyo Skytree, Meiji Shrine, take a day trip to Mount Fuji, then ride the bullet train to Osaka for castle visits and Kyoto temples.',
-     'Active', FALSE,
+     'Active', 'International', 'Group', FALSE,
      'Tokyo Osaka Cherry Blossom Tour 5D4N',
      'Japan tour 5 days. Tokyo, Mount Fuji, Shinkansen, Osaka Castle, Kyoto temples.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'tokyo-osaka.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -179,7 +182,7 @@ VALUES
      'Seoul - Jeju Island 4 Days 3 Nights',
      'Discover Seouls royal palaces and Jejus volcanic landscapes.',
      'Explore Gyeongbokgung Palace and Myeongdong shopping in Seoul, then fly to Jeju Island for Hallasan National Park and Seongsan Ilchulbong sunrise peak.',
-     'Active', FALSE,
+     'Active', 'International', 'FIT', FALSE,
      'Seoul Jeju Tour 4D3N - Palaces & Volcanic Island',
      'Korea tour 4 days. Seoul palaces, Myeongdong, Jeju Hallasan, Seongsan peak.',
      '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'seoul-jeju.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
@@ -275,7 +278,7 @@ ON CONFLICT DO NOTHING;
 -- ============================================================
 -- 7. TourDays
 -- ============================================================
-INSERT INTO "TourDays" ("Id", "TourClassificationId", "DayNumber", "Title", "Description", "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc")
+INSERT INTO "TourDays" ("Id", "ClassificationId", "DayNumber", "Title", "Description", "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc")
 VALUES
     -- T1 Standard: Hà Nội – Hạ Long (3 days)
     ('019527d0-0000-7000-8000-000000000001', '019527c0-0000-7000-8000-000000000001', 1, 'Hà Nội → Hạ Long',         'Di chuyển Hà Nội - Hạ Long, tham quan hang Sửng Sốt',           'system', NOW(), 'system', NOW()),
@@ -509,7 +512,242 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
--- 12. Reviews  (15 reviews, bilingual VN + EN)
+-- 12. TourInstances  (10 instances across 6 tours, various statuses)
+-- ============================================================
+INSERT INTO "TourInstances" (
+    "Id", "TourId", "ClassificationId",
+    "TourInstanceCode", "Title",
+    "TourName", "TourCode", "ClassificationName",
+    "InstanceType", "Status", "CancellationReason",
+    "StartDate", "EndDate", "DurationDays", "ConfirmationDeadline",
+    "MinParticipation", "MaxParticipation", "CurrentParticipation",
+    "BasePrice", "SellingPrice", "OperatingCost",
+    "Location",
+    "Thumbnail_FileId", "Thumbnail_OriginalFileName", "Thumbnail_FileName", "Thumbnail_PublicURL",
+    "IncludedServices", "Guide",
+    "Translations",
+    "IsDeleted", "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc"
+)
+VALUES
+    -- TI-01: Hạ Long - Tiêu chuẩn, khởi hành 15/04/2026 (Available)
+    ('01952900-0000-7000-8000-000000000001',
+     '019527b0-0000-7000-8000-000000000001', '019527c0-0000-7000-8000-000000000001',
+     'TI-20260315-0001', 'Hạ Long Bay 3N2Đ - Khởi hành 15/04',
+     'Hà Nội - Hạ Long 3 Ngày 2 Đêm', 'VN-HN-HL-3N2D', 'Tiêu chuẩn',
+     'Public', 'Available', NULL,
+     '2026-04-15T07:00:00+07:00', '2026-04-17T18:00:00+07:00', 3, '2026-04-10T23:59:59+07:00',
+     10, 30, 12,
+     3500000, 4290000, 2800000,
+     'Hạ Long, Quảng Ninh',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-bay.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Xe đưa đón", "Bữa ăn theo chương trình", "Vé tham quan", "HDV tiếng Việt", "Bảo hiểm du lịch"]',
+     '{"Name": "Nguyễn Văn Hùng", "AvatarUrl": null, "Languages": ["vi", "en"], "Experience": "5 năm kinh nghiệm HDV"}',
+     '{"vi": {"title": "Hạ Long Bay 3N2Đ - Khởi hành 15/04", "location": "Hạ Long, Quảng Ninh", "includedServices": ["Xe đưa đón", "Bữa ăn theo chương trình", "Vé tham quan", "HDV tiếng Việt", "Bảo hiểm du lịch"], "cancellationReason": null}, "en": {"title": "Ha Long Bay 3D2N - Departure Apr 15", "location": "Ha Long, Quang Ninh", "includedServices": ["Shuttle bus", "Meals as per itinerary", "Entrance tickets", "Vietnamese guide", "Travel insurance"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-02: Hạ Long - Premium, khởi hành 20/04/2026 (Confirmed)
+    ('01952900-0000-7000-8000-000000000002',
+     '019527b0-0000-7000-8000-000000000001', '019527c0-0000-7000-8000-000000000002',
+     'TI-20260320-0002', 'Hạ Long Bay Premium 3N2Đ - Khởi hành 20/04',
+     'Hà Nội - Hạ Long 3 Ngày 2 Đêm', 'VN-HN-HL-3N2D', 'Cao cấp',
+     'Public', 'Confirmed', NULL,
+     '2026-04-20T07:00:00+07:00', '2026-04-22T18:00:00+07:00', 3, '2026-04-15T23:59:59+07:00',
+     8, 20, 18,
+     5500000, 6890000, 4200000,
+     'Hạ Long, Quảng Ninh',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-bay.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Xe đưa đón VIP", "Bữa ăn 5 sao", "Vé tham quan", "HDV song ngữ", "Bảo hiểm premium", "Spa trên tàu"]',
+     '{"Name": "Trần Thị Mai", "AvatarUrl": null, "Languages": ["vi", "en", "fr"], "Experience": "8 năm kinh nghiệm HDV quốc tế"}',
+     '{"vi": {"title": "Hạ Long Bay Premium 3N2Đ - Khởi hành 20/04", "location": "Hạ Long, Quảng Ninh", "includedServices": ["Xe đưa đón VIP", "Bữa ăn 5 sao", "Vé tham quan", "HDV song ngữ", "Bảo hiểm premium", "Spa trên tàu"], "cancellationReason": null}, "en": {"title": "Ha Long Bay Premium 3D2N - Departure Apr 20", "location": "Ha Long, Quang Ninh", "includedServices": ["VIP shuttle", "5-star meals", "Entrance tickets", "Bilingual guide", "Premium insurance", "Onboard spa"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-03: Đà Nẵng - Hội An, khởi hành 01/05/2026 (Available)
+    ('01952900-0000-7000-8000-000000000003',
+     '019527b0-0000-7000-8000-000000000002', '019527c0-0000-7000-8000-000000000003',
+     'TI-20260501-0003', 'Đà Nẵng - Hội An 4N3Đ - Lễ 30/4',
+     'Đà Nẵng - Hội An - Bà Nà 4 Ngày 3 Đêm', 'VN-DN-HA-4N3D', 'Tiêu chuẩn',
+     'Public', 'Available', NULL,
+     '2026-05-01T06:00:00+07:00', '2026-05-04T20:00:00+07:00', 4, '2026-04-25T23:59:59+07:00',
+     15, 40, 22,
+     4200000, 5490000, 3500000,
+     'Đà Nẵng - Hội An',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'da-nang-hoi-an.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Vé máy bay khứ hồi", "Khách sạn 3 sao", "Bữa ăn theo CT", "Vé Bà Nà Hills", "HDV tiếng Việt"]',
+     '{"Name": "Lê Minh Tuấn", "AvatarUrl": null, "Languages": ["vi"], "Experience": "3 năm kinh nghiệm miền Trung"}',
+     '{"vi": {"title": "Đà Nẵng - Hội An 4N3Đ - Lễ 30/4", "location": "Đà Nẵng - Hội An", "includedServices": ["Vé máy bay khứ hồi", "Khách sạn 3 sao", "Bữa ăn theo CT", "Vé Bà Nà Hills", "HDV tiếng Việt"], "cancellationReason": null}, "en": {"title": "Da Nang - Hoi An 4D3N - Apr 30 Holiday", "location": "Da Nang - Hoi An", "includedServices": ["Round-trip flights", "3-star hotel", "Meals as per itinerary", "Ba Na Hills ticket", "Vietnamese guide"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-04: Phú Quốc, khởi hành 10/05/2026 (SoldOut)
+    ('01952900-0000-7000-8000-000000000004',
+     '019527b0-0000-7000-8000-000000000003', '019527c0-0000-7000-8000-000000000005',
+     'TI-20260510-0004', 'Phú Quốc Đảo Ngọc 5N4Đ - Hè 2026',
+     'Phú Quốc Đảo Ngọc 5 Ngày 4 Đêm', 'VN-PQ-5N4D', 'Tiêu chuẩn',
+     'Public', 'SoldOut', NULL,
+     '2026-05-10T08:00:00+07:00', '2026-05-14T18:00:00+07:00', 5, '2026-05-05T23:59:59+07:00',
+     10, 25, 25,
+     5800000, 7290000, 4800000,
+     'Phú Quốc, Kiên Giang',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'phu-quoc.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Vé máy bay khứ hồi", "Resort 4 sao", "Bữa ăn theo CT", "Vé Safari", "Lặn san hô", "Bảo hiểm"]',
+     '{"Name": "Phạm Hoàng Nam", "AvatarUrl": null, "Languages": ["vi", "en"], "Experience": "6 năm HDV biển đảo"}',
+     '{"vi": {"title": "Phú Quốc Đảo Ngọc 5N4Đ - Hè 2026", "location": "Phú Quốc, Kiên Giang", "includedServices": ["Vé máy bay khứ hồi", "Resort 4 sao", "Bữa ăn theo CT", "Vé Safari", "Lặn san hô", "Bảo hiểm"], "cancellationReason": null}, "en": {"title": "Phu Quoc Pearl Island 5D4N - Summer 2026", "location": "Phu Quoc, Kien Giang", "includedServices": ["Round-trip flights", "4-star resort", "Meals as per itinerary", "Safari ticket", "Coral snorkeling", "Travel insurance"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-05: Sapa, khởi hành 20/03/2026 (InProgress)
+    ('01952900-0000-7000-8000-000000000005',
+     '019527b0-0000-7000-8000-000000000004', '019527c0-0000-7000-8000-000000000007',
+     'TI-20260320-0005', 'Sapa - Fansipan 3N2Đ - Xuân 2026',
+     'Sapa - Bản Cát Cát - Fansipan 3 Ngày 2 Đêm', 'VN-SP-3N2D', 'Tiêu chuẩn',
+     'Public', 'InProgress', NULL,
+     '2026-03-08T06:00:00+07:00', '2026-03-10T20:00:00+07:00', 3, '2026-03-05T23:59:59+07:00',
+     8, 20, 16,
+     3200000, 3990000, 2500000,
+     'Sapa, Lào Cai',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'sapa.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Xe limousine", "Khách sạn 3 sao", "Bữa ăn", "Vé cáp treo Fansipan", "HDV bản địa"]',
+     '{"Name": "Vàng A Pao", "AvatarUrl": null, "Languages": ["vi", "hmong"], "Experience": "Người bản địa, 4 năm HDV"}',
+     '{"vi": {"title": "Sapa - Fansipan 3N2Đ - Xuân 2026", "location": "Sapa, Lào Cai", "includedServices": ["Xe limousine", "Khách sạn 3 sao", "Bữa ăn", "Vé cáp treo Fansipan", "HDV bản địa"], "cancellationReason": null}, "en": {"title": "Sapa - Fansipan 3D2N - Spring 2026", "location": "Sapa, Lao Cai", "includedServices": ["Limousine bus", "3-star hotel", "Meals", "Fansipan cable car ticket", "Local guide"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-06: Sapa, khởi hành 01/02/2026 (Completed)
+    ('01952900-0000-7000-8000-000000000006',
+     '019527b0-0000-7000-8000-000000000004', '019527c0-0000-7000-8000-000000000007',
+     'TI-20260201-0006', 'Sapa - Fansipan 3N2Đ - Tết 2026',
+     'Sapa - Bản Cát Cát - Fansipan 3 Ngày 2 Đêm', 'VN-SP-3N2D', 'Tiêu chuẩn',
+     'Public', 'Completed', NULL,
+     '2026-02-01T06:00:00+07:00', '2026-02-03T20:00:00+07:00', 3, '2026-01-28T23:59:59+07:00',
+     8, 20, 20,
+     3800000, 4590000, 2800000,
+     'Sapa, Lào Cai',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'sapa.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Xe limousine", "Khách sạn 3 sao", "Bữa ăn", "Vé cáp treo Fansipan", "HDV bản địa"]',
+     '{"Name": "Vàng A Pao", "AvatarUrl": null, "Languages": ["vi", "hmong"], "Experience": "Người bản địa, 4 năm HDV"}',
+     '{"vi": {"title": "Sapa - Fansipan 3N2Đ - Tết 2026", "location": "Sapa, Lào Cai", "includedServices": ["Xe limousine", "Khách sạn 3 sao", "Bữa ăn", "Vé cáp treo Fansipan", "HDV bản địa"], "cancellationReason": null}, "en": {"title": "Sapa - Fansipan 3D2N - Tet 2026", "location": "Sapa, Lao Cai", "includedServices": ["Limousine bus", "3-star hotel", "Meals", "Fansipan cable car ticket", "Local guide"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-07: Bangkok - Pattaya, 25/04/2026 (Available)
+    ('01952900-0000-7000-8000-000000000007',
+     '019527b0-0000-7000-8000-000000000006', '019527c0-0000-7000-8000-000000000009',
+     'TI-20260425-0007', 'Bangkok - Pattaya 4D3N - April 2026',
+     'Bangkok - Pattaya 4 Days 3 Nights', 'TH-BKK-PTY-4D3N', 'Standard',
+     'Public', 'Available', NULL,
+     '2026-04-25T08:00:00+07:00', '2026-04-28T20:00:00+07:00', 4, '2026-04-20T23:59:59+07:00',
+     10, 30, 8,
+     8500000, 10990000, 7200000,
+     'Bangkok & Pattaya, Thailand',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'bangkok-pattaya.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Round-trip flights", "3-star hotel", "Meals as per itinerary", "Entrance tickets", "English guide", "Travel insurance"]',
+     '{"Name": "Somchai Prasert", "AvatarUrl": null, "Languages": ["th", "en"], "Experience": "10 years Thailand specialist"}',
+     '{"vi": {"title": "Bangkok - Pattaya 4N3Đ - Tháng 4/2026", "location": "Bangkok & Pattaya, Thái Lan", "includedServices": ["Vé máy bay khứ hồi", "Khách sạn 3 sao", "Bữa ăn theo CT", "Vé tham quan", "HDV tiếng Anh", "Bảo hiểm du lịch"], "cancellationReason": null}, "en": {"title": "Bangkok - Pattaya 4D3N - April 2026", "location": "Bangkok & Pattaya, Thailand", "includedServices": ["Round-trip flights", "3-star hotel", "Meals as per itinerary", "Entrance tickets", "English guide", "Travel insurance"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-08: Tokyo - Osaka, 01/04/2026 (Confirmed - cherry blossom season)
+    ('01952900-0000-7000-8000-000000000008',
+     '019527b0-0000-7000-8000-000000000007', '019527c0-0000-7000-8000-00000000000b',
+     'TI-20260401-0008', 'Tokyo - Osaka Sakura 5D4N - April 2026',
+     'Tokyo - Osaka Cherry Blossom 5 Days 4 Nights', 'JP-TKO-OSK-5D4N', 'Standard',
+     'Public', 'Confirmed', NULL,
+     '2026-04-01T09:00:00+07:00', '2026-04-05T18:00:00+07:00', 5, '2026-03-25T23:59:59+07:00',
+     10, 25, 22,
+     18500000, 22990000, 15000000,
+     'Tokyo & Osaka, Japan',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'tokyo-osaka.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Round-trip flights", "4-star hotels", "Shinkansen ticket", "Mt Fuji day trip", "Entrance fees", "Bilingual guide"]',
+     '{"Name": "Tanaka Yuki", "AvatarUrl": null, "Languages": ["ja", "en"], "Experience": "12 years Japan tourism expert"}',
+     '{"vi": {"title": "Tokyo - Osaka Hoa Anh Đào 5N4Đ - Tháng 4/2026", "location": "Tokyo & Osaka, Nhật Bản", "includedServices": ["Vé máy bay khứ hồi", "Khách sạn 4 sao", "Vé Shinkansen", "Tour Mt Fuji", "Vé tham quan", "HDV song ngữ"], "cancellationReason": null}, "en": {"title": "Tokyo - Osaka Sakura 5D4N - April 2026", "location": "Tokyo & Osaka, Japan", "includedServices": ["Round-trip flights", "4-star hotels", "Shinkansen ticket", "Mt Fuji day trip", "Entrance fees", "Bilingual guide"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-09: Seoul - Jeju, 15/05/2026 (Available, Private tour)
+    ('01952900-0000-7000-8000-000000000009',
+     '019527b0-0000-7000-8000-000000000008', '019527c0-0000-7000-8000-00000000000d',
+     'TI-20260515-0009', 'Seoul - Jeju Private 4D3N - May 2026',
+     'Seoul - Jeju Island 4 Days 3 Nights', 'KR-SEL-JEJ-4D3N', 'Standard',
+     'Private', 'Available', NULL,
+     '2026-05-15T08:00:00+07:00', '2026-05-18T18:00:00+07:00', 4, '2026-05-10T23:59:59+07:00',
+     2, 8, 4,
+     15000000, 18990000, 12000000,
+     'Seoul & Jeju, South Korea',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'seoul-jeju.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Round-trip flights", "4-star hotels", "Domestic flight Seoul-Jeju", "Private van", "All entrance fees", "English guide"]',
+     '{"Name": "Kim Soo-jin", "AvatarUrl": null, "Languages": ["ko", "en"], "Experience": "7 years Korea inbound tourism"}',
+     '{"vi": {"title": "Seoul - Jeju Riêng tư 4N3Đ - Tháng 5/2026", "location": "Seoul & Jeju, Hàn Quốc", "includedServices": ["Vé máy bay khứ hồi", "Khách sạn 4 sao", "Bay nội địa Seoul-Jeju", "Xe riêng", "Vé tham quan", "HDV tiếng Anh"], "cancellationReason": null}, "en": {"title": "Seoul - Jeju Private 4D3N - May 2026", "location": "Seoul & Jeju, South Korea", "includedServices": ["Round-trip flights", "4-star hotels", "Domestic flight Seoul-Jeju", "Private van", "All entrance fees", "English guide"], "cancellationReason": null}}',
+     FALSE, 'system', NOW(), 'system', NOW()),
+
+    -- TI-10: Đà Nẵng, 15/01/2026 (Cancelled)
+    ('01952900-0000-7000-8000-00000000000a',
+     '019527b0-0000-7000-8000-000000000002', '019527c0-0000-7000-8000-000000000003',
+     'TI-20260115-0010', 'Đà Nẵng - Hội An 4N3Đ - Đầu năm 2026',
+     'Đà Nẵng - Hội An - Bà Nà 4 Ngày 3 Đêm', 'VN-DN-HA-4N3D', 'Tiêu chuẩn',
+     'Public', 'Cancelled', 'Không đủ số lượng khách tối thiểu để khởi hành.',
+     '2026-01-15T06:00:00+07:00', '2026-01-18T20:00:00+07:00', 4, '2026-01-10T23:59:59+07:00',
+     15, 40, 5,
+     4200000, 5490000, 3500000,
+     'Đà Nẵng - Hội An',
+     '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'da-nang-hoi-an.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg',
+     '["Vé máy bay khứ hồi", "Khách sạn 3 sao", "Bữa ăn theo CT", "Vé Bà Nà Hills"]',
+     NULL,
+     '{"vi": {"title": "Đà Nẵng - Hội An 4N3Đ - Đầu năm 2026", "location": "Đà Nẵng - Hội An", "includedServices": ["Vé máy bay khứ hồi", "Khách sạn 3 sao", "Bữa ăn theo CT", "Vé Bà Nà Hills"], "cancellationReason": "Không đủ số lượng khách tối thiểu để khởi hành."}, "en": {"title": "Da Nang - Hoi An 4D3N - Early 2026", "location": "Da Nang - Hoi An", "includedServices": ["Round-trip flights", "3-star hotel", "Meals as per itinerary", "Ba Na Hills ticket"], "cancellationReason": "Insufficient minimum number of participants to depart."}}',
+     FALSE, 'system', NOW(), 'system', NOW())
+ON CONFLICT DO NOTHING;
+
+-- ============================================================
+-- 13. TourInstanceImages  (2 images per instance = 20 rows)
+-- ============================================================
+INSERT INTO "TourInstanceImages" ("TourInstanceId", "FileId", "OriginalFileName", "FileName", "PublicURL")
+VALUES
+    ('01952900-0000-7000-8000-000000000001', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-instance-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000001', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-instance-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000002', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-premium-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000002', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'ha-long-premium-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000003', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'danang-instance-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000003', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'danang-instance-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000004', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'phuquoc-instance-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000004', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'phuquoc-instance-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000005', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'sapa-spring-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000005', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'sapa-spring-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000007', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'bangkok-instance-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000007', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'bangkok-instance-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000008', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'tokyo-sakura-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000008', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'tokyo-sakura-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000009', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'seoul-jeju-1.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg'),
+    ('01952900-0000-7000-8000-000000000009', '9c4bbb62-fe53-4c58-b32c-1712db0f5882', 'seoul-jeju-2.jpg', '9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg', 'http://localhost:9000/panthora/9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg');
+
+-- ============================================================
+-- 14. TourInstancePricingTiers  (dynamic pricing for select instances)
+-- ============================================================
+INSERT INTO "TourInstancePricingTiers" (
+    "Id", "TourInstanceId", "MinParticipants", "MaxParticipants", "PricePerPerson",
+    "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc"
+)
+VALUES
+    -- TI-01: Hạ Long tiêu chuẩn (giảm giá theo nhóm)
+    ('01952910-0000-7000-8000-000000000001', '01952900-0000-7000-8000-000000000001', 10, 15, 4290000, 'system', NOW(), 'system', NOW()),
+    ('01952910-0000-7000-8000-000000000002', '01952900-0000-7000-8000-000000000001', 16, 25, 3990000, 'system', NOW(), 'system', NOW()),
+    ('01952910-0000-7000-8000-000000000003', '01952900-0000-7000-8000-000000000001', 26, 30, 3690000, 'system', NOW(), 'system', NOW()),
+    -- TI-03: Đà Nẵng Hội An
+    ('01952910-0000-7000-8000-000000000004', '01952900-0000-7000-8000-000000000003', 15, 25, 5490000, 'system', NOW(), 'system', NOW()),
+    ('01952910-0000-7000-8000-000000000005', '01952900-0000-7000-8000-000000000003', 26, 35, 4990000, 'system', NOW(), 'system', NOW()),
+    ('01952910-0000-7000-8000-000000000006', '01952900-0000-7000-8000-000000000003', 36, 40, 4590000, 'system', NOW(), 'system', NOW()),
+    -- TI-07: Bangkok - Pattaya
+    ('01952910-0000-7000-8000-000000000007', '01952900-0000-7000-8000-000000000007', 10, 20, 10990000, 'system', NOW(), 'system', NOW()),
+    ('01952910-0000-7000-8000-000000000008', '01952900-0000-7000-8000-000000000007', 21, 30, 9990000, 'system', NOW(), 'system', NOW()),
+    -- TI-08: Tokyo - Osaka
+    ('01952910-0000-7000-8000-000000000009', '01952900-0000-7000-8000-000000000008', 10, 15, 22990000, 'system', NOW(), 'system', NOW()),
+    ('01952910-0000-7000-8000-00000000000a', '01952900-0000-7000-8000-000000000008', 16, 25, 20990000, 'system', NOW(), 'system', NOW())
+ON CONFLICT DO NOTHING;
+
+-- ============================================================
+-- 15. Reviews  (15 reviews, bilingual VN + EN)
 --     Uses existing User IDs from the account tables
 -- ============================================================
 INSERT INTO "Reviews" ("Id", "UserId", "TourId", "Rating", "Comment", "IsApproved", "CreatedBy", "CreatedOnUtc", "LastModifiedBy", "LastModifiedOnUtc")

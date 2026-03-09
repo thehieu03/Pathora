@@ -48,3 +48,11 @@ public sealed class TourPlanRouteTranslationData
     public string? TransportationNote { get; set; }
     public string? Note { get; set; }
 }
+
+public sealed class TourInstanceTranslationData
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Location { get; set; }
+    public List<string> IncludedServices { get; set; } = [];
+    public string? CancellationReason { get; set; }
+}

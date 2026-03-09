@@ -1,72 +1,106 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
 using Domain.ValueObjects;
 
 public class TourInstanceEntity : Aggregate<Guid>
 {
+    // Foreign keys
     public Guid TourId { get; set; }
     public virtual TourEntity Tour { get; set; } = null!;
     public Guid ClassificationId { get; set; }
     public virtual TourClassificationEntity Classification { get; set; } = null!;
 
+    // Instance identity
+    public string TourInstanceCode { get; set; } = null!;
+    public string Title { get; set; } = null!;
+
+    // Denormalized from Tour
     public string TourName { get; set; } = null!;
     public string TourCode { get; set; } = null!;
     public string ClassificationName { get; set; } = null!;
-    public string? Location { get; set; }
-    public ImageEntity Thumbnail { get; set; } = null!;
 
+    // Status & Type
     public TourType InstanceType { get; set; } = TourType.Public;
     public TourInstanceStatus Status { get; set; } = TourInstanceStatus.Available;
+    public string? CancellationReason { get; set; }
 
+    // Schedule
     public DateTimeOffset StartDate { get; set; }
     public DateTimeOffset EndDate { get; set; }
     public int DurationDays { get; set; }
-
-    public int MinParticipants { get; set; }
-    public int MaxParticipants { get; set; }
-    public int RegisteredParticipants { get; set; }
-
-    public decimal Price { get; set; }
-    public decimal SalePrice { get; set; }
-    public string? Category { get; set; }
     public DateTimeOffset? ConfirmationDeadline { get; set; }
 
+    // Participants
+    public int MinParticipation { get; set; }
+    public int MaxParticipation { get; set; }
+    public int CurrentParticipation { get; set; }
+
+    // Pricing
+    public decimal BasePrice { get; set; }
+    public decimal SellingPrice { get; set; }
+    public decimal OperatingCost { get; set; }
+
+    // Media & Location
+    public string? Location { get; set; }
+    public ImageEntity Thumbnail { get; set; } = null!;
+    public List<ImageEntity> Images { get; set; } = [];
+
+    // Services & Guide
     public List<string> IncludedServices { get; set; } = [];
     public TourInstanceGuide? Guide { get; set; }
     public virtual List<DynamicPricingTierEntity> DynamicPricingTiers { get; set; } = [];
 
+    // Soft delete
     public bool IsDeleted { get; set; }
+
+    // Translations (vi/en)
+    public Dictionary<string, TourInstanceTranslationData> Translations { get; set; } = [];
+
+    public static string GenerateInstanceCode() {
+        var timestamp = DateTimeOffset.UtcNow.ToString("yyyyMMddHHmmss");
+        var random = Random.Shared.Next(1000, 9999);
+        return $"TI-{timestamp}-{random}";
+    }
+
+    private static int CalculateDurationDays(DateTimeOffset startDate, DateTimeOffset endDate) {
+        return (endDate.Date - startDate.Date).Days + 1;
+    }
 
     public static TourInstanceEntity Create(
         Guid tourId,
         Guid classificationId,
+        string title,
         string tourName,
         string tourCode,
         string classificationName,
         TourType instanceType,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
-        int durationDays,
-        int minParticipants,
-        int maxParticipants,
-        decimal price,
-        decimal salePrice,
+        int minParticipation,
+        int maxParticipation,
+        decimal basePrice,
+        decimal sellingPrice,
+        decimal operatingCost,
         string performedBy,
         string? location = null,
         ImageEntity? thumbnail = null,
-        string? category = null,
+        List<ImageEntity>? images = null,
         DateTimeOffset? confirmationDeadline = null,
         List<string>? includedServices = null,
         TourInstanceGuide? guide = null)
     {
         EnsureValidDateRange(startDate, endDate);
-        EnsureValidParticipants(minParticipants, maxParticipants);
+        EnsureValidParticipants(minParticipation, maxParticipation);
+        EnsureValidPricing(basePrice, sellingPrice, operatingCost);
 
         return new TourInstanceEntity
         {
             Id = Guid.CreateVersion7(),
             TourId = tourId,
             ClassificationId = classificationId,
+            TourInstanceCode = GenerateInstanceCode(),
+            Title = title,
             TourName = tourName,
             TourCode = tourCode,
             ClassificationName = classificationName,
@@ -74,15 +108,16 @@ public class TourInstanceEntity : Aggregate<Guid>
             Status = TourInstanceStatus.Available,
             StartDate = startDate,
             EndDate = endDate,
-            DurationDays = durationDays,
-            MinParticipants = minParticipants,
-            MaxParticipants = maxParticipants,
-            RegisteredParticipants = 0,
-            Price = price,
-            SalePrice = salePrice,
+            DurationDays = CalculateDurationDays(startDate, endDate),
+            MinParticipation = minParticipation,
+            MaxParticipation = maxParticipation,
+            CurrentParticipation = 0,
+            BasePrice = basePrice,
+            SellingPrice = sellingPrice,
+            OperatingCost = operatingCost,
             Location = location,
             Thumbnail = thumbnail ?? new ImageEntity(),
-            Category = category,
+            Images = images ?? [],
             ConfirmationDeadline = confirmationDeadline,
             IncludedServices = includedServices ?? [],
             Guide = guide,
@@ -95,31 +130,50 @@ public class TourInstanceEntity : Aggregate<Guid>
     }
 
     public void Update(
+        string title,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
-        int minParticipants,
-        int maxParticipants,
-        decimal price,
-        decimal salePrice,
+        int minParticipation,
+        int maxParticipation,
+        decimal basePrice,
+        decimal sellingPrice,
+        decimal operatingCost,
         string performedBy,
         string? location = null,
-        string? category = null,
+        ImageEntity? thumbnail = null,
+        List<ImageEntity>? images = null,
         DateTimeOffset? confirmationDeadline = null,
         List<string>? includedServices = null,
         TourInstanceGuide? guide = null)
     {
         EnsureValidDateRange(startDate, endDate);
-        EnsureValidParticipants(minParticipants, maxParticipants);
+        EnsureValidParticipants(minParticipation, maxParticipation);
+        EnsureValidPricing(basePrice, sellingPrice, operatingCost);
 
+        Title = title;
         StartDate = startDate;
         EndDate = endDate;
-        MinParticipants = minParticipants;
-        MaxParticipants = maxParticipants;
-        Price = price;
-        SalePrice = salePrice;
+        DurationDays = CalculateDurationDays(startDate, endDate);
+        MinParticipation = minParticipation;
+        MaxParticipation = maxParticipation;
+        BasePrice = basePrice;
+        SellingPrice = sellingPrice;
+        OperatingCost = operatingCost;
         Location = location;
-        Category = category;
         ConfirmationDeadline = confirmationDeadline;
+        if (thumbnail is not null)
+        {
+            Thumbnail ??= new ImageEntity();
+            Thumbnail.FileId = thumbnail.FileId;
+            Thumbnail.OriginalFileName = thumbnail.OriginalFileName;
+            Thumbnail.FileName = thumbnail.FileName;
+            Thumbnail.PublicURL = thumbnail.PublicURL;
+        }
+        if (images is not null)
+        {
+            Images.Clear();
+            Images.AddRange(images);
+        }
         if (includedServices is not null)
             IncludedServices = includedServices;
         Guide = guide;
@@ -127,10 +181,40 @@ public class TourInstanceEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 
-    public void ChangeStatus(TourInstanceStatus newStatus)
+    public void AddParticipant(int count = 1)
+    {
+        if (count <= 0)
+            throw new ArgumentOutOfRangeException(nameof(count), "Số người thêm phải lớn hơn 0.");
+        if (CurrentParticipation + count > MaxParticipation)
+            throw new InvalidOperationException($"Không thể thêm {count} người. Đã đạt giới hạn tối đa {MaxParticipation} người.");
+        CurrentParticipation += count;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void RemoveParticipant(int count = 1)
+    {
+        if (count <= 0)
+            throw new ArgumentOutOfRangeException(nameof(count), "Số người giảm phải lớn hơn 0.");
+        if (CurrentParticipation - count < 0)
+            throw new InvalidOperationException("Số người tham gia không thể âm.");
+        CurrentParticipation -= count;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void Cancel(string reason, string performedBy)
+    {
+        EnsureValidTransition(Status, TourInstanceStatus.Cancelled);
+        Status = TourInstanceStatus.Cancelled;
+        CancellationReason = reason;
+        LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void ChangeStatus(TourInstanceStatus newStatus, string performedBy)
     {
         EnsureValidTransition(Status, newStatus);
         Status = newStatus;
+        LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 
@@ -147,14 +231,24 @@ public class TourInstanceEntity : Aggregate<Guid>
             throw new ArgumentException("Ngày bắt đầu phải trước ngày kết thúc.");
     }
 
-    private static void EnsureValidParticipants(int minParticipants, int maxParticipants)
+    private static void EnsureValidParticipants(int minParticipation, int maxParticipation)
     {
-        if (minParticipants < 0)
-            throw new ArgumentOutOfRangeException(nameof(minParticipants), "Số người tối thiểu không được âm.");
-        if (maxParticipants <= 0)
-            throw new ArgumentOutOfRangeException(nameof(maxParticipants), "Số người tối đa phải lớn hơn 0.");
-        if (minParticipants > maxParticipants)
-            throw new ArgumentOutOfRangeException(nameof(minParticipants), "Số người tối thiểu phải nhỏ hơn hoặc bằng số người tối đa.");
+        if (minParticipation < 0)
+            throw new ArgumentOutOfRangeException(nameof(minParticipation), "Số người tối thiểu không được âm.");
+        if (maxParticipation <= 0)
+            throw new ArgumentOutOfRangeException(nameof(maxParticipation), "Số người tối đa phải lớn hơn 0.");
+        if (minParticipation > maxParticipation)
+            throw new ArgumentOutOfRangeException(nameof(minParticipation), "Số người tối thiểu phải nhỏ hơn hoặc bằng số người tối đa.");
+    }
+
+    private static void EnsureValidPricing(decimal basePrice, decimal sellingPrice, decimal operatingCost)
+    {
+        if (basePrice < 0)
+            throw new ArgumentOutOfRangeException(nameof(basePrice), "Giá cơ bản không được âm.");
+        if (sellingPrice < 0)
+            throw new ArgumentOutOfRangeException(nameof(sellingPrice), "Giá bán không được âm.");
+        if (operatingCost < 0)
+            throw new ArgumentOutOfRangeException(nameof(operatingCost), "Chi phí vận hành không được âm.");
     }
 
     private static void EnsureValidTransition(TourInstanceStatus current, TourInstanceStatus next)

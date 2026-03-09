@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260308210212_AddTourDayTranslationsAndActivities")]
+    partial class AddTourDayTranslationsAndActivities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -768,11 +771,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("CustomerSegment")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -816,11 +814,6 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
-                    b.Property<string>("TourScope")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<string>("Translations")
                         .IsRequired()
                         .HasColumnType("jsonb");
@@ -846,12 +839,9 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("BasePrice")
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<string>("CancellationReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
+                    b.Property<string>("Category")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid>("ClassificationId")
                         .HasColumnType("uuid");
@@ -869,11 +859,6 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CurrentParticipation")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
 
                     b.Property<int>("DurationDays")
                         .HasColumnType("integer");
@@ -905,16 +890,21 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<int>("MaxParticipation")
+                    b.Property<int>("MaxParticipants")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MinParticipation")
+                    b.Property<int>("MinParticipants")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("OperatingCost")
+                    b.Property<decimal>("Price")
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<decimal>("SellingPrice")
+                    b.Property<int>("RegisteredParticipants")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<decimal>("SalePrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTimeOffset>("StartDate")
@@ -925,11 +915,6 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<string>("TourCode")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -938,19 +923,10 @@ namespace Infrastructure.Data.Migrations
                     b.Property<Guid>("TourId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("TourInstanceCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<string>("TourName")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
-
-                    b.Property<string>("Translations")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
 
                     b.HasKey("Id");
 
@@ -962,9 +938,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("StartDate");
 
                     b.HasIndex("TourId");
-
-                    b.HasIndex("TourInstanceCode")
-                        .IsUnique();
 
                     b.HasIndex("Status", "InstanceType");
 
@@ -1703,48 +1676,9 @@ namespace Infrastructure.Data.Migrations
                                 .HasForeignKey("TourInstanceEntityId");
                         });
 
-                    b.OwnsMany("Domain.Entities.ImageEntity", "Images", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("FileId")
-                                .HasMaxLength(200)
-                                .HasColumnType("character varying(200)");
-
-                            b1.Property<string>("FileName")
-                                .HasMaxLength(500)
-                                .HasColumnType("character varying(500)");
-
-                            b1.Property<string>("OriginalFileName")
-                                .HasMaxLength(500)
-                                .HasColumnType("character varying(500)");
-
-                            b1.Property<string>("PublicURL")
-                                .HasMaxLength(1000)
-                                .HasColumnType("character varying(1000)");
-
-                            b1.Property<Guid>("TourInstanceId")
-                                .HasColumnType("uuid");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("TourInstanceId");
-
-                            b1.ToTable("TourInstanceImages", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("TourInstanceId");
-                        });
-
                     b.Navigation("Classification");
 
                     b.Navigation("Guide");
-
-                    b.Navigation("Images");
 
                     b.Navigation("Thumbnail")
                         .IsRequired();

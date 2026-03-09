@@ -44,6 +44,16 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(t => t.TourScope)
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.Property(t => t.CustomerSegment)
+            .HasConversion<string>()
+            .HasMaxLength(50)
+            .IsRequired();
+
         builder.Property(t => t.IsDeleted)
             .HasDefaultValue(false);
 

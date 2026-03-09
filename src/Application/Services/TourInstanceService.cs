@@ -61,21 +61,22 @@ public class TourInstanceService(
         var entity = TourInstanceEntity.Create(
             tourId: request.TourId,
             classificationId: request.ClassificationId,
+            title: request.Title,
             tourName: tour.TourName,
             tourCode: tour.TourCode,
             classificationName: classification.Name,
             instanceType: request.InstanceType,
             startDate: request.StartDate,
             endDate: request.EndDate,
-            durationDays: classification.DurationDays,
-            minParticipants: request.MinParticipants,
-            maxParticipants: request.MaxParticipants,
-            price: request.Price ?? classification.Price,
-            salePrice: request.SalePrice ?? classification.SalePrice,
+            minParticipation: request.MinParticipation,
+            maxParticipation: request.MaxParticipation,
+            basePrice: request.BasePrice,
+            sellingPrice: request.SellingPrice,
+            operatingCost: request.OperatingCost,
             performedBy: performedBy,
             location: request.Location,
             thumbnail: tour.Thumbnail,
-            category: request.Category,
+            images: tour.Images,
             confirmationDeadline: request.ConfirmationDeadline,
             includedServices: request.IncludedServices,
             guide: guide);
@@ -112,15 +113,16 @@ public class TourInstanceService(
             : null;
 
         entity.Update(
+            title: request.Title,
             startDate: request.StartDate,
             endDate: request.EndDate,
-            minParticipants: request.MinParticipants,
-            maxParticipants: request.MaxParticipants,
-            price: request.Price,
-            salePrice: request.SalePrice,
+            minParticipation: request.MinParticipation,
+            maxParticipation: request.MaxParticipation,
+            basePrice: request.BasePrice,
+            sellingPrice: request.SellingPrice,
+            operatingCost: request.OperatingCost,
             performedBy: performedBy,
             location: request.Location,
-            category: request.Category,
             confirmationDeadline: request.ConfirmationDeadline,
             includedServices: request.IncludedServices,
             guide: guide);
@@ -155,7 +157,8 @@ public class TourInstanceService(
         if (entity is null)
             return Error.NotFound("TourInstance.NotFound", "Lịch trình tour không tồn tại");
 
-        entity.ChangeStatus(newStatus);
+        var performedBy = _user.Id ?? string.Empty;
+        entity.ChangeStatus(newStatus, performedBy);
         await _tourInstanceRepository.Update(entity);
         return Result.Success;
     }

@@ -112,7 +112,7 @@ public static class TranslationResolutionExtensions
     {
         var translated = entity.ResolveTranslation(language);
         entity.Title = translated.Title;
-        entity.Description = translated.Description;
+        entity.Description = translated.Description ?? entity.Description;
 
         foreach (var activity in entity.Activities)
         {
@@ -167,6 +167,27 @@ public static class TranslationResolutionExtensions
         {
             entity.ToLocation.ApplyResolvedTranslation(language);
         }
+    }
+
+    public static TourInstanceTranslationData ResolveTranslation(this TourInstanceEntity entity, string? language)
+    {
+        var (requested, fallback) = ResolveCandidates(entity.Translations, language);
+        return new TourInstanceTranslationData
+        {
+            Title = requested?.Title ?? fallback?.Title ?? entity.Title,
+            Location = requested?.Location ?? fallback?.Location ?? entity.Location,
+            IncludedServices = requested?.IncludedServices ?? fallback?.IncludedServices ?? entity.IncludedServices,
+            CancellationReason = requested?.CancellationReason ?? fallback?.CancellationReason ?? entity.CancellationReason
+        };
+    }
+
+    public static void ApplyResolvedTranslation(this TourInstanceEntity entity, string? language)
+    {
+        var translated = entity.ResolveTranslation(language);
+        entity.Title = translated.Title;
+        entity.Location = translated.Location;
+        entity.IncludedServices = translated.IncludedServices;
+        entity.CancellationReason = translated.CancellationReason;
     }
 
     private static (TTranslation? Requested, TTranslation? Fallback) ResolveCandidates<TTranslation>(

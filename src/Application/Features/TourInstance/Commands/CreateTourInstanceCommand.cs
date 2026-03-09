@@ -13,15 +13,16 @@ namespace Application.Features.TourInstance.Commands;
 public sealed record CreateTourInstanceCommand(
     Guid TourId,
     Guid ClassificationId,
+    string Title,
     TourType InstanceType,
     DateTimeOffset StartDate,
     DateTimeOffset EndDate,
-    int MinParticipants,
-    int MaxParticipants,
-    decimal? Price = null,
-    decimal? SalePrice = null,
+    int MinParticipation,
+    int MaxParticipation,
+    decimal BasePrice,
+    decimal SellingPrice,
+    decimal OperatingCost,
     string? Location = null,
-    string? Category = null,
     DateTimeOffset? ConfirmationDeadline = null,
     List<string>? IncludedServices = null,
     TourInstanceGuideDto? Guide = null,
@@ -40,6 +41,9 @@ public sealed class CreateTourInstanceCommandValidator : AbstractValidator<Creat
         RuleFor(x => x.ClassificationId)
             .NotEmpty().WithMessage(ValidationMessages.TourInstanceClassificationIdRequired);
 
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage("Tiêu đề là bắt buộc.");
+
         RuleFor(x => x.StartDate)
             .NotEmpty().WithMessage(ValidationMessages.TourInstanceStartDateRequired);
 
@@ -47,11 +51,20 @@ public sealed class CreateTourInstanceCommandValidator : AbstractValidator<Creat
             .NotEmpty().WithMessage(ValidationMessages.TourInstanceEndDateRequired)
             .GreaterThan(x => x.StartDate).WithMessage(ValidationMessages.TourInstanceEndDateAfterStart);
 
-        RuleFor(x => x.MaxParticipants)
+        RuleFor(x => x.MaxParticipation)
             .GreaterThan(0).WithMessage(ValidationMessages.TourInstanceMaxParticipantsGreaterThanZero);
 
-        RuleFor(x => x.MinParticipants)
+        RuleFor(x => x.MinParticipation)
             .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceMinParticipantsNonNegative);
+
+        RuleFor(x => x.BasePrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Giá cơ bản không được âm.");
+
+        RuleFor(x => x.SellingPrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Giá bán không được âm.");
+
+        RuleFor(x => x.OperatingCost)
+            .GreaterThanOrEqualTo(0).WithMessage("Chi phí vận hành không được âm.");
     }
 }
 

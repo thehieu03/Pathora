@@ -31,7 +31,6 @@ public static class DependencyInjection
                     npgsqlOptions.CommandTimeout(120);
                     npgsqlOptions.EnableRetryOnFailure(3);
                 });
-                // hoặc MySQL, PostgreSQL...
             })
             .AddIdentityServices(configuration)
             .AddMailService(configuration)

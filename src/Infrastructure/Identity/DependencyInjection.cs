@@ -46,13 +46,19 @@ internal static class DependencyInjection
 
         authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
+                var jwtSecret = configuration["Jwt:Secret"];
+                if (string.IsNullOrWhiteSpace(jwtSecret))
+                {
+                    throw new InvalidOperationException(
+                        "Missing configuration value 'Jwt:Secret'. Set it in appsettings or environment variables.");
+                }
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"] ??
-                        throw new InvalidOperationException("Invalid Jwt secret"))),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
                     ValidIssuers = configuration["Jwt:Issuer"]?.Split(","),
                     ValidAudiences = configuration["Jwt:Audience"]?.Split(","),
 

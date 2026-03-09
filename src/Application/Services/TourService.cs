@@ -48,10 +48,10 @@ public class TourService(
             request.LongDescription,
             _user.Id ?? string.Empty,
             request.Status,
-            request.SEOTitle,
-            request.SEODescription,
-            thumbnail,
-            images);
+            seoTitle: request.SEOTitle,
+            seoDescription: request.SEODescription,
+            thumbnail: thumbnail,
+            images: images);
         tour.Translations = NormalizeTranslations(request.Translations);
 
         await _tourRepository.Create(tour);
@@ -77,10 +77,10 @@ public class TourService(
             request.LongDescription,
             request.Status,
             _user.Id ?? string.Empty,
-            request.SEOTitle,
-            request.SEODescription,
-            thumbnail,
-            images);
+            seoTitle: request.SEOTitle,
+            seoDescription: request.SEODescription,
+            thumbnail: thumbnail,
+            images: images);
         MergeTranslations(tour, request.Translations);
 
         await _tourRepository.Update(tour);

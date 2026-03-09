@@ -4,20 +4,19 @@ using Domain.Entities.Translations;
 
 public class TourDayEntity : Aggregate<Guid>
 {
-    public Guid TourClassificationId { get; set; }
+    public Guid ClassificationId { get; set; }
     public virtual TourClassificationEntity Classification { get; set; } = null!;
     public int DayNumber { get; set; }
     public string Title { get; set; } = null!;
-    public string? Description { get; set; } = null!;
+    public string? Description { get; set; }
     public Dictionary<string, TourDayTranslationData> Translations { get; set; } = [];
     public virtual List<TourDayActivityEntity> Activities { get; set; } = [];
 
-    public static TourDayEntity Create(Guid classificationId, int dayNumber, string title, string performedBy, string? description = null)
-    {
+    public static TourDayEntity Create(Guid classificationId, int dayNumber, string title, string performedBy, string? description = null) {
         return new TourDayEntity
         {
             Id = Guid.CreateVersion7(),
-            TourClassificationId = classificationId,
+            ClassificationId = classificationId,
             DayNumber = dayNumber,
             Title = title,
             Description = description,
@@ -28,8 +27,7 @@ public class TourDayEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(int dayNumber, string title, string performedBy, string? description = null)
-    {
+    public void Update(int dayNumber, string title, string performedBy, string? description = null) {
         DayNumber = dayNumber;
         Title = title;
         Description = description;
