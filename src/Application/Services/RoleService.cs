@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Application.Common.Constant;
 using Domain.Common.Repositories;
 using Application.Contracts.Role;
 using Domain.Constant;
@@ -45,7 +46,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
         var roleResult = await _roleRepository.FindById(request.RoleId);
         if (roleResult.IsError) return roleResult.Errors;
         if (roleResult.Value is null)
-            return Error.NotFound("Role.NotFound", "Role không tồn tại");
+            return Error.NotFound(ErrorConstants.Role.NotFoundCode, ErrorConstants.Role.NotFoundDescription);
 
         var role = roleResult.Value;
         role.Update(request.Name, request.Description, request.Type, request.Status, _user.Id ?? string.Empty);
@@ -62,7 +63,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
         var roleResult = await _roleRepository.FindById(request.RoleId);
         if (roleResult.IsError) return roleResult.Errors;
         if (roleResult.Value is null)
-            return Error.NotFound("Role.NotFound", "Role không tồn tại");
+            return Error.NotFound(ErrorConstants.Role.NotFoundCode, ErrorConstants.Role.NotFoundDescription);
 
         var role = roleResult.Value;
         role.SoftDelete(_user.Id ?? string.Empty);
@@ -99,7 +100,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
         var roleResult = await _roleRepository.FindById(request.RoleId);
         if (roleResult.IsError) return roleResult.Errors;
         if (roleResult.Value is null)
-            return Error.NotFound("Role.NotFound", "Role không tồn tại");
+            return Error.NotFound(ErrorConstants.Role.NotFoundCode, ErrorConstants.Role.NotFoundDescription);
 
         var role = roleResult.Value;
         return new RoleDetailVm(role.Id, role.Name, role.Description, role.Type, role.Status, []);

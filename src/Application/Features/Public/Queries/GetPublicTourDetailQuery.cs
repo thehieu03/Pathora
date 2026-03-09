@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.Common.Constant;
 using Contracts.Interfaces;
 using AutoMapper;
 using Domain.Common.Repositories;
@@ -21,7 +22,7 @@ public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourReposito
         var tour = await tourRepository.FindById(request.Id, asNoTracking: true);
 
         if (tour is null || tour.IsDeleted || tour.Status != TourStatus.Active)
-            return Error.NotFound("Tour.NotFound", "Tour không tìm thấy");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.PublicNotFoundDescription);
 
         tour.ApplyResolvedTranslations(_languageContext.CurrentLanguage);
         return mapper.Map<TourDto>(tour);
@@ -32,4 +33,3 @@ public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourReposito
         public string CurrentLanguage { get; set; } = ILanguageContext.DefaultLanguage;
     }
 }
-

@@ -1,4 +1,5 @@
 using Application.Common.Interfaces;
+using Application.Common.Constant;
 using Contracts.Interfaces;
 using Application.Contracts.Identity;
 using Domain.Common.Repositories;
@@ -45,7 +46,7 @@ public class IdentityService(
     {
         var isUnique = await _userRepository.IsEmailUnique(request.Email);
         if (!isUnique)
-            return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+            return Error.Conflict(ErrorConstants.User.DuplicateEmailCode, ErrorConstants.User.DuplicateEmailDescription);
 
         var hashedPassword = _passwordHasher.HashPassword(request.Password);
         var userEntity = UserEntity.Create(request.Username, request.FullName, request.Email, hashedPassword, request.Email);
@@ -58,11 +59,11 @@ public class IdentityService(
     {
         var userEntity = await _userRepository.FindByEmail(request.Email);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Email hoặc mật khẩu không đúng");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundForInvalidCredentialsDescription);
 
         var isPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.Password);
         if (!isPasswordValid)
-            return Error.Validation("User.InvalidPassword", "Email hoặc mật khẩu không đúng");
+            return Error.Validation(ErrorConstants.User.InvalidPasswordCode, ErrorConstants.User.InvalidPasswordForInvalidCredentialsDescription);
 
         var tokenResult = await _tokenManager.GenerateToken(userEntity);
         if (tokenResult.IsError)
@@ -120,7 +121,7 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         return await _tokenManager.RevokeToken(userId, request.RefreshToken);
     }
@@ -129,15 +130,15 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var uid))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         var userEntity = await _userRepository.FindById(uid);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         var isOldPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.OldPassword);
         if (!isOldPasswordValid)
-            return Error.Validation("User.InvalidPassword", "Mật khẩu cũ không đúng");
+            return Error.Validation(ErrorConstants.User.InvalidPasswordCode, ErrorConstants.User.InvalidPasswordDescription);
 
         userEntity.ChangePassword(_passwordHasher.HashPassword(request.NewPassword), _user.Id ?? string.Empty);
         await _userRepository.Update(userEntity);
@@ -159,11 +160,11 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var uid))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         var userEntity = await _userRepository.FindById(uid);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         var rolesResult = await _roleRepository.FindByUserId(userId);
         var roles = rolesResult.IsError
@@ -190,7 +191,7 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         return new List<TabVm>();
     }

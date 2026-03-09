@@ -28,6 +28,9 @@ public static class ValidationMessages
     public const string UsernameRequired = "Username is required.";
     public const string UserIdRequired = "User ID is required.";
     public const string AvatarTooLong = "Avatar URL is too long.";
+    public const string ProviderKeyRequired = "ProviderKey không được để trống";
+    public const string ProviderEmailRequired = "Email không được để trống";
+    public const string ProviderEmailInvalid = "Email không hợp lệ";
 
     // ── Role ────────────────────────────────────────────────────────────
     public const string RoleNameRequired = "Role name is required.";

@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
@@ -63,10 +64,12 @@ public class TourService(
     {
         var tour = await _tourRepository.FindById(request.Id);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         if (await _tourRepository.ExistsByTourCode(tour.TourCode, request.Id))
-            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{tour.TourCode}' đã tồn tại");
+            return Error.Conflict(
+                ErrorConstants.Tour.DuplicateCodeCode,
+                string.Format(ErrorConstants.Tour.DuplicateCodeDescriptionTemplate, tour.TourCode));
 
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : null;
         var images = request.Images?.Select(ToImageEntity).ToList();
@@ -92,7 +95,7 @@ public class TourService(
     {
         var tour = await _tourRepository.FindById(id);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         await _tourRepository.SoftDelete(id);
         await _unitOfWork.SaveChangeAsync();
@@ -124,7 +127,7 @@ public class TourService(
     {
         var tour = await _tourRepository.FindById(id, asNoTracking: true);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         tour.ApplyResolvedTranslations(_languageContext.CurrentLanguage);
         return _mapper.Map<TourDto>(tour);

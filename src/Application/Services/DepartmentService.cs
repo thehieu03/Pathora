@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Application.Common.Constant;
 using Application.Contracts.Department;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -82,7 +83,7 @@ public class DepartmentService(
     {
         var department = await _departmentRepository.GetByIdAsync(request.DepartmentId);
         if (department is null)
-            return Error.NotFound("Department.NotFound", "Phòng ban không tồn tại");
+            return Error.NotFound(ErrorConstants.Department.NotFoundCode, ErrorConstants.Department.NotFoundDescription);
 
         var level = 1;
         if (request.DepartmentParentId.HasValue)

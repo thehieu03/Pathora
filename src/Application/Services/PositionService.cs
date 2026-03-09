@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Application.Common.Constant;
 using Domain.Common.Repositories;
 using Application.Contracts.Position;
 using Domain.Constant;
@@ -42,7 +43,7 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
         var positionResult = await _positionRepository.FindById(id);
         if (positionResult.IsError) return positionResult.Errors;
         if (positionResult.Value is null)
-            return Error.NotFound("Position.NotFound", "Chức vụ không tồn tại");
+            return Error.NotFound(ErrorConstants.Position.NotFoundCode, ErrorConstants.Position.NotFoundDescription);
 
         var position = positionResult.Value;
         position.SoftDelete(_user.Id ?? string.Empty);
@@ -92,7 +93,7 @@ public class PositionService(IPositionRepository positionRepository, IRoleServic
         var positionResult = await _positionRepository.FindById(request.Id);
         if (positionResult.IsError) return positionResult.Errors;
         if (positionResult.Value is null)
-            return Error.NotFound("Position.NotFound", "Chức vụ không tồn tại");
+            return Error.NotFound(ErrorConstants.Position.NotFoundCode, ErrorConstants.Position.NotFoundDescription);
 
         var position = positionResult.Value;
         position.Update(request.Name, request.Level, _user.Id ?? string.Empty, request.Note, request.Type);
