@@ -94,6 +94,12 @@ const nextConfig: NextConfig = {
         hostname: "www.figma.com",
         pathname: "/api/mcp/asset/**",
       },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "9000",
+        pathname: "/**",
+      },
       ...envRemotePatterns,
     ],
   },

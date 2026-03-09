@@ -90,7 +90,7 @@ export const LatestToursSection = () => {
       <SectionContainer>
         <section className="w-full">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
+            <h2 suppressHydrationWarning className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
               {t("landing.latestTours.title")}
             </h2>
           </div>
@@ -116,7 +116,7 @@ export const LatestToursSection = () => {
     <SectionContainer>
       <section className="w-full">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
+          <h2 suppressHydrationWarning className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.latestTours.title")}
           </h2>
           <Button
@@ -126,6 +126,7 @@ export const LatestToursSection = () => {
             iconPosition="right"
             iconClass="text-[14px]"
             className="w-24 justify-center text-landing-heading text-sm hover:text-landing-accent transition-colors bg-transparent"
+            suppressHydrationWarning
           />
         </div>
 

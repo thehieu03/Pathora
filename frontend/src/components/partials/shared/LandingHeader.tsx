@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import Link from "next/link";
 import Image from "./LandingImage";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button, Icon } from "@/components/ui";
 import dynamic from "next/dynamic";
 import { Transition, TransitionChild } from "@headlessui/react";
@@ -392,10 +392,22 @@ export const LandingHeader = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useMobileMenu();
   const { width, breakpoints } = useWidth();
   const mdBreakpoint = breakpoints.md;
+  const searchParams = useSearchParams();
   const [authOpen, setAuthOpen] = useState(false);
   const [authView, setAuthView] = useState<"signup" | "login" | "forgot">(
     "signup",
   );
+
+  useEffect(() => {
+    if (searchParams.get("login") === "true" && !authOpen) {
+      setAuthView("login");
+      setAuthOpen(true);
+      // Clean up the URL query param
+      const url = new URL(window.location.href);
+      url.searchParams.delete("login");
+      router.replace(url.pathname, { scroll: false });
+    }
+  }, [searchParams]);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -584,7 +596,7 @@ export const LandingHeader = ({
                 setLanguageMenuOpen((prev) => !prev);
                 setUserMenuOpen(false);
               }}
-              aria-label={`${t("landing.a11y.changeLanguage")} (${normalizedLanguage.toUpperCase()})`}
+              aria-label={`${t("landing.a11y.changeLanguage")} (${mounted ? normalizedLanguage.toUpperCase() : "EN"})`}
               aria-haspopup="menu"
               aria-expanded={languageMenuOpen}
               aria-controls={languageMenuId}>
@@ -594,7 +606,7 @@ export const LandingHeader = ({
                 <span className="w-4 h-4 xl:w-5 xl:h-5" />
               )}
               <span className="text-sm xl:text-base font-semibold">
-                {normalizedLanguage.toUpperCase()}
+                {mounted ? normalizedLanguage.toUpperCase() : "EN"}
               </span>
               {mounted ? (
                 <FiChevronDown
@@ -615,7 +627,7 @@ export const LandingHeader = ({
                   : "invisible opacity-0 pointer-events-none"
               }`}>
               {languages.map((lang) => {
-                const isActive = lang.code === normalizedLanguage;
+                const isActive = mounted && lang.code === normalizedLanguage;
                 return (
                   <Button
                     key={lang.code}
@@ -631,7 +643,7 @@ export const LandingHeader = ({
                     }`}>
                     <span>{lang.label}</span>
                     {isActive && (
-                      <FiCheck suppressHydrationWarning className="w-4 h-4" />
+                      <FiCheck className="w-4 h-4" />
                     )}
                   </Button>
                 );
@@ -717,12 +729,12 @@ export const LandingHeader = ({
             <>
               <Button
                 onClick={() => openAuth("login")}
-                text={t("common.signIn")}
+                text={mounted ? t("common.signIn") : "Sign In"}
                 className={`w-30 xl:w-36 px-4 xl:px-5 py-2 xl:py-2.5 font-semibold text-sm xl:text-[20px] rounded-full transition-colors ${isSolid ? "text-landing-heading hover:bg-gray-100 bg-transparent" : "text-white hover:bg-white/10 bg-transparent"}`}
               />
               <Button
                 onClick={() => openAuth("signup")}
-                text={t("common.signUp")}
+                text={mounted ? t("common.signUp") : "Sign Up"}
                 className="w-30 xl:w-36 px-5 xl:px-6 py-2 xl:py-2.5 bg-landing-accent text-white font-semibold text-sm xl:text-[20px] rounded-full hover:bg-landing-accent-hover transition-colors"
               />
             </>
@@ -757,3 +769,4 @@ export const LandingHeader = ({
     </>
   );
 };
+

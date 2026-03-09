@@ -4,29 +4,25 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const authStatus = request.cookies.get("auth_status")?.value;
 
-  const isAuthPage =
-    request.nextUrl.pathname.startsWith("/login") ||
-    request.nextUrl.pathname.startsWith("/register") ||
-    request.nextUrl.pathname.startsWith("/forgot-password");
-
   const isPublicPath =
-    request.nextUrl.pathname.startsWith("/api/public") ||
-    request.nextUrl.pathname.startsWith("/api/home") ||
     request.nextUrl.pathname === "/" ||
+    request.nextUrl.pathname.startsWith("/home") ||
     request.nextUrl.pathname.startsWith("/tours") ||
-    request.nextUrl.pathname.startsWith("/tour-detail");
+    request.nextUrl.pathname.startsWith("/tour-detail") ||
+    request.nextUrl.pathname.startsWith("/about") ||
+    request.nextUrl.pathname.startsWith("/visa") ||
+    request.nextUrl.pathname.startsWith("/policies") ||
+    request.nextUrl.pathname.startsWith("/checkout") ||
+    request.nextUrl.pathname.startsWith("/auth/callback");
 
   if (isPublicPath) {
     return NextResponse.next();
   }
 
-  if (!authStatus && !isAuthPage) {
-    const loginUrl = new URL("/login", request.url);
+  if (!authStatus) {
+    const loginUrl = new URL("/home", request.url);
+    loginUrl.searchParams.set("login", "true");
     return NextResponse.redirect(loginUrl);
-  }
-
-  if (authStatus && isAuthPage) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

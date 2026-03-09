@@ -153,7 +153,7 @@ export const FeaturedTripsSection = () => {
       <SectionContainer>
         <section className="w-full">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
+            <h2 suppressHydrationWarning className="min-h-10 md:min-h-12 text-2xl md:text-[30px] font-bold text-landing-heading">
               {t("landing.featured.title")}
             </h2>
           </div>

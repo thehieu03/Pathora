@@ -231,11 +231,12 @@ export const SelectField = ({
         {icon}
       </div>
       <div className="flex min-w-0 flex-col gap-0.5 md:gap-1 w-full">
-        <span className="text-[#333] font-semibold text-xs md:text-sm leading-tight truncate w-full block">
+        <span suppressHydrationWarning className="text-[#333] font-semibold text-xs md:text-sm leading-tight truncate w-full block">
           {label}
         </span>
         <div className="flex min-w-0 items-center justify-between gap-1 w-full opacity-70">
           <span
+            suppressHydrationWarning
             className={`text-[10px] md:text-xs font-normal truncate flex-1 ${
               displayValue ? "text-[#333]" : "text-[#333] opacity-80"
             }`}>

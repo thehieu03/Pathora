@@ -2,6 +2,7 @@
 import TextInput from "@/components/ui/TextInput";
 import Button from "@/components/ui/Button";
 import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "../shared/LandingImage";
 import { Icon } from "@/components/ui";
@@ -572,27 +573,90 @@ const TourCard = ({ tour }: { tour: SearchTour }) => {
 };
 
 /* ── Results Toolbar ───────────────────────────────────────── */
-const ResultsToolbar = ({ count }: { count: number }) => {
+const VIEW_MODE_OPTIONS = [
+  { id: "tours" as const, icon: "heroicons-outline:rectangle-stack", labelKey: "landing.tourDiscovery.byTour" },
+  { id: "instances" as const, icon: "heroicons-outline:calendar-days", labelKey: "landing.tourDiscovery.byDeparture" },
+];
+
+const ResultsToolbar = ({
+  count,
+  viewMode,
+  onViewModeChange,
+}: {
+  count: number;
+  viewMode: "tours" | "instances";
+  onViewModeChange: (mode: "tours" | "instances") => void;
+}) => {
   const { t } = useTranslation();
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [gridView, setGridView] = useState<"grid" | "list">("grid");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  const activeOption = VIEW_MODE_OPTIONS.find((o) => o.id === viewMode)!;
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isDropdownOpen]);
 
   return (
     <div className="flex items-center justify-between py-2 mb-4">
       <p className="text-sm text-[#6a7282] lg:text-[#05073c]">
         {t("landing.tourDiscovery.showing")}{" "}
         <span className="font-semibold text-[#05073c]">{count}</span>{" "}
-        {t("landing.tourDiscovery.toursLower")}
+        {viewMode === "tours"
+          ? t("landing.tourDiscovery.toursLower")
+          : t("landing.tourDiscovery.departuresLower")}
       </p>
       <div className="flex items-center gap-2 lg:gap-2">
-        {/* Scheduled Tours Button */}
-        <Button
-          type="button"
-          className="inline-flex items-center gap-2 bg-gradient-to-b from-[#fa8b02] to-[#eb662b] lg:bg-none lg:bg-[#eb662b] text-white text-xs font-semibold lg:font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-lg shadow-md lg:shadow-none hover:opacity-90 transition-opacity">
-          <Icon icon="heroicons-outline:calendar" className="w-4 h-4" />
-          <span className="text-[12px] lg:text-xs">
-            {t("landing.tourDiscovery.scheduledTours")}
-          </span>
-        </Button>
+        {/* View Mode Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <Button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="inline-flex items-center gap-1.5 bg-gradient-to-b from-[#fa8b02] to-[#eb662b] text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl shadow-sm hover:opacity-90 transition-opacity">
+            <Icon icon={activeOption.icon} className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{t(activeOption.labelKey)}</span>
+            <Icon
+              icon="heroicons-outline:chevron-down"
+              className={`w-3 h-3 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+            />
+          </Button>
+
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-1.5 w-52 bg-white border border-[#e5e7eb] rounded-xl shadow-lg z-20 overflow-hidden">
+              {VIEW_MODE_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => {
+                    onViewModeChange(option.id);
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors ${
+                    viewMode === option.id
+                      ? "bg-[#fff7ed] text-[#eb662b] font-semibold"
+                      : "text-[#4a5565] hover:bg-[#f9fafb]"
+                  }`}>
+                  <Icon icon={option.icon} className="w-4 h-4 shrink-0" />
+                  <span>{t(option.labelKey)}</span>
+                  {viewMode === option.id && (
+                    <Icon icon="heroicons-outline:check" className="w-4 h-4 ml-auto shrink-0" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Recommended Dropdown - compact on mobile */}
         <Button
@@ -612,9 +676,9 @@ const ResultsToolbar = ({ count }: { count: number }) => {
         <div className="hidden lg:flex items-center border border-[#f3f4f6] rounded-lg overflow-hidden">
           <Button
             type="button"
-            onClick={() => setViewMode("grid")}
+            onClick={() => setGridView("grid")}
             className={`w-9 h-9 flex items-center justify-center transition-colors ${
-              viewMode === "grid"
+              gridView === "grid"
                 ? "bg-[#eb662b] text-white"
                 : "bg-white text-[#6a7282] hover:bg-gray-50"
             }`}>
@@ -622,9 +686,9 @@ const ResultsToolbar = ({ count }: { count: number }) => {
           </Button>
           <Button
             type="button"
-            onClick={() => setViewMode("list")}
+            onClick={() => setGridView("list")}
             className={`w-9 h-9 flex items-center justify-center transition-colors ${
-              viewMode === "list"
+              gridView === "list"
                 ? "bg-[#eb662b] text-white"
                 : "bg-white text-[#6a7282] hover:bg-gray-50"
             }`}>
@@ -874,23 +938,31 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
 /* ── Main Tour Discovery Page ──────────────────────────────── */
 export const TourDiscoveryPage = () => {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [classificationFilter, setClassificationFilter] = useState("");
 
-  // API state
+  // View mode: tours (default) or instances (departures)
+  const [viewMode, setViewMode] = useState<"tours" | "instances">("tours");
+
+  // API state — tours
   const [tours, setTours] = useState<SearchTour[]>([]);
   const [totalTours, setTotalTours] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [destinations, setDestinations] = useState<string[]>([]);
 
-  // Scheduled tour instances state
-  const [scheduledInstances, setScheduledInstances] = useState<TourInstanceVm[]>([]);
-  const [scheduledLoading, setScheduledLoading] = useState(true);
+  // API state — instances (departure mode)
+  const [instanceData, setInstanceData] = useState<TourInstanceVm[]>([]);
+  const [instanceTotal, setInstanceTotal] = useState(0);
+  const [instancePage, setInstancePage] = useState(1);
+  const [instanceLoading, setInstanceLoading] = useState(false);
+  const [instanceError, setInstanceError] = useState<string | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(totalTours / PAGE_SIZE));
+  const instanceTotalPages = Math.max(1, Math.ceil(instanceTotal / PAGE_SIZE));
 
   const fetchTours = useCallback(
     async (page: number, destination?: string, classification?: string) => {
@@ -921,34 +993,81 @@ export const TourDiscoveryPage = () => {
     [t],
   );
 
-  // Initial load + fetch destinations + scheduled instances
+  const fetchInstances = useCallback(
+    async (page: number, destination?: string) => {
+      setInstanceLoading(true);
+      setInstanceError(null);
+      try {
+        const result = await homeService.getAvailablePublicInstances(
+          destination || undefined,
+          page,
+          PAGE_SIZE,
+        );
+        if (result) {
+          setInstanceData(result.data || []);
+          setInstanceTotal(result.total || 0);
+        } else {
+          setInstanceData([]);
+          setInstanceTotal(0);
+        }
+      } catch {
+        setInstanceError(t("landing.tourDiscovery.errorLoadingInstances"));
+        setInstanceData([]);
+        setInstanceTotal(0);
+      } finally {
+        setInstanceLoading(false);
+      }
+    },
+    [t],
+  );
+
+  // Read ?tab=scheduled from URL to auto-switch to instance mode
+  useEffect(() => {
+    if (searchParams.get("tab") === "scheduled") {
+      setViewMode("instances");
+    }
+  }, [searchParams]);
+
+  // Initial load + fetch destinations
   useEffect(() => {
     fetchTours(1);
     homeService
       .getDestinations()
       .then(setDestinations)
       .catch(() => {});
-    // Fetch upcoming scheduled tours
-    setScheduledLoading(true);
-    homeService
-      .getAvailablePublicInstances(undefined, 1, 6)
-      .then((result) => {
-        if (result) setScheduledInstances(result.data ?? []);
-      })
-      .catch(() => {})
-      .finally(() => setScheduledLoading(false));
   }, [fetchTours]);
+
+  // Fetch instances when switching to instance mode
+  useEffect(() => {
+    if (viewMode === "instances" && instanceData.length === 0 && !instanceLoading) {
+      fetchInstances(1, searchText);
+    }
+  }, [viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refetch when page or filters change
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    fetchTours(page, searchText, classificationFilter);
+    if (viewMode === "tours") {
+      setCurrentPage(page);
+      fetchTours(page, searchText, classificationFilter);
+    } else {
+      setInstancePage(page);
+      fetchInstances(page, searchText);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSearch = () => {
     setCurrentPage(1);
-    fetchTours(1, searchText, classificationFilter);
+    setInstancePage(1);
+    if (viewMode === "tours") {
+      fetchTours(1, searchText, classificationFilter);
+    } else {
+      fetchInstances(1, searchText);
+    }
+  };
+
+  const handleViewModeChange = (mode: "tours" | "instances") => {
+    setViewMode(mode);
   };
 
   const handleClassificationChange = (classification: string) => {
@@ -1006,99 +1125,152 @@ export const TourDiscoveryPage = () => {
               {/* Customize Your Tour CTA (mobile only) */}
               <CustomizeTourCTA />
 
-              {/* ── Upcoming Scheduled Tours Section ── */}
-              {!scheduledLoading && scheduledInstances.length > 0 && (
-                <div className="mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <Icon
-                        icon="heroicons-outline:calendar-days"
-                        className="w-5 h-5 text-[#eb662b]"
-                      />
-                      <h2 className="text-lg font-bold text-[#05073c]">
-                        {t("tourInstance.upcomingScheduledTours", "Upcoming Scheduled Tours")}
-                      </h2>
-                    </div>
-                    <Link
-                      href="/tours?tab=scheduled"
-                      className="text-xs font-semibold text-[#eb662b] hover:underline">
-                      {t("tourInstance.viewAll", "View All")}
-                    </Link>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {scheduledInstances.slice(0, 3).map((instance) => (
-                      <ScheduledTourCard key={instance.id} instance={instance} />
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Upcoming Scheduled Tours preview removed — user switches via view mode toggle */}
 
               {/* Results Toolbar */}
-              <ResultsToolbar count={totalTours} />
+              <ResultsToolbar
+                count={viewMode === "tours" ? totalTours : instanceTotal}
+                viewMode={viewMode}
+                onViewModeChange={handleViewModeChange}
+              />
 
-              {/* Error State */}
-              {error && (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Icon
-                    icon="heroicons-outline:exclamation-circle"
-                    className="w-12 h-12 text-red-400 mb-4"
-                  />
-                  <p className="text-sm text-[#6a7282] mb-4">{error}</p>
-                  <Button
-                    type="button"
-                    onClick={() =>
-                      fetchTours(currentPage, searchText, classificationFilter)
-                    }
-                    className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
-                    <Icon
-                      icon="heroicons-outline:arrow-path"
-                      className="w-4 h-4"
-                    />
-                    {t("landing.tourDiscovery.retry") || "Retry"}
-                  </Button>
-                </div>
-              )}
-
-              {/* Loading State */}
-              {loading && !error && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <TourCardSkeleton key={i} />
-                  ))}
-                </div>
-              )}
-
-              {/* Empty State */}
-              {!loading && !error && tours.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <Icon
-                    icon="heroicons-outline:magnifying-glass"
-                    className="w-12 h-12 text-[#99a1af] mb-4"
-                  />
-                  <h3 className="text-lg font-semibold text-[#05073c] mb-2">
-                    {t("landing.tourDiscovery.noResults")}
-                  </h3>
-                  <p className="text-sm text-[#6a7282] max-w-md">
-                    {t("landing.tourDiscovery.noResultsDescription")}
-                  </p>
-                </div>
-              )}
-
-              {/* Tour Grid */}
-              {!loading && !error && tours.length > 0 && (
+              {/* ══════════ Tour Mode Content ══════════ */}
+              {viewMode === "tours" && (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {tours.map((tour) => (
-                      <TourCard key={tour.id} tour={tour} />
-                    ))}
-                  </div>
+                  {/* Error State */}
+                  {error && (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <Icon
+                        icon="heroicons-outline:exclamation-circle"
+                        className="w-12 h-12 text-red-400 mb-4"
+                      />
+                      <p className="text-sm text-[#6a7282] mb-4">{error}</p>
+                      <Button
+                        type="button"
+                        onClick={() =>
+                          fetchTours(currentPage, searchText, classificationFilter)
+                        }
+                        className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        <Icon
+                          icon="heroicons-outline:arrow-path"
+                          className="w-4 h-4"
+                        />
+                        {t("landing.tourDiscovery.retry")}
+                      </Button>
+                    </div>
+                  )}
 
-                  {/* Pagination */}
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                  />
+                  {/* Loading State */}
+                  {loading && !error && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <TourCardSkeleton key={i} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Empty State */}
+                  {!loading && !error && tours.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <Icon
+                        icon="heroicons-outline:magnifying-glass"
+                        className="w-12 h-12 text-[#99a1af] mb-4"
+                      />
+                      <h3 className="text-lg font-semibold text-[#05073c] mb-2">
+                        {t("landing.tourDiscovery.noResults")}
+                      </h3>
+                      <p className="text-sm text-[#6a7282] max-w-md">
+                        {t("landing.tourDiscovery.noResultsDescription")}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Tour Grid */}
+                  {!loading && !error && tours.length > 0 && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {tours.map((tour) => (
+                          <TourCard key={tour.id} tour={tour} />
+                        ))}
+                      </div>
+
+                      {/* Pagination */}
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* ══════════ Instance (Departure) Mode Content ══════════ */}
+              {viewMode === "instances" && (
+                <>
+                  {/* Error State */}
+                  {instanceError && (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <Icon
+                        icon="heroicons-outline:exclamation-circle"
+                        className="w-12 h-12 text-red-400 mb-4"
+                      />
+                      <p className="text-sm text-[#6a7282] mb-4">{instanceError}</p>
+                      <Button
+                        type="button"
+                        onClick={() => fetchInstances(instancePage, searchText)}
+                        className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        <Icon
+                          icon="heroicons-outline:arrow-path"
+                          className="w-4 h-4"
+                        />
+                        {t("landing.tourDiscovery.retry")}
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Loading State */}
+                  {instanceLoading && !instanceError && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <TourCardSkeleton key={i} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Empty State */}
+                  {!instanceLoading && !instanceError && instanceData.length === 0 && (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                      <Icon
+                        icon="heroicons-outline:calendar"
+                        className="w-12 h-12 text-[#99a1af] mb-4"
+                      />
+                      <h3 className="text-lg font-semibold text-[#05073c] mb-2">
+                        {t("landing.tourDiscovery.noInstancesTitle")}
+                      </h3>
+                      <p className="text-sm text-[#6a7282] max-w-md">
+                        {t("landing.tourDiscovery.noInstancesDescription")}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Instance Grid */}
+                  {!instanceLoading && !instanceError && instanceData.length > 0 && (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {instanceData.map((instance) => (
+                          <ScheduledTourCard key={instance.id} instance={instance} />
+                        ))}
+                      </div>
+
+                      {/* Pagination */}
+                      <Pagination
+                        currentPage={instancePage}
+                        totalPages={instanceTotalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </>
+                  )}
                 </>
               )}
             </div>

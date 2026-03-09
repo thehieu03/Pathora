@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
 import ToursLoading from "./loading";
 
@@ -8,5 +8,9 @@ const TourDiscoveryPage = dynamic(
 );
 
 export default function ToursPage() {
-  return <TourDiscoveryPage />;
+  return (
+    <Suspense fallback={<ToursLoading />}>
+      <TourDiscoveryPage />
+    </Suspense>
+  );
 }

@@ -129,10 +129,11 @@ export const ReviewsSection = () => {
         <div className="text-center mb-12">
           <h2
             id="reviews-heading"
+            suppressHydrationWarning
             className="text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.reviews.title")}
           </h2>
-          <p className="text-landing-body text-base mt-2">
+          <p suppressHydrationWarning className="text-landing-body text-base mt-2">
             {t("landing.reviews.subtitle")}
           </p>
         </div>
@@ -144,6 +145,7 @@ export const ReviewsSection = () => {
             icon="heroicons-outline:chevron-left"
             iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
             ariaLabel={t("landing.reviews.previousReview")}
+            suppressHydrationWarning
           />
 
           <div className="max-w-162.5 mx-auto text-center px-4 md:px-16 lg:px-20">
@@ -179,6 +181,7 @@ export const ReviewsSection = () => {
             icon="heroicons-outline:chevron-right"
             iconClass="text-[20px] text-landing-body group-hover:text-white transition-colors"
             ariaLabel={t("landing.reviews.nextReview")}
+            suppressHydrationWarning
           />
         </div>
 

@@ -53,10 +53,10 @@ export const CTASection = () => {
       />
       <div className="absolute inset-0 bg-landing-heading/60" />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-6">
-        <h2 className="text-3xl md:text-[44px] font-bold mb-4 leading-tight">
+        <h2 suppressHydrationWarning className="text-3xl md:text-[44px] font-bold mb-4 leading-tight">
           {t("landing.cta.title")}
         </h2>
-        <p className="text-base md:text-lg text-white/80 max-w-xl mb-8 leading-relaxed">
+        <p suppressHydrationWarning className="text-base md:text-lg text-white/80 max-w-xl mb-8 leading-relaxed">
           {t("landing.cta.description")}
         </p>
         <Button
@@ -66,6 +66,7 @@ export const CTASection = () => {
           iconPosition="right"
           iconClass="text-[16px]"
           className="inline-flex items-center gap-2 bg-landing-accent text-white font-semibold px-8 py-3.5 rounded-full hover:bg-landing-accent-hover transition-colors text-base"
+          suppressHydrationWarning
         />
       </div>
     </section>
@@ -78,10 +79,10 @@ export const WhyChooseSection = () => {
     <section className="w-full bg-[#f9fafb] py-16 md:py-20">
       <SectionContainer>
         <div className="text-center mb-14">
-          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+          <h2 suppressHydrationWarning className="text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.whyChoose.title")}
           </h2>
-          <p className="text-landing-body text-base mt-2">
+          <p suppressHydrationWarning className="text-landing-body text-base mt-2">
             {t("landing.whyChoose.subtitle")}
           </p>
         </div>
@@ -101,10 +102,10 @@ export const WhyChooseSection = () => {
                   className="w-8 h-8"
                 />
               </div>
-              <h3 className="font-semibold text-landing-heading text-base leading-snug">
+              <h3 suppressHydrationWarning className="font-semibold text-landing-heading text-base leading-snug">
                 {t(feat.titleKey)}
               </h3>
-              <p className="text-landing-body text-sm leading-relaxed max-w-62.5">
+              <p suppressHydrationWarning className="text-landing-body text-sm leading-relaxed max-w-62.5">
                 {t(feat.descKey)}
               </p>
             </Card>
@@ -120,7 +121,7 @@ export const TrustedBrandsSection = () => {
   return (
     <section className="w-full bg-white py-12 border-t border-landing-border">
       <SectionContainer>
-        <p className="text-center text-landing-body font-medium text-sm uppercase tracking-widest mb-8">
+        <p suppressHydrationWarning className="text-center text-landing-body font-medium text-sm uppercase tracking-widest mb-8">
           {t("landing.trustedBrands.title")}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">

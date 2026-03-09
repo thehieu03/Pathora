@@ -147,7 +147,7 @@ export const TrendingDestinationsSection = () => {
     <SectionContainer>
       <section className="w-full">
         <div className="mb-8">
-          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+          <h2 suppressHydrationWarning className="text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.destinations.trendingTitle")}
           </h2>
         </div>
@@ -245,7 +245,7 @@ export const TopAttractionsSection = () => {
     <SectionContainer>
       <section className="w-full">
         <div className="mb-8">
-          <h2 className="text-2xl md:text-[30px] font-bold text-landing-heading">
+          <h2 suppressHydrationWarning className="text-2xl md:text-[30px] font-bold text-landing-heading">
             {t("landing.destinations.topAttractionsTitle")}
           </h2>
         </div>

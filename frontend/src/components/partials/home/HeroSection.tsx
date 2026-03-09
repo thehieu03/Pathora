@@ -139,10 +139,16 @@ export const HeroSection = () => {
 
       <div className="relative z-10 flex flex-col items-center pt-25 md:pt-51.75 gap-10 md:gap-15 px-4">
         <div className="flex flex-col items-center gap-4 text-white text-center w-full max-w-5xl">
-          <h1 className="h-24 md:h-40 flex items-center justify-center text-4xl md:text-[72px] font-normal leading-tight font-serif overflow-hidden">
+          <h1 
+            suppressHydrationWarning
+            className="h-24 md:h-40 flex items-center justify-center text-4xl md:text-[72px] font-normal leading-tight font-serif overflow-hidden"
+          >
             {t("landing.hero.title")}
           </h1>
-          <p className="h-7 md:h-8 overflow-hidden text-lg md:text-2xl font-bold">
+          <p 
+            suppressHydrationWarning
+            className="h-7 md:h-8 overflow-hidden text-lg md:text-2xl font-bold"
+          >
             {t("landing.hero.subtitle")}
           </p>
         </div>
@@ -163,6 +169,7 @@ export const HeroSection = () => {
                 }`}
               />
               <span
+                suppressHydrationWarning
                 className={`font-semibold text-base md:text-lg ${
                   tourType === "public" ? "text-landing-accent" : "text-white"
                 }`}>
@@ -181,6 +188,7 @@ export const HeroSection = () => {
                 }`}
               />
               <span
+                suppressHydrationWarning
                 className={`font-semibold text-base md:text-lg ${
                   tourType === "private" ? "text-landing-accent" : "text-white"
                 }`}>
@@ -242,8 +250,9 @@ export const HeroSection = () => {
               <Button
                 onClick={handleSearch}
                 className="bg-landing-accent rounded-lg md:rounded-xl h-11 md:h-12 px-4 md:px-5 hover:bg-landing-accent-hover transition-colors shrink-0 w-full md:w-full flex items-center justify-center gap-2"
-                ariaLabel={t("landing.hero.searchAria")}>
-                <span className="text-white font-medium text-sm md:text-base whitespace-nowrap">
+                ariaLabel={t("landing.hero.searchAria")}
+                suppressHydrationWarning>
+                <span suppressHydrationWarning className="text-white font-medium text-sm md:text-base whitespace-nowrap">
                   {t("landing.hero.exploreTours")}
                 </span>
                 <Icon icon="heroicons-outline:search" className="w-4 h-4 md:w-5 md:h-5 text-white" aria-hidden="true" />
