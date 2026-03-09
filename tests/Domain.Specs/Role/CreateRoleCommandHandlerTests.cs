@@ -14,7 +14,7 @@ public sealed class CreateRoleCommandHandlerTests
     {
         var roleService = Substitute.For<IRoleService>();
         roleService.Create(Arg.Any<CreateRoleRequest>())
-            .Returns(Guid.CreateVersion7());
+            .Returns(1);
 
         var handler = new CreateRoleCommandHandler(roleService);
         var command = new CreateRoleCommand("Admin", "Bootstrap role", 1, null!);

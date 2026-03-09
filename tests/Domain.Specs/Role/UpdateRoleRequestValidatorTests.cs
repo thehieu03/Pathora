@@ -11,7 +11,7 @@ public sealed class UpdateRoleRequestValidatorTests
     {
         var validator = new UpdateRoleRequestValidator();
         var request = new UpdateRoleRequest(
-            RoleId: Guid.CreateVersion7().ToString(),
+            RoleId: 1,
             Name: "Admin",
             Description: "Test invalid status",
             Status: (RoleStatus)200,

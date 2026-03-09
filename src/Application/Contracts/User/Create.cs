@@ -5,7 +5,7 @@ namespace Application.Contracts.User;
 
 public sealed record CreateUserRequest(
     List<UserDepartmentInfo> Departments,
-    List<Guid> RoleIds,
+    List<int> RoleIds,
     string Email,
     string FullName,
     string Avatar

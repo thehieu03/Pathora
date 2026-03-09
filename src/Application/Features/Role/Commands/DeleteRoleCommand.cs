@@ -7,7 +7,7 @@ using Application.Services;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record DeleteRoleCommand(string RoleId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+public sealed record DeleteRoleCommand(int RoleId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
 }

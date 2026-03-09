@@ -17,7 +17,7 @@ public sealed class RoleControllerTests
         var roles = new List<RoleVm>
         {
             new(
-                Guid.CreateVersion7(),
+                1,
                 "Admin",
                 "System admin",
                 1,
@@ -41,11 +41,11 @@ public sealed class RoleControllerTests
     [Fact]
     public async Task GetDetail_WhenRoleMissing_ShouldReturnNotFoundResponse()
     {
-        const string roleId = "missing-role-id";
+        const int roleId = 0;
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<RoleController, GetRoleDetailQuery, RoleDetailVm>(
                 Error.NotFound("Role.NotFound", "Không tìm thấy vai trò"),
-                "/api/role/missing-role-id");
+                "/api/role/0");
 
         var actionResult = await controller.GetDetail(roleId);
 
@@ -54,7 +54,7 @@ public sealed class RoleControllerTests
             expectedStatusCode: StatusCodes.Status404NotFound,
             expectedCode: "Role.NotFound",
             expectedMessage: "Không tìm thấy vai trò",
-            expectedInstance: "/api/role/missing-role-id");
+            expectedInstance: "/api/role/0");
         Assert.Equal(new GetRoleDetailQuery(roleId), probe.CapturedRequest);
     }
 
@@ -82,9 +82,9 @@ public sealed class RoleControllerTests
     public async Task Create_WhenCommandSucceeds_ShouldReturnOkAndPayload()
     {
         var command = new CreateRoleCommand("Admin", "System admin", 1, [1, 2]);
-        var response = Guid.CreateVersion7();
+        var response = 1;
         var (controller, probe) = ApiControllerTestHelper
-            .BuildController<RoleController, CreateRoleCommand, Guid>(response, "/api/role");
+            .BuildController<RoleController, CreateRoleCommand, int>(response, "/api/role");
 
         var actionResult = await controller.Create(command);
 
@@ -100,7 +100,7 @@ public sealed class RoleControllerTests
     public async Task Update_WhenCommandSucceeds_ShouldReturnOkAndPayload()
     {
         var command = new UpdateRoleCommand(
-            RoleId: Guid.CreateVersion7().ToString(),
+            RoleId: 1,
             Name: "Admin",
             Description: "Updated description",
             Status: RoleStatus.Active,
@@ -122,16 +122,16 @@ public sealed class RoleControllerTests
     [Fact]
     public async Task Delete_WhenCommandSucceeds_ShouldReturnOkAndPayload()
     {
-        const string roleId = "role-to-delete";
+        const int roleId = 1;
         var (controller, probe) = ApiControllerTestHelper
-            .BuildController<RoleController, DeleteRoleCommand, Success>(Result.Success, "/api/role/role-to-delete");
+            .BuildController<RoleController, DeleteRoleCommand, Success>(Result.Success, "/api/role/1");
 
         var actionResult = await controller.Delete(roleId);
 
         ApiControllerTestHelper.AssertSuccessResponse(
             actionResult,
             expectedStatusCode: StatusCodes.Status200OK,
-            expectedInstance: "/api/role/role-to-delete",
+            expectedInstance: "/api/role/1",
             expectedData: Result.Success);
         Assert.Equal(new DeleteRoleCommand(roleId), probe.CapturedRequest);
     }

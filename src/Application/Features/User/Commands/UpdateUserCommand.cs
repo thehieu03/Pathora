@@ -8,7 +8,7 @@ namespace Application.Features.User.Commands;
 public sealed record UpdateUserCommand(
     Guid Id,
     List<UserDepartmentInfo> Departments,
-    List<Guid> RoleIds,
+    List<int> RoleIds,
     string FullName,
     string Avatar) : ICommand<ErrorOr<Success>>;
 

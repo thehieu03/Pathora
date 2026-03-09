@@ -13,7 +13,7 @@ namespace Application.Services;
 
 public interface IRoleService
 {
-    Task<ErrorOr<Guid>> Create(CreateRoleRequest request);
+    Task<ErrorOr<int>> Create(CreateRoleRequest request);
     Task<ErrorOr<Success>> Update(UpdateRoleRequest request);
     Task<ErrorOr<Success>> Delete(DeleteRoleRequest request);
     Task<ErrorOr<PaginatedListWithPermissions<RoleVm>>> GetAll(GetAllRoleRequest request);
@@ -29,7 +29,7 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
     private readonly IRoleRepository _roleRepository = roleRepository;
     private readonly IFunctionRepository _functionRepository = functionRepository;
 
-    public async Task<ErrorOr<Guid>> Create(CreateRoleRequest request)
+    public async Task<ErrorOr<int>> Create(CreateRoleRequest request)
     {
         var role = RoleEntity.Create(request.Name, request.Description, request.Type, _user.Id ?? string.Empty);
 

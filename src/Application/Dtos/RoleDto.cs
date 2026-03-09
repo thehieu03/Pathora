@@ -3,7 +3,7 @@ using Domain.Enums;
 namespace Application.Dtos;
 
 public sealed record RoleDto(
-    Guid Id,
+    int Id,
     string Name,
     string Description,
     int Type,

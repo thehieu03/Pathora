@@ -10,7 +10,7 @@ public sealed record UserDetailVm(
     IEnumerable<UserDepartmentVm> Departments
 );
 
-public sealed record RoleVm(Guid RoleId, string RoleName);
+public sealed record RoleVm(int RoleId, string RoleName);
 
 public sealed record UserDepartmentVm(
     Guid DepartmentId,

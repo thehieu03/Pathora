@@ -8,7 +8,7 @@ using Application.Services;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record UpdateRoleCommand(string RoleId, string Name, string Description, RoleStatus Status, int Type, IEnumerable<int> FunctionIds) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+public sealed record UpdateRoleCommand(int RoleId, string Name, string Description, RoleStatus Status, int Type, IEnumerable<int> FunctionIds) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
 }
