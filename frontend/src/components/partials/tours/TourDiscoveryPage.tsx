@@ -4,6 +4,7 @@ import Button from "@/components/ui/Button";
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import Image from "../shared/LandingImage";
 import { Icon } from "@/components/ui";
 import { LandingHeader } from "../shared/LandingHeader";
@@ -16,6 +17,20 @@ import { TourInstanceVm, TourInstanceStatusMap } from "@/types/tour";
 
 /* ── Sample Tour Data — replaced by API ───────────────────── */
 const PAGE_SIZE = 12;
+
+/* ── Animation Variants ───────────────────────────────────── */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } },
+};
 
 /* ── Filter Data ───────────────────────────────────────────── */
 const CLASSIFICATION_OPTIONS = [
@@ -471,7 +486,10 @@ const CustomizeTourCTA = () => {
 const TourCard = ({ tour }: { tour: SearchTour }) => {
   const { t } = useTranslation();
   return (
-    <article className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
+    <motion.article 
+      variants={itemVariants}
+      className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group"
+    >
       {/* Image */}
       <div className="relative w-full h-[192px] overflow-hidden">
         {tour.thumbnail ? (
@@ -568,7 +586,7 @@ const TourCard = ({ tour }: { tour: SearchTour }) => {
           </Link>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 };
 
@@ -835,7 +853,10 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
     });
 
   return (
-    <article className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
+    <motion.article 
+      variants={itemVariants}
+      className="bg-white border border-[#f3f4f6] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group"
+    >
       {/* Image */}
       <div className="relative w-full h-[180px] overflow-hidden">
         {instance.thumbnail?.publicURL ? (
@@ -931,7 +952,7 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
           </Link>
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 };
 
@@ -1188,11 +1209,16 @@ export const TourDiscoveryPage = () => {
                   {/* Tour Grid */}
                   {!loading && !error && tours.length > 0 && (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <motion.div 
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                      >
                         {tours.map((tour) => (
                           <TourCard key={tour.id} tour={tour} />
                         ))}
-                      </div>
+                      </motion.div>
 
                       {/* Pagination */}
                       <Pagination
@@ -1257,11 +1283,16 @@ export const TourDiscoveryPage = () => {
                   {/* Instance Grid */}
                   {!instanceLoading && !instanceError && instanceData.length > 0 && (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <motion.div 
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                      >
                         {instanceData.map((instance) => (
                           <ScheduledTourCard key={instance.id} instance={instance} />
                         ))}
-                      </div>
+                      </motion.div>
 
                       {/* Pagination */}
                       <Pagination

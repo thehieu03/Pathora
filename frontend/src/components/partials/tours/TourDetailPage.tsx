@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import TextInput from "@/components/ui/TextInput";
 import Button from "@/components/ui/Button";
 import React, { useState, useEffect, useMemo } from "react";
@@ -29,6 +30,17 @@ import {
 /* ══════════════════════════════════════════════════════════════
    Sub-components
    ══════════════════════════════════════════════════════════════ */
+
+/* ── Animation Variants ───────────────────────────────────── */
+const pageVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, staggerChildren: 0.1 } }
+};
+
+const fadeUpVariant = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
 
 /* ── Info Pill ─────────────────────────────────────────────── */
 function InfoPill({
@@ -729,7 +741,12 @@ export function TourDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={pageVariants}
+      className="min-h-screen bg-white"
+    >
       {/* ── Hero Section ───────────────────────────────────── */}
       <div className="relative h-[460px] overflow-hidden">
         {heroImage && (
@@ -822,7 +839,7 @@ export function TourDetailPage() {
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-5 px-6 pb-16">
           {/* ── Left Column ──────────────────────────────── */}
-          <div className="flex-1 min-w-0 flex flex-col gap-5">
+          <motion.div variants={fadeUpVariant} className="flex-1 min-w-0 flex flex-col gap-5">
             {/* Image Gallery */}
             {galleryImages.length > 0 && (
               <div
@@ -1055,10 +1072,10 @@ export function TourDetailPage() {
 
             {/* Scheduled Departures */}
             {tourId && <ScheduledDeparturesSection tourId={tourId} />}
-          </div>
+          </motion.div>
 
           {/* ── Right Sidebar ────────────────────────────── */}
-          <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4 lg:sticky lg:top-4 self-start">
+          <motion.div variants={fadeUpVariant} className="w-full lg:w-80 shrink-0 flex flex-col gap-4 lg:sticky lg:top-4 self-start">
             {/* Booking Card */}
             <div className="bg-white border border-gray-100 rounded-2xl shadow-md overflow-hidden">
               {/* Orange gradient top bar */}
@@ -1271,7 +1288,7 @@ export function TourDetailPage() {
                 {t("landing.tourDetail.contactUs")}
               </Button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
@@ -1294,6 +1311,6 @@ export function TourDetailPage() {
 
       {/* ── Footer ─────────────────────────────────────────── */}
       <LandingFooter />
-    </div>
+    </motion.div>
   );
 }

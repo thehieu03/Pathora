@@ -399,15 +399,21 @@ export const LandingHeader = ({
   );
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (searchParams.get("login") === "true" && !authOpen) {
-      setAuthView("login");
-      setAuthOpen(true);
-      // Clean up the URL query param
-      const url = new URL(window.location.href);
-      url.searchParams.delete("login");
-      router.replace(url.pathname, { scroll: false });
+      timer = setTimeout(() => {
+        setAuthView("login");
+        setAuthOpen(true);
+        // Clean up the URL query param
+        const url = new URL(window.location.href);
+        url.searchParams.delete("login");
+        router.replace(url.pathname, { scroll: false });
+      }, 0);
     }
-  }, [searchParams]);
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [searchParams, authOpen, router]);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);

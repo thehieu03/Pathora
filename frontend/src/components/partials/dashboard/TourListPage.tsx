@@ -5,9 +5,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/components/ui";
 import { tourService } from "@/services/tourService";
 import { TourVm } from "@/types/tour";
+
+/* ── Animation Variants ───────────────────────────────────── */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } },
+};
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -164,7 +179,8 @@ function StatCard({
   iconColor,
 }: StatCardProps) {
   return (
-    <div
+    <motion.div
+      variants={itemVariants}
       className={`bg-white rounded-xl border-l-4 p-5 flex items-center gap-4 shadow-sm ${borderColor}`}>
       <div
         className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBg}`}>
@@ -174,7 +190,7 @@ function StatCard({
         <p className="text-sm text-slate-500">{label}</p>
         <p className="text-2xl font-bold text-slate-900">{value}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -358,7 +374,12 @@ export function TourListPage() {
           </div>
 
           {/* ── Stat Cards ─────────────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
             <StatCard
               label="Total Tours"
               value={statCounts.total}
@@ -391,7 +412,7 @@ export function TourListPage() {
               iconBg="bg-slate-100"
               iconColor="text-slate-500"
             />
-          </div>
+          </motion.div>
 
           {/* ── Tour Table ─────────────────────────────────── */}
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
@@ -441,12 +462,20 @@ export function TourListPage() {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredTours.map((tour) => (
-                      <tr
-                        key={tour.id}
-                        className="hover:bg-slate-50 transition-colors">
-                        {/* Tour Name */}
+                  <motion.tbody 
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    className="divide-y divide-slate-100"
+                  >
+                    <AnimatePresence>
+                      {filteredTours.map((tour) => (
+                        <motion.tr
+                          variants={itemVariants}
+                          layout
+                          key={tour.id}
+                          className="hover:bg-slate-50 transition-colors">
+                          {/* Tour Name */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-16 h-16 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
@@ -518,9 +547,10 @@ export function TourListPage() {
                             </button>
                           </div>
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
-                  </tbody>
+                    </AnimatePresence>
+                  </motion.tbody>
                 </table>
               </div>
             )}

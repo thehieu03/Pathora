@@ -5,6 +5,9 @@ openspec/
 *.ai.*
 *.cursorrules
 .cursor/
+.codex/
+.gemini/
+.opencode/
 .windsurf/
 .claude/
 .agent/
@@ -12,5 +15,10 @@ openspec/
 .aider*
 .kilocode/
 .kiro/
+CLAUDE.md
+skills/
+skills-lock.json
 .github/copilot-instructions.md
+.github/prompts/
+.github/skills/
 .vscode/mcp.json
