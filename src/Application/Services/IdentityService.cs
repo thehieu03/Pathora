@@ -51,8 +51,27 @@ public class IdentityService(
         var hashedPassword = _passwordHasher.HashPassword(request.Password);
         var userEntity = UserEntity.Create(request.Username, request.FullName, request.Email, hashedPassword, request.Email);
 
-        await _userRepository.Create(userEntity);
-        return Result.Success;
+        try
+        {
+            await _unitOfWork.BeginTransactionAsync();
+            await _userRepository.Create(userEntity);
+
+            var addRoleResult = await _roleRepository.AddUser(userEntity.Id, [DefaultRoleIds.Customer]);
+            if (addRoleResult.IsError)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                return addRoleResult.Errors;
+            }
+
+            await _unitOfWork.SaveChangeAsync();
+            await _unitOfWork.CommitTransactionAsync();
+            return Result.Success;
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
     }
 
     public async Task<ErrorOr<LoginResponse>> Login(LoginRequest request)
@@ -86,6 +105,7 @@ public class IdentityService(
             {
                 userEntity.LinkGoogle(request.ProviderKey, "google");
                 await _userRepository.Update(userEntity);
+                await _unitOfWork.SaveChangeAsync();
             }
             else
             {
@@ -95,7 +115,27 @@ public class IdentityService(
                     request.ProviderEmail,
                     request.FullName,
                     null);
-                await _userRepository.Create(userEntity);
+
+                try
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+                    await _userRepository.Create(userEntity);
+
+                    var addRoleResult = await _roleRepository.AddUser(userEntity.Id, [DefaultRoleIds.Customer]);
+                    if (addRoleResult.IsError)
+                    {
+                        await _unitOfWork.RollbackTransactionAsync();
+                        return addRoleResult.Errors;
+                    }
+
+                    await _unitOfWork.SaveChangeAsync();
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw;
+                }
             }
         }
 

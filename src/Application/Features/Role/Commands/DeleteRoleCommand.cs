@@ -9,7 +9,7 @@ namespace Application.Features.Role.Commands;
 
 public sealed record DeleteRoleCommand(int RoleId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
-    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role, CacheKey.User];
 }
 
 public sealed class DeleteRoleCommandHandler(IRoleService roleService)
@@ -20,6 +20,3 @@ public sealed class DeleteRoleCommandHandler(IRoleService roleService)
         return await roleService.Delete(new DeleteRoleRequest(request.RoleId));
     }
 }
-
-
-

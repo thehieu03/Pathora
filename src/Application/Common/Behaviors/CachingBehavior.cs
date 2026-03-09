@@ -5,7 +5,7 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace Application.Common.Behaviors;
 
-public sealed class CachingBehavior<TRequest, TResponse>(
+public sealed partial class CachingBehavior<TRequest, TResponse>(
     IFusionCache cache,
     CacheKeyTracker cacheKeyTracker,
     ILogger<CachingBehavior<TRequest, TResponse>> logger)
@@ -23,11 +23,11 @@ public sealed class CachingBehavior<TRequest, TResponse>(
         var cached = await cache.TryGetAsync<TResponse>(cacheKey, token: cancellationToken);
         if (cached.HasValue)
         {
-            logger.LogDebug("[CACHE HIT] Key={CacheKey}", cacheKey);
+            Log.CacheHit(logger, cacheKey);
             return cached.Value;
         }
 
-        logger.LogDebug("[CACHE MISS] Key={CacheKey}", cacheKey);
+        Log.CacheMiss(logger, cacheKey);
         var response = await next();
 
         var entryOptions = new FusionCacheEntryOptions
@@ -48,5 +48,14 @@ public sealed class CachingBehavior<TRequest, TResponse>(
     {
         var colonIndex = cacheKey.IndexOf(':');
         return colonIndex > 0 ? cacheKey[..colonIndex] : null;
+    }
+
+    private static partial class Log
+    {
+        [LoggerMessage(EventId = 1001, Level = LogLevel.Debug, Message = "[CACHE HIT] Key={CacheKey}")]
+        public static partial void CacheHit(ILogger logger, string cacheKey);
+
+        [LoggerMessage(EventId = 1002, Level = LogLevel.Debug, Message = "[CACHE MISS] Key={CacheKey}")]
+        public static partial void CacheMiss(ILogger logger, string cacheKey);
     }
 }
