@@ -19,4 +19,4 @@ public sealed class CreateRoleRequestValidator : AbstractValidator<CreateRoleReq
     }
 }
 
-public sealed record CreateRoleResponse(Guid Id);
+public sealed record CreateRoleResponse(int Id);

@@ -12,7 +12,7 @@ public sealed class RoleCommandHandlerTests
     public async Task DeleteHandler_ShouldDelegateToRoleService()
     {
         var roleService = Substitute.For<IRoleService>();
-        var roleId = Guid.CreateVersion7().ToString();
+        var roleId = 1;
         roleService.Delete(Arg.Any<DeleteRoleRequest>()).Returns(Result.Success);
 
         var handler = new DeleteRoleCommandHandler(roleService);
@@ -33,7 +33,7 @@ public sealed class RoleCommandHandlerTests
 
         var handler = new DeleteRoleCommandHandler(roleService);
         var result = await handler.Handle(
-            new DeleteRoleCommand("nonexistent"), CancellationToken.None);
+            new DeleteRoleCommand(0), CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal("Role.NotFound", result.FirstError.Code);

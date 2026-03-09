@@ -9,7 +9,7 @@ namespace Application.Features.User.Commands;
 
 public sealed record CreateUserCommand(
     List<UserDepartmentInfo> Departments,
-    List<Guid> RoleIds,
+    List<int> RoleIds,
     string Email,
     string FullName,
     string Avatar) : ICommand<ErrorOr<Guid>>;

@@ -6,7 +6,7 @@ namespace Application.Contracts.User;
 public sealed record UpdateUserRequest(
     Guid Id,
     List<UserDepartmentInfo> Departments,
-    List<Guid> RoleIds,
+    List<int> RoleIds,
     string FullName,
     string Avatar
 );

@@ -5,7 +5,7 @@ namespace Application.Contracts.Role;
 public sealed record GetAllRoleRequest();
 
 public sealed record RoleVm(
-    Guid Id,
+    int Id,
     string Name,
     string Description,
     int Type,

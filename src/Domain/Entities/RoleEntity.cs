@@ -3,12 +3,8 @@ using Domain.Constant;
 
 namespace Domain.Entities;
 
-public class RoleEntity : Aggregate<Guid>
+public class RoleEntity : Aggregate<int>
 {
-    public RoleEntity()
-    {
-        Id = Guid.CreateVersion7();
-    }
 
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;

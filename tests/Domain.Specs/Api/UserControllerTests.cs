@@ -71,7 +71,7 @@ public sealed class UserControllerTests
             ],
             RoleIds:
             [
-                Guid.CreateVersion7()
+                1
             ],
             Email: "new.user@example.com",
             FullName: "New User",
@@ -101,7 +101,7 @@ public sealed class UserControllerTests
             ],
             RoleIds:
             [
-                Guid.CreateVersion7()
+                1
             ],
             FullName: "Updated User",
             Avatar: "updated-avatar.png");

@@ -5,7 +5,7 @@ using FluentValidation;
 namespace Application.Contracts.Role;
 
 public sealed record UpdateRoleRequest(
-    string RoleId,
+    int RoleId,
     string Name,
     string Description,
     RoleStatus Status,

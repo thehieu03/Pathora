@@ -23,7 +23,7 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
         return Task.FromResult<ErrorOr<Success>>(Result.Success);
     }
 
-    public async Task<ErrorOr<Success>> AddUser(Guid userId, List<Guid> roleIds)
+    public async Task<ErrorOr<Success>> AddUser(Guid userId, List<int> roleIds)
     {
         var userRoles = roleIds.Select(roleId => new UserRoleEntity
         {
@@ -41,7 +41,7 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
         return Result.Success;
     }
 
-    public async Task<ErrorOr<List<(Guid UserId, Guid RoleId)>>> FindAllUserRoles()
+    public async Task<ErrorOr<List<(Guid UserId, int RoleId)>>> FindAllUserRoles()
     {
         var result = await _context.UserRoles
             .AsNoTracking()
@@ -58,11 +58,9 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
             .ToListAsync();
     }
 
-    public async Task<ErrorOr<RoleEntity?>> FindById(string roleId)
+    public async Task<ErrorOr<RoleEntity?>> FindById(int roleId)
     {
-        if (!Guid.TryParse(roleId, out var id))
-            return Error.Validation("Role.InvalidId", "Role ID không hợp lệ");
-        var role = await _context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+        var role = await _context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == roleId && !r.IsDeleted);
         return role;
     }
 

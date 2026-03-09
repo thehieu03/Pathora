@@ -5,7 +5,7 @@ using ErrorOr;
 
 namespace Application.Features.Role.Queries;
 
-public sealed record GetRoleDetailQuery(string RoleId) : IQuery<ErrorOr<RoleDetailVm>>;
+public sealed record GetRoleDetailQuery(int RoleId) : IQuery<ErrorOr<RoleDetailVm>>;
 
 public sealed class GetRoleDetailQueryHandler(IRoleService roleService)
     : IQueryHandler<GetRoleDetailQuery, ErrorOr<RoleDetailVm>>

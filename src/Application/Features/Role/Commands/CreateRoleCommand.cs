@@ -9,7 +9,7 @@ using FluentValidation;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<int>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role];
 }
@@ -28,9 +28,9 @@ public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCom
 }
 
 public sealed class CreateRoleCommandHandler(IRoleService roleService)
-    : ICommandHandler<CreateRoleCommand, ErrorOr<Guid>>
+    : ICommandHandler<CreateRoleCommand, ErrorOr<int>>
 {
-    public async Task<ErrorOr<Guid>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<int>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
         return await roleService.Create(new CreateRoleRequest(request.Name, request.Description, request.Type, request.FunctionIds ?? []));
     }

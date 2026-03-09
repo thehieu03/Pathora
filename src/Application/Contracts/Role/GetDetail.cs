@@ -2,10 +2,10 @@ using Domain.Enums;
 
 namespace Application.Contracts.Role;
 
-public sealed record GetRoleDetailRequest(string RoleId);
+public sealed record GetRoleDetailRequest(int RoleId);
 
 public sealed record RoleDetailVm(
-    Guid? Id,
+    int? Id,
     string? Name,
     string? Description,
     int? Type,
