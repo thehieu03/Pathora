@@ -1,4 +1,5 @@
 using Domain.Common.Repositories;
+using Application.Common.Constant;
 using Domain.Entities;
 using Domain.Enums;
 using ErrorOr;
@@ -67,7 +68,7 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
     public async Task<ErrorOr<List<RoleEntity>>> FindByUserId(string userId)
     {
         if (!Guid.TryParse(userId, out var uid))
-            return Error.Validation("User.InvalidId", "User ID không hợp lệ");
+            return Error.Validation(ErrorConstants.User.InvalidIdCode, ErrorConstants.User.InvalidIdDescription);
         var roleIds = await _context.UserRoles
             .Where(ur => ur.UserId == uid)
             .Select(ur => ur.RoleId)

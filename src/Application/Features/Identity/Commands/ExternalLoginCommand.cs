@@ -1,4 +1,5 @@
 using Application.Contracts.Identity;
+using Application.Common.Constant;
 using Application.Services;
 using BuildingBlocks.CORS;
 using ErrorOr;
@@ -16,11 +17,11 @@ public sealed class ExternalLoginCommandValidator : AbstractValidator<ExternalLo
     public ExternalLoginCommandValidator()
     {
         RuleFor(x => x.ProviderKey)
-            .NotEmpty().WithMessage("ProviderKey không được để trống");
+            .NotEmpty().WithMessage(ValidationMessages.ProviderKeyRequired);
 
         RuleFor(x => x.ProviderEmail)
-            .NotEmpty().WithMessage("Email không được để trống")
-            .EmailAddress().WithMessage("Email không hợp lệ");
+            .NotEmpty().WithMessage(ValidationMessages.ProviderEmailRequired)
+            .EmailAddress().WithMessage(ValidationMessages.ProviderEmailInvalid);
     }
 }
 
@@ -32,6 +33,6 @@ public sealed class ExternalLoginCommandHandler(IIdentityService identityService
         CancellationToken cancellationToken)
     {
         return await identityService.ExternalLogin(
-            new ExternalLoginRequest("Google", request.ProviderKey, request.ProviderEmail, request.FullName));
+            new ExternalLoginRequest(AuthProviders.Google, request.ProviderKey, request.ProviderEmail, request.FullName));
     }
 }

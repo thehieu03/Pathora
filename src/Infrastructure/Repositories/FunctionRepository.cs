@@ -1,4 +1,5 @@
 using Domain.Common.Repositories;
+using Application.Common.Constant;
 using Domain.Constant;
 using Domain.Entities;
 using ErrorOr;
@@ -25,7 +26,7 @@ public class FunctionRepository(AppDbContext context) : IFunctionRepository
     {
         if (!Guid.TryParse(userId, out var userGuid))
         {
-            return Error.Validation("User.InvalidId", "Định dạng UserId không hợp lệ.");
+            return Error.Validation(ErrorConstants.User.InvalidIdCode, ErrorConstants.User.InvalidIdFormatDescription);
         }
 
         // Truy vấn lấy danh sách Function thông qua các bảng trung gian
@@ -34,16 +35,16 @@ public class FunctionRepository(AppDbContext context) : IFunctionRepository
          .Where(ur => ur.UserId == userGuid)
          .SelectMany(ur => _context.Set<RoleFunctionEntity>()
              .Where(rf => rf.RoleId == ur.RoleId)
-             .Select(rf => rf.Function)) 
+             .Select(rf => rf.Function))
          .Distinct()
          .ToListAsync();
 
         if (functions == null || !functions.Any())
         {
-            return Error.NotFound("User.FunctionsNotFound", "Không tìm thấy chức năng nào cho người dùng này.");
+            return Error.NotFound(ErrorConstants.User.FunctionsNotFoundCode, ErrorConstants.User.FunctionsNotFoundDescription);
         }
 
-       
+
         return functions;
     }
 }

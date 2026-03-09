@@ -2,6 +2,7 @@ using Common.Generators;
 using Contracts;
 using Contracts.Interfaces;
 using Application.Contracts.User;
+using Application.Common.Constant;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.UnitOfWork;
@@ -71,7 +72,7 @@ public class UserService(
     {
         var userEntity = await _userRepository.FindById(id);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         var rolesResult = await _roleRepository.FindByUserId(id.ToString());
         var roles = rolesResult.IsError
@@ -92,7 +93,7 @@ public class UserService(
     {
         var isUnique = await _userRepository.IsEmailUnique(request.Email);
         if (!isUnique)
-            return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+            return Error.Conflict(ErrorConstants.User.DuplicateEmailCode, ErrorConstants.User.DuplicateEmailDescription);
 
         var generatedPassword = PasswordGenerator.Generate();
         var userEntity = UserEntity.Create(
@@ -125,7 +126,7 @@ public class UserService(
     {
         var userEntity = await _userRepository.FindById(request.Id);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         userEntity.Update(request.FullName, request.Avatar, _user.Id ?? string.Empty);
 
@@ -151,7 +152,7 @@ public class UserService(
     {
         var userEntity = await _userRepository.FindById(request.UserId);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         var newPassword = PasswordGenerator.Generate();
         userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
@@ -165,7 +166,7 @@ public class UserService(
     {
         var userEntity = await _userRepository.FindById(id);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         // Dùng entity method để đảm bảo LastModifiedBy/LastModifiedOnUtc được set
         userEntity.SoftDelete(_user.Id ?? string.Empty);
@@ -178,7 +179,7 @@ public class UserService(
     {
         var isUnique = await _userRepository.IsEmailUnique(email);
         if (!isUnique)
-            return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+            return Error.Conflict(ErrorConstants.User.DuplicateEmailCode, ErrorConstants.User.DuplicateEmailDescription);
         return Result.Success;
     }
 }

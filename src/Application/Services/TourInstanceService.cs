@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.TourInstance.Commands;
 using Application.Features.TourInstance.Queries;
@@ -40,11 +41,11 @@ public class TourInstanceService(
     {
         var tour = await _tourRepository.FindById(request.TourId);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         var classification = tour.Classifications.FirstOrDefault(c => c.Id == request.ClassificationId);
         if (classification is null)
-            return Error.NotFound("Classification.NotFound", "Phân loại tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Classification.NotFoundCode, ErrorConstants.Classification.NotFoundDescription);
 
         var performedBy = _user.Id ?? string.Empty;
 
@@ -98,7 +99,7 @@ public class TourInstanceService(
     {
         var entity = await _tourInstanceRepository.FindById(request.Id);
         if (entity is null)
-            return Error.NotFound("TourInstance.NotFound", "Lịch trình tour không tồn tại");
+            return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
 
         var performedBy = _user.Id ?? string.Empty;
 
@@ -145,7 +146,7 @@ public class TourInstanceService(
     {
         var entity = await _tourInstanceRepository.FindById(id);
         if (entity is null)
-            return Error.NotFound("TourInstance.NotFound", "Lịch trình tour không tồn tại");
+            return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
 
         await _tourInstanceRepository.SoftDelete(id);
         return Result.Success;
@@ -155,7 +156,7 @@ public class TourInstanceService(
     {
         var entity = await _tourInstanceRepository.FindById(id);
         if (entity is null)
-            return Error.NotFound("TourInstance.NotFound", "Lịch trình tour không tồn tại");
+            return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
 
         var performedBy = _user.Id ?? string.Empty;
         entity.ChangeStatus(newStatus, performedBy);
@@ -176,7 +177,7 @@ public class TourInstanceService(
     {
         var entity = await _tourInstanceRepository.FindById(id, asNoTracking: true);
         if (entity is null)
-            return Error.NotFound("TourInstance.NotFound", "Lịch trình tour không tồn tại");
+            return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
 
         return _mapper.Map<TourInstanceDto>(entity);
     }
@@ -200,7 +201,7 @@ public class TourInstanceService(
     {
         var entity = await _tourInstanceRepository.FindPublicById(id);
         if (entity is null)
-            return Error.NotFound("TourInstance.NotFound", "Lịch trình tour không tồn tại hoặc không khả dụng");
+            return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.PublicNotFoundDescription);
 
         return _mapper.Map<TourInstanceDto>(entity);
     }
