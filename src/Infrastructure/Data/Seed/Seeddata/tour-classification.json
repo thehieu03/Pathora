@@ -1,0 +1,38 @@
+{
+  "entity": "TourClassificationEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "TourId": null,
+    "Tour": null,
+    "Name": null,
+    "Price": null,
+    "SalePrice": null,
+    "Description": null,
+    "DurationDays": null,
+    "Translations": {},
+    "Plans": [],
+    "Insurances": []
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "TourId": "Guid",
+    "Tour": "TourEntity",
+    "Name": "string",
+    "Price": "decimal",
+    "SalePrice": "decimal",
+    "Description": "string",
+    "DurationDays": "int",
+    "Translations": "Dictionary<string, TourClassificationTranslationData>",
+    "Plans": "List<TourDayEntity>",
+    "Insurances": "List<TourInsuranceEntity>"
+  },
+  "data": []
+}

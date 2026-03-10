@@ -1,0 +1,16 @@
+{
+  "entity": "ImageEntity",
+  "template": {
+    "FileId": null,
+    "OriginalFileName": null,
+    "FileName": null,
+    "PublicURL": null
+  },
+  "types": {
+    "FileId": "string?",
+    "OriginalFileName": "string?",
+    "FileName": "string?",
+    "PublicURL": "string?"
+  },
+  "data": []
+}

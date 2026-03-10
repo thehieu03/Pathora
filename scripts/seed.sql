@@ -44,7 +44,7 @@ DELETE FROM "SystemKeys";
 -- ============================================================
 -- Reset auto-increment sequences cho các bảng int PK
 -- ============================================================
-ALTER SEQUENCE "Roles_Id_seq" RESTART WITH 1;
+ALTER SEQUENCE "Roles_NewId_seq" RESTART WITH 1;
 ALTER SEQUENCE "Functions_Id_seq" RESTART WITH 1;
 ALTER SEQUENCE "SystemKeys_Id_seq" RESTART WITH 1;
 ALTER SEQUENCE "LogErrors_Id_seq" RESTART WITH 1;

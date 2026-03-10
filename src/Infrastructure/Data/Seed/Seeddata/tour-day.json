@@ -1,0 +1,32 @@
+{
+  "entity": "TourDayEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "ClassificationId": null,
+    "Classification": null,
+    "DayNumber": null,
+    "Title": null,
+    "Description": null,
+    "Translations": {},
+    "Activities": []
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "ClassificationId": "Guid",
+    "Classification": "TourClassificationEntity",
+    "DayNumber": "int",
+    "Title": "string",
+    "Description": "string?",
+    "Translations": "Dictionary<string, TourDayTranslationData>",
+    "Activities": "List<TourDayActivityEntity>"
+  },
+  "data": []
+}

@@ -1,0 +1,28 @@
+{
+  "entity": "DynamicPricingTierEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "TourInstanceId": null,
+    "TourInstance": null,
+    "MinParticipants": null,
+    "MaxParticipants": null,
+    "PricePerPerson": null
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "TourInstanceId": "Guid",
+    "TourInstance": "TourInstanceEntity",
+    "MinParticipants": "int",
+    "MaxParticipants": "int",
+    "PricePerPerson": "decimal"
+  },
+  "data": []
+}
