@@ -1,4 +1,5 @@
 ﻿using Application.Contracts.Payment;
+using Domain.ApiThirdPatyResponse;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +10,6 @@ namespace Infrastructure.CronJobs;
 internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
 {
     private readonly HttpClient _httpClient = new();
-    private readonly IServiceScopeFactory? _scopeFactory;
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _httpClient.DefaultRequestHeaders.Clear();
@@ -27,7 +27,7 @@ internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundS
                 var transactions = JsonSerializer.Deserialize<SepayApiResponse>(json, options);
                 using var scope = scopeFactory.CreateScope();
                 var sender = scope.ServiceProvider.GetRequiredService<ISender>();
-                await sender.Send(new ProcessPaymentCommand(transactions), stoppingToken);
+                _ = await sender.Send(new ProcessPaymentCommand(transactions), stoppingToken);
             }
             catch (Exception ex)
             {

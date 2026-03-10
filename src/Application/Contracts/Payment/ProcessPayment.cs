@@ -5,5 +5,5 @@ using System.Text;
 
 namespace Application.Contracts.Payment
 {
-    public sealed record ProcessPaymentCommand(SepayApiResponse Response);
+    public sealed record ProcessPaymentCommand(SepayApiResponse? Response);
 }
