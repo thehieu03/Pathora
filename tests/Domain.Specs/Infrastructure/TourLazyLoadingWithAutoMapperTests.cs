@@ -54,7 +54,7 @@ public sealed class TourLazyLoadingWithAutoMapperTests
         using var dbContext = new AppDbContext(options);
 
         var tour = TourEntity.Create("Paris Tour", "Short", "Long", "tester", TourStatus.Active);
-        var classification = TourClassificationEntity.Create(tour.Id, "VIP", 1000m, 900m, "Description", 3, "tester");
+        var classification = TourClassificationEntity.Create(tour.Id, "VIP", 1000m, 900m, 0m, "Description", 3, 2, "tester");
         var day = TourDayEntity.Create(classification.Id, 1, "Day 1", "tester");
         var activity = TourDayActivityEntity.Create(day.Id, 1, TourDayActivityType.Sightseeing, "Visit", "tester");
 

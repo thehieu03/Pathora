@@ -57,7 +57,7 @@ public sealed class PublicQueryHandlerTests
     {
         var tourRepo = Substitute.For<ITourRepository>();
         var classification = TourClassificationEntity.Create(
-            Guid.CreateVersion7(), "VIP", 1000m, 900m, "VIP package", 3, "tester");
+            Guid.CreateVersion7(), "VIP", 1000m, 900m, 0m, "VIP package", 3, 2, "tester");
 
         var tour = new TourEntity
         {
@@ -125,7 +125,7 @@ public sealed class PublicQueryHandlerTests
         day.Activities = [activity];
 
         var classification = TourClassificationEntity.Create(
-            Guid.CreateVersion7(), "VIP", 500m, 400m, "desc", 2, "tester");
+            Guid.CreateVersion7(), "VIP", 500m, 400m, 0m, "desc", 2, 1, "tester");
         classification.Plans = [day];
 
         var tour = new TourEntity

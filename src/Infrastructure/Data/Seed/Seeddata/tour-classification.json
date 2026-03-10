@@ -1,38 +1,418 @@
-{
-  "entity": "TourClassificationEntity",
-  "template": {
-    "Id": null,
-    "CreatedOnUtc": null,
-    "CreatedBy": null,
-    "LastModifiedOnUtc": null,
-    "LastModifiedBy": null,
-    "TourId": null,
-    "Tour": null,
-    "Name": null,
-    "Price": null,
-    "SalePrice": null,
-    "Description": null,
-    "DurationDays": null,
-    "Translations": {},
-    "Plans": [],
-    "Insurances": []
+[
+  {
+    "Id": "019527c0-0000-7000-8000-000000000001",
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "Name": "Tiêu chuẩn",
+    "Description": "Khách sạn 3 sao, xe du lịch, HDV",
+    "AdultPrice": 3500000,
+    "ChildPrice": 2800000,
+    "InfantPrice": 0,
+    "NumberOfDay": 3,
+    "NumberOfNight": 2,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Khách sạn 3 sao, xe du lịch, HDV"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star hotel, tourist coach, tour guide"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "types": {
-    "Id": "Guid",
-    "CreatedOnUtc": "DateTimeOffset",
-    "CreatedBy": "string?",
-    "LastModifiedOnUtc": "DateTimeOffset?",
-    "LastModifiedBy": "string?",
-    "TourId": "Guid",
-    "Tour": "TourEntity",
-    "Name": "string",
-    "Price": "decimal",
-    "SalePrice": "decimal",
-    "Description": "string",
-    "DurationDays": "int",
-    "Translations": "Dictionary<string, TourClassificationTranslationData>",
-    "Plans": "List<TourDayEntity>",
-    "Insurances": "List<TourInsuranceEntity>"
+  {
+    "Id": "019527c0-0000-7000-8000-000000000002",
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "Name": "Cao cấp",
+    "Description": "Nghỉ đêm trên du thuyền 5 sao, buffet hải sản",
+    "AdultPrice": 6500000,
+    "ChildPrice": 5200000,
+    "InfantPrice": 0,
+    "NumberOfDay": 3,
+    "NumberOfNight": 2,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Nghỉ đêm trên du thuyền 5 sao, buffet hải sản"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "Overnight on 5-star cruise, seafood buffet"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "data": []
-}
+  {
+    "Id": "019527c0-0000-7000-8000-000000000003",
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "Name": "Tiêu chuẩn",
+    "Description": "Khách sạn 3 sao, bao gồm vé Bà Nà",
+    "AdultPrice": 4200000,
+    "ChildPrice": 3400000,
+    "InfantPrice": 0,
+    "NumberOfDay": 4,
+    "NumberOfNight": 3,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Khách sạn 3 sao, bao gồm vé Bà Nà"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star hotel, Ba Na ticket included"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000004",
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "Name": "Cao cấp",
+    "Description": "Resort 5 sao Hội An, xe riêng, HDV riêng",
+    "AdultPrice": 8900000,
+    "ChildPrice": 7100000,
+    "InfantPrice": 0,
+    "NumberOfDay": 4,
+    "NumberOfNight": 3,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Resort 5 sao Hội An, xe riêng, HDV riêng"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "5-star Hoi An resort, private van, private guide"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000005",
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "Name": "Tiêu chuẩn",
+    "Description": "Resort 3 sao, bao gồm vé máy bay",
+    "AdultPrice": 5800000,
+    "ChildPrice": 4600000,
+    "InfantPrice": 500000,
+    "NumberOfDay": 5,
+    "NumberOfNight": 4,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Resort 3 sao, bao gồm vé máy bay"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star resort, flight ticket included"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000006",
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "Name": "Cao cấp",
+    "Description": "Resort 5 sao bãi Sao, spa miễn phí",
+    "AdultPrice": 11200000,
+    "ChildPrice": 8900000,
+    "InfantPrice": 500000,
+    "NumberOfDay": 5,
+    "NumberOfNight": 4,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Resort 5 sao bãi Sao, spa miễn phí"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "5-star Sao Beach resort, free spa"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000007",
+    "TourId": "019527b0-0000-7000-8000-000000000004",
+    "Name": "Tiêu chuẩn",
+    "Description": "Homestay bản làng, xe du lịch",
+    "AdultPrice": 2800000,
+    "ChildPrice": 2200000,
+    "InfantPrice": 0,
+    "NumberOfDay": 3,
+    "NumberOfNight": 2,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Homestay bản làng, xe du lịch"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "Village homestay, tourist coach"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000008",
+    "TourId": "019527b0-0000-7000-8000-000000000004",
+    "Name": "Cao cấp",
+    "Description": "Hotel Sapa 4 sao, cáp treo Fansipan VIP",
+    "AdultPrice": 5200000,
+    "ChildPrice": 4200000,
+    "InfantPrice": 0,
+    "NumberOfDay": 3,
+    "NumberOfNight": 2,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Hotel Sapa 4 sao, cáp treo Fansipan VIP"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "Sapa 4-star hotel, VIP Fansipan cable car"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000009",
+    "TourId": "019527b0-0000-7000-8000-000000000005",
+    "Name": "Tiêu chuẩn",
+    "Description": "Khách sạn 3 sao + resort 3 sao PQ",
+    "AdultPrice": 6200000,
+    "ChildPrice": 5000000,
+    "InfantPrice": 500000,
+    "NumberOfDay": 5,
+    "NumberOfNight": 4,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Khách sạn 3 sao + resort 3 sao PQ"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star hotel + 3-star Phu Quoc resort"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-00000000000a",
+    "TourId": "019527b0-0000-7000-8000-000000000005",
+    "Name": "Cao cấp",
+    "Description": "Resort 5 sao Phú Quốc, bay thẳng",
+    "AdultPrice": 12800000,
+    "ChildPrice": 10200000,
+    "InfantPrice": 500000,
+    "NumberOfDay": 5,
+    "NumberOfNight": 4,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Resort 5 sao Phú Quốc, bay thẳng"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "5-star Phu Quoc resort, direct flight"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-00000000000b",
+    "TourId": "019527b0-0000-7000-8000-000000000006",
+    "Name": "Standard",
+    "Description": "3-star hotel, group coach, English-speaking guide",
+    "AdultPrice": 7500000,
+    "ChildPrice": 6000000,
+    "InfantPrice": 0,
+    "NumberOfDay": 4,
+    "NumberOfNight": 3,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Khách sạn 3 sao, xe ghép, HDV tiếng Việt"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star hotel, group coach, English-speaking guide"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-00000000000c",
+    "TourId": "019527b0-0000-7000-8000-000000000006",
+    "Name": "Premium",
+    "Description": "5-star hotel, private van, Thai massage included",
+    "AdultPrice": 14500000,
+    "ChildPrice": 11600000,
+    "InfantPrice": 0,
+    "NumberOfDay": 4,
+    "NumberOfNight": 3,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Khách sạn 5 sao, xe riêng, massage Thái miễn phí"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "5-star hotel, private van, Thai massage included"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-00000000000d",
+    "TourId": "019527b0-0000-7000-8000-000000000007",
+    "Name": "Standard",
+    "Description": "3-star hotel, Shinkansen pass, group tour",
+    "AdultPrice": 18500000,
+    "ChildPrice": 14800000,
+    "InfantPrice": 0,
+    "NumberOfDay": 5,
+    "NumberOfNight": 4,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Khách sạn 3 sao, vé Shinkansen, tour ghép"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star hotel, Shinkansen pass, group tour"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-00000000000e",
+    "TourId": "019527b0-0000-7000-8000-000000000007",
+    "Name": "Premium",
+    "Description": "4-star ryokan + hotel, private guide, kaiseki dinner",
+    "AdultPrice": 32000000,
+    "ChildPrice": 25600000,
+    "InfantPrice": 0,
+    "NumberOfDay": 5,
+    "NumberOfNight": 4,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Ryokan 4 sao + khách sạn, HDV riêng, tối kaiseki"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "4-star ryokan + hotel, private guide, kaiseki dinner"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-00000000000f",
+    "TourId": "019527b0-0000-7000-8000-000000000008",
+    "Name": "Standard",
+    "Description": "3-star hotel, domestic flight, group tour",
+    "AdultPrice": 12800000,
+    "ChildPrice": 10200000,
+    "InfantPrice": 0,
+    "NumberOfDay": 4,
+    "NumberOfNight": 3,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Tiêu chuẩn",
+        "Description": "Khách sạn 3 sao, bay nội địa, tour ghép"
+      },
+      "en": {
+        "Name": "Standard",
+        "Description": "3-star hotel, domestic flight, group tour"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527c0-0000-7000-8000-000000000010",
+    "TourId": "019527b0-0000-7000-8000-000000000008",
+    "Name": "Premium",
+    "Description": "5-star hotel, private car, premium activities",
+    "AdultPrice": 22500000,
+    "ChildPrice": 18000000,
+    "InfantPrice": 0,
+    "NumberOfDay": 4,
+    "NumberOfNight": 3,
+    "IsDeleted": false,
+    "Translations": {
+      "vi": {
+        "Name": "Cao cấp",
+        "Description": "Khách sạn 5 sao, xe riêng, hoạt động cao cấp"
+      },
+      "en": {
+        "Name": "Premium",
+        "Description": "5-star hotel, private car, premium activities"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

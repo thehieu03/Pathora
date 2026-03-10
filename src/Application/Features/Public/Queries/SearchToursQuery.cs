@@ -42,14 +42,14 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
         {
             var classification = t.Classifications.FirstOrDefault();
             return new SearchTourVm(
-                t.Id,
+t.Id,
                 t.TourName,
                 t.Thumbnail?.PublicURL,
                 t.ShortDescription,
                 GetMainLocation(t),
-                classification?.DurationDays ?? 0,
-                classification?.Price ?? 0,
-                classification?.SalePrice ?? 0,
+                classification?.NumberOfDay ?? 0,
+                classification?.AdultPrice ?? 0,
+                classification?.ChildPrice ?? 0,
                 classification?.Name,
                 null);
         }).ToList();

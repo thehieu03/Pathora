@@ -1,46 +1,2324 @@
-{
-  "entity": "TourDayActivityEntity",
-  "template": {
-    "Id": null,
-    "CreatedOnUtc": null,
-    "CreatedBy": null,
-    "LastModifiedOnUtc": null,
-    "LastModifiedBy": null,
-    "TourDayId": null,
-    "TourDay": null,
-    "Order": null,
-    "ActivityType": null,
-    "Title": null,
-    "Description": null,
+[
+  {
+    "Id": "019527d5-0001-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000001",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Di chuyển Hà Nội → Hạ Long",
+    "Description": "Khởi hành từ Hà Nội bằng xe du lịch, dừng nghỉ giữa đường tại Hải Dương.",
+    "Note": "Xe khởi hành đúng giờ, mang theo đồ cá nhân.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "11:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển Hà Nội → Hạ Long",
+        "Description": "Khởi hành từ Hà Nội bằng xe du lịch, dừng nghỉ giữa đường tại Hải Dương."
+      },
+      "en": {
+        "Title": "Transfer Hanoi to Ha Long",
+        "Description": "Depart from Hanoi by tourist bus, rest stop in Hai Duong."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0001-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000001",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Ăn trưa hải sản Hạ Long",
+    "Description": "Thưởng thức hải sản tươi sống tại nhà hàng ven vịnh.",
     "Note": null,
-    "EstimatedCost": null,
-    "IsOptional": null,
-    "Translations": {},
-    "StartTime": null,
-    "EndTime": null,
-    "Routes": [],
-    "Accommodation": null
+    "EstimatedCost": 250000,
+    "IsOptional": false,
+    "StartTime": "11:30:00",
+    "EndTime": "12:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ăn trưa hải sản Hạ Long",
+        "Description": "Thưởng thức hải sản tươi sống tại nhà hàng ven vịnh."
+      },
+      "en": {
+        "Title": "Seafood Lunch in Ha Long",
+        "Description": "Enjoy fresh seafood at a bay-side restaurant."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "types": {
-    "Id": "Guid",
-    "CreatedOnUtc": "DateTimeOffset",
-    "CreatedBy": "string?",
-    "LastModifiedOnUtc": "DateTimeOffset?",
-    "LastModifiedBy": "string?",
-    "TourDayId": "Guid",
-    "TourDay": "TourDayEntity",
-    "Order": "int",
-    "ActivityType": "TourDayActivityType",
-    "Title": "string",
-    "Description": "string?",
-    "Note": "string?",
-    "EstimatedCost": "decimal?",
-    "IsOptional": "bool",
-    "Translations": "Dictionary<string, TourDayActivityTranslationData>",
-    "StartTime": "TimeOnly?",
-    "EndTime": "TimeOnly?",
-    "Routes": "List<TourPlanRouteEntity>",
-    "Accommodation": "TourPlanAccommodationEntity?"
+  {
+    "Id": "019527d5-0001-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000001",
+    "Order": 3,
+    "ActivityType": "Accommodation",
+    "Title": "Lên du thuyền & nhận phòng",
+    "Description": "Check-in du thuyền 4 sao, ngắm cảnh vịnh Hạ Long từ boong tàu.",
+    "Note": "Mang theo CMND/CCCD để check-in.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "13:00:00",
+    "EndTime": "14:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Lên du thuyền & nhận phòng",
+        "Description": "Check-in du thuyền 4 sao, ngắm cảnh vịnh Hạ Long từ boong tàu."
+      },
+      "en": {
+        "Title": "Board Cruise & Check-in",
+        "Description": "Check into the 4-star cruise, enjoy Ha Long Bay views from the deck."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "data": []
-}
+  {
+    "Id": "019527d5-0001-7000-8000-000000000004",
+    "TourDayId": "019527d0-0001-7000-8000-000000000001",
+    "Order": 4,
+    "ActivityType": "Sightseeing",
+    "Title": "Ngắm hoàng hôn trên vịnh",
+    "Description": "Thưởng thức hoàng hôn trên boong du thuyền với cocktail.",
+    "Note": null,
+    "EstimatedCost": 50000,
+    "IsOptional": true,
+    "StartTime": "17:00:00",
+    "EndTime": "18:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ngắm hoàng hôn trên vịnh",
+        "Description": "Thưởng thức hoàng hôn trên boong du thuyền với cocktail."
+      },
+      "en": {
+        "Title": "Sunset Viewing on the Bay",
+        "Description": "Enjoy sunset from the cruise deck with cocktails."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0002-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000002",
+    "Order": 1,
+    "ActivityType": "Sightseeing",
+    "Title": "Tham quan hang Sửng Sốt",
+    "Description": "Khám phá hang Sửng Sốt - một trong những hang động lớn nhất vịnh Hạ Long.",
+    "Note": "Mang giày thể thao, đường đi có bậc thang.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "10:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tham quan hang Sửng Sốt",
+        "Description": "Khám phá hang Sửng Sốt - một trong những hang động lớn nhất vịnh Hạ Long."
+      },
+      "en": {
+        "Title": "Visit Sung Sot Cave",
+        "Description": "Explore Sung Sot Cave - one of the largest caves in Ha Long Bay."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0002-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000002",
+    "Order": 2,
+    "ActivityType": "Adventure",
+    "Title": "Chèo kayak quanh vịnh",
+    "Description": "Chèo kayak len lỏi qua các hang luồn và ngắm làng chài nổi.",
+    "Note": "Mặc áo phao bắt buộc. Không biết bơi vẫn tham gia được.",
+    "EstimatedCost": 150000,
+    "IsOptional": true,
+    "StartTime": "10:30:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Chèo kayak quanh vịnh",
+        "Description": "Chèo kayak len lỏi qua các hang luồn và ngắm làng chài nổi."
+      },
+      "en": {
+        "Title": "Kayaking Around the Bay",
+        "Description": "Kayak through cave tunnels and see floating fishing villages."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0002-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000002",
+    "Order": 3,
+    "ActivityType": "Relaxation",
+    "Title": "Tắm biển đảo Ti Tốp",
+    "Description": "Tắm biển và leo lên đỉnh đảo Ti Tốp ngắm toàn cảnh vịnh.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "16:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tắm biển đảo Ti Tốp",
+        "Description": "Tắm biển và leo lên đỉnh đảo Ti Tốp ngắm toàn cảnh vịnh."
+      },
+      "en": {
+        "Title": "Swimming at Ti Top Island",
+        "Description": "Swim at the beach and climb to the top of Ti Top Island for panoramic views."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0003-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000003",
+    "Order": 1,
+    "ActivityType": "Sightseeing",
+    "Title": "Ngắm bình minh trên vịnh",
+    "Description": "Thức dậy sớm ngắm bình minh, tập thái cực quyền trên boong tàu.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "05:30:00",
+    "EndTime": "06:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ngắm bình minh trên vịnh",
+        "Description": "Thức dậy sớm ngắm bình minh, tập thái cực quyền trên boong tàu."
+      },
+      "en": {
+        "Title": "Sunrise on the Bay",
+        "Description": "Early wake-up for sunrise, Tai Chi session on the cruise deck."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0003-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000003",
+    "Order": 2,
+    "ActivityType": "Transportation",
+    "Title": "Trả phòng & di chuyển về Hà Nội",
+    "Description": "Trả phòng du thuyền, lên xe về Hà Nội, dừng nghỉ mua đặc sản.",
+    "Note": "Kiểm tra đồ đạc trước khi rời tàu.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "09:00:00",
+    "EndTime": "13:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Trả phòng & di chuyển về Hà Nội",
+        "Description": "Trả phòng du thuyền, lên xe về Hà Nội, dừng nghỉ mua đặc sản."
+      },
+      "en": {
+        "Title": "Check-out & Transfer to Hanoi",
+        "Description": "Check out from cruise, return to Hanoi by bus with souvenir stop."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0003-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000003",
+    "Order": 3,
+    "ActivityType": "Shopping",
+    "Title": "Mua đặc sản Quảng Ninh",
+    "Description": "Dừng tại cửa hàng đặc sản mua chả mực, bánh gật gù, than tổ ong.",
+    "Note": "Tự túc chi phí mua sắm.",
+    "EstimatedCost": 200000,
+    "IsOptional": true,
+    "StartTime": "13:30:00",
+    "EndTime": "14:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Mua đặc sản Quảng Ninh",
+        "Description": "Dừng tại cửa hàng đặc sản mua chả mực, bánh gật gù, than tổ ong."
+      },
+      "en": {
+        "Title": "Quang Ninh Souvenirs Shopping",
+        "Description": "Stop at specialty shops for squid cake, local pastries, and charcoal briquettes."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0004-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000004",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Đón sân bay Đà Nẵng",
+    "Description": "Đón đoàn tại sân bay quốc tế Đà Nẵng, di chuyển lên Bà Nà Hills.",
+    "Note": "HDV đón tại cổng ra sân bay.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "09:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Đón sân bay Đà Nẵng",
+        "Description": "Đón đoàn tại sân bay quốc tế Đà Nẵng, di chuyển lên Bà Nà Hills."
+      },
+      "en": {
+        "Title": "Da Nang Airport Pickup",
+        "Description": "Meet group at Da Nang International Airport, transfer to Ba Na Hills."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0004-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000004",
+    "Order": 2,
+    "ActivityType": "Sightseeing",
+    "Title": "Bà Nà Hills & Cầu Vàng",
+    "Description": "Đi cáp treo lên Bà Nà Hills, check-in Cầu Vàng, tham quan làng Pháp.",
+    "Note": "Cáp treo có thể đông vào cuối tuần.",
+    "EstimatedCost": 900000,
+    "IsOptional": false,
+    "StartTime": "10:00:00",
+    "EndTime": "15:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Bà Nà Hills & Cầu Vàng",
+        "Description": "Đi cáp treo lên Bà Nà Hills, check-in Cầu Vàng, tham quan làng Pháp."
+      },
+      "en": {
+        "Title": "Ba Na Hills & Golden Bridge",
+        "Description": "Cable car to Ba Na Hills, visit Golden Bridge and French Village."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0004-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000004",
+    "Order": 3,
+    "ActivityType": "Entertainment",
+    "Title": "Fantasy Park Bà Nà",
+    "Description": "Vui chơi tại khu giải trí trong nhà Fantasy Park với nhiều trò chơi hấp dẫn.",
+    "Note": "Vé đã bao gồm trong vé Bà Nà Hills.",
+    "EstimatedCost": 0,
+    "IsOptional": true,
+    "StartTime": "15:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Fantasy Park Bà Nà",
+        "Description": "Vui chơi tại khu giải trí trong nhà Fantasy Park với nhiều trò chơi hấp dẫn."
+      },
+      "en": {
+        "Title": "Ba Na Fantasy Park",
+        "Description": "Enjoy indoor amusement at Fantasy Park with various exciting rides."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0005-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000005",
+    "Order": 1,
+    "ActivityType": "Cultural",
+    "Title": "Tham quan phố cổ Hội An",
+    "Description": "Dạo phố cổ Hội An, tham quan Chùa Cầu, nhà cổ Tấn Ký, hội quán Phúc Kiến.",
+    "Note": "Mua vé tham quan phố cổ tại quầy bán vé.",
+    "EstimatedCost": 120000,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "11:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tham quan phố cổ Hội An",
+        "Description": "Dạo phố cổ Hội An, tham quan Chùa Cầu, nhà cổ Tấn Ký, hội quán Phúc Kiến."
+      },
+      "en": {
+        "Title": "Hoi An Ancient Town Tour",
+        "Description": "Walk through Hoi An Ancient Town, visit Japanese Covered Bridge, Tan Ky House, and Fujian Assembly Hall."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0005-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000005",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Thưởng thức ẩm thực Hội An",
+    "Description": "Ăn trưa với cao lầu, mì Quảng, bánh mì Phượng - đặc sản nổi tiếng Hội An.",
+    "Note": null,
+    "EstimatedCost": 150000,
+    "IsOptional": false,
+    "StartTime": "12:00:00",
+    "EndTime": "13:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Thưởng thức ẩm thực Hội An",
+        "Description": "Ăn trưa với cao lầu, mì Quảng, bánh mì Phượng - đặc sản nổi tiếng Hội An."
+      },
+      "en": {
+        "Title": "Hoi An Culinary Experience",
+        "Description": "Lunch with Cao Lau, Mi Quang, Banh Mi Phuong - famous Hoi An specialties."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0005-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000005",
+    "Order": 3,
+    "ActivityType": "Shopping",
+    "Title": "Mua sắm đèn lồng & lụa Hội An",
+    "Description": "Tham quan làng nghề đèn lồng, chọn lụa tơ tằm tại các cửa hàng phố cổ.",
+    "Note": "Có thể đặt may áo dài trong 24h.",
+    "EstimatedCost": 300000,
+    "IsOptional": true,
+    "StartTime": "14:00:00",
+    "EndTime": "16:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Mua sắm đèn lồng & lụa Hội An",
+        "Description": "Tham quan làng nghề đèn lồng, chọn lụa tơ tằm tại các cửa hàng phố cổ."
+      },
+      "en": {
+        "Title": "Lantern & Silk Shopping in Hoi An",
+        "Description": "Visit lantern-making workshops, browse silk shops in the ancient town."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0005-7000-8000-000000000004",
+    "TourDayId": "019527d0-0001-7000-8000-000000000005",
+    "Order": 4,
+    "ActivityType": "Entertainment",
+    "Title": "Đêm đèn lồng Hội An",
+    "Description": "Thả đèn hoa đăng trên sông Hoài, ngắm phố cổ lung linh ánh đèn lồng.",
+    "Note": "Phố cổ đẹp nhất vào dịp rằm.",
+    "EstimatedCost": 30000,
+    "IsOptional": false,
+    "StartTime": "19:00:00",
+    "EndTime": "21:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Đêm đèn lồng Hội An",
+        "Description": "Thả đèn hoa đăng trên sông Hoài, ngắm phố cổ lung linh ánh đèn lồng."
+      },
+      "en": {
+        "Title": "Hoi An Lantern Night",
+        "Description": "Release floating lanterns on Hoai River, admire the ancient town illuminated by lanterns."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0006-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000006",
+    "Order": 1,
+    "ActivityType": "Cultural",
+    "Title": "Khám phá Thánh địa Mỹ Sơn",
+    "Description": "Tham quan khu di tích Thánh địa Mỹ Sơn, di sản văn hoá thế giới UNESCO.",
+    "Note": "Nên đi sớm để tránh nắng. Mang mũ nón và nước uống.",
+    "EstimatedCost": 150000,
+    "IsOptional": false,
+    "StartTime": "07:30:00",
+    "EndTime": "11:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Khám phá Thánh địa Mỹ Sơn",
+        "Description": "Tham quan khu di tích Thánh địa Mỹ Sơn, di sản văn hoá thế giới UNESCO."
+      },
+      "en": {
+        "Title": "Explore My Son Sanctuary",
+        "Description": "Visit My Son Sanctuary, a UNESCO World Heritage Site of Cham civilization."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0006-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000006",
+    "Order": 2,
+    "ActivityType": "Entertainment",
+    "Title": "Xem biểu diễn nghệ thuật Chăm",
+    "Description": "Thưởng thức múa Apsara và âm nhạc truyền thống Chăm tại sân khấu ngoài trời.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "11:00:00",
+    "EndTime": "11:45:00",
+    "Translations": {
+      "vi": {
+        "Title": "Xem biểu diễn nghệ thuật Chăm",
+        "Description": "Thưởng thức múa Apsara và âm nhạc truyền thống Chăm tại sân khấu ngoài trời."
+      },
+      "en": {
+        "Title": "Cham Art Performance",
+        "Description": "Enjoy Apsara dance and traditional Cham music at the outdoor stage."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0006-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000006",
+    "Order": 3,
+    "ActivityType": "Relaxation",
+    "Title": "Nghỉ ngơi chiều tự do",
+    "Description": "Thời gian tự do tại khách sạn, tắm hồ bơi hoặc spa.",
+    "Note": "Dịch vụ spa tự túc chi phí.",
+    "EstimatedCost": 0,
+    "IsOptional": true,
+    "StartTime": "14:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Nghỉ ngơi chiều tự do",
+        "Description": "Thời gian tự do tại khách sạn, tắm hồ bơi hoặc spa."
+      },
+      "en": {
+        "Title": "Free Afternoon Relaxation",
+        "Description": "Free time at hotel, enjoy pool or spa services."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0007-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000007",
+    "Order": 1,
+    "ActivityType": "Relaxation",
+    "Title": "Tắm biển Mỹ Khê",
+    "Description": "Tắm biển và thư giãn tại bãi biển Mỹ Khê, một trong những bãi biển đẹp nhất hành tinh.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "10:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tắm biển Mỹ Khê",
+        "Description": "Tắm biển và thư giãn tại bãi biển Mỹ Khê, một trong những bãi biển đẹp nhất hành tinh."
+      },
+      "en": {
+        "Title": "My Khe Beach Swimming",
+        "Description": "Swim and relax at My Khe Beach, one of the most beautiful beaches in the world."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0007-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000007",
+    "Order": 2,
+    "ActivityType": "Shopping",
+    "Title": "Mua sắm chợ Hàn",
+    "Description": "Mua đặc sản Đà Nẵng tại chợ Hàn: mắm, khô cá, bánh tráng.",
+    "Note": "Nhớ trả giá khi mua hàng.",
+    "EstimatedCost": 200000,
+    "IsOptional": true,
+    "StartTime": "10:30:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Mua sắm chợ Hàn",
+        "Description": "Mua đặc sản Đà Nẵng tại chợ Hàn: mắm, khô cá, bánh tráng."
+      },
+      "en": {
+        "Title": "Shopping at Han Market",
+        "Description": "Buy Da Nang specialties at Han Market: fish sauce, dried fish, rice paper."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0007-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000007",
+    "Order": 3,
+    "ActivityType": "Transportation",
+    "Title": "Ra sân bay Đà Nẵng",
+    "Description": "Di chuyển ra sân bay, kết thúc chương trình tour.",
+    "Note": "Có mặt tại sân bay trước 2 tiếng.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "15:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ra sân bay Đà Nẵng",
+        "Description": "Di chuyển ra sân bay, kết thúc chương trình tour."
+      },
+      "en": {
+        "Title": "Transfer to Da Nang Airport",
+        "Description": "Transfer to airport, end of tour program."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0008-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000008",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Bay đến Phú Quốc",
+    "Description": "Đáp chuyến bay từ TP.HCM đến sân bay quốc tế Phú Quốc.",
+    "Note": "Tập trung tại sân bay Tân Sơn Nhất trước 2 tiếng.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "09:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Bay đến Phú Quốc",
+        "Description": "Đáp chuyến bay từ TP.HCM đến sân bay quốc tế Phú Quốc."
+      },
+      "en": {
+        "Title": "Fly to Phu Quoc",
+        "Description": "Take flight from Ho Chi Minh City to Phu Quoc International Airport."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0008-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000008",
+    "Order": 2,
+    "ActivityType": "Accommodation",
+    "Title": "Nhận phòng resort",
+    "Description": "Check-in resort 4 sao, nhận phòng hướng biển.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "10:00:00",
+    "EndTime": "11:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Nhận phòng resort",
+        "Description": "Check-in resort 4 sao, nhận phòng hướng biển."
+      },
+      "en": {
+        "Title": "Resort Check-in",
+        "Description": "Check into 4-star resort, ocean-view room."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0008-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000008",
+    "Order": 3,
+    "ActivityType": "Relaxation",
+    "Title": "Tự do tắm biển Long Beach",
+    "Description": "Thư giãn tại bãi biển dài Long Beach, tắm biển hoặc nghỉ ngơi tại resort.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tự do tắm biển Long Beach",
+        "Description": "Thư giãn tại bãi biển dài Long Beach, tắm biển hoặc nghỉ ngơi tại resort."
+      },
+      "en": {
+        "Title": "Free Time at Long Beach",
+        "Description": "Relax at Long Beach, swim or rest at the resort."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0009-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000009",
+    "Order": 1,
+    "ActivityType": "Sightseeing",
+    "Title": "Vinpearl Safari Phú Quốc",
+    "Description": "Tham quan vườn thú bán hoang dã lớn nhất Việt Nam, xem thú ăn sáng.",
+    "Note": "Không cho thú ăn. Tuân thủ nội quy khu vực.",
+    "EstimatedCost": 650000,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Vinpearl Safari Phú Quốc",
+        "Description": "Tham quan vườn thú bán hoang dã lớn nhất Việt Nam, xem thú ăn sáng."
+      },
+      "en": {
+        "Title": "Vinpearl Safari Phu Quoc",
+        "Description": "Visit Vietnam's largest semi-wild zoo, watch animal feeding session."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0009-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000009",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Ăn trưa tại Vinpearl",
+    "Description": "Buffet trưa tại nhà hàng khu vực Vinpearl.",
+    "Note": null,
+    "EstimatedCost": 300000,
+    "IsOptional": false,
+    "StartTime": "12:00:00",
+    "EndTime": "13:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ăn trưa tại Vinpearl",
+        "Description": "Buffet trưa tại nhà hàng khu vực Vinpearl."
+      },
+      "en": {
+        "Title": "Lunch at Vinpearl",
+        "Description": "Lunch buffet at Vinpearl restaurant area."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0009-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000009",
+    "Order": 3,
+    "ActivityType": "Entertainment",
+    "Title": "VinWonders Phú Quốc",
+    "Description": "Vui chơi tại công viên giải trí VinWonders với tàu lượn, đu quay và show nước.",
+    "Note": "Mặc đồ thoải mái. Một số trò có giới hạn chiều cao.",
+    "EstimatedCost": 650000,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "18:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "VinWonders Phú Quốc",
+        "Description": "Vui chơi tại công viên giải trí VinWonders với tàu lượn, đu quay và show nước."
+      },
+      "en": {
+        "Title": "VinWonders Phu Quoc",
+        "Description": "Enjoy VinWonders amusement park with roller coasters, ferris wheel, and water shows."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000a-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000a",
+    "Order": 1,
+    "ActivityType": "Adventure",
+    "Title": "Lặn biển ngắm san hô",
+    "Description": "Lặn snorkeling tại quần đảo An Thới, ngắm san hô và cá nhiệt đới.",
+    "Note": "Hướng dẫn viên lặn chuyên nghiệp đi cùng. Không cần biết bơi.",
+    "EstimatedCost": 500000,
+    "IsOptional": false,
+    "StartTime": "07:30:00",
+    "EndTime": "11:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Lặn biển ngắm san hô",
+        "Description": "Lặn snorkeling tại quần đảo An Thới, ngắm san hô và cá nhiệt đới."
+      },
+      "en": {
+        "Title": "Snorkeling & Coral Watching",
+        "Description": "Snorkel at An Thoi archipelago, watch corals and tropical fish."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000a-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000a",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Thưởng thức hải sản trên tàu",
+    "Description": "Ăn trưa hải sản tươi sống ngay trên tàu: cua, tôm, mực nướng.",
+    "Note": null,
+    "EstimatedCost": 350000,
+    "IsOptional": false,
+    "StartTime": "12:00:00",
+    "EndTime": "13:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Thưởng thức hải sản trên tàu",
+        "Description": "Ăn trưa hải sản tươi sống ngay trên tàu: cua, tôm, mực nướng."
+      },
+      "en": {
+        "Title": "Seafood Feast on Boat",
+        "Description": "Fresh seafood lunch on the boat: crab, shrimp, grilled squid."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000a-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000a",
+    "Order": 3,
+    "ActivityType": "Adventure",
+    "Title": "Câu cá giải trí",
+    "Description": "Câu cá tại vùng biển quanh đảo, thưởng thức cá câu được ngay tại chỗ.",
+    "Note": "Dụng cụ câu cá được cung cấp sẵn.",
+    "EstimatedCost": 200000,
+    "IsOptional": true,
+    "StartTime": "14:00:00",
+    "EndTime": "16:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Câu cá giải trí",
+        "Description": "Câu cá tại vùng biển quanh đảo, thưởng thức cá câu được ngay tại chỗ."
+      },
+      "en": {
+        "Title": "Recreational Fishing",
+        "Description": "Fish in the waters around the islands, enjoy freshly caught fish on the spot."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000b-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000b",
+    "Order": 1,
+    "ActivityType": "Cultural",
+    "Title": "Thăm làng chài Hàm Ninh",
+    "Description": "Khám phá làng chài truyền thống Hàm Ninh, tìm hiểu đời sống ngư dân.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "10:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Thăm làng chài Hàm Ninh",
+        "Description": "Khám phá làng chài truyền thống Hàm Ninh, tìm hiểu đời sống ngư dân."
+      },
+      "en": {
+        "Title": "Visit Ham Ninh Fishing Village",
+        "Description": "Explore the traditional Ham Ninh fishing village, learn about fishermen's life."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000b-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000b",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Ăn ghẹ Hàm Ninh",
+    "Description": "Thưởng thức ghẹ Hàm Ninh hấp - đặc sản nổi tiếng nhất Phú Quốc.",
+    "Note": "Ghẹ theo mùa, giá có thể thay đổi.",
+    "EstimatedCost": 400000,
+    "IsOptional": false,
+    "StartTime": "11:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ăn ghẹ Hàm Ninh",
+        "Description": "Thưởng thức ghẹ Hàm Ninh hấp - đặc sản nổi tiếng nhất Phú Quốc."
+      },
+      "en": {
+        "Title": "Ham Ninh Crab Feast",
+        "Description": "Enjoy steamed Ham Ninh crab - Phu Quoc's most famous specialty."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000b-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000b",
+    "Order": 3,
+    "ActivityType": "Shopping",
+    "Title": "Chợ đêm Phú Quốc",
+    "Description": "Dạo chợ đêm Phú Quốc, mua đặc sản nước mắm, tiêu, ngọc trai.",
+    "Note": "Chợ đêm mở từ 17:00. Nên trả giá.",
+    "EstimatedCost": 300000,
+    "IsOptional": true,
+    "StartTime": "18:00:00",
+    "EndTime": "20:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Chợ đêm Phú Quốc",
+        "Description": "Dạo chợ đêm Phú Quốc, mua đặc sản nước mắm, tiêu, ngọc trai."
+      },
+      "en": {
+        "Title": "Phu Quoc Night Market",
+        "Description": "Explore Phu Quoc Night Market, buy fish sauce, pepper, and pearl souvenirs."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000c-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000c",
+    "Order": 1,
+    "ActivityType": "FreeTime",
+    "Title": "Thời gian tự do",
+    "Description": "Nghỉ ngơi tại resort, tắm biển hoặc sử dụng dịch vụ spa.",
+    "Note": "Trả phòng trước 12:00.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "11:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Thời gian tự do",
+        "Description": "Nghỉ ngơi tại resort, tắm biển hoặc sử dụng dịch vụ spa."
+      },
+      "en": {
+        "Title": "Free Time",
+        "Description": "Rest at resort, swim or enjoy spa services."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000c-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000c",
+    "Order": 2,
+    "ActivityType": "Transportation",
+    "Title": "Ra sân bay Phú Quốc",
+    "Description": "Di chuyển ra sân bay, bay về TP.HCM. Kết thúc tour.",
+    "Note": "Có mặt tại sân bay trước 2 tiếng.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "12:00:00",
+    "EndTime": "15:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ra sân bay Phú Quốc",
+        "Description": "Di chuyển ra sân bay, bay về TP.HCM. Kết thúc tour."
+      },
+      "en": {
+        "Title": "Transfer to Phu Quoc Airport",
+        "Description": "Transfer to airport, fly back to Ho Chi Minh City. End of tour."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000d-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000d",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Di chuyển Hà Nội → Sapa",
+    "Description": "Khởi hành từ Hà Nội bằng xe du lịch cao cấp, đường cao tốc Nội Bài - Lào Cai.",
+    "Note": "Xe khởi hành lúc 6:00 sáng. Tập trung trước 15 phút.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "06:00:00",
+    "EndTime": "11:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển Hà Nội → Sapa",
+        "Description": "Khởi hành từ Hà Nội bằng xe du lịch cao cấp, đường cao tốc Nội Bài - Lào Cai."
+      },
+      "en": {
+        "Title": "Transfer Hanoi to Sapa",
+        "Description": "Depart Hanoi by premium bus via Noi Bai - Lao Cai expressway."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000d-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000d",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Ăn trưa đặc sản Sapa",
+    "Description": "Thưởng thức lợn cắp nách, cá suối nướng, rau rừng tại nhà hàng địa phương.",
+    "Note": null,
+    "EstimatedCost": 200000,
+    "IsOptional": false,
+    "StartTime": "11:30:00",
+    "EndTime": "12:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ăn trưa đặc sản Sapa",
+        "Description": "Thưởng thức lợn cắp nách, cá suối nướng, rau rừng tại nhà hàng địa phương."
+      },
+      "en": {
+        "Title": "Sapa Specialty Lunch",
+        "Description": "Enjoy local pig, grilled stream fish, and forest vegetables at a local restaurant."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000d-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000d",
+    "Order": 3,
+    "ActivityType": "Sightseeing",
+    "Title": "Dạo phố Sapa & Nhà thờ đá",
+    "Description": "Dạo quanh trung tâm thị trấn Sapa, tham quan Nhà thờ đá cổ, chợ tình Sapa.",
+    "Note": "Thời tiết có thể lạnh, mang áo ấm.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Dạo phố Sapa & Nhà thờ đá",
+        "Description": "Dạo quanh trung tâm thị trấn Sapa, tham quan Nhà thờ đá cổ, chợ tình Sapa."
+      },
+      "en": {
+        "Title": "Sapa Town Walk & Stone Church",
+        "Description": "Walk around Sapa town center, visit the ancient Stone Church and Love Market."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000e-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000e",
+    "Order": 1,
+    "ActivityType": "Adventure",
+    "Title": "Chinh phục đỉnh Fansipan",
+    "Description": "Đi cáp treo lên đỉnh Fansipan 3143m - nóc nhà Đông Dương.",
+    "Note": "Mang áo khoác dày, nhiệt độ trên đỉnh có thể dưới 10°C.",
+    "EstimatedCost": 800000,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "11:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Chinh phục đỉnh Fansipan",
+        "Description": "Đi cáp treo lên đỉnh Fansipan 3143m - nóc nhà Đông Dương."
+      },
+      "en": {
+        "Title": "Conquer Fansipan Summit",
+        "Description": "Cable car to Fansipan summit at 3143m - the Roof of Indochina."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000e-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000e",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Ăn trưa trên đỉnh Fansipan",
+    "Description": "Ăn trưa tại nhà hàng khu vực đỉnh Fansipan với view núi rừng.",
+    "Note": null,
+    "EstimatedCost": 250000,
+    "IsOptional": false,
+    "StartTime": "12:00:00",
+    "EndTime": "13:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ăn trưa trên đỉnh Fansipan",
+        "Description": "Ăn trưa tại nhà hàng khu vực đỉnh Fansipan với view núi rừng."
+      },
+      "en": {
+        "Title": "Lunch at Fansipan Summit",
+        "Description": "Lunch at the summit restaurant with mountain and forest views."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000e-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000e",
+    "Order": 3,
+    "ActivityType": "Cultural",
+    "Title": "Trekking bản Cát Cát",
+    "Description": "Trekking xuống bản Cát Cát, giao lưu với người H'Mông, xem dệt thổ cẩm.",
+    "Note": "Đường đi dốc, nên mang giày thể thao. Vé vào bản 70.000đ.",
+    "EstimatedCost": 70000,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Trekking bản Cát Cát",
+        "Description": "Trekking xuống bản Cát Cát, giao lưu với người H'Mông, xem dệt thổ cẩm."
+      },
+      "en": {
+        "Title": "Cat Cat Village Trekking",
+        "Description": "Trek to Cat Cat Village, interact with H'Mong people, watch brocade weaving."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000f-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000f",
+    "Order": 1,
+    "ActivityType": "Sightseeing",
+    "Title": "Ngắm ruộng bậc thang Mường Hoa",
+    "Description": "Tham quan thung lũng Mường Hoa với ruộng bậc thang trải dài tuyệt đẹp.",
+    "Note": "Đẹp nhất vào mùa lúa chín (tháng 9-10).",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:30:00",
+    "EndTime": "10:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ngắm ruộng bậc thang Mường Hoa",
+        "Description": "Tham quan thung lũng Mường Hoa với ruộng bậc thang trải dài tuyệt đẹp."
+      },
+      "en": {
+        "Title": "Muong Hoa Terraced Rice Fields",
+        "Description": "Visit Muong Hoa Valley with its stunning terraced rice fields."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000f-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000f",
+    "Order": 2,
+    "ActivityType": "Shopping",
+    "Title": "Mua đặc sản Sapa",
+    "Description": "Mua thổ cẩm, thảo dược, mật ong rừng tại chợ Sapa.",
+    "Note": null,
+    "EstimatedCost": 200000,
+    "IsOptional": true,
+    "StartTime": "11:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Mua đặc sản Sapa",
+        "Description": "Mua thổ cẩm, thảo dược, mật ong rừng tại chợ Sapa."
+      },
+      "en": {
+        "Title": "Sapa Souvenir Shopping",
+        "Description": "Buy brocade, herbs, and forest honey at Sapa market."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-000f-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000000f",
+    "Order": 3,
+    "ActivityType": "Transportation",
+    "Title": "Di chuyển Sapa → Hà Nội",
+    "Description": "Lên xe trở về Hà Nội, dừng nghỉ dọc đường.",
+    "Note": "Dự kiến về đến Hà Nội khoảng 18:00.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "13:00:00",
+    "EndTime": "18:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển Sapa → Hà Nội",
+        "Description": "Lên xe trở về Hà Nội, dừng nghỉ dọc đường."
+      },
+      "en": {
+        "Title": "Transfer Sapa to Hanoi",
+        "Description": "Return to Hanoi by bus with rest stops along the way."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0010-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000010",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Airport Transfer to Hotel",
+    "Description": "Pickup from Suvarnabhumi Airport, transfer to hotel in central Bangkok.",
+    "Note": "Driver will hold a sign at arrivals gate.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "10:00:00",
+    "EndTime": "11:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Đón sân bay về khách sạn",
+        "Description": "Đón tại sân bay Suvarnabhumi, di chuyển về khách sạn trung tâm Bangkok."
+      },
+      "en": {
+        "Title": "Airport Transfer to Hotel",
+        "Description": "Pickup from Suvarnabhumi Airport, transfer to hotel in central Bangkok."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0010-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000010",
+    "Order": 2,
+    "ActivityType": "Sightseeing",
+    "Title": "Khao San Road Evening",
+    "Description": "Explore the vibrant Khao San Road with street food, shops, and nightlife.",
+    "Note": "Watch out for pickpockets in crowded areas.",
+    "EstimatedCost": 500,
+    "IsOptional": false,
+    "StartTime": "18:00:00",
+    "EndTime": "21:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Khám phá Khao San Road buổi tối",
+        "Description": "Khám phá con đường Khao San sôi động với ẩm thực đường phố, cửa hàng và cuộc sống về đêm."
+      },
+      "en": {
+        "Title": "Khao San Road Evening",
+        "Description": "Explore the vibrant Khao San Road with street food, shops, and nightlife."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0011-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000011",
+    "Order": 1,
+    "ActivityType": "Cultural",
+    "Title": "Grand Palace & Wat Phra Kaew",
+    "Description": "Visit the Grand Palace complex and the Temple of the Emerald Buddha.",
+    "Note": "Dress code required: cover shoulders and knees. No shorts or tank tops.",
+    "EstimatedCost": 500,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "10:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Hoàng cung & Chùa Phật Ngọc",
+        "Description": "Tham quan quần thể Hoàng cung và Chùa Phật Ngọc linh thiêng."
+      },
+      "en": {
+        "Title": "Grand Palace & Wat Phra Kaew",
+        "Description": "Visit the Grand Palace complex and the Temple of the Emerald Buddha."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0011-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000011",
+    "Order": 2,
+    "ActivityType": "Cultural",
+    "Title": "Wat Pho & Wat Arun",
+    "Description": "Visit Wat Pho (Reclining Buddha) and cross the river to Wat Arun (Temple of Dawn).",
+    "Note": null,
+    "EstimatedCost": 400,
+    "IsOptional": false,
+    "StartTime": "11:00:00",
+    "EndTime": "13:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Chùa Wat Pho & Wat Arun",
+        "Description": "Tham quan Wat Pho (Phật nằm) và qua sông đến Wat Arun (Chùa Bình Minh)."
+      },
+      "en": {
+        "Title": "Wat Pho & Wat Arun",
+        "Description": "Visit Wat Pho (Reclining Buddha) and cross the river to Wat Arun (Temple of Dawn)."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0011-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000011",
+    "Order": 3,
+    "ActivityType": "Shopping",
+    "Title": "Chatuchak Weekend Market",
+    "Description": "Browse over 15,000 stalls at Southeast Asia's largest outdoor market.",
+    "Note": "Market is only open on weekends. Bring cash for bargaining.",
+    "EstimatedCost": 2000,
+    "IsOptional": true,
+    "StartTime": "15:00:00",
+    "EndTime": "18:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Chợ cuối tuần Chatuchak",
+        "Description": "Tham quan hơn 15.000 gian hàng tại chợ ngoài trời lớn nhất Đông Nam Á."
+      },
+      "en": {
+        "Title": "Chatuchak Weekend Market",
+        "Description": "Browse over 15,000 stalls at Southeast Asia's largest outdoor market."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0012-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000012",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Transfer to Pattaya",
+    "Description": "Morning departure from Bangkok to Pattaya (approx. 2 hours).",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "09:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển đến Pattaya",
+        "Description": "Khởi hành sáng từ Bangkok đến Pattaya (khoảng 2 tiếng)."
+      },
+      "en": {
+        "Title": "Transfer to Pattaya",
+        "Description": "Morning departure from Bangkok to Pattaya (approx. 2 hours)."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0012-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000012",
+    "Order": 2,
+    "ActivityType": "Adventure",
+    "Title": "Coral Island Water Sports",
+    "Description": "Speed boat to Coral Island. Enjoy parasailing, banana boat, and snorkeling.",
+    "Note": "Bring swimwear, sunscreen, and waterproof bag for phone.",
+    "EstimatedCost": 1500,
+    "IsOptional": false,
+    "StartTime": "09:30:00",
+    "EndTime": "14:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Thể thao nước tại đảo San Hô",
+        "Description": "Cano ra đảo San Hô. Chơi dù bay, chuối kéo và lặn ngắm san hô."
+      },
+      "en": {
+        "Title": "Coral Island Water Sports",
+        "Description": "Speed boat to Coral Island. Enjoy parasailing, banana boat, and snorkeling."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0012-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000012",
+    "Order": 3,
+    "ActivityType": "Relaxation",
+    "Title": "Pattaya Beach Relaxation",
+    "Description": "Free time at Pattaya Beach, Thai massage on the beach available.",
+    "Note": "Thai massage costs around 300 THB/hour.",
+    "EstimatedCost": 300,
+    "IsOptional": true,
+    "StartTime": "15:00:00",
+    "EndTime": "17:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Thư giãn tại bãi biển Pattaya",
+        "Description": "Thời gian tự do tại bãi biển Pattaya, có dịch vụ massage Thái trên bãi biển."
+      },
+      "en": {
+        "Title": "Pattaya Beach Relaxation",
+        "Description": "Free time at Pattaya Beach, Thai massage on the beach available."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0013-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000013",
+    "Order": 1,
+    "ActivityType": "FreeTime",
+    "Title": "Free Morning",
+    "Description": "Free time for last-minute shopping or hotel relaxation before departure.",
+    "Note": "Hotel checkout at 12:00.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Buổi sáng tự do",
+        "Description": "Thời gian tự do mua sắm hoặc nghỉ ngơi tại khách sạn trước khi về."
+      },
+      "en": {
+        "Title": "Free Morning",
+        "Description": "Free time for last-minute shopping or hotel relaxation before departure."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0013-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000013",
+    "Order": 2,
+    "ActivityType": "Transportation",
+    "Title": "Airport Transfer & Departure",
+    "Description": "Transfer to Suvarnabhumi Airport for departure flight.",
+    "Note": "Please arrive at airport 3 hours before international flights.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "16:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ra sân bay & Khởi hành",
+        "Description": "Di chuyển ra sân bay Suvarnabhumi để bay về."
+      },
+      "en": {
+        "Title": "Airport Transfer & Departure",
+        "Description": "Transfer to Suvarnabhumi Airport for departure flight."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0014-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000014",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Narita Airport Transfer",
+    "Description": "Transfer from Narita Airport to hotel in central Tokyo via Narita Express.",
+    "Note": "Narita Express takes about 60 minutes to Tokyo Station.",
+    "EstimatedCost": 3250,
+    "IsOptional": false,
+    "StartTime": "10:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển từ sân bay Narita",
+        "Description": "Di chuyển từ sân bay Narita về khách sạn trung tâm Tokyo bằng Narita Express."
+      },
+      "en": {
+        "Title": "Narita Airport Transfer",
+        "Description": "Transfer from Narita Airport to hotel in central Tokyo via Narita Express."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0014-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000014",
+    "Order": 2,
+    "ActivityType": "Cultural",
+    "Title": "Senso-ji Temple, Asakusa",
+    "Description": "Visit Tokyo's oldest temple, walk through Nakamise shopping street.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "16:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Chùa Senso-ji, Asakusa",
+        "Description": "Tham quan ngôi chùa cổ nhất Tokyo, đi dạo phố mua sắm Nakamise."
+      },
+      "en": {
+        "Title": "Senso-ji Temple, Asakusa",
+        "Description": "Visit Tokyo's oldest temple, walk through Nakamise shopping street."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0014-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000014",
+    "Order": 3,
+    "ActivityType": "Sightseeing",
+    "Title": "Shibuya Crossing & Hachiko",
+    "Description": "Experience the world's busiest pedestrian crossing and visit the Hachiko statue.",
+    "Note": "Best viewed from Starbucks above the crossing.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "17:00:00",
+    "EndTime": "19:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ngã tư Shibuya & Hachiko",
+        "Description": "Trải nghiệm ngã tư đông đúc nhất thế giới và thăm tượng chú chó Hachiko."
+      },
+      "en": {
+        "Title": "Shibuya Crossing & Hachiko",
+        "Description": "Experience the world's busiest pedestrian crossing and visit the Hachiko statue."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0015-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000015",
+    "Order": 1,
+    "ActivityType": "Cultural",
+    "Title": "Meiji Shrine & Harajuku",
+    "Description": "Visit Meiji Shrine in the morning tranquility, then explore Harajuku's Takeshita Street.",
+    "Note": null,
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "11:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Đền Meiji & Harajuku",
+        "Description": "Tham quan đền Meiji trong yên bình buổi sáng, khám phá phố Takeshita Harajuku."
+      },
+      "en": {
+        "Title": "Meiji Shrine & Harajuku",
+        "Description": "Visit Meiji Shrine in the morning tranquility, then explore Harajuku's Takeshita Street."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0015-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000015",
+    "Order": 2,
+    "ActivityType": "Sightseeing",
+    "Title": "Tokyo Skytree",
+    "Description": "Ascend Tokyo Skytree (634m) for panoramic city views, visit Solamachi mall.",
+    "Note": "Tembo Deck ticket: 2,100 JPY. Reserve online for shorter queue.",
+    "EstimatedCost": 2100,
+    "IsOptional": false,
+    "StartTime": "13:00:00",
+    "EndTime": "15:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tháp Tokyo Skytree",
+        "Description": "Lên tháp Tokyo Skytree (634m) ngắm toàn cảnh thành phố, tham quan trung tâm Solamachi."
+      },
+      "en": {
+        "Title": "Tokyo Skytree",
+        "Description": "Ascend Tokyo Skytree (634m) for panoramic city views, visit Solamachi mall."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0015-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000015",
+    "Order": 3,
+    "ActivityType": "Shopping",
+    "Title": "Akihabara Electric Town",
+    "Description": "Explore Akihabara's electronics shops, anime stores, and maid cafes.",
+    "Note": "Tax-free shopping available for tourists with passport.",
+    "EstimatedCost": 5000,
+    "IsOptional": true,
+    "StartTime": "16:00:00",
+    "EndTime": "19:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Phố điện tử Akihabara",
+        "Description": "Khám phá các cửa hàng điện tử, anime và quán cà phê hầu gái tại Akihabara."
+      },
+      "en": {
+        "Title": "Akihabara Electric Town",
+        "Description": "Explore Akihabara's electronics shops, anime stores, and maid cafes."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0016-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000016",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Bus to Mount Fuji",
+    "Description": "Depart Tokyo by chartered bus to Mt. Fuji 5th Station (approx. 2.5 hours).",
+    "Note": "Weather dependent - may not reach 5th Station if road is closed.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:00:00",
+    "EndTime": "09:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Xe đến núi Phú Sĩ",
+        "Description": "Khởi hành từ Tokyo bằng xe tour đến trạm 5 núi Phú Sĩ (khoảng 2,5 tiếng)."
+      },
+      "en": {
+        "Title": "Bus to Mount Fuji",
+        "Description": "Depart Tokyo by chartered bus to Mt. Fuji 5th Station (approx. 2.5 hours)."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0016-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000016",
+    "Order": 2,
+    "ActivityType": "Sightseeing",
+    "Title": "Mt. Fuji 5th Station",
+    "Description": "Explore the 5th Station at 2,300m altitude with views of the surrounding landscape.",
+    "Note": "Temperature much lower than Tokyo. Bring warm layers.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "10:00:00",
+    "EndTime": "11:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Trạm 5 núi Phú Sĩ",
+        "Description": "Khám phá trạm 5 ở độ cao 2.300m với tầm nhìn toàn cảnh xung quanh."
+      },
+      "en": {
+        "Title": "Mt. Fuji 5th Station",
+        "Description": "Explore the 5th Station at 2,300m altitude with views of the surrounding landscape."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0016-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000016",
+    "Order": 3,
+    "ActivityType": "Sightseeing",
+    "Title": "Lake Kawaguchi",
+    "Description": "Visit Lake Kawaguchi for iconic Fuji reflections, lunch at lakeside restaurant.",
+    "Note": null,
+    "EstimatedCost": 1500,
+    "IsOptional": false,
+    "StartTime": "12:30:00",
+    "EndTime": "15:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Hồ Kawaguchi",
+        "Description": "Tham quan hồ Kawaguchi ngắm bóng núi Phú Sĩ phản chiếu, ăn trưa ven hồ."
+      },
+      "en": {
+        "Title": "Lake Kawaguchi",
+        "Description": "Visit Lake Kawaguchi for iconic Fuji reflections, lunch at lakeside restaurant."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0016-7000-8000-000000000004",
+    "TourDayId": "019527d0-0001-7000-8000-000000000016",
+    "Order": 4,
+    "ActivityType": "Relaxation",
+    "Title": "Onsen Hot Spring Experience",
+    "Description": "Relax at a traditional Japanese onsen (hot spring bath) near Lake Kawaguchi.",
+    "Note": "Tattoos may not be allowed in some onsens. Ask guide for tattoo-friendly options.",
+    "EstimatedCost": 1200,
+    "IsOptional": true,
+    "StartTime": "15:30:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Trải nghiệm tắm khoáng Onsen",
+        "Description": "Thư giãn tại suối nước nóng truyền thống Nhật Bản gần hồ Kawaguchi."
+      },
+      "en": {
+        "Title": "Onsen Hot Spring Experience",
+        "Description": "Relax at a traditional Japanese onsen (hot spring bath) near Lake Kawaguchi."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0017-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000017",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Shinkansen to Osaka",
+    "Description": "Take the iconic Shinkansen bullet train from Tokyo to Osaka (approx. 2.5 hours).",
+    "Note": "Reserved seats in Green Car. Enjoy bento boxes on the train.",
+    "EstimatedCost": 13870,
+    "IsOptional": false,
+    "StartTime": "08:00:00",
+    "EndTime": "10:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tàu Shinkansen đến Osaka",
+        "Description": "Trải nghiệm tàu siêu tốc Shinkansen từ Tokyo đến Osaka (khoảng 2,5 tiếng)."
+      },
+      "en": {
+        "Title": "Shinkansen to Osaka",
+        "Description": "Take the iconic Shinkansen bullet train from Tokyo to Osaka (approx. 2.5 hours)."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0017-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000017",
+    "Order": 2,
+    "ActivityType": "Cultural",
+    "Title": "Osaka Castle",
+    "Description": "Visit the iconic Osaka Castle, explore the museum inside and surrounding park.",
+    "Note": "Castle tower admission: 600 JPY.",
+    "EstimatedCost": 600,
+    "IsOptional": false,
+    "StartTime": "11:30:00",
+    "EndTime": "13:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Lâu đài Osaka",
+        "Description": "Tham quan lâu đài Osaka nổi tiếng, bảo tàng bên trong và công viên xung quanh."
+      },
+      "en": {
+        "Title": "Osaka Castle",
+        "Description": "Visit the iconic Osaka Castle, explore the museum inside and surrounding park."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0017-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000017",
+    "Order": 3,
+    "ActivityType": "Dining",
+    "Title": "Dotonbori Street Food",
+    "Description": "Experience Osaka's famous food street: takoyaki, okonomiyaki, and fresh sushi.",
+    "Note": "Dotonbori is best experienced in the evening with neon lights.",
+    "EstimatedCost": 3000,
+    "IsOptional": false,
+    "StartTime": "18:00:00",
+    "EndTime": "20:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ẩm thực đường phố Dotonbori",
+        "Description": "Trải nghiệm phố ẩm thực nổi tiếng Osaka: takoyaki, okonomiyaki và sushi tươi."
+      },
+      "en": {
+        "Title": "Dotonbori Street Food",
+        "Description": "Experience Osaka's famous food street: takoyaki, okonomiyaki, and fresh sushi."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0018-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000018",
+    "Order": 1,
+    "ActivityType": "Cultural",
+    "Title": "Fushimi Inari Shrine",
+    "Description": "Walk through thousands of vermillion torii gates at Fushimi Inari, Kyoto's most iconic shrine.",
+    "Note": "Arrive early (before 9AM) to avoid crowds. Full trail takes 2-3 hours.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "07:30:00",
+    "EndTime": "10:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Đền Fushimi Inari",
+        "Description": "Đi bộ qua hàng ngàn cổng torii đỏ tại Fushimi Inari, ngôi đền biểu tượng nhất Kyoto."
+      },
+      "en": {
+        "Title": "Fushimi Inari Shrine",
+        "Description": "Walk through thousands of vermillion torii gates at Fushimi Inari, Kyoto's most iconic shrine."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0018-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000018",
+    "Order": 2,
+    "ActivityType": "Sightseeing",
+    "Title": "Kinkaku-ji (Golden Pavilion)",
+    "Description": "Visit the stunning Golden Pavilion, a Zen Buddhist temple covered in gold leaf.",
+    "Note": "Admission: 500 JPY. No interior access - viewing from outside only.",
+    "EstimatedCost": 500,
+    "IsOptional": false,
+    "StartTime": "11:00:00",
+    "EndTime": "12:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Kinkaku-ji (Chùa Vàng)",
+        "Description": "Tham quan Chùa Vàng tuyệt đẹp, ngôi chùa Thiền phủ vàng lá."
+      },
+      "en": {
+        "Title": "Kinkaku-ji (Golden Pavilion)",
+        "Description": "Visit the stunning Golden Pavilion, a Zen Buddhist temple covered in gold leaf."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0018-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000018",
+    "Order": 3,
+    "ActivityType": "Transportation",
+    "Title": "Transfer to Kansai Airport",
+    "Description": "Transfer from Kyoto to Kansai International Airport for departure flight.",
+    "Note": "JR Haruka Express takes 75 minutes from Kyoto to Kansai Airport.",
+    "EstimatedCost": 1800,
+    "IsOptional": false,
+    "StartTime": "15:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển ra sân bay Kansai",
+        "Description": "Di chuyển từ Kyoto ra sân bay quốc tế Kansai để bay về."
+      },
+      "en": {
+        "Title": "Transfer to Kansai Airport",
+        "Description": "Transfer from Kyoto to Kansai International Airport for departure flight."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0019-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-000000000019",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Incheon Airport Transfer",
+    "Description": "Transfer from Incheon International Airport to hotel in central Seoul via AREX express.",
+    "Note": "AREX express takes 43 minutes to Seoul Station.",
+    "EstimatedCost": 9500,
+    "IsOptional": false,
+    "StartTime": "10:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Di chuyển từ sân bay Incheon",
+        "Description": "Di chuyển từ sân bay Incheon về khách sạn trung tâm Seoul bằng AREX express."
+      },
+      "en": {
+        "Title": "Incheon Airport Transfer",
+        "Description": "Transfer from Incheon International Airport to hotel in central Seoul via AREX express."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0019-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-000000000019",
+    "Order": 2,
+    "ActivityType": "Cultural",
+    "Title": "Gyeongbokgung Palace",
+    "Description": "Visit the main royal palace of the Joseon dynasty. Try hanbok rental for free entry.",
+    "Note": "Free admission when wearing hanbok. Hanbok rental: 15,000-20,000 KRW.",
+    "EstimatedCost": 15000,
+    "IsOptional": false,
+    "StartTime": "13:30:00",
+    "EndTime": "15:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Cung điện Gyeongbokgung",
+        "Description": "Tham quan cung điện hoàng gia chính triều đại Joseon. Thuê hanbok để được miễn phí vào cổng."
+      },
+      "en": {
+        "Title": "Gyeongbokgung Palace",
+        "Description": "Visit the main royal palace of the Joseon dynasty. Try hanbok rental for free entry."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-0019-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-000000000019",
+    "Order": 3,
+    "ActivityType": "Sightseeing",
+    "Title": "Bukchon Hanok Village",
+    "Description": "Stroll through the charming traditional Korean hanok houses between two palaces.",
+    "Note": "Please be quiet - residents still live here. No loud talking.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "16:00:00",
+    "EndTime": "17:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Làng Hanok Bukchon",
+        "Description": "Dạo qua những ngôi nhà truyền thống Hanok xinh đẹp giữa hai cung điện."
+      },
+      "en": {
+        "Title": "Bukchon Hanok Village",
+        "Description": "Stroll through the charming traditional Korean hanok houses between two palaces."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001a-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001a",
+    "Order": 1,
+    "ActivityType": "Shopping",
+    "Title": "Myeongdong Shopping District",
+    "Description": "Explore Korea's top shopping district for cosmetics, fashion, and K-pop merchandise.",
+    "Note": "Many shops offer tax refund for purchases over 30,000 KRW.",
+    "EstimatedCost": 50000,
+    "IsOptional": false,
+    "StartTime": "09:00:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Khu mua sắm Myeongdong",
+        "Description": "Khám phá khu mua sắm hàng đầu Hàn Quốc về mỹ phẩm, thời trang và hàng K-pop."
+      },
+      "en": {
+        "Title": "Myeongdong Shopping District",
+        "Description": "Explore Korea's top shopping district for cosmetics, fashion, and K-pop merchandise."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001a-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001a",
+    "Order": 2,
+    "ActivityType": "Dining",
+    "Title": "Korean BBQ Lunch",
+    "Description": "Authentic Korean BBQ experience with samgyeopsal, bulgogi, and banchan side dishes.",
+    "Note": null,
+    "EstimatedCost": 25000,
+    "IsOptional": false,
+    "StartTime": "12:30:00",
+    "EndTime": "13:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Ăn trưa BBQ Hàn Quốc",
+        "Description": "Trải nghiệm BBQ Hàn Quốc chính gốc với thịt ba chỉ, bulgogi và banchan."
+      },
+      "en": {
+        "Title": "Korean BBQ Lunch",
+        "Description": "Authentic Korean BBQ experience with samgyeopsal, bulgogi, and banchan side dishes."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001a-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001a",
+    "Order": 3,
+    "ActivityType": "Sightseeing",
+    "Title": "N Seoul Tower (Namsan Tower)",
+    "Description": "Take the Namsan cable car up to N Seoul Tower for stunning panoramic city views.",
+    "Note": "Cable car: 11,000 KRW round trip. Tower observation deck: 16,000 KRW.",
+    "EstimatedCost": 27000,
+    "IsOptional": false,
+    "StartTime": "15:00:00",
+    "EndTime": "17:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Tháp N Seoul (Tháp Namsan)",
+        "Description": "Đi cáp treo Namsan lên tháp N Seoul ngắm toàn cảnh thành phố tuyệt đẹp."
+      },
+      "en": {
+        "Title": "N Seoul Tower (Namsan Tower)",
+        "Description": "Take the Namsan cable car up to N Seoul Tower for stunning panoramic city views."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001a-7000-8000-000000000004",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001a",
+    "Order": 4,
+    "ActivityType": "Entertainment",
+    "Title": "Gangnam District Nightlife",
+    "Description": "Experience trendy Gangnam area with cafes, K-pop entertainment, and COEX underground mall.",
+    "Note": "COEX Starfield Library is free and open to public.",
+    "EstimatedCost": 20000,
+    "IsOptional": true,
+    "StartTime": "19:00:00",
+    "EndTime": "21:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Khu Gangnam về đêm",
+        "Description": "Trải nghiệm khu Gangnam sành điệu với quán cà phê, giải trí K-pop và COEX."
+      },
+      "en": {
+        "Title": "Gangnam District Nightlife",
+        "Description": "Experience trendy Gangnam area with cafes, K-pop entertainment, and COEX underground mall."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001b-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001b",
+    "Order": 1,
+    "ActivityType": "Transportation",
+    "Title": "Fly Seoul to Jeju",
+    "Description": "Domestic flight from Gimpo Airport to Jeju International Airport (approx. 1 hour).",
+    "Note": "Gimpo Airport is closer than Incheon for domestic flights.",
+    "EstimatedCost": 80000,
+    "IsOptional": false,
+    "StartTime": "07:30:00",
+    "EndTime": "09:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Bay Seoul đến Jeju",
+        "Description": "Bay nội địa từ sân bay Gimpo đến sân bay quốc tế Jeju (khoảng 1 tiếng)."
+      },
+      "en": {
+        "Title": "Fly Seoul to Jeju",
+        "Description": "Domestic flight from Gimpo Airport to Jeju International Airport (approx. 1 hour)."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001b-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001b",
+    "Order": 2,
+    "ActivityType": "Sightseeing",
+    "Title": "Seongsan Ilchulbong (Sunrise Peak)",
+    "Description": "Hike to the top of Seongsan Ilchulbong, a UNESCO World Heritage volcanic crater.",
+    "Note": "Moderate hike, about 30 minutes to the top. Wear comfortable shoes.",
+    "EstimatedCost": 5000,
+    "IsOptional": false,
+    "StartTime": "10:30:00",
+    "EndTime": "12:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Seongsan Ilchulbong (Đỉnh Bình Minh)",
+        "Description": "Leo lên đỉnh Seongsan Ilchulbong, miệng núi lửa di sản UNESCO."
+      },
+      "en": {
+        "Title": "Seongsan Ilchulbong (Sunrise Peak)",
+        "Description": "Hike to the top of Seongsan Ilchulbong, a UNESCO World Heritage volcanic crater."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001b-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001b",
+    "Order": 3,
+    "ActivityType": "Adventure",
+    "Title": "Hallasan National Park Trail",
+    "Description": "Trek along one of Hallasan's trails through Jeju's volcanic landscape and forest.",
+    "Note": "Full summit trail requires 8+ hours. We take the shorter Yeongsil trail (3 hours).",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "14:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Trekking Vườn quốc gia Hallasan",
+        "Description": "Trekking trên các con đường Hallasan qua cảnh quan núi lửa và rừng Jeju."
+      },
+      "en": {
+        "Title": "Hallasan National Park Trail",
+        "Description": "Trek along one of Hallasan's trails through Jeju's volcanic landscape and forest."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001c-7000-8000-000000000001",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001c",
+    "Order": 1,
+    "ActivityType": "Sightseeing",
+    "Title": "Manjanggul Lava Tube",
+    "Description": "Explore one of the world's longest lava tubes, a UNESCO World Natural Heritage site.",
+    "Note": "Cave is cool inside (around 11-21°C year-round). Bring light jacket.",
+    "EstimatedCost": 4000,
+    "IsOptional": false,
+    "StartTime": "08:30:00",
+    "EndTime": "10:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Hang động dung nham Manjanggul",
+        "Description": "Khám phá một trong những hang dung nham dài nhất thế giới, di sản thiên nhiên UNESCO."
+      },
+      "en": {
+        "Title": "Manjanggul Lava Tube",
+        "Description": "Explore one of the world's longest lava tubes, a UNESCO World Natural Heritage site."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001c-7000-8000-000000000002",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001c",
+    "Order": 2,
+    "ActivityType": "Cultural",
+    "Title": "Jeju Folk Village Museum",
+    "Description": "Explore a preserved traditional village showcasing Jeju's unique culture and lifestyle.",
+    "Note": null,
+    "EstimatedCost": 11000,
+    "IsOptional": false,
+    "StartTime": "10:30:00",
+    "EndTime": "12:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Bảo tàng Làng dân gian Jeju",
+        "Description": "Khám phá làng truyền thống được bảo tồn, trưng bày văn hoá và lối sống đặc trưng Jeju."
+      },
+      "en": {
+        "Title": "Jeju Folk Village Museum",
+        "Description": "Explore a preserved traditional village showcasing Jeju's unique culture and lifestyle."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001c-7000-8000-000000000003",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001c",
+    "Order": 3,
+    "ActivityType": "Shopping",
+    "Title": "Jeju Tangerine & Souvenirs",
+    "Description": "Buy famous Jeju tangerines, hallabong chocolate, and Dol Hareubang souvenirs.",
+    "Note": "Jeju tangerines are seasonal (October-February) but products available year-round.",
+    "EstimatedCost": 30000,
+    "IsOptional": true,
+    "StartTime": "12:30:00",
+    "EndTime": "13:30:00",
+    "Translations": {
+      "vi": {
+        "Title": "Quýt Jeju & Quà lưu niệm",
+        "Description": "Mua quýt Jeju nổi tiếng, socola hallabong và quà lưu niệm tượng đá Dol Hareubang."
+      },
+      "en": {
+        "Title": "Jeju Tangerine & Souvenirs",
+        "Description": "Buy famous Jeju tangerines, hallabong chocolate, and Dol Hareubang souvenirs."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d5-001c-7000-8000-000000000004",
+    "TourDayId": "019527d0-0001-7000-8000-00000000001c",
+    "Order": 4,
+    "ActivityType": "Transportation",
+    "Title": "Jeju Airport & Departure",
+    "Description": "Transfer to Jeju International Airport for departure flight back home.",
+    "Note": "Arrive at airport 2 hours before international flight, 1 hour for domestic.",
+    "EstimatedCost": 0,
+    "IsOptional": false,
+    "StartTime": "15:00:00",
+    "EndTime": "17:00:00",
+    "Translations": {
+      "vi": {
+        "Title": "Sân bay Jeju & Khởi hành",
+        "Description": "Di chuyển ra sân bay quốc tế Jeju để bay về."
+      },
+      "en": {
+        "Title": "Jeju Airport & Departure",
+        "Description": "Transfer to Jeju International Airport for departure flight back home."
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

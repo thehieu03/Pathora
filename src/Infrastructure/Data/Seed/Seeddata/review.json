@@ -1,32 +1,122 @@
-{
-  "entity": "ReviewEntity",
-  "template": {
-    "Id": null,
-    "CreatedOnUtc": null,
-    "CreatedBy": null,
-    "LastModifiedOnUtc": null,
-    "LastModifiedBy": null,
-    "UserId": null,
-    "User": null,
-    "TourId": null,
-    "Tour": null,
-    "Rating": null,
-    "Comment": null,
-    "IsApproved": null
+[
+  {
+    "Id": "019527f0-0000-7000-8000-000000000001",
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "UserId": "019527a0-0000-7000-8000-000000000108",
+    "Rating": 5,
+    "Comment": "Tour Hạ Long tuyệt vời! Du thuyền đẹp, hướng dẫn viên nhiệt tình.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "types": {
-    "Id": "Guid",
-    "CreatedOnUtc": "DateTimeOffset",
-    "CreatedBy": "string?",
-    "LastModifiedOnUtc": "DateTimeOffset?",
-    "LastModifiedBy": "string?",
-    "UserId": "Guid",
-    "User": "UserEntity",
-    "TourId": "Guid",
-    "Tour": "TourEntity",
-    "Rating": "int",
-    "Comment": "string?",
-    "IsApproved": "bool"
+  {
+    "Id": "019527f0-0000-7000-8000-000000000002",
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "UserId": "019527a0-0000-7000-8000-000000000109",
+    "Rating": 4,
+    "Comment": "Hội An rất đẹp, đồ ăn ngon. Cầu Vàng Bà Nà siêu ấn tượng!",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "data": []
-}
+  {
+    "Id": "019527f0-0000-7000-8000-000000000003",
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "UserId": "019527a0-0000-7000-8000-000000000108",
+    "Rating": 5,
+    "Comment": "Phú Quốc xứng danh đảo ngọc. Lặn biển san hô rất đẹp.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000004",
+    "TourId": "019527b0-0000-7000-8000-000000000007",
+    "UserId": "019527a0-0000-7000-8000-000000000109",
+    "Rating": 5,
+    "Comment": "Japan cherry blossom season is breathtaking! Highly recommend this tour.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000005",
+    "TourId": "019527b0-0000-7000-8000-000000000004",
+    "UserId": "019527a0-0000-7000-8000-000000000110",
+    "Rating": 4,
+    "Comment": "Sapa mùa nào cũng đẹp. Ruộng bậc thang mùa lúa chín rực vàng.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000006",
+    "TourId": "019527b0-0000-7000-8000-000000000006",
+    "UserId": "019527a0-0000-7000-8000-000000000111",
+    "Rating": 5,
+    "Comment": "Bangkok - Pattaya tour was amazing! The temples were stunning.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000007",
+    "TourId": "019527b0-0000-7000-8000-000000000008",
+    "UserId": "019527a0-0000-7000-8000-000000000112",
+    "Rating": 4,
+    "Comment": "Seoul and Jeju are both wonderful! Love the Korean food.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000008",
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "UserId": "019527a0-0000-7000-8000-000000000113",
+    "Rating": 5,
+    "Comment": "Vịnh Hạ Long là một trong những kỳ quan thiên nhiên tuyệt vời nhất.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000009",
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "UserId": "019527a0-0000-7000-8000-000000000114",
+    "Rating": 5,
+    "Comment": "Phố cổ Hội An về đêm rất lung linh. Đi tour này không thể bỏ lỡ!",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527f0-0000-7000-8000-000000000010",
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "UserId": "019527a0-0000-7000-8000-000000000115",
+    "Rating": 4,
+    "Comment": "Phú Quốc đảo ngọc xứng danh. Nhưng cần book resort sớm hơn.",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

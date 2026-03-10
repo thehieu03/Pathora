@@ -1,16 +1,170 @@
-{
-  "entity": "ImageEntity",
-  "template": {
-    "FileId": null,
-    "OriginalFileName": null,
-    "FileName": null,
-    "PublicURL": null
+[
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "ha-long-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
   },
-  "types": {
-    "FileId": "string?",
-    "OriginalFileName": "string?",
-    "FileName": "string?",
-    "PublicURL": "string?"
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "ha-long-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
   },
-  "data": []
-}
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000001",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "ha-long-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "da-nang-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "da-nang-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000002",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "da-nang-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "phu-quoc-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "phu-quoc-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000003",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "phu-quoc-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000004",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "sapa-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000004",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "sapa-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000004",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "sapa-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000005",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "hcm-cantho-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000005",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "hcm-cantho-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000005",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "hcm-cantho-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000006",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "bangkok-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000006",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "bangkok-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000006",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "bangkok-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000007",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "tokyo-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000007",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "tokyo-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000007",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "tokyo-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000008",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "seoul-1.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000008",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "seoul-2.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  },
+  {
+    "TourId": "019527b0-0000-7000-8000-000000000008",
+    "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5882",
+    "OriginalFileName": "seoul-3.jpg",
+    "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5882.jpg",
+    "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+  }
+]

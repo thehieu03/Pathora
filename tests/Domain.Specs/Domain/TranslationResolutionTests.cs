@@ -77,7 +77,7 @@ public sealed class TranslationResolutionTests
             LongDescription = "English long"
         };
 
-        var classification = TourClassificationEntity.Create(tour.Id, "Phân loại vi", 1000m, 900m, "Mô tả vi", 2, "tester");
+        var classification = TourClassificationEntity.Create(tour.Id, "Phân loại vi", 1000m, 900m, 0m, "Mô tả vi", 2, 1, "tester");
         classification.Translations["en"] = new TourClassificationTranslationData
         {
             Name = "English classification",

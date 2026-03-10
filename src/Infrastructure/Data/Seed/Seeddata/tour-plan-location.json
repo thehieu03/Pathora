@@ -1,48 +1,452 @@
-{
-  "entity": "TourPlanLocationEntity",
-  "template": {
-    "Id": null,
-    "CreatedOnUtc": null,
-    "CreatedBy": null,
-    "LastModifiedOnUtc": null,
-    "LastModifiedBy": null,
-    "LocationName": null,
-    "LocationDescription": null,
-    "LocationType": null,
-    "Address": null,
-    "City": null,
-    "Country": null,
-    "Latitude": null,
-    "Longitude": null,
-    "EntranceFee": null,
-    "OpeningHours": null,
-    "ClosingHours": null,
-    "EstimatedDurationMinutes": null,
-    "Note": null,
-    "Translations": {},
-    "TourDayActivity": null
+[
+  {
+    "Id": "019527d6-0001-7000-8000-000000000001",
+    "LocationName": "Vịnh Hạ Long",
+    "LocationDescription": "Di sản thiên nhiên thế giới UNESCO với hàng nghìn đảo đá vôi và hang động tuyệt đẹp",
+    "LocationType": "TouristAttraction",
+    "Address": "Vịnh Hạ Long",
+    "City": "Hạ Long",
+    "Country": "Vietnam",
+    "Latitude": 20.9101,
+    "Longitude": 107.1839,
+    "EntranceFee": 300000,
+    "OpeningHours": "06:00:00",
+    "ClosingHours": "18:00:00",
+    "EstimatedDurationMinutes": 240,
+    "Note": "Nên đi vào buổi sáng sớm để tránh đông đúc",
+    "Translations": {
+      "vi": {
+        "LocationName": "Vịnh Hạ Long",
+        "LocationDescription": "Di sản thiên nhiên thế giới UNESCO với hàng nghìn đảo đá vôi và hang động tuyệt đẹp"
+      },
+      "en": {
+        "LocationName": "Ha Long Bay",
+        "LocationDescription": "UNESCO World Heritage Site featuring thousands of limestone islands and stunning caves"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "types": {
-    "Id": "Guid",
-    "CreatedOnUtc": "DateTimeOffset",
-    "CreatedBy": "string?",
-    "LastModifiedOnUtc": "DateTimeOffset?",
-    "LastModifiedBy": "string?",
-    "LocationName": "string",
-    "LocationDescription": "string?",
-    "LocationType": "LocationType",
-    "Address": "string?",
-    "City": "string?",
-    "Country": "string?",
-    "Latitude": "decimal?",
-    "Longitude": "decimal?",
-    "EntranceFee": "decimal?",
-    "OpeningHours": "TimeOnly?",
-    "ClosingHours": "TimeOnly?",
-    "EstimatedDurationMinutes": "int?",
-    "Note": "string?",
-    "Translations": "Dictionary<string, TourPlanLocationTranslationData>",
-    "TourDayActivity": "TourDayActivityEntity"
+  {
+    "Id": "019527d6-0002-7000-8000-000000000002",
+    "LocationName": "Hang Sửng Sốt",
+    "LocationDescription": "Hang động lớn nhất và đẹp nhất trong Vịnh Hạ Long với thạch nhũ kỳ vĩ",
+    "LocationType": "TouristAttraction",
+    "Address": "Đảo Bồ Hòn, Vịnh Hạ Long",
+    "City": "Hạ Long",
+    "Country": "Vietnam",
+    "Latitude": 20.9050,
+    "Longitude": 107.1700,
+    "EntranceFee": 150000,
+    "OpeningHours": "07:00:00",
+    "ClosingHours": "17:00:00",
+    "EstimatedDurationMinutes": 90,
+    "Note": "Cần leo khoảng 100 bậc thang để vào hang",
+    "Translations": {
+      "vi": {
+        "LocationName": "Hang Sửng Sốt",
+        "LocationDescription": "Hang động lớn nhất và đẹp nhất trong Vịnh Hạ Long với thạch nhũ kỳ vĩ"
+      },
+      "en": {
+        "LocationName": "Sung Sot Cave (Surprise Cave)",
+        "LocationDescription": "The largest and most magnificent cave in Ha Long Bay with stunning stalactites"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "data": []
-}
+  {
+    "Id": "019527d6-0003-7000-8000-000000000003",
+    "LocationName": "Bãi Ti Tốp",
+    "LocationDescription": "Bãi biển cát trắng hình lưỡi liềm nằm giữa Vịnh Hạ Long, được đặt theo tên phi hành gia Liên Xô Gherman Titov",
+    "LocationType": "Beach",
+    "Address": "Đảo Ti Tốp, Vịnh Hạ Long",
+    "City": "Hạ Long",
+    "Country": "Vietnam",
+    "Latitude": 20.9200,
+    "Longitude": 107.1600,
+    "EntranceFee": 0,
+    "OpeningHours": "06:00:00",
+    "ClosingHours": "18:00:00",
+    "EstimatedDurationMinutes": 120,
+    "Note": "Có thể leo lên đỉnh đảo để ngắm toàn cảnh Vịnh Hạ Long",
+    "Translations": {
+      "vi": {
+        "LocationName": "Bãi Ti Tốp",
+        "LocationDescription": "Bãi biển cát trắng hình lưỡi liềm nằm giữa Vịnh Hạ Long, được đặt theo tên phi hành gia Liên Xô Gherman Titov"
+      },
+      "en": {
+        "LocationName": "Ti Top Beach",
+        "LocationDescription": "A crescent-shaped white sand beach in Ha Long Bay, named after Soviet cosmonaut Gherman Titov"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-0004-7000-8000-000000000004",
+    "LocationName": "Cầu Vàng Bà Nà",
+    "LocationDescription": "Cây cầu biểu tượng được nâng đỡ bởi đôi bàn tay khổng lồ tại khu du lịch Bà Nà Hills",
+    "LocationType": "TouristAttraction",
+    "Address": "Khu du lịch Bà Nà Hills, Hòa Ninh, Hòa Vang",
+    "City": "Đà Nẵng",
+    "Country": "Vietnam",
+    "Latitude": 15.9977,
+    "Longitude": 107.9882,
+    "EntranceFee": 900000,
+    "OpeningHours": "07:00:00",
+    "ClosingHours": "22:00:00",
+    "EstimatedDurationMinutes": 360,
+    "Note": "Giá vé bao gồm cáp treo và các khu vui chơi trong Bà Nà Hills",
+    "Translations": {
+      "vi": {
+        "LocationName": "Cầu Vàng Bà Nà",
+        "LocationDescription": "Cây cầu biểu tượng được nâng đỡ bởi đôi bàn tay khổng lồ tại khu du lịch Bà Nà Hills"
+      },
+      "en": {
+        "LocationName": "Golden Bridge at Ba Na Hills",
+        "LocationDescription": "The iconic bridge held by giant stone hands at Ba Na Hills resort"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-0005-7000-8000-000000000005",
+    "LocationName": "Phố cổ Hội An",
+    "LocationDescription": "Khu phố cổ được UNESCO công nhận là Di sản Văn hóa Thế giới với kiến trúc cổ kính và đèn lồng rực rỡ",
+    "LocationType": "TouristAttraction",
+    "Address": "Phố cổ Hội An",
+    "City": "Hội An",
+    "Country": "Vietnam",
+    "Latitude": 15.8801,
+    "Longitude": 108.3380,
+    "EntranceFee": 120000,
+    "OpeningHours": "07:00:00",
+    "ClosingHours": "21:30:00",
+    "EstimatedDurationMinutes": 180,
+    "Note": "Nên đến vào buổi chiều tối để ngắm đèn lồng và thả hoa đăng trên sông Hoài",
+    "Translations": {
+      "vi": {
+        "LocationName": "Phố cổ Hội An",
+        "LocationDescription": "Khu phố cổ được UNESCO công nhận là Di sản Văn hóa Thế giới với kiến trúc cổ kính và đèn lồng rực rỡ"
+      },
+      "en": {
+        "LocationName": "Hoi An Ancient Town",
+        "LocationDescription": "UNESCO World Cultural Heritage site with ancient architecture and vibrant lanterns"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-0006-7000-8000-000000000006",
+    "LocationName": "Thánh địa Mỹ Sơn",
+    "LocationDescription": "Quần thể đền tháp Chăm Pa cổ đại được UNESCO công nhận là Di sản Văn hóa Thế giới",
+    "LocationType": "Temple",
+    "Address": "Xã Duy Phú, Huyện Duy Xuyên",
+    "City": "Quảng Nam",
+    "Country": "Vietnam",
+    "Latitude": 15.7644,
+    "Longitude": 108.1225,
+    "EntranceFee": 150000,
+    "OpeningHours": "06:00:00",
+    "ClosingHours": "17:00:00",
+    "EstimatedDurationMinutes": 150,
+    "Note": "Nên thuê hướng dẫn viên để hiểu rõ lịch sử văn hóa Chăm Pa",
+    "Translations": {
+      "vi": {
+        "LocationName": "Thánh địa Mỹ Sơn",
+        "LocationDescription": "Quần thể đền tháp Chăm Pa cổ đại được UNESCO công nhận là Di sản Văn hóa Thế giới"
+      },
+      "en": {
+        "LocationName": "My Son Sanctuary",
+        "LocationDescription": "Ancient Champa temple complex recognized as a UNESCO World Cultural Heritage site"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-0007-7000-8000-000000000007",
+    "LocationName": "Vinpearl Safari Phú Quốc",
+    "LocationDescription": "Vườn thú bán hoang dã lớn nhất Việt Nam với hơn 3.000 cá thể động vật từ khắp nơi trên thế giới",
+    "LocationType": "TouristAttraction",
+    "Address": "Bãi Dài, Gành Dầu",
+    "City": "Phú Quốc",
+    "Country": "Vietnam",
+    "Latitude": 10.3732,
+    "Longitude": 103.8583,
+    "EntranceFee": 650000,
+    "OpeningHours": "09:00:00",
+    "ClosingHours": "16:00:00",
+    "EstimatedDurationMinutes": 240,
+    "Note": "Mua vé combo với Vinpearl Land để tiết kiệm chi phí",
+    "Translations": {
+      "vi": {
+        "LocationName": "Vinpearl Safari Phú Quốc",
+        "LocationDescription": "Vườn thú bán hoang dã lớn nhất Việt Nam với hơn 3.000 cá thể động vật từ khắp nơi trên thế giới"
+      },
+      "en": {
+        "LocationName": "Vinpearl Safari Phu Quoc",
+        "LocationDescription": "Vietnam's largest semi-wild zoo with over 3,000 animals from around the world"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-0008-7000-8000-000000000008",
+    "LocationName": "Quần đảo An Thới",
+    "LocationDescription": "Cụm 18 hòn đảo phía nam Phú Quốc với làn nước trong xanh, lý tưởng cho lặn biển và câu cá",
+    "LocationType": "Beach",
+    "Address": "Quần đảo An Thới",
+    "City": "Phú Quốc",
+    "Country": "Vietnam",
+    "Latitude": 10.0167,
+    "Longitude": 104.0167,
+    "EntranceFee": 0,
+    "OpeningHours": "06:00:00",
+    "ClosingHours": "17:00:00",
+    "EstimatedDurationMinutes": 300,
+    "Note": "Đặt tour cano hoặc tàu gỗ từ cảng An Thới để tham quan các đảo",
+    "Translations": {
+      "vi": {
+        "LocationName": "Quần đảo An Thới",
+        "LocationDescription": "Cụm 18 hòn đảo phía nam Phú Quốc với làn nước trong xanh, lý tưởng cho lặn biển và câu cá"
+      },
+      "en": {
+        "LocationName": "An Thoi Archipelago",
+        "LocationDescription": "A cluster of 18 islands south of Phu Quoc with crystal-clear waters, ideal for snorkeling and fishing"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-0009-7000-8000-000000000009",
+    "LocationName": "Đỉnh Fansipan",
+    "LocationDescription": "Đỉnh núi cao nhất Đông Dương (3.143m), được mệnh danh là 'Nóc nhà Đông Dương'",
+    "LocationType": "NationalPark",
+    "Address": "Dãy Hoàng Liên Sơn",
+    "City": "Sa Pa",
+    "Country": "Vietnam",
+    "Latitude": 22.3033,
+    "Longitude": 103.7750,
+    "EntranceFee": 700000,
+    "OpeningHours": "07:30:00",
+    "ClosingHours": "17:00:00",
+    "EstimatedDurationMinutes": 300,
+    "Note": "Có thể đi cáp treo hoặc leo núi trekking 2-3 ngày",
+    "Translations": {
+      "vi": {
+        "LocationName": "Đỉnh Fansipan",
+        "LocationDescription": "Đỉnh núi cao nhất Đông Dương (3.143m), được mệnh danh là 'Nóc nhà Đông Dương'"
+      },
+      "en": {
+        "LocationName": "Fansipan Summit",
+        "LocationDescription": "The highest peak in Indochina (3,143m), known as 'The Roof of Indochina'"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-000a-7000-8000-00000000000a",
+    "LocationName": "Bản Cát Cát",
+    "LocationDescription": "Bản làng người H'Mông cổ kính với thác nước đẹp và văn hóa truyền thống độc đáo",
+    "LocationType": "TouristAttraction",
+    "Address": "Xã San Sả Hồ, Thị xã Sa Pa",
+    "City": "Sa Pa",
+    "Country": "Vietnam",
+    "Latitude": 22.3225,
+    "Longitude": 103.8361,
+    "EntranceFee": 100000,
+    "OpeningHours": "07:00:00",
+    "ClosingHours": "18:00:00",
+    "EstimatedDurationMinutes": 150,
+    "Note": "Mang giày thoải mái vì cần đi bộ nhiều trên đường dốc",
+    "Translations": {
+      "vi": {
+        "LocationName": "Bản Cát Cát",
+        "LocationDescription": "Bản làng người H'Mông cổ kính với thác nước đẹp và văn hóa truyền thống độc đáo"
+      },
+      "en": {
+        "LocationName": "Cat Cat Village",
+        "LocationDescription": "An ancient H'Mong village with beautiful waterfalls and unique traditional culture"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-000b-7000-8000-00000000000b",
+    "LocationName": "Hoàng Cung (Grand Palace)",
+    "LocationDescription": "Quần thể cung điện hoàng gia Thái Lan với kiến trúc lộng lẫy và chùa Phật Ngọc nổi tiếng",
+    "LocationType": "Temple",
+    "Address": "Na Phra Lan Rd, Phra Borom Maha Ratchawang",
+    "City": "Bangkok",
+    "Country": "Thailand",
+    "Latitude": 13.7500,
+    "Longitude": 100.4914,
+    "EntranceFee": 500,
+    "OpeningHours": "08:30:00",
+    "ClosingHours": "15:30:00",
+    "EstimatedDurationMinutes": 180,
+    "Note": "Yêu cầu trang phục lịch sự, không mặc quần short hoặc áo hở vai",
+    "Translations": {
+      "vi": {
+        "LocationName": "Hoàng Cung (Grand Palace)",
+        "LocationDescription": "Quần thể cung điện hoàng gia Thái Lan với kiến trúc lộng lẫy và chùa Phật Ngọc nổi tiếng"
+      },
+      "en": {
+        "LocationName": "The Grand Palace",
+        "LocationDescription": "The Thai royal palace complex with magnificent architecture and the famous Temple of the Emerald Buddha"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-000c-7000-8000-00000000000c",
+    "LocationName": "Chùa Sensō-ji",
+    "LocationDescription": "Ngôi chùa Phật giáo cổ nhất Tokyo được xây dựng năm 645, nổi tiếng với cổng Kaminarimon và phố mua sắm Nakamise",
+    "LocationType": "Temple",
+    "Address": "2-3-1 Asakusa, Taito City",
+    "City": "Tokyo",
+    "Country": "Japan",
+    "Latitude": 35.7148,
+    "Longitude": 139.7967,
+    "EntranceFee": 0,
+    "OpeningHours": "06:00:00",
+    "ClosingHours": "17:00:00",
+    "EstimatedDurationMinutes": 120,
+    "Note": "Miễn phí vào cổng, nên đến sớm để tránh đông đúc",
+    "Translations": {
+      "vi": {
+        "LocationName": "Chùa Sensō-ji",
+        "LocationDescription": "Ngôi chùa Phật giáo cổ nhất Tokyo được xây dựng năm 645, nổi tiếng với cổng Kaminarimon và phố mua sắm Nakamise"
+      },
+      "en": {
+        "LocationName": "Sensō-ji Temple",
+        "LocationDescription": "Tokyo's oldest Buddhist temple built in 645, famous for the Kaminarimon gate and Nakamise shopping street"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-000d-7000-8000-00000000000d",
+    "LocationName": "Núi Phú Sĩ",
+    "LocationDescription": "Ngọn núi biểu tượng của Nhật Bản cao 3.776m, là Di sản Văn hóa Thế giới UNESCO",
+    "LocationType": "NationalPark",
+    "Address": "Khu vực Hồ Kawaguchi",
+    "City": "Yamanashi",
+    "Country": "Japan",
+    "Latitude": 35.3606,
+    "Longitude": 138.7274,
+    "EntranceFee": 1000,
+    "OpeningHours": "05:00:00",
+    "ClosingHours": "18:00:00",
+    "EstimatedDurationMinutes": 480,
+    "Note": "Mùa leo núi chính thức từ tháng 7 đến tháng 9, ngoài mùa có thể ngắm từ hồ Kawaguchi",
+    "Translations": {
+      "vi": {
+        "LocationName": "Núi Phú Sĩ",
+        "LocationDescription": "Ngọn núi biểu tượng của Nhật Bản cao 3.776m, là Di sản Văn hóa Thế giới UNESCO"
+      },
+      "en": {
+        "LocationName": "Mount Fuji",
+        "LocationDescription": "Japan's iconic 3,776m mountain and UNESCO World Cultural Heritage site"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-000e-7000-8000-00000000000e",
+    "LocationName": "Cung điện Gyeongbokgung",
+    "LocationDescription": "Cung điện lớn nhất và quan trọng nhất trong năm cung điện hoàng gia của triều đại Joseon",
+    "LocationType": "Museum",
+    "Address": "161 Sajik-ro, Jongno-gu",
+    "City": "Seoul",
+    "Country": "Korea",
+    "Latitude": 37.5796,
+    "Longitude": 126.9770,
+    "EntranceFee": 3000,
+    "OpeningHours": "09:00:00",
+    "ClosingHours": "18:00:00",
+    "EstimatedDurationMinutes": 180,
+    "Note": "Miễn phí vào cổng nếu mặc hanbok truyền thống, lễ đổi gác diễn ra lúc 10:00 và 14:00",
+    "Translations": {
+      "vi": {
+        "LocationName": "Cung điện Gyeongbokgung",
+        "LocationDescription": "Cung điện lớn nhất và quan trọng nhất trong năm cung điện hoàng gia của triều đại Joseon"
+      },
+      "en": {
+        "LocationName": "Gyeongbokgung Palace",
+        "LocationDescription": "The largest and most important of the five royal palaces of the Joseon Dynasty"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527d6-000f-7000-8000-00000000000f",
+    "LocationName": "Đỉnh Seongsan Ilchulbong",
+    "LocationDescription": "Miệng núi lửa hình vương miện trên đảo Jeju, nổi tiếng với cảnh bình minh tuyệt đẹp",
+    "LocationType": "NationalPark",
+    "Address": "Seongsan-eup, Seogwipo-si",
+    "City": "Jeju",
+    "Country": "Korea",
+    "Latitude": 33.4611,
+    "Longitude": 126.9406,
+    "EntranceFee": 5000,
+    "OpeningHours": "05:00:00",
+    "ClosingHours": "20:00:00",
+    "EstimatedDurationMinutes": 120,
+    "Note": "Nên đến trước bình minh để ngắm mặt trời mọc từ đỉnh núi lửa",
+    "Translations": {
+      "vi": {
+        "LocationName": "Đỉnh Seongsan Ilchulbong",
+        "LocationDescription": "Miệng núi lửa hình vương miện trên đảo Jeju, nổi tiếng với cảnh bình minh tuyệt đẹp"
+      },
+      "en": {
+        "LocationName": "Seongsan Ilchulbong (Sunrise Peak)",
+        "LocationDescription": "A crown-shaped volcanic crater on Jeju Island, famous for its stunning sunrise views"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]
