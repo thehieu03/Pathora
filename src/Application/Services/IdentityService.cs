@@ -126,7 +126,7 @@ public class IdentityService(
             if (userEntity is not null)
             {
                 userEntity.LinkGoogle(request.ProviderKey, "google");
-                await _userRepository.Update(userEntity);
+                _userRepository.Update(userEntity);
                 await _unitOfWork.SaveChangeAsync();
             }
             else

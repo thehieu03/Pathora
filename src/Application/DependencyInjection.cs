@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITourService, TourService>();
         services.AddScoped<ITourInstanceService, TourInstanceService>();
+        services.AddScoped<IPaymentService,PaymentService>();
 
         return services;
     }

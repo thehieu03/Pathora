@@ -22,17 +22,7 @@ public sealed class IdentityServiceTests
     private readonly IRoleRepository _roleRepository = Substitute.For<IRoleRepository>();
     private readonly IdentityService _sut;
 
-    public IdentityServiceTests()
-    {
-        _sut = new IdentityService(
-            _user,
-            _tokenManager,
-            _unitOfWork,
-            _passwordHasher,
-            _userService,
-            _userRepository,
-            _roleRepository);
-    }
+
 
     [Fact]
     public async Task Register_WhenRoleAssignmentSucceeds_ShouldCreateUserWithZeroBalanceAndCustomerRole()
@@ -114,7 +104,7 @@ public sealed class IdentityServiceTests
             new ExternalLoginRequest(AuthProviders.Google, "google-key", "existing@example.com", "Existing User"));
 
         Assert.False(result.IsError);
-        await _userRepository.Received(1).Update(Arg.Is<UserEntity>(u => u.GoogleId == "google-key"));
+        _userRepository.Received(1).Update(Arg.Is<UserEntity>(u => u.GoogleId == "google-key"));
         await _roleRepository.DidNotReceive().AddUser(Arg.Any<Guid>(), Arg.Any<List<int>>());
         await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
     }

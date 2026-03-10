@@ -24,7 +24,7 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
 
     public async Task<UserEntity?> FindByGoogleId(string googleId)
     {
-        return await _dbContext.Users
+        return await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.GoogleId == googleId && !u.IsDeleted);
     }
@@ -33,14 +33,10 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
     {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        await _dbContext.Users.AddAsync(user);
+        await _context.Users.AddAsync(user);
     }
 
-    public Task Update(UserEntity user)
-    {
-        _dbContext.Users.Update(user);
-        return Task.CompletedTask;
-    }
+  
 
     public async Task SoftDelete(Guid id)
     {

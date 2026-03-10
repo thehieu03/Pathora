@@ -1,15 +1,18 @@
 using Api.Exceptions;
+using Common.Constants;
 using Contracts.ModelResponse;
 using Domain.Constant;
-using Common.Constants;
+using ErrorOr;
 using FluentValidation;
+using Infrastructure.Loging;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace Api.Exceptions.Handler;
 
 public sealed class CustomExceptionHandler(
     ILogger<CustomExceptionHandler> logger,
-    IConfiguration cfg) : IExceptionHandler
+    IConfiguration cfg,
+    LogQueue logQueue) : IExceptionHandler
 {
     #region Implementations
 
@@ -109,12 +112,17 @@ public sealed class CustomExceptionHandler(
         if (details.StatusCode == StatusCodes.Status500InternalServerError)
         {
             logger.LogError("Error Message: {exceptionMessage}, Time of occurrence {time}", exception.Message, DateTime.UtcNow);
+
         }
         else
         {
             logger.LogWarning("Message: {exceptionMessage}, Time of occurrence {time}", exception.Message, DateTime.UtcNow);
         }
-
+        var log = new LogError 
+        {
+            Content ="["+exception.GetType().Name+"]" + exception.Message+exception.StackTrace,
+        };
+        logQueue.Writer.TryWrite(log);
         await context.Response.WriteAsJsonAsync(response, cancellationToken: cancellationToken);
 
         return true;

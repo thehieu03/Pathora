@@ -3,6 +3,7 @@ using Infrastructure.Data;
 using Infrastructure.Files;
 using Infrastructure.Identity;
 using Infrastructure.Localization;
+using Infrastructure.Loging;
 using Infrastructure.Mails;
 using Infrastructure.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ public static class DependencyInjection
                     npgsqlOptions.EnableRetryOnFailure(3);
                 });
             })
+            .AddLogingService(configuration)           
             .AddIdentityServices(configuration)
             .AddMailService(configuration)
             .AddFileService(configuration)
