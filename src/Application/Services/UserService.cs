@@ -132,7 +132,7 @@ public class UserService(
         try
         {
             await _unitOfWork.BeginTransactionAsync();
-            await _userRepository.Update(userEntity);
+            _userRepository.Update(userEntity);
             await _roleRepository.DeleteUser(request.Id);
             if (request.RoleIds.Count > 0)
                 await _roleRepository.AddUser(request.Id, request.RoleIds);
@@ -149,14 +149,20 @@ public class UserService(
 
     public async Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)
     {
-        var userEntity = await _userRepository.FindById(request.UserId);
-        if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+        try
+        {
+            var userEntity = await _userRepository.FindById(request.UserId);
+            if (userEntity is null)
+                return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
 
-        var newPassword = PasswordGenerator.Generate();
-        userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
-        await _userRepository.Update(userEntity);
-
+            var newPassword = PasswordGenerator.Generate();
+            userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
+            _userRepository.Update(userEntity);
+        }
+        catch 
+        {
+            return Error.Failure("User.Failure", "đổi mật khẩu thất bại");
+        }
         return Result.Success;
     }
 
@@ -168,7 +174,7 @@ public class UserService(
 
         // Dùng entity method để đảm bảo LastModifiedBy/LastModifiedOnUtc được set
         userEntity.SoftDelete(_user.Id ?? string.Empty);
-        await _userRepository.Update(userEntity);
+        _userRepository.Update(userEntity);
         return Result.Success;
     }
 

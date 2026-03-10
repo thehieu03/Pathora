@@ -28,27 +28,35 @@ public class Repository<T> : IRepository<T> where T : class
 
     public virtual async Task<T?> GetByIdAsync(Guid id)
     {
-        return await _dbSet
-            .TagWith($"GetById: {typeof(T).Name}")
-            .FirstOrDefaultAsync(e => EF.Property<Guid>(e, GetPrimaryKeyName()) == id);
+        IQueryable<T> query = _dbSet.TagWith($"GetById: {typeof(T).Name}");
+        query = query.Where(e => EF.Property<Guid>(e, GetPrimaryKeyName()) == id);
+        if (typeof(T).GetProperty("IsDeleted") != null)
+             query = query.Where(e => !EF.Property<bool>(e, "IsDeleted"));
+        return await query.FirstOrDefaultAsync();
     }
 
     public virtual async Task<IReadOnlyList<T>> GetListAsync(
-        Expression<Func<T, bool>>? predicate = null,
-        Expression<Func<T, object>>[]? includes = null)
+     Expression<Func<T, bool>>? predicate = null,
+     Expression<Func<T, object>>[]? includes = null)
     {
         IQueryable<T> query = _dbSet.AsNoTracking();
-       
+
         query = query.TagWith($"GetList: {typeof(T).Name}");
 
+        // kiểm tra entity có IsDeleted không
+        if (typeof(T).GetProperty("IsDeleted") != null)
+        {
+            query = query.Where(e => !EF.Property<bool>(e, "IsDeleted"));
+        }
         if (includes is { Length: > 0 })
         {
-            foreach (var include in includes) query = query.Include(include);
+            foreach (var include in includes)
+                query = query.Include(include);
+
             query = query.AsSplitQuery();
         }
-
-        if (predicate != null) query = query.Where(predicate);
-
+        if (predicate != null)
+            query = query.Where(predicate);
         return await query.ToListAsync();
     }
 

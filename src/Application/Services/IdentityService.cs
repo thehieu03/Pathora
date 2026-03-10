@@ -50,47 +50,47 @@ public class IdentityService(
 
     public async Task<ErrorOr<Success>> Register(RegisterRequest request)
     {
-        await _unitOfWork.BeginTransactionAsync();
+       
         var isUnique = await _userRepository.IsEmailUnique(request.Email);
         if (!isUnique)
             return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+        
         try
         {
-            var registerRepo = _unitOfWork.GenericRepository<RegisterEntity>();
-           
-
-            var hashedPassword = _passwordHasher.HashPassword(request.Password);
-
-
-            var userEntity = new RegisterEntity
+            await _unitOfWork.ExecuteTransactionAsync(async () =>
             {
-                Email = request.Email,
-                Username = request.Username,
-                FullName = request.FullName,
-                Password = hashedPassword
-            };
-            await registerRepo.AddAsync(userEntity);
-            var mailRepo = _unitOfWork.GenericRepository<MailEntity>();
+                var registerRepo = _unitOfWork.GenericRepository<RegisterEntity>();
 
-            var mailEntity = new MailEntity
-            {
-                To = request.Email,
-                Subject = "Chào mừng đến với hệ thống",
-                Body = JsonSerializer.Serialize(new RegisterMail("https://pathora-be.duckdns.org/swagger/index.html",request.Email,180.ToString())),
-                Template = nameof(RegisterMail),
-            };
 
-            await mailRepo.AddAsync(mailEntity);
+                var hashedPassword = _passwordHasher.HashPassword(request.Password);
 
+
+                var userEntity = new RegisterEntity
+                {
+                    Email = request.Email,
+                    Username = request.Username,
+                    FullName = request.FullName,
+                    Password = hashedPassword
+                };
+                await registerRepo.AddAsync(userEntity);
+                var mailRepo = _unitOfWork.GenericRepository<MailEntity>();
+
+                var mailEntity = new MailEntity
+                {
+                    To = request.Email,
+                    Subject = "Chào mừng đến với hệ thống",
+                    Body = JsonSerializer.Serialize(new RegisterMail("https://pathora-be.duckdns.org/swagger/index.html", request.Email, 180.ToString())),
+                    Template = nameof(RegisterMail),
+                };
+
+                await mailRepo.AddAsync(mailEntity);
+            });
         }
         catch(Exception) 
         {
             await _unitOfWork.RollbackTransactionAsync();
         }
-        finally 
-        {
-            await _unitOfWork.CommitTransactionAsync();
-        }
+       
         return Result.Success;
     }
 
@@ -102,7 +102,7 @@ public class IdentityService(
 
         var isPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.Password);
         if (!isPasswordValid)
-            return Error.Validation("User.InvalidPassword", "Email hoặc mật khẩu không đúng");
+            return Error.Validation("User.InvalidPassword", "Email hoặc mật khẩu ");
 
         var tokenResult = await _tokenManager.GenerateToken(userEntity);
         if (tokenResult.IsError)
@@ -138,6 +138,7 @@ public class IdentityService(
 
     public async Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)
     {
+
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var uid))
             return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
@@ -151,7 +152,7 @@ public class IdentityService(
             return Error.Validation("User.InvalidPassword", "Mật khẩu cũ không đúng");
 
         userEntity.ChangePassword(_passwordHasher.HashPassword(request.NewPassword), _user.Id ?? string.Empty);
-        await _userRepository.Update(userEntity);
+        _userRepository.Update(userEntity);
 
         return Result.Success;
     }
@@ -204,5 +205,41 @@ public class IdentityService(
             return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
 
         return new List<TabVm>();
+    }
+
+    public async Task<ErrorOr<Success>> ConfirmRegister(ConfirmRegisterRequest request)
+    {
+        if (!Guid.TryParse(request.code, out var guidCode))
+             return Error.Validation("Register.InvalidCode", "Mã xác nhận không đúng định dạng Guid.");
+
+        var register = await _registerRepository.GetByIdAsync(guidCode);
+
+        if (register is null)
+            return Error.NotFound("Register.NotFound", "Mã xác nhận không tồn tại hoặc đã được kích hoạt.");
+        try
+        {
+            await _unitOfWork.ExecuteTransactionAsync(async () =>
+            {
+                var userRepo = _unitOfWork.GenericRepository<UserEntity>();
+                var registerRepo = _unitOfWork.GenericRepository<RegisterEntity>();
+
+                var user = new UserEntity
+                {
+                    Email = register.Email,
+                    Username = register.Username,
+                    FullName = register.FullName,
+                    Password = register.Password
+                };
+
+                await userRepo.AddAsync(user);
+                await registerRepo.DeleteAsync(guidCode);
+            });
+
+            return Result.Success;
+        }
+        catch
+        {
+            return Error.Failure("Register.ConfirmationFailed", "Xác nhận đăng ký thất bại.");
+        }
     }
 }

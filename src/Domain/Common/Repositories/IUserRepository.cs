@@ -3,12 +3,11 @@ using ErrorOr;
 
 namespace Domain.Common.Repositories;
 
-public interface IUserRepository
+public interface IUserRepository: IRepository<UserEntity>
 {
     Task<UserEntity?> FindByEmail(string email);
     Task<UserEntity?> FindById(Guid id);
     Task Create(UserEntity user);
-    Task Update(UserEntity user);
     Task SoftDelete(Guid id);
     Task<List<UserEntity>> FindAll(string? textSearch, Guid? departmentId, int pageNumber, int pageSize);
     Task<int> CountAll(string? textSearch, Guid? departmentId);

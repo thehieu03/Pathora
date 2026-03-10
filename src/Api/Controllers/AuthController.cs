@@ -32,7 +32,12 @@ public class AuthController : BaseApiController
         var result = await Sender.Send(command);
         return HandleResult(result);
     }
-
+    [HttpPost(AuthEndpoint.ConfirmRegister)]
+    public async Task<IActionResult> ConfirmRegister([FromBody] ConfirmCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
     [Authorize]
     [HttpPost(AuthEndpoint.Logout)]
     public async Task<IActionResult> Logout([FromBody] LogoutCommand command)

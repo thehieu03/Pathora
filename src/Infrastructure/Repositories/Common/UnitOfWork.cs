@@ -1,6 +1,8 @@
 using Domain.Common.Repositories;
 using Domain.UnitOfWork;
 using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Repositories.Common;
 
@@ -58,5 +60,27 @@ public class UnitOfWork : IUnitOfWork
         var newRepository = new Repository<TEntity>(_context);
         _repositories[type] = newRepository;
         return newRepository;
+    }
+
+    public async Task ExecuteTransactionAsync(Func<Task> action)
+    {
+        var strategy = ContextDb.Database.CreateExecutionStrategy();
+
+        await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await ContextDb.Database.BeginTransactionAsync();
+            try
+            {
+                await action();
+
+                await ContextDb.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        });
     }
 }
