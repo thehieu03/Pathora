@@ -1,6 +1,7 @@
 using System.Reflection;
+using Application.Common.Behaviors;
 using Application.Services;
-using Domain.Behaviors;
+using BuildingBlocks.Behaviors;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +17,12 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
+            cfg.AddOpenBehavior(typeof(CacheInvalidationBehavior<,>));
         });
+        services.AddSingleton<CacheKeyTracker>();
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         services.AddAutoMapper(Assembly.GetExecutingAssembly());
-
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IFunctionService, FunctionService>();
@@ -29,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<ISystemKeyService, SystemKeyService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITourService, TourService>();
+        services.AddScoped<ITourInstanceService, TourInstanceService>();
 
         return services;
     }

@@ -22,18 +22,32 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
             .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
     }
 
+    public async Task<UserEntity?> FindByGoogleId(string googleId)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.GoogleId == googleId && !u.IsDeleted);
+    }
+
     public async Task Create(UserEntity user)
     {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
+        await _dbContext.Users.AddAsync(user);
     }
+
+    public Task Update(UserEntity user)
+    {
+        _dbContext.Users.Update(user);
+        return Task.CompletedTask;
+    }
+
     public async Task SoftDelete(Guid id)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user != null)
         {
             user.IsDeleted = true;
-            await _context.SaveChangesAsync();
         }
     }
 

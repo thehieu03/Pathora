@@ -1,0 +1,14 @@
+{
+  "entity": "RoleFunctionEntity",
+  "template": {
+    "RoleId": null,
+    "FunctionId": null,
+    "Function": null
+  },
+  "types": {
+    "RoleId": "int",
+    "FunctionId": "int",
+    "Function": "Function"
+  },
+  "data": []
+}

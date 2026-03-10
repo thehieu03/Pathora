@@ -1,6 +1,8 @@
+using Application.Common;
 using Application.Common.Constant;
+using Contracts.Interfaces;
 using Application.Dtos;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
@@ -18,7 +20,10 @@ public sealed record CreateTourCommand(
     TourStatus Status,
     ImageInputDto? Thumbnail = null,
     List<ImageInputDto>? Images = null,
-    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Guid>>;
+    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
+}
 
 public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCommand>
 {
@@ -38,5 +43,6 @@ public sealed class CreateTourCommandHandler(ITourService tourService)
         return await tourService.Create(request);
     }
 }
+
 
 

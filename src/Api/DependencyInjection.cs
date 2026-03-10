@@ -1,11 +1,14 @@
 using System.Diagnostics;
+using System.IO.Compression;
+using System.Threading.RateLimiting;
 using Api.Infrastructure;
 using Api.Swagger.Extensions;
 using ApiExceptionHandler = Api.Exceptions.Handler.CustomExceptionHandler;
 using Application.Common.Constant;
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -39,8 +42,8 @@ public static class DependencyInjection
                         .GetChildren()
                         .Select(x => x.Value ?? throw new ApplicationException("Origin url cannot be empty"))
                         .ToArray())
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
+                    .WithHeaders("Content-Type", "Authorization", "Accept", "Accept-Language", "X-Requested-With")
+                    .WithMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                     .AllowCredentials());
         });
 
@@ -48,6 +51,82 @@ public static class DependencyInjection
 
         services.AddMonitoringServices(configuration);
         services.AddIdentityServices();
+        services.AddRateLimiterServices();
+        services.AddResponseCompressionServices();
+
+        return services;
+    }
+
+    private static IServiceCollection AddResponseCompressionServices(this IServiceCollection services)
+    {
+        services.AddResponseCompression(options =>
+        {
+            options.EnableForHttps = true;
+            options.Providers.Add<BrotliCompressionProvider>();
+            options.Providers.Add<GzipCompressionProvider>();
+            options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+            [
+                "application/json",
+                "text/plain",
+                "text/html"
+            ]);
+        });
+
+        services.Configure<BrotliCompressionProviderOptions>(options =>
+            options.Level = CompressionLevel.Fastest);
+
+        services.Configure<GzipCompressionProviderOptions>(options =>
+            options.Level = CompressionLevel.SmallestSize);
+
+        return services;
+    }
+
+    private static IServiceCollection AddRateLimiterServices(this IServiceCollection services)
+    {
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.AddPolicy("global", context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 100,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+
+            options.AddPolicy("auth-strict", context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 20,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+
+            options.OnRejected = async (context, cancellationToken) =>
+            {
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                {
+                    context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();
+                }
+
+                await Task.CompletedTask;
+            };
+
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 100,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+        });
 
         return services;
     }

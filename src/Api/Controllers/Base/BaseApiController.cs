@@ -1,4 +1,4 @@
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -87,7 +87,6 @@ public abstract class BaseApiController : ControllerBase
             HttpContext.Request.Path,
             successStatusCode));
     }
-
     protected IActionResult HandleGet<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status200OK,
@@ -122,7 +121,6 @@ public abstract class BaseApiController : ControllerBase
     {
         if (result.IsError)
             return HandleResult(result);
-
         return NoContent();
     }
 }

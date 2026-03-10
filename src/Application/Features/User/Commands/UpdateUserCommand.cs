@@ -1,5 +1,7 @@
+using Application.Common;
 using Application.Contracts.User;
-using Domain.CORS;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using Application.Services;
 
@@ -8,9 +10,12 @@ namespace Application.Features.User.Commands;
 public sealed record UpdateUserCommand(
     Guid Id,
     List<UserDepartmentInfo> Departments,
-    List<Guid> RoleIds,
+    List<int> RoleIds,
     string FullName,
-    string Avatar) : ICommand<ErrorOr<Success>>;
+    string Avatar) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.User];
+}
 
 public sealed class UpdateUserCommandHandler(IUserService userService)
     : ICommandHandler<UpdateUserCommand, ErrorOr<Success>>
@@ -21,5 +26,3 @@ public sealed class UpdateUserCommandHandler(IUserService userService)
             request.Id, request.Departments, request.RoleIds, request.FullName, request.Avatar));
     }
 }
-
-

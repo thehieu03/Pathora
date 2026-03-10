@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 
 namespace Api.Middleware;
 

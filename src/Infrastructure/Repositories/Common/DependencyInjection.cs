@@ -1,5 +1,6 @@
 
 using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.UnitOfWork;
 using Microsoft.Extensions.Configuration;
@@ -28,8 +29,14 @@ internal static class DependencyInjection
         services.AddScoped<IFunctionRepository, FunctionRepository>();
 
         services.AddScoped<ITourRepository, TourRepository>();
+        services.AddScoped<ITourInstanceRepository, TourInstanceRepository>();
 
         services.AddScoped<IReviewRepository, ReviewRepository>();
+
+        services.AddScoped<ITourRequestRepository, TourRequestRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
+        services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegisterRepository, RegisterRepository>();

@@ -3,7 +3,9 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Application.Common;
+using Application.Common.Constant;
 using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.UnitOfWork;
@@ -67,14 +69,14 @@ internal sealed class TokenManager(
         var tokenEntity = tokens.FirstOrDefault();
 
         if (tokenEntity is null)
-            return Error.NotFound("RefreshToken.NotFound", "Refresh token không tồn tại");
+            return Error.NotFound(ErrorConstants.RefreshToken.NotFoundCode, ErrorConstants.RefreshToken.NotFoundDescription);
 
         if (!tokenEntity.IsActive)
-            return Error.Validation("RefreshToken.Expired", "Refresh token đã hết hạn");
+            return Error.Validation(ErrorConstants.RefreshToken.ExpiredCode, ErrorConstants.RefreshToken.ExpiredDescription);
 
         var user = await userRepository.FindById(tokenEntity.UserId);
         if (user is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         // Delete old refresh token
         repo.Delete(tokenEntity);

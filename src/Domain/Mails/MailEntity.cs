@@ -9,7 +9,7 @@ public class MailEntity : Aggregate<Guid>
     public string Body { get; set; } = null!;
     public string Template { get; set; } = null!;
     public MailStatus Status { get; set; } = MailStatus.Pending;
-    public DateTime? SentAt { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset? SentAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 

@@ -1,6 +1,6 @@
 using Api.Controllers;
 using Application.Features.Identity.Commands;
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Http;

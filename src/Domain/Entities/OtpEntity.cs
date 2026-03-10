@@ -1,7 +1,8 @@
 namespace Domain.Entities;
 
-public sealed class OtpEntity
+public class OtpEntity
 {
+    public Guid Id { get; set; } = Guid.CreateVersion7();
     public required string Email { get; set; }
     public required string Code { get; set; }
     public required DateTimeOffset ExpiryDate { get; set; }
@@ -12,4 +13,3 @@ public sealed class OtpEntity
         return new OtpEntity { Email = email, Code = code, ExpiryDate = expiryDate };
     }
 }
-

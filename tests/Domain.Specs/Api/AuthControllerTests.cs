@@ -2,11 +2,12 @@ using Api.Controllers;
 using Application.Contracts.Identity;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Domain.Specs.Api;
@@ -127,6 +128,31 @@ public sealed class AuthControllerTests
     }
 
     [Fact]
+    public async Task Logout_WhenBodyTokenMissing_ShouldUseRefreshTokenCookie()
+    {
+        var command = new LogoutCommand(string.Empty);
+        var (controller, probe) = BuildController<LogoutCommand, Success>(Result.Success, "/api/auth/logout");
+        controller.ControllerContext.HttpContext.Request.Headers.Cookie = "refresh_token=cookie-refresh-token";
+
+        await controller.Logout(command);
+
+        Assert.Equal("cookie-refresh-token", probe.CapturedRequest?.RefreshToken);
+    }
+
+    [Fact]
+    public async Task Logout_WhenCommandSucceeds_ShouldClearAuthCookies()
+    {
+        var command = new LogoutCommand("refresh-token");
+        var (controller, _) = BuildController<LogoutCommand, Success>(Result.Success, "/api/auth/logout");
+
+        await controller.Logout(command);
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("access_token=", setCookie);
+        Assert.Contains("refresh_token=", setCookie);
+    }
+
+    [Fact]
     public async Task GetUserInfo_WhenQuerySucceeds_ShouldReturnOkAndWrappedSuccessPayload()
     {
         var response = new UserInfoVm(
@@ -210,6 +236,25 @@ public sealed class AuthControllerTests
             expectedCode: "Identity.Forbidden",
             expectedMessage: "Không có quyền truy cập",
             expectedInstance: "/api/auth/tabs");
+    }
+
+    [Fact]
+    public void GoogleLogin_WhenGoogleIsNotConfigured_ShouldRedirectToFrontendCallbackError()
+    {
+        var (controller, _) = BuildController<GetTabsQuery, List<TabVm>>(
+            new List<TabVm>(),
+            "/api/auth/google-login");
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Cors:AllowedOrigins:0"] = "http://localhost:3000"
+            })
+            .Build();
+
+        var actionResult = controller.GoogleLogin(configuration);
+
+        var redirectResult = Assert.IsType<RedirectResult>(actionResult);
+        Assert.Equal("http://localhost:3000/auth/callback?error=google_auth_not_configured", redirectResult.Url);
     }
 
     private static (AuthController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TRequest, TResponse>(

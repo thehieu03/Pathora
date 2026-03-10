@@ -1,8 +1,10 @@
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
+using Application.Common.Constant;
 using Application.Contracts.Department;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.UnitOfWork;
 using ErrorOr;
 
 namespace Application.Services;
@@ -19,12 +21,14 @@ public interface IDepartmentService
 public class DepartmentService(
     IUser user,
     IRoleService roleService,
-    IDepartmentRepository departmentRepository)
+    IDepartmentRepository departmentRepository,
+    IUnitOfWork unitOfWork)
     : IDepartmentService
 {
     private readonly IUser _user = user;
     private readonly IRoleService _roleService = roleService;
     private readonly IDepartmentRepository _departmentRepository = departmentRepository;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<ErrorOr<Guid>> Create(CreateDepartmentRequest request)
     {
@@ -39,12 +43,14 @@ public class DepartmentService(
         var department = DepartmentEntity.Create(request.DepartmentName, level, _user.Id ?? string.Empty, request.DepartmentParentId);
 
         await _departmentRepository.AddAsync(department);
+        await _unitOfWork.SaveChangeAsync();
         return department.Id;
     }
 
     public async Task<ErrorOr<Success>> Delete(Guid id)
     {
         await _departmentRepository.DeleteAsync(id);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 
@@ -77,7 +83,7 @@ public class DepartmentService(
     {
         var department = await _departmentRepository.GetByIdAsync(request.DepartmentId);
         if (department is null)
-            return Error.NotFound("Department.NotFound", "Phòng ban không tồn tại");
+            return Error.NotFound(ErrorConstants.Department.NotFoundCode, ErrorConstants.Department.NotFoundDescription);
 
         var level = 1;
         if (request.DepartmentParentId.HasValue)
@@ -89,6 +95,7 @@ public class DepartmentService(
 
         department.Update(request.DepartmentName, level, _user.Id ?? string.Empty, request.DepartmentParentId);
         _departmentRepository.Update(department);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 }

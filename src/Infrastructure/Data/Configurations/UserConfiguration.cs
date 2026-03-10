@@ -29,8 +29,23 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
         builder.Property(u => u.AvatarUrl)
             .HasMaxLength(500);
 
-        builder.Property(u => u.Password)
+        builder.Property(u => u.Status)
             .IsRequired();
+
+        builder.Property(u => u.Password)
+            .IsRequired(false);
+
+        builder.Property(u => u.GoogleId)
+            .HasMaxLength(255)
+            .IsRequired(false);
+
+        builder.Property(u => u.Balance)
+            .HasPrecision(18, 2)
+            .HasDefaultValue(0m);
+
+        builder.HasIndex(u => u.GoogleId)
+            .IsUnique()
+            .HasFilter("\"GoogleId\" IS NOT NULL");
 
         builder.Property(u => u.ForcePasswordChange)
             .HasDefaultValue(false);
@@ -40,7 +55,8 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.HasIndex(u => u.IsDeleted);
 
-        builder.HasIndex(u => u.Username);
+        builder.HasIndex(u => u.Username)
+            .IsUnique();
 
         builder.HasIndex(u => u.CreatedOnUtc);
 

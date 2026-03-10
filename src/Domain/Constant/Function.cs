@@ -1,6 +1,6 @@
 namespace Domain.Constant;
 
-public sealed class Function : Entity<int>
+public class Function : Entity<int>
 {
     public int CategoryId { get; set; }
     public string ApiUrl { get; set; } = null!;
@@ -9,4 +9,3 @@ public sealed class Function : Entity<int>
     public string ButtonShow { get; set; } = null!;
     public bool IsDeleted { get; set; }
 }
-

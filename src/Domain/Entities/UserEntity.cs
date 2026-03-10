@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public sealed class UserEntity : Aggregate<Guid>
+public class UserEntity : Aggregate<Guid>
 {
     public UserEntity()
     {
@@ -12,9 +12,11 @@ public sealed class UserEntity : Aggregate<Guid>
     public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }
     public string? AvatarUrl { get; set; }
-    public UserStatus? Status { get; set; } = UserStatus.Active;
+    public UserStatus Status { get; set; } = UserStatus.Active;
     public VerifyStatus VerifyStatus { get; set; } = VerifyStatus.Unverified;
     public string? Password { get; set; } = null!;
+    public string? GoogleId { get; set; }
+    public decimal Balance { get; set; } = 0m;
     public bool ForcePasswordChange { get; set; }
     public bool IsDeleted { get; set; } = false;
 
@@ -27,6 +29,7 @@ public sealed class UserEntity : Aggregate<Guid>
             Email = email,
             AvatarUrl = avatar,
             Password = hashedPassword,
+            Balance = 0m,
             ForcePasswordChange = forcePasswordChange,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
@@ -51,6 +54,31 @@ public sealed class UserEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 
+    public void LinkGoogle(string googleId, string performedBy)
+    {
+        GoogleId = googleId;
+        LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public static UserEntity CreateFromGoogle(string googleId, string email, string? fullName, string? avatarUrl)
+    {
+        return new UserEntity
+        {
+            Username = email,
+            FullName = fullName,
+            Email = email,
+            AvatarUrl = avatarUrl,
+            GoogleId = googleId,
+            Password = null,
+            Balance = 0m,
+            CreatedBy = "google",
+            LastModifiedBy = "google",
+            CreatedOnUtc = DateTimeOffset.UtcNow,
+            LastModifiedOnUtc = DateTimeOffset.UtcNow
+        };
+    }
+
     public void SoftDelete(string performedBy)
     {
         IsDeleted = true;
@@ -58,4 +86,3 @@ public sealed class UserEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 }
-

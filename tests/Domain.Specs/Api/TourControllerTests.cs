@@ -1,5 +1,5 @@
 using Api.Controllers;
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.File;
 using Application.Dtos;
 using Application.Features.Tour.Commands;

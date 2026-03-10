@@ -1,4 +1,4 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Role;
 using Application.Features.Role.Queries;
 using Application.Services;
@@ -15,7 +15,7 @@ public sealed class GetAllRolesQueryHandlerTests
     {
         var roles = new List<RoleVm>
         {
-            new(Guid.CreateVersion7(), "Admin", "System admin", 1, RoleStatus.Active, [])
+            new(1, "Admin", "System admin", 1, RoleStatus.Active, [])
         };
         var payload = new PaginatedListWithPermissions<RoleVm>(roles.Count, roles, new Dictionary<string, bool>());
 

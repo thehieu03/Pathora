@@ -75,7 +75,6 @@ public class Repository<T> : IRepository<T> where T : class
                 _dbSet.Update(entity);
             }
             else _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
         }
     }
 
@@ -99,25 +98,22 @@ public class Repository<T> : IRepository<T> where T : class
     public virtual async Task AddAsync(T entity)
     {
         await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
     }
 
     public virtual void Update(T entity)
     {
         _dbSet.Update(entity);
-        _context.SaveChanges();
     }
 
-    public virtual void UpdateRangeAsync(IEnumerable<T> entities)
+    public virtual Task UpdateRangeAsync(IEnumerable<T> entities)
     {
         _dbSet.UpdateRange(entities);
-        _context.SaveChanges();
+        return Task.CompletedTask;
     }
 
-    public virtual async void AddRangeAsync(IEnumerable<T> entities)
+    public virtual async Task AddRangeAsync(IEnumerable<T> entities)
     {
         await _dbSet.AddRangeAsync(entities);
-        await _context.SaveChangesAsync();
     }
 
     public virtual void Delete(int id)
@@ -132,13 +128,12 @@ public class Repository<T> : IRepository<T> where T : class
     public virtual void Delete(T entity)
     {
         _dbSet.Remove(entity);
-        _context.SaveChanges();
     }
 
-    public virtual void DeleteRangeAsync(IEnumerable<T> entities)
+    public virtual Task DeleteRangeAsync(IEnumerable<T> entities)
     {
         _dbSet.RemoveRange(entities);
-        _context.SaveChanges();
+        return Task.CompletedTask;
     }
 
     public virtual IQueryable<T> GetQuery()

@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Files;
 using Infrastructure.Identity;
@@ -22,12 +22,15 @@ public static class DependencyInjection
         return services
            .AddDbContext<AppDbContext>(options =>
             {
+                options.UseLazyLoadingProxies(proxyOptions =>
+                {
+                    proxyOptions.IgnoreNonVirtualNavigations();
+                });
                 options.UseNpgsql(configuration.GetConnectionString("Default"), npgsqlOptions =>
                 {
                     npgsqlOptions.CommandTimeout(120);
                     npgsqlOptions.EnableRetryOnFailure(3);
                 });
-                // hoặc MySQL, PostgreSQL...
             })
             .AddIdentityServices(configuration)
             .AddMailService(configuration)
@@ -52,4 +55,3 @@ public static class DependencyInjection
         return services;
     }
 }
-

@@ -1,4 +1,6 @@
 using Application.Common.Interfaces;
+using Application.Common.Constant;
+using Contracts.Interfaces;
 using Application.Contracts.Identity;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -98,7 +100,7 @@ public class IdentityService(
     {
         var userEntity = await _userRepository.FindByEmail(request.Email);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Email hoặc mật khẩu không đúng");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundForInvalidCredentialsDescription);
 
         var isPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.Password);
         if (!isPasswordValid)
@@ -112,9 +114,59 @@ public class IdentityService(
         return new LoginResponse(accessToken, refreshToken);
     }
 
-    public Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request)
+    public async Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request)
     {
-        throw new NotImplementedException();
+        // 1. Try to find user by GoogleId
+        var userEntity = await _userRepository.FindByGoogleId(request.ProviderKey);
+
+        if (userEntity is null)
+        {
+            // 2. Try to find user by email — link the GoogleId
+            userEntity = await _userRepository.FindByEmail(request.ProviderEmail);
+            if (userEntity is not null)
+            {
+                userEntity.LinkGoogle(request.ProviderKey, "google");
+                await _userRepository.Update(userEntity);
+                await _unitOfWork.SaveChangeAsync();
+            }
+            else
+            {
+                // 3. Create a new user from Google info
+                userEntity = UserEntity.CreateFromGoogle(
+                    request.ProviderKey,
+                    request.ProviderEmail,
+                    request.FullName,
+                    null);
+
+                try
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+                    await _userRepository.Create(userEntity);
+
+                    var addRoleResult = await _roleRepository.AddUser(userEntity.Id, [DefaultRoleIds.Customer]);
+                    if (addRoleResult.IsError)
+                    {
+                        await _unitOfWork.RollbackTransactionAsync();
+                        return addRoleResult.Errors;
+                    }
+
+                    await _unitOfWork.SaveChangeAsync();
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                catch
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    throw;
+                }
+            }
+        }
+
+        var tokenResult = await _tokenManager.GenerateToken(userEntity);
+        if (tokenResult.IsError)
+            return tokenResult.Errors;
+
+        var (accessToken, refreshToken) = tokenResult.Value;
+        return new ExternalLoginResponse(accessToken, refreshToken);
     }
 
     public async Task<ErrorOr<RefreshTokenResponse>> Refresh(RefreshTokenRequest request)
@@ -131,7 +183,7 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         return await _tokenManager.RevokeToken(userId, request.RefreshToken);
     }
@@ -141,15 +193,15 @@ public class IdentityService(
 
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var uid))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         var userEntity = await _userRepository.FindById(uid);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         var isOldPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.OldPassword);
         if (!isOldPasswordValid)
-            return Error.Validation("User.InvalidPassword", "Mật khẩu cũ không đúng");
+            return Error.Validation(ErrorConstants.User.InvalidPasswordCode, ErrorConstants.User.InvalidPasswordDescription);
 
         userEntity.ChangePassword(_passwordHasher.HashPassword(request.NewPassword), _user.Id ?? string.Empty);
         _userRepository.Update(userEntity);
@@ -171,11 +223,11 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var uid))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         var userEntity = await _userRepository.FindById(uid);
         if (userEntity is null)
-            return Error.NotFound("User.NotFound", "Người dùng không tồn tại");
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
         var rolesResult = await _roleRepository.FindByUserId(userId);
         var roles = rolesResult.IsError
@@ -202,7 +254,7 @@ public class IdentityService(
     {
         var userId = _user.Id;
         if (string.IsNullOrEmpty(userId))
-            return Error.Unauthorized("User.Unauthorized", "Người dùng chưa đăng nhập");
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         return new List<TabVm>();
     }

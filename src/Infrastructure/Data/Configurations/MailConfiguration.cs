@@ -32,10 +32,12 @@ public class MailConfiguration : IEntityTypeConfiguration<MailEntity>
             .HasMaxLength(50)
             .HasDefaultValue(MailStatus.Pending);
 
-        builder.Property(m => m.SentAt);
+        builder.Property(m => m.SentAt)
+            .HasColumnType("timestamp with time zone");
 
         builder.Property(m => m.CreatedAt)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnType("timestamp with time zone");
 
         builder.HasIndex(m => m.Status);
 

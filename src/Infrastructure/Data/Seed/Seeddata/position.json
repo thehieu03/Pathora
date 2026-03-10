@@ -1,0 +1,28 @@
+{
+  "entity": "PositionEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "Name": null,
+    "Level": null,
+    "Note": null,
+    "IsDeleted": null,
+    "Type": null
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "Name": "string",
+    "Level": "int",
+    "Note": "string?",
+    "IsDeleted": "bool",
+    "Type": "int?"
+  },
+  "data": []
+}

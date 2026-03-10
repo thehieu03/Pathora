@@ -1,6 +1,7 @@
 using Api.Exceptions;
-using Domain.ApiModel;
+using Contracts.ModelResponse;
 using Domain.Constant;
+using Common.Constants;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
@@ -30,6 +31,13 @@ public sealed class CustomExceptionHandler(
                 includeInnerEx ? exception.GetType().Name : string.Empty
             ),
             ClientValidationException =>
+            (
+                exception.Message,
+                context.Response.StatusCode = StatusCodes.Status400BadRequest,
+                MessageCode.BadRequest,
+                includeInnerEx ? exception.GetType().Name : string.Empty
+            ),
+            ArgumentException =>
             (
                 exception.Message,
                 context.Response.StatusCode = StatusCodes.Status400BadRequest,
@@ -82,6 +90,10 @@ public sealed class CustomExceptionHandler(
         else if (exception is NotFoundException notFoundException)
         {
             errors.Add(new ErrorResult(notFoundException.Message, notFoundException.Details!));
+        }
+        else if (exception is ArgumentException argumentException)
+        {
+            errors.Add(new ErrorResult(argumentException.Message, argumentException.ParamName ?? string.Empty));
         }
         else
         {

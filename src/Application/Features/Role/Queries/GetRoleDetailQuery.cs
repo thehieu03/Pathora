@@ -1,11 +1,17 @@
+using Application.Common;
 using Application.Contracts.Role;
+using Contracts.Interfaces;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 
 namespace Application.Features.Role.Queries;
 
-public sealed record GetRoleDetailQuery(string RoleId) : IQuery<ErrorOr<RoleDetailVm>>;
+public sealed record GetRoleDetailQuery(int RoleId) : IQuery<ErrorOr<RoleDetailVm>>, ICacheable
+{
+    public string CacheKey => $"{Common.CacheKey.Role}:detail:{RoleId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
+}
 
 public sealed class GetRoleDetailQueryHandler(IRoleService roleService)
     : IQueryHandler<GetRoleDetailQuery, ErrorOr<RoleDetailVm>>
@@ -15,4 +21,3 @@ public sealed class GetRoleDetailQueryHandler(IRoleService roleService)
         return await roleService.GetDetail(new GetRoleDetailRequest(request.RoleId));
     }
 }
-

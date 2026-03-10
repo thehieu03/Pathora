@@ -37,7 +37,8 @@ public sealed class TourEntityTests
 
         var tour = TourEntity.Create(
             "Tour Đà Nẵng", "Mô tả ngắn", "Mô tả dài", "admin",
-            TourStatus.Active, "SEO Title", "SEO Desc", thumbnail, images);
+            TourStatus.Active, seoTitle: "SEO Title", seoDescription: "SEO Desc",
+            thumbnail: thumbnail, images: images);
 
         Assert.Equal("Tour Đà Nẵng", tour.TourName);
         Assert.Equal("Mô tả ngắn", tour.ShortDescription);
@@ -99,7 +100,7 @@ public sealed class TourEntityTests
         var tour = TourEntity.Create("Original", "Short", "Long", "creator", TourStatus.Pending);
 
         tour.Update("Updated Tour", "New Short", "New Long", TourStatus.Active, "editor",
-            "New SEO Title", "New SEO Desc");
+            seoTitle: "New SEO Title", seoDescription: "New SEO Desc");
 
         Assert.Equal("Updated Tour", tour.TourName);
         Assert.Equal("New Short", tour.ShortDescription);
@@ -121,6 +122,21 @@ public sealed class TourEntityTests
 
         Assert.Equal("new", tour.Thumbnail.FileId);
         Assert.Equal("new.jpg", tour.Thumbnail.OriginalFileName);
+    }
+
+    [Fact]
+    public void Update_WithNewThumbnail_WhenCurrentThumbnailIsMissing_ShouldNotThrow()
+    {
+        var tour = TourEntity.Create("Tour", "Short", "Long", "tester");
+        tour.Thumbnail = null!;
+        var newThumb = ImageEntity.Create("new", "new.jpg", "new.jpg", "http://cdn/new.jpg");
+
+        var exception = Record.Exception(() =>
+            tour.Update("Tour", "Short", "Long", TourStatus.Active, "editor", thumbnail: newThumb));
+
+        Assert.Null(exception);
+        Assert.NotNull(tour.Thumbnail);
+        Assert.Equal("new", tour.Thumbnail.FileId);
     }
 
     [Fact]

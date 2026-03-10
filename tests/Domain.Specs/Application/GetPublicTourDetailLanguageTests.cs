@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Features.Public.Queries;
 using Application.Mapping;
 using AutoMapper;
@@ -34,7 +34,7 @@ public sealed class GetPublicTourDetailLanguageTests
             ShortDescription = "English short",
             LongDescription = "English long"
         };
-        _tourRepository.FindById(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper, _languageContext);
         var result = await handler.Handle(new GetPublicTourDetailQuery(tour.Id), CancellationToken.None);

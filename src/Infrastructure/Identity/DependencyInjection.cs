@@ -2,6 +2,8 @@ using System.Security.Claims;
 using System.Text;
 using Application.Common;
 using Application.Common.Interfaces;
+using Common.Authentication;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -38,18 +40,25 @@ internal static class DependencyInjection
                 options.ClientSecret = googleClientSecret;
                 options.Scope.Add("email");
                 options.Scope.Add("profile");
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
         }
 
         authBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
+                var jwtSecret = configuration["Jwt:Secret"];
+                if (string.IsNullOrWhiteSpace(jwtSecret))
+                {
+                    throw new InvalidOperationException(
+                        "Missing configuration value 'Jwt:Secret'. Set it in appsettings or environment variables.");
+                }
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"] ??
-                        throw new InvalidOperationException("Invalid Jwt secret"))),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
                     ValidIssuers = configuration["Jwt:Issuer"]?.Split(","),
                     ValidAudiences = configuration["Jwt:Audience"]?.Split(","),
 
@@ -58,6 +67,18 @@ internal static class DependencyInjection
 
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+                    {
+                        var token = AuthTokenResolver.Resolve(
+                            context.Request.Headers.Authorization.ToString(),
+                            context.Request.Cookies["access_token"]);
+                        if (!string.IsNullOrWhiteSpace(token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
                     OnTokenValidated = async context =>
                     {
                         var jti = context.Principal?.FindFirst("jti")?.Value;

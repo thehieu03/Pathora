@@ -1,0 +1,36 @@
+{
+  "entity": "TourInsuranceEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "InsuranceName": null,
+    "InsuranceType": null,
+    "InsuranceProvider": null,
+    "CoverageDescription": null,
+    "CoverageAmount": null,
+    "CoverageFee": null,
+    "IsOptional": null,
+    "Note": null,
+    "TourClassification": null
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "InsuranceName": "string",
+    "InsuranceType": "InsuranceType",
+    "InsuranceProvider": "string",
+    "CoverageDescription": "string",
+    "CoverageAmount": "decimal",
+    "CoverageFee": "decimal",
+    "IsOptional": "bool",
+    "Note": "string?",
+    "TourClassification": "TourClassificationEntity"
+  },
+  "data": []
+}

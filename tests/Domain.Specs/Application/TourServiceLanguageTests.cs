@@ -1,4 +1,4 @@
-using Application.Common.Interfaces;
+using Contracts.Interfaces;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
@@ -9,6 +9,7 @@ using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Entities.Translations;
 using Domain.Enums;
+using Domain.UnitOfWork;
 using NSubstitute;
 
 namespace Domain.Specs.Application;
@@ -17,6 +18,7 @@ public sealed class TourServiceLanguageTests
 {
     private readonly ITourRepository _tourRepository = Substitute.For<ITourRepository>();
     private readonly IUser _user = Substitute.For<IUser>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
     private readonly ILanguageContext _languageContext = Substitute.For<ILanguageContext>();
     private readonly IMapper _mapper;
     private readonly ITourService _sut;
@@ -26,7 +28,7 @@ public sealed class TourServiceLanguageTests
         _user.Id.Returns("tester");
         var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<TourProfile>());
         _mapper = mapperConfig.CreateMapper();
-        _sut = new TourService(_tourRepository, _user, _mapper, _languageContext);
+        _sut = new TourService(_tourRepository, _user, _unitOfWork, _mapper, _languageContext);
     }
 
     [Fact]
@@ -65,7 +67,7 @@ public sealed class TourServiceLanguageTests
             LongDescription = "Mô tả dài vi"
         };
 
-        _tourRepository.FindById(tour.Id).Returns(tour);
+        _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
         var result = await _sut.GetDetail(tour.Id);
 

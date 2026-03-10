@@ -21,13 +21,6 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-// Auto-apply migrations on startup
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await db.Database.MigrateAsync();
-}
-
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
@@ -36,10 +29,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseExceptionHandler(_ => { });
 
+app.UseResponseCompression();
+
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
 app.UseCors();
 app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.UseSerilogRequestLogging();
 

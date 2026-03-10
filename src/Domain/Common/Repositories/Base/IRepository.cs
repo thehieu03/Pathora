@@ -9,10 +9,10 @@ public interface IRepository<T> where T : class
     Task<IEnumerable<T>> GetAllAsync();
     Task AddAsync(T entity);
     void Update(T entity);
-    void UpdateRangeAsync(IEnumerable<T> entities);
-    void AddRangeAsync(IEnumerable<T> entities);
+    Task UpdateRangeAsync(IEnumerable<T> entities);
+    Task AddRangeAsync(IEnumerable<T> entities);
     void Delete(T entity);
-    void DeleteRangeAsync(IEnumerable<T> entities);
+    Task DeleteRangeAsync(IEnumerable<T> entities);
     Task<IQueryable<T>> GetQuery(Expression<Func<T, bool>> predicate);
     IQueryable<T> Get(
         Expression<Func<T, bool>>? filter = null,

@@ -14,8 +14,7 @@ public sealed class TourProfile : Profile
 
         CreateMap<TourClassificationEntity, TourClassificationDto>();
 
-        CreateMap<TourDayEntity, TourDayDto>()
-            .ForMember(dest => dest.ClassificationId, opt => opt.MapFrom(src => src.TourClassificationId));
+        CreateMap<TourDayEntity, TourDayDto>();
 
         CreateMap<TourDayActivityEntity, TourDayActivityDto>();
 

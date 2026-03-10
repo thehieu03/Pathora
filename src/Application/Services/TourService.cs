@@ -1,5 +1,6 @@
-using Application.Common.Contracts;
-using Application.Common.Interfaces;
+using Contracts;
+using Contracts.Interfaces;
+using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
@@ -7,6 +8,7 @@ using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Entities.Translations;
+using Domain.UnitOfWork;
 using ErrorOr;
 
 namespace Application.Services;
@@ -20,10 +22,16 @@ public interface ITourService
     Task<ErrorOr<TourDto>> GetDetail(Guid id);
 }
 
-public class TourService(ITourRepository tourRepository, IUser user, IMapper mapper, ILanguageContext? languageContext = null) : ITourService
+public class TourService(
+    ITourRepository tourRepository,
+    IUser user,
+    IUnitOfWork unitOfWork,
+    IMapper mapper,
+    ILanguageContext? languageContext = null) : ITourService
 {
     private readonly ITourRepository _tourRepository = tourRepository;
     private readonly IUser _user = user;
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IMapper _mapper = mapper;
     private readonly ILanguageContext _languageContext = languageContext ?? new FallbackLanguageContext();
 
@@ -41,13 +49,14 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
             request.LongDescription,
             _user.Id ?? string.Empty,
             request.Status,
-            request.SEOTitle,
-            request.SEODescription,
-            thumbnail,
-            images);
+            seoTitle: request.SEOTitle,
+            seoDescription: request.SEODescription,
+            thumbnail: thumbnail,
+            images: images);
         tour.Translations = NormalizeTranslations(request.Translations);
 
         await _tourRepository.Create(tour);
+        await _unitOfWork.SaveChangeAsync();
         return tour.Id;
     }
 
@@ -55,10 +64,12 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
     {
         var tour = await _tourRepository.FindById(request.Id);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         if (await _tourRepository.ExistsByTourCode(tour.TourCode, request.Id))
-            return Error.Conflict("Tour.DuplicateCode", $"Mã tour '{tour.TourCode}' đã tồn tại");
+            return Error.Conflict(
+                ErrorConstants.Tour.DuplicateCodeCode,
+                string.Format(ErrorConstants.Tour.DuplicateCodeDescriptionTemplate, tour.TourCode));
 
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : null;
         var images = request.Images?.Select(ToImageEntity).ToList();
@@ -69,13 +80,14 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
             request.LongDescription,
             request.Status,
             _user.Id ?? string.Empty,
-            request.SEOTitle,
-            request.SEODescription,
-            thumbnail,
-            images);
+            seoTitle: request.SEOTitle,
+            seoDescription: request.SEODescription,
+            thumbnail: thumbnail,
+            images: images);
         MergeTranslations(tour, request.Translations);
 
         await _tourRepository.Update(tour);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 
@@ -83,9 +95,10 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
     {
         var tour = await _tourRepository.FindById(id);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         await _tourRepository.SoftDelete(id);
+        await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
 
@@ -112,9 +125,9 @@ public class TourService(ITourRepository tourRepository, IUser user, IMapper map
 
     public async Task<ErrorOr<TourDto>> GetDetail(Guid id)
     {
-        var tour = await _tourRepository.FindByIdReadOnly(id);
+        var tour = await _tourRepository.FindById(id, asNoTracking: true);
         if (tour is null)
-            return Error.NotFound("Tour.NotFound", "Tour không tồn tại");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
         tour.ApplyResolvedTranslations(_languageContext.CurrentLanguage);
         return _mapper.Map<TourDto>(tour);

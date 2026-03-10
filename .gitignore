@@ -278,10 +278,15 @@ CLAUDE.md
 .cursor/
 .windsurf/
 .claude/
+.agent/
 .agents/
+.codex/
 .aider*
+.gemini/
 .kilocode/
 .kiro/
+.opencode/
+openspec/
 .github/copilot-instructions.md
 .vscode/mcp.json
 

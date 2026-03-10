@@ -1,15 +1,21 @@
 using Application.Dtos;
-using Application.Common.Interfaces;
+using Application.Common;
+using Application.Common.Constant;
+using Contracts.Interfaces;
 using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities.Translations;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using Domain.Enums;
 using ErrorOr;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetPublicTourDetailQuery(Guid Id) : IQuery<ErrorOr<TourDto>>;
+public sealed record GetPublicTourDetailQuery(Guid Id) : IQuery<ErrorOr<TourDto>>, ICacheable
+{
+    public string CacheKey => $"{Common.CacheKey.Tour}:public:detail:{Id}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourRepository, IMapper mapper, ILanguageContext? languageContext = null)
     : IQueryHandler<GetPublicTourDetailQuery, ErrorOr<TourDto>>
@@ -18,10 +24,10 @@ public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourReposito
 
     public async Task<ErrorOr<TourDto>> Handle(GetPublicTourDetailQuery request, CancellationToken cancellationToken)
     {
-        var tour = await tourRepository.FindByIdReadOnly(request.Id);
+        var tour = await tourRepository.FindById(request.Id, asNoTracking: true);
 
         if (tour is null || tour.IsDeleted || tour.Status != TourStatus.Active)
-            return Error.NotFound("Tour.NotFound", "Tour không tìm thấy");
+            return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.PublicNotFoundDescription);
 
         tour.ApplyResolvedTranslations(_languageContext.CurrentLanguage);
         return mapper.Map<TourDto>(tour);

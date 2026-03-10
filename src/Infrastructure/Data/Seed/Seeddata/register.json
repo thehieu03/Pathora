@@ -1,0 +1,28 @@
+{
+  "entity": "RegisterEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "Username": null,
+    "Email": null,
+    "Password": null,
+    "FullName": null,
+    "IsDeleted": null
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "Username": "string",
+    "Email": "string",
+    "Password": "string",
+    "FullName": "string",
+    "IsDeleted": "bool"
+  },
+  "data": []
+}

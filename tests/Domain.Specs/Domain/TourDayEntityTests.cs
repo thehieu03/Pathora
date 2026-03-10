@@ -11,7 +11,7 @@ public sealed class TourDayEntityTests
         var entity = TourDayEntity.Create(classificationId, 1, "Day 1 - Hà Nội", "admin", "Explore Hà Nội");
 
         Assert.NotEqual(Guid.Empty, entity.Id);
-        Assert.Equal(classificationId, entity.TourClassificationId);
+        Assert.Equal(classificationId, entity.ClassificationId);
         Assert.Equal(1, entity.DayNumber);
         Assert.Equal("Day 1 - Hà Nội", entity.Title);
         Assert.Equal("Explore Hà Nội", entity.Description);

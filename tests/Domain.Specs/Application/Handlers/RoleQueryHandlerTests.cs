@@ -1,4 +1,4 @@
-using Application.Common.Contracts;
+using Contracts;
 using Application.Contracts.Role;
 using Application.Features.Role.Queries;
 using Application.Services;
@@ -16,8 +16,8 @@ public sealed class RoleQueryHandlerTests
     public async Task GetDetailHandler_ShouldDelegateToRoleService()
     {
         var roleService = Substitute.For<IRoleService>();
-        var roleId = Guid.CreateVersion7().ToString();
-        var expected = new RoleDetailVm(Guid.CreateVersion7(), "Admin", "System admin", 1, RoleStatus.Active, []);
+        var roleId = 1;
+        var expected = new RoleDetailVm(1, "Admin", "System admin", 1, RoleStatus.Active, []);
         roleService.GetDetail(Arg.Any<GetRoleDetailRequest>()).Returns(expected);
 
         var handler = new GetRoleDetailQueryHandler(roleService);
@@ -39,7 +39,7 @@ public sealed class RoleQueryHandlerTests
 
         var handler = new GetRoleDetailQueryHandler(roleService);
         var result = await handler.Handle(
-            new GetRoleDetailQuery("nonexistent"), CancellationToken.None);
+            new GetRoleDetailQuery(0), CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal("Role.NotFound", result.FirstError.Code);

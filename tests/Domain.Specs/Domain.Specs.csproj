@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk"/>
         <PackageReference Include="NSubstitute"/>
         <PackageReference Include="xunit"/>
@@ -23,6 +24,8 @@
         <ProjectReference Include="..\..\src\Api\Api.csproj" />
         <ProjectReference Include="..\..\src\Application\Application.csproj" />
         <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
+        <ProjectReference Include="..\..\Share\Common\Common.csproj" />
+        <ProjectReference Include="..\..\Share\Contracts\Contracts.csproj" />
     </ItemGroup>
 
 </Project>

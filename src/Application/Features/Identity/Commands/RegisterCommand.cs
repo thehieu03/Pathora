@@ -1,4 +1,4 @@
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 using Application.Common.Constant;
@@ -38,5 +38,6 @@ public sealed class RegisterCommandHandler(IIdentityService identityService)
         return await identityService.Register(new RegisterRequest(request.Username, request.FullName, request.Email, request.Password));
     }
 }
+
 
 

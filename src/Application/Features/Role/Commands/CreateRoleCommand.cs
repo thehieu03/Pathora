@@ -1,13 +1,18 @@
+using Application.Common;
 using Application.Common.Constant;
+using Contracts.Interfaces;
 using Application.Contracts.Role;
 using Application.Services;
-using Domain.CORS;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 
 namespace Application.Features.Role.Commands;
 
-public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<Guid>>;
+public sealed record CreateRoleCommand(string Name, string Description, int Type, IEnumerable<int>? FunctionIds = null) : ICommand<ErrorOr<int>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Role, CacheKey.User];
+}
 
 public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCommand>
 {
@@ -23,11 +28,10 @@ public sealed class CreateRoleCommandValidator : AbstractValidator<CreateRoleCom
 }
 
 public sealed class CreateRoleCommandHandler(IRoleService roleService)
-    : ICommandHandler<CreateRoleCommand, ErrorOr<Guid>>
+    : ICommandHandler<CreateRoleCommand, ErrorOr<int>>
 {
-    public async Task<ErrorOr<Guid>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<int>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
         return await roleService.Create(new CreateRoleRequest(request.Name, request.Description, request.Type, request.FunctionIds ?? []));
     }
 }
-

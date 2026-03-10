@@ -38,7 +38,7 @@ public class MailRepository(AppDbContext context) : IMailRepository
         {
             mail.Status = status;
             if (status == MailStatus.Sent)
-                mail.SentAt = DateTime.UtcNow;
+                mail.SentAt = DateTimeOffset.UtcNow;
         }
         await _context.SaveChangesAsync();
         return Result.Success;

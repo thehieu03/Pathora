@@ -10,7 +10,10 @@ public class OtpConfiguration : IEntityTypeConfiguration<OtpEntity>
     {
         builder.ToTable("Otps");
 
-        builder.HasKey(o => new { o.Email, o.Code });
+        builder.HasKey(o => o.Id);
+
+        builder.Property(o => o.Id)
+            .ValueGeneratedNever();
 
         builder.Property(o => o.Email)
             .IsRequired()
@@ -25,6 +28,9 @@ public class OtpConfiguration : IEntityTypeConfiguration<OtpEntity>
 
         builder.Property(o => o.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasIndex(o => o.Email)
+            .IsUnique();
 
         builder.HasIndex(o => o.ExpiryDate);
     }

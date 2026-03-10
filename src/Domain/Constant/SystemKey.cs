@@ -1,6 +1,6 @@
 namespace Domain.Constant;
 
-public sealed class SystemKey : Entity<int>
+public class SystemKey : Entity<int>
 {
     public int ParentId { get; set; }
     public string CodeKey { get; set; } = null!;
@@ -9,4 +9,3 @@ public sealed class SystemKey : Entity<int>
     public int SortOrder { get; set; }
     public bool IsDeleted { get; set; }
 }
-

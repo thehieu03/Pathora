@@ -1,15 +1,22 @@
 using Api.Endpoint;
-using Application.Common.Interfaces;
+using Api.Infrastructure;
+using Contracts.Interfaces;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
 [Route(AuthEndpoint.Base)]
+[EnableRateLimiting("auth-strict")]
 public class AuthController : BaseApiController
 {
     [HttpPost(AuthEndpoint.Login)]
@@ -42,10 +49,18 @@ public class AuthController : BaseApiController
     [HttpPost(AuthEndpoint.Logout)]
     public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
     {
-        var result = await Sender.Send(command);
+        var refreshToken = string.IsNullOrWhiteSpace(command.RefreshToken)
+            ? Request.Cookies["refresh_token"] ?? string.Empty
+            : command.RefreshToken;
+
+        var result = await Sender.Send(command with { RefreshToken = refreshToken });
+        if (!result.IsError)
+        {
+            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+        }
+
         return HandleResult(result);
     }
-
     [Authorize]
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()
@@ -68,9 +83,10 @@ public class AuthController : BaseApiController
         [FromBody] DevResetPasswordRequest request,
         [FromServices] AppDbContext db,
         [FromServices] IPasswordHasher hasher,
-        [FromServices] IWebHostEnvironment env)
+        [FromServices] IWebHostEnvironment env,
+        [FromServices] IConfiguration configuration)
     {
-        if (!env.IsDevelopment())
+        if (!env.IsDevelopment() || !configuration.GetValue<bool>("Dev:EnableDevEndpoints"))
             return NotFound();
 
         var user = await db.Users
@@ -83,6 +99,65 @@ public class AuthController : BaseApiController
         await db.SaveChangesAsync();
 
         return Ok(new { message = $"Đã đổi mật khẩu cho {user.Email} (username: {user.Username})" });
+    }
+
+    [HttpGet(AuthEndpoint.GoogleLogin)]
+    public IActionResult GoogleLogin([FromServices] IConfiguration configuration)
+    {
+        if (!IsGoogleConfigured(configuration))
+            return Redirect(GetFrontendUrl(configuration) + "/auth/callback?error=google_auth_not_configured");
+
+        var properties = new AuthenticationProperties
+        {
+            RedirectUri = Url.Action(nameof(GoogleCallback))
+        };
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    [HttpGet(AuthEndpoint.GoogleCallback)]
+    public async Task<IActionResult> GoogleCallback([FromServices] IConfiguration configuration)
+    {
+        var frontendUrl = GetFrontendUrl(configuration);
+        var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        if (!authenticateResult.Succeeded)
+            return Redirect(frontendUrl + "/auth/callback?error=google_auth_failed");
+
+        var claims = authenticateResult.Principal?.Claims.ToList() ?? [];
+        var googleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        var fullName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+        if (string.IsNullOrEmpty(googleId) || string.IsNullOrEmpty(email))
+        {
+            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            return Redirect(frontendUrl + "/auth/callback?error=missing_claims");
+        }
+
+        var result = await Sender.Send(new ExternalLoginCommand(googleId, email, fullName ?? ""));
+
+        // Sign out the cookie used during the OAuth flow
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        if (result.IsError)
+        {
+            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            return Redirect(frontendUrl + "/auth/callback?error=login_failed");
+        }
+
+        var response = result.Value;
+        AuthCookieWriter.WriteAuthCookies(Response, response, Request.IsHttps);
+        return Redirect($"{frontendUrl}/auth/callback");
+    }
+
+    private static string GetFrontendUrl(IConfiguration configuration)
+    {
+        return configuration["Cors:AllowedOrigins:0"] ?? "http://localhost:3000";
+    }
+
+    private static bool IsGoogleConfigured(IConfiguration configuration)
+    {
+        return !string.IsNullOrWhiteSpace(configuration["Authentication:Google:ClientId"]) &&
+               !string.IsNullOrWhiteSpace(configuration["Authentication:Google:ClientSecret"]);
     }
 }
 

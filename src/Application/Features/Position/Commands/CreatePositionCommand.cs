@@ -1,4 +1,6 @@
-using Domain.CORS;
+using Application.Common;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 using Application.Common.Constant;
@@ -7,7 +9,10 @@ using Application.Services;
 
 namespace Application.Features.Position.Commands;
 
-public sealed record CreatePositionCommand(string Name, int Level, string? Note, int? Type) : ICommand<ErrorOr<Success>>;
+public sealed record CreatePositionCommand(string Name, int Level, string? Note, int? Type) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Position];
+}
 
 public sealed class CreatePositionCommandValidator : AbstractValidator<CreatePositionCommand>
 {
@@ -27,5 +32,6 @@ public sealed class CreatePositionCommandHandler(IPositionService positionServic
         return await positionService.CreateAsync(new CreatePositionRequest(request.Name, request.Level, request.Note, request.Type));
     }
 }
+
 
 

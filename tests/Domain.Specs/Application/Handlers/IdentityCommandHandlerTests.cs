@@ -130,4 +130,44 @@ public sealed class IdentityCommandHandlerTests
         Assert.True(result.IsError);
         Assert.Equal("Identity.InvalidRefreshToken", result.FirstError.Code);
     }
+
+    // ── ExternalLogin ───────────────────────────────────────
+
+    [Fact]
+    public async Task ExternalLoginHandler_ShouldDelegateToIdentityService()
+    {
+        var identityService = Substitute.For<IIdentityService>();
+        var expected = new ExternalLoginResponse("access-token", "refresh-token");
+        identityService.ExternalLogin(Arg.Any<ExternalLoginRequest>()).Returns(expected);
+
+        var handler = new ExternalLoginCommandHandler(identityService);
+        var result = await handler.Handle(
+            new ExternalLoginCommand("google-id-123", "user@gmail.com", "Test User"),
+            CancellationToken.None);
+
+        Assert.False(result.IsError);
+        Assert.Equal(expected, result.Value);
+        await identityService.Received(1).ExternalLogin(
+            Arg.Is<ExternalLoginRequest>(r =>
+                r.Provider == "Google" &&
+                r.ProviderKey == "google-id-123" &&
+                r.ProviderEmail == "user@gmail.com" &&
+                r.FullName == "Test User"));
+    }
+
+    [Fact]
+    public async Task ExternalLoginHandler_WhenServiceReturnsError_ShouldPropagateError()
+    {
+        var identityService = Substitute.For<IIdentityService>();
+        identityService.ExternalLogin(Arg.Any<ExternalLoginRequest>())
+            .Returns(Error.Failure("Identity.ExternalLoginFailed", "Failed"));
+
+        var handler = new ExternalLoginCommandHandler(identityService);
+        var result = await handler.Handle(
+            new ExternalLoginCommand("google-id-123", "user@gmail.com", "Test User"),
+            CancellationToken.None);
+
+        Assert.True(result.IsError);
+        Assert.Equal("Identity.ExternalLoginFailed", result.FirstError.Code);
+    }
 }

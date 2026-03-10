@@ -18,7 +18,7 @@ public class RoleController : BaseApiController
     }
 
     [HttpGet(RoleEndpoint.RoleId)]
-    public async Task<IActionResult> GetDetail(string roleId)
+    public async Task<IActionResult> GetDetail(int roleId)
     {
         var result = await Sender.Send(new GetRoleDetailQuery(roleId));
         return HandleResult(result);
@@ -46,7 +46,7 @@ public class RoleController : BaseApiController
     }
 
     [HttpDelete(RoleEndpoint.RoleId)]
-    public async Task<IActionResult> Delete(string roleId)
+    public async Task<IActionResult> Delete(int roleId)
     {
         var result = await Sender.Send(new DeleteRoleCommand(roleId));
         return HandleResult(result);

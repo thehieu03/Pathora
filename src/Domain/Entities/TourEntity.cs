@@ -4,6 +4,8 @@ using Domain.Entities.Translations;
 
 public class TourEntity : Aggregate<Guid>
 {
+    private static int _tourCodeSequence = Random.Shared.Next(0, 100000);
+
     public string TourCode { get; set; } = null!;
     public string TourName { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
@@ -12,19 +14,21 @@ public class TourEntity : Aggregate<Guid>
     public string? SEOTitle { get; set; }
     public string? SEODescription { get; set; }
     public TourStatus Status { get; set; } = TourStatus.Pending;
+    public TourScope TourScope { get; set; } = TourScope.Domestic;
+    public CustomerSegment CustomerSegment { get; set; } = CustomerSegment.Group;
     public ImageEntity Thumbnail { get; set; } = null!;
     public List<ImageEntity> Images { get; set; } = [];
     public Dictionary<string, TourTranslationData> Translations { get; set; } = [];
-    public List<TourClassificationEntity> Classifications { get; set; } = [];
+    public virtual List<TourClassificationEntity> Classifications { get; set; } = [];
 
     public static string GenerateTourCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
-        var uniquePart = Guid.CreateVersion7().ToString("N")[..8];
-        return $"TOUR-{datePart}-{uniquePart}";
+        var sequence = Interlocked.Increment(ref _tourCodeSequence) % 100000;
+        return $"TOUR-{datePart}-{sequence:00000}";
     }
 
-    public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
+    public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, TourScope tourScope = TourScope.Domestic, CustomerSegment customerSegment = CustomerSegment.Group, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
     {
         return new TourEntity
         {
@@ -36,6 +40,8 @@ public class TourEntity : Aggregate<Guid>
             SEOTitle = seoTitle,
             SEODescription = seoDescription,
             Status = status,
+            TourScope = tourScope,
+            CustomerSegment = customerSegment,
             Thumbnail = thumbnail ?? new ImageEntity(),
             Images = images ?? [],
             CreatedBy = performedBy,
@@ -45,7 +51,7 @@ public class TourEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
+    public void Update(string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, TourScope tourScope = TourScope.Domestic, CustomerSegment customerSegment = CustomerSegment.Group, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null)
     {
         TourName = tourName;
         ShortDescription = shortDescription;
@@ -53,8 +59,11 @@ public class TourEntity : Aggregate<Guid>
         SEOTitle = seoTitle;
         SEODescription = seoDescription;
         Status = status;
+        TourScope = tourScope;
+        CustomerSegment = customerSegment;
         if (thumbnail is not null)
         {
+            Thumbnail ??= new ImageEntity();
             Thumbnail.FileId = thumbnail.FileId;
             Thumbnail.OriginalFileName = thumbnail.OriginalFileName;
             Thumbnail.FileName = thumbnail.FileName;

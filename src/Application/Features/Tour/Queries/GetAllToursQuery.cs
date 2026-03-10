@@ -1,11 +1,18 @@
-using Application.Common.Contracts;
-using Domain.CORS;
+using Application.Common;
+using Contracts;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
 using ErrorOr;
+using Application.Services;
 
 namespace Application.Features.Tour.Queries;
 
 public sealed record GetAllToursQuery(string? SearchText, int PageNumber = 1, int PageSize = 10)
-    : IQuery<ErrorOr<PaginatedList<TourVm>>>;
+    : IQuery<ErrorOr<PaginatedList<TourVm>>>, ICacheable
+{
+    public string CacheKey => $"{Common.CacheKey.Tour}:all:{PageNumber}:{PageSize}:{SearchText}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(30);
+}
 
 public sealed record TourVm(
     Guid Id,
@@ -14,4 +21,13 @@ public sealed record TourVm(
     string ShortDescription,
     string Status,
     DateTimeOffset CreatedOnUtc);
+
+public sealed class GetAllToursQueryHandler(ITourService tourService)
+    : IQueryHandler<GetAllToursQuery, ErrorOr<PaginatedList<TourVm>>>
+{
+    public async Task<ErrorOr<PaginatedList<TourVm>>> Handle(GetAllToursQuery request, CancellationToken cancellationToken)
+    {
+        return await tourService.GetAll(request);
+    }
+}
 

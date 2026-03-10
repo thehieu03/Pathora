@@ -1,4 +1,5 @@
 using Domain.Common.Repositories;
+using Application.Common.Constant;
 using Domain.Entities;
 using Domain.Enums;
 using ErrorOr;
@@ -14,18 +15,16 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
     public async Task<ErrorOr<Success>> Create(RoleEntity role)
     {
         await _context.Roles.AddAsync(role);
-        await _context.SaveChangesAsync();
         return Result.Success;
     }
 
-    public async Task<ErrorOr<Success>> Update(RoleEntity role)
+    public Task<ErrorOr<Success>> Update(RoleEntity role)
     {
         _context.Roles.Update(role);
-        await _context.SaveChangesAsync();
-        return Result.Success;
+        return Task.FromResult<ErrorOr<Success>>(Result.Success);
     }
 
-    public async Task<ErrorOr<Success>> AddUser(Guid userId, List<Guid> roleIds)
+    public async Task<ErrorOr<Success>> AddUser(Guid userId, List<int> roleIds)
     {
         var userRoles = roleIds.Select(roleId => new UserRoleEntity
         {
@@ -33,7 +32,6 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
             RoleId = roleId
         }).ToList();
         await _context.UserRoles.AddRangeAsync(userRoles);
-        await _context.SaveChangesAsync();
         return Result.Success;
     }
 
@@ -41,11 +39,10 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
     {
         var userRoles = await _context.UserRoles.Where(ur => ur.UserId == userId).ToListAsync();
         _context.UserRoles.RemoveRange(userRoles);
-        await _context.SaveChangesAsync();
         return Result.Success;
     }
 
-    public async Task<ErrorOr<List<(Guid UserId, Guid RoleId)>>> FindAllUserRoles()
+    public async Task<ErrorOr<List<(Guid UserId, int RoleId)>>> FindAllUserRoles()
     {
         var result = await _context.UserRoles
             .AsNoTracking()
@@ -62,18 +59,16 @@ public class RoleRepository(AppDbContext context) : IRoleRepository
             .ToListAsync();
     }
 
-    public async Task<ErrorOr<RoleEntity?>> FindById(string roleId)
+    public async Task<ErrorOr<RoleEntity?>> FindById(int roleId)
     {
-        if (!Guid.TryParse(roleId, out var id))
-            return Error.Validation("Role.InvalidId", "Role ID không hợp lệ");
-        var role = await _context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+        var role = await _context.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == roleId && !r.IsDeleted);
         return role;
     }
 
     public async Task<ErrorOr<List<RoleEntity>>> FindByUserId(string userId)
     {
         if (!Guid.TryParse(userId, out var uid))
-            return Error.Validation("User.InvalidId", "User ID không hợp lệ");
+            return Error.Validation(ErrorConstants.User.InvalidIdCode, ErrorConstants.User.InvalidIdDescription);
         var roleIds = await _context.UserRoles
             .Where(ur => ur.UserId == uid)
             .Select(ur => ur.RoleId)
