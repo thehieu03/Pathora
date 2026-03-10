@@ -1,0 +1,36 @@
+{
+  "entity": "CustomerDepositEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "BookingId": null,
+    "Booking": null,
+    "DepositOrder": null,
+    "ExpectedAmount": null,
+    "DueAt": null,
+    "Status": null,
+    "PaidAt": null,
+    "Note": null,
+    "Payments": []
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "BookingId": "Guid",
+    "Booking": "BookingEntity",
+    "DepositOrder": "int",
+    "ExpectedAmount": "decimal",
+    "DueAt": "DateTimeOffset",
+    "Status": "DepositStatus",
+    "PaidAt": "DateTimeOffset?",
+    "Note": "string?",
+    "Payments": "List<CustomerPaymentEntity>"
+  },
+  "data": []
+}

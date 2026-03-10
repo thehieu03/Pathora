@@ -1,0 +1,42 @@
+{
+  "entity": "UserEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "Username": null,
+    "FullName": null,
+    "Email": null,
+    "PhoneNumber": null,
+    "AvatarUrl": null,
+    "Status": null,
+    "VerifyStatus": null,
+    "Password": null,
+    "GoogleId": null,
+    "Balance": null,
+    "ForcePasswordChange": null,
+    "IsDeleted": null
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "Username": "string",
+    "FullName": "string?",
+    "Email": "string",
+    "PhoneNumber": "string?",
+    "AvatarUrl": "string?",
+    "Status": "UserStatus",
+    "VerifyStatus": "VerifyStatus",
+    "Password": "string?",
+    "GoogleId": "string?",
+    "Balance": "decimal",
+    "ForcePasswordChange": "bool",
+    "IsDeleted": "bool"
+  },
+  "data": []
+}

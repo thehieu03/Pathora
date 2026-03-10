@@ -4,16 +4,17 @@ Verifies all 6 public API endpoints used by the Home page return valid data,
 and cross-checks counts against the database.
 """
 
+import json
 import sys
 import time
-import json
-import requests
+
 import psycopg2
+import requests
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
 API_BASE_URL = "http://localhost:8080"
-DB_CONNECTION = "host=34.87.55.176 port=3306 dbname=Pathora user=postgres password=123abc@A"
+DB_CONNECTION = "host=pathora-db.duckdns.org port=443 dbname=Pathora user=postgres password=123abc@A"
 
 ENDPOINTS = [
     {
@@ -57,6 +58,7 @@ ENDPOINTS = [
 
 # ── Connection checks ────────────────────────────────────────────────────────
 
+
 def check_api_connection():
     """Check API server is reachable via health endpoint."""
     try:
@@ -77,6 +79,7 @@ def check_db_connection():
 
 
 # ── Endpoint verification ────────────────────────────────────────────────────
+
 
 def check_endpoint(endpoint):
     """Call an endpoint and verify response format. Returns result dict."""
@@ -136,6 +139,7 @@ def check_endpoint(endpoint):
 
 # ── Database cross-checks ────────────────────────────────────────────────────
 
+
 def cross_check_db(api_results):
     """Compare API counts with database counts."""
     checks = []
@@ -144,61 +148,88 @@ def cross_check_db(api_results):
         cur = conn.cursor()
 
         # Tours: active and not deleted
-        cur.execute("""SELECT COUNT(*) FROM "Tours" WHERE "Status" = 'Active' AND "IsDeleted" = false""")
+        cur.execute(
+            """SELECT COUNT(*) FROM "Tours" WHERE "Status" = 'Active' AND "IsDeleted" = false"""
+        )
         db_tours = cur.fetchone()[0]
-        featured_count = next((r["items"] for r in api_results if r["name"] == "Featured Tours"), 0)
-        latest_count = next((r["items"] for r in api_results if r["name"] == "Latest Tours"), 0)
-        checks.append({
-            "name": "Tours (Featured <= DB)",
-            "api": featured_count,
-            "db": db_tours,
-            "status": "PASS" if featured_count <= db_tours else "FAIL",
-        })
-        checks.append({
-            "name": "Tours (Latest <= DB)",
-            "api": latest_count,
-            "db": db_tours,
-            "status": "PASS" if latest_count <= db_tours else "FAIL",
-        })
+        featured_count = next(
+            (r["items"] for r in api_results if r["name"] == "Featured Tours"), 0
+        )
+        latest_count = next(
+            (r["items"] for r in api_results if r["name"] == "Latest Tours"), 0
+        )
+        checks.append(
+            {
+                "name": "Tours (Featured <= DB)",
+                "api": featured_count,
+                "db": db_tours,
+                "status": "PASS" if featured_count <= db_tours else "FAIL",
+            }
+        )
+        checks.append(
+            {
+                "name": "Tours (Latest <= DB)",
+                "api": latest_count,
+                "db": db_tours,
+                "status": "PASS" if latest_count <= db_tours else "FAIL",
+            }
+        )
 
         # Reviews
         cur.execute("""SELECT COUNT(*) FROM "Reviews" WHERE "IsApproved" = true""")
         db_reviews = cur.fetchone()[0]
-        reviews_count = next((r["items"] for r in api_results if r["name"] == "Top Reviews"), 0)
-        checks.append({
-            "name": "Reviews (API <= DB)",
-            "api": reviews_count,
-            "db": db_reviews,
-            "status": "PASS" if reviews_count <= db_reviews else "FAIL",
-        })
+        reviews_count = next(
+            (r["items"] for r in api_results if r["name"] == "Top Reviews"), 0
+        )
+        checks.append(
+            {
+                "name": "Reviews (API <= DB)",
+                "api": reviews_count,
+                "db": db_reviews,
+                "status": "PASS" if reviews_count <= db_reviews else "FAIL",
+            }
+        )
 
         # Locations / destinations
-        cur.execute("""SELECT COUNT(DISTINCT "City") FROM "TourPlanLocations" WHERE "City" IS NOT NULL""")
+        cur.execute(
+            """SELECT COUNT(DISTINCT "City") FROM "TourPlanLocations" WHERE "City" IS NOT NULL"""
+        )
         db_locations = cur.fetchone()[0]
-        dest_count = next((r["items"] for r in api_results if r["name"] == "Trending Destinations"), 0)
-        attract_count = next((r["items"] for r in api_results if r["name"] == "Top Attractions"), 0)
-        checks.append({
-            "name": "Destinations (API <= DB)",
-            "api": dest_count,
-            "db": db_locations,
-            "status": "PASS" if dest_count <= db_locations else "FAIL",
-        })
-        checks.append({
-            "name": "Attractions (API <= DB)",
-            "api": attract_count,
-            "db": db_locations,
-            "status": "PASS" if attract_count <= db_locations else "FAIL",
-        })
+        dest_count = next(
+            (r["items"] for r in api_results if r["name"] == "Trending Destinations"), 0
+        )
+        attract_count = next(
+            (r["items"] for r in api_results if r["name"] == "Top Attractions"), 0
+        )
+        checks.append(
+            {
+                "name": "Destinations (API <= DB)",
+                "api": dest_count,
+                "db": db_locations,
+                "status": "PASS" if dest_count <= db_locations else "FAIL",
+            }
+        )
+        checks.append(
+            {
+                "name": "Attractions (API <= DB)",
+                "api": attract_count,
+                "db": db_locations,
+                "status": "PASS" if attract_count <= db_locations else "FAIL",
+            }
+        )
 
         cur.close()
         conn.close()
     except Exception as e:
-        checks.append({"name": "DB Cross-check", "api": "-", "db": "-", "status": f"ERROR: {e}"})
+        checks.append(
+            {"name": "DB Cross-check", "api": "-", "db": "-", "status": f"ERROR: {e}"}
+        )
 
     return checks
 
 
 # ── Report ────────────────────────────────────────────────────────────────────
+
 
 def print_report(api_results, db_checks):
     """Print summary table and verdict."""
@@ -214,7 +245,9 @@ def print_report(api_results, db_checks):
     for r in api_results:
         status_icon = "PASS" if r["status"] == "PASS" else "FAIL"
         error = r["error"] or ""
-        print(f"{r['name']:<28} {status_icon:<8} {r['time_ms']:<12} {r['items']:<8} {error}")
+        print(
+            f"{r['name']:<28} {status_icon:<8} {r['time_ms']:<12} {r['items']:<8} {error}"
+        )
 
     # DB cross-check results
     print(f"\n{'DB Cross-Check':<28} {'Status':<8} {'API Count':<12} {'DB Count'}")
@@ -240,6 +273,7 @@ def print_report(api_results, db_checks):
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
+
 
 def main():
     print("Checking API server connection...")
