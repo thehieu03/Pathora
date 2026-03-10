@@ -33,6 +33,11 @@ internal static class DependencyInjection
 
         services.AddScoped<IReviewRepository, ReviewRepository>();
 
+        services.AddScoped<ITourRequestRepository, TourRequestRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
+        services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
