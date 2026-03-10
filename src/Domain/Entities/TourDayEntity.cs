@@ -4,8 +4,8 @@ using Domain.Entities.Translations;
 
 public class TourDayEntity : Aggregate<Guid>
 {
-    public Guid ClassificationId { get; set; }
-    public virtual TourClassificationEntity Classification { get; set; } = null!;
+    public Guid? ClassificationId { get; set; }
+    public virtual TourClassificationEntity? Classification { get; set; }
     public int DayNumber { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }

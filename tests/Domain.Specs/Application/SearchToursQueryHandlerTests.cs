@@ -91,8 +91,10 @@ public sealed class SearchToursQueryHandlerTests
             "VIP",
             1000m,
             900m,
+            0m,
             "desc",
             3,
+            2,
             "tester");
         classification.Plans = [day];
 

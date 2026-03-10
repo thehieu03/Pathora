@@ -1,14 +1,522 @@
-{
-  "entity": "RoleFunctionEntity",
-  "template": {
-    "RoleId": null,
-    "FunctionId": null,
-    "Function": null
+[
+  {
+    "RoleId": 1,
+    "FunctionId": 1
   },
-  "types": {
-    "RoleId": "int",
-    "FunctionId": "int",
-    "Function": "Function"
+  {
+    "RoleId": 1,
+    "FunctionId": 2
   },
-  "data": []
-}
+  {
+    "RoleId": 1,
+    "FunctionId": 3
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 4
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 5
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 6
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 7
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 8
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 9
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 10
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 11
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 12
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 13
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 14
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 15
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 16
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 17
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 18
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 19
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 20
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 21
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 24
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 25
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 26
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 27
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 28
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 29
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 30
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 31
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 32
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 33
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 34
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 35
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 36
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 37
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 38
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 39
+  },
+  {
+    "RoleId": 1,
+    "FunctionId": 40
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 1
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 2
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 3
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 4
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 5
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 6
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 7
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 8
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 9
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 10
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 11
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 12
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 13
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 14
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 15
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 16
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 17
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 18
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 19
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 20
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 21
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 24
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 25
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 26
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 27
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 28
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 29
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 30
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 31
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 32
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 33
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 34
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 35
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 36
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 37
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 38
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 39
+  },
+  {
+    "RoleId": 2,
+    "FunctionId": 40
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 1
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 2
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 12
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 13
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 24
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 25
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 26
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 27
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 28
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 29
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 30
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 31
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 32
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 33
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 34
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 35
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 36
+  },
+  {
+    "RoleId": 3,
+    "FunctionId": 37
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 1
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 2
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 33
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 34
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 35
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 36
+  },
+  {
+    "RoleId": 4,
+    "FunctionId": 37
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 27
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 28
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 29
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 30
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 31
+  },
+  {
+    "RoleId": 5,
+    "FunctionId": 32
+  },
+  {
+    "RoleId": 6,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 6,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 6,
+    "FunctionId": 33
+  },
+  {
+    "RoleId": 6,
+    "FunctionId": 34
+  },
+  {
+    "RoleId": 6,
+    "FunctionId": 35
+  },
+  {
+    "RoleId": 7,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 7,
+    "FunctionId": 23
+  },
+  {
+    "RoleId": 7,
+    "FunctionId": 27
+  },
+  {
+    "RoleId": 7,
+    "FunctionId": 28
+  },
+  {
+    "RoleId": 8,
+    "FunctionId": 33
+  },
+  {
+    "RoleId": 8,
+    "FunctionId": 34
+  },
+  {
+    "RoleId": 9,
+    "FunctionId": 22
+  },
+  {
+    "RoleId": 9,
+    "FunctionId": 23
+  }
+]

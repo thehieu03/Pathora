@@ -1,28 +1,134 @@
-{
-  "entity": "PositionEntity",
-  "template": {
-    "Id": null,
-    "CreatedOnUtc": null,
-    "CreatedBy": null,
-    "LastModifiedOnUtc": null,
-    "LastModifiedBy": null,
-    "Name": null,
-    "Level": null,
+[
+  {
+    "Id": "019527a0-0000-7000-8000-000000000030",
+    "Name": "Giám đốc",
+    "Level": 1,
     "Note": null,
-    "IsDeleted": null,
-    "Type": null
+    "Type": 1,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "types": {
-    "Id": "Guid",
-    "CreatedOnUtc": "DateTimeOffset",
-    "CreatedBy": "string?",
-    "LastModifiedOnUtc": "DateTimeOffset?",
-    "LastModifiedBy": "string?",
-    "Name": "string",
-    "Level": "int",
-    "Note": "string?",
-    "IsDeleted": "bool",
-    "Type": "int?"
+  {
+    "Id": "019527a0-0000-7000-8000-000000000031",
+    "Name": "Phó giám đốc",
+    "Level": 2,
+    "Note": null,
+    "Type": 1,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  "data": []
-}
+  {
+    "Id": "019527a0-0000-7000-8000-000000000032",
+    "Name": "Trưởng phòng",
+    "Level": 3,
+    "Note": null,
+    "Type": 1,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000033",
+    "Name": "Phó phòng",
+    "Level": 4,
+    "Note": null,
+    "Type": 1,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000034",
+    "Name": "Nhân viên kinh doanh",
+    "Level": 5,
+    "Note": "Phụ trách bán tour",
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000035",
+    "Name": "Nhân viên điều hành",
+    "Level": 5,
+    "Note": "Phụ trách vận hành tour",
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000036",
+    "Name": "Hướng dẫn viên",
+    "Level": 5,
+    "Note": "HDV nội địa & quốc tế",
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000037",
+    "Name": "Nhân viên kế toán",
+    "Level": 5,
+    "Note": null,
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000038",
+    "Name": "Nhân viên IT",
+    "Level": 5,
+    "Note": null,
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000039",
+    "Name": "Nhân viên marketing",
+    "Level": 5,
+    "Note": null,
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000040",
+    "Name": "Thực tập sinh",
+    "Level": 6,
+    "Note": null,
+    "Type": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

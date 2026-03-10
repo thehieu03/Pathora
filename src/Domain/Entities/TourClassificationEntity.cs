@@ -7,28 +7,29 @@ public class TourClassificationEntity : Aggregate<Guid>
     public Guid TourId { get; set; }
     public virtual TourEntity Tour { get; set; } = null!;
     public string Name { get; set; } = null!;
-    public decimal Price { get; set; }
-    public decimal SalePrice { get; set; }
+    public decimal AdultPrice { get; set; }
+    public decimal ChildPrice { get; set; }
+    public decimal InfantPrice { get; set; }
     public string Description { get; set; } = null!;
-    public int DurationDays { get; set; }
+    public int NumberOfDay { get; set; }
+    public int NumberOfNight { get; set; }
     public Dictionary<string, TourClassificationTranslationData> Translations { get; set; } = [];
     public virtual List<TourDayEntity> Plans { get; set; } = [];
     public virtual List<TourInsuranceEntity> Insurances { get; set; } = [];
 
-    public static TourClassificationEntity Create(Guid tourId, string name, decimal price, decimal salePrice, string description, int durationDays, string performedBy)
+    public static TourClassificationEntity Create(Guid tourId, string name, decimal adultPrice, decimal childPrice, decimal infantPrice, string description, int numberOfDay, int numberOfNight, string performedBy)
     {
-        EnsureValidPricing(price, salePrice);
-        EnsureValidDuration(durationDays);
-
         return new TourClassificationEntity
         {
             Id = Guid.CreateVersion7(),
             TourId = tourId,
             Name = name,
-            Price = price,
-            SalePrice = salePrice,
+            AdultPrice = adultPrice,
+            ChildPrice = childPrice,
+            InfantPrice = infantPrice,
             Description = description,
-            DurationDays = durationDays,
+            NumberOfDay = numberOfDay,
+            NumberOfNight = numberOfNight,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,
@@ -36,43 +37,16 @@ public class TourClassificationEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(string name, decimal price, decimal salePrice, string description, int durationDays, string performedBy)
+    public void Update(string name, decimal adultPrice, decimal childPrice, decimal infantPrice, string description, int numberOfDay, int numberOfNight, string performedBy)
     {
-        EnsureValidPricing(price, salePrice);
-        EnsureValidDuration(durationDays);
-
         Name = name;
-        Price = price;
-        SalePrice = salePrice;
+        AdultPrice = adultPrice;
+        ChildPrice = childPrice;
+        InfantPrice = infantPrice;
         Description = description;
-        DurationDays = durationDays;
+        NumberOfDay = numberOfDay;
+        NumberOfNight = numberOfNight;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
-    }
-
-    private static void EnsureValidPricing(decimal price, decimal salePrice)
-    {
-        if (price < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(price), "Price must be non-negative.");
-        }
-
-        if (salePrice < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(salePrice), "Sale price must be non-negative.");
-        }
-
-        if (salePrice > price)
-        {
-            throw new ArgumentOutOfRangeException(nameof(salePrice), "Sale price must be less than or equal to price.");
-        }
-    }
-
-    private static void EnsureValidDuration(int durationDays)
-    {
-        if (durationDays <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(durationDays), "Duration days must be greater than zero.");
-        }
     }
 }

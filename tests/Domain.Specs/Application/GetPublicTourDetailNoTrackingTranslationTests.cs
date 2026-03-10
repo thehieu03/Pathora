@@ -67,7 +67,7 @@ public sealed class GetPublicTourDetailNoTrackingTranslationTests
             LongDescription = "English long"
         };
 
-        var classification = TourClassificationEntity.Create(tour.Id, "VIP", 1000m, 900m, "Mô tả hạng", 3, "tester");
+        var classification = TourClassificationEntity.Create(tour.Id, "VIP", 1000m, 900m, 0m, "Mô tả hạng", 3, 2, "tester");
         classification.Translations["en"] = new TourClassificationTranslationData
         {
             Name = "English VIP",
