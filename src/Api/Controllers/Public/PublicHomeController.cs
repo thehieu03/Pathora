@@ -62,14 +62,30 @@ public class PublicHomeController : BaseApiController
 
     [HttpGet(PublicEndpoint.Tours + "/" + PublicEndpoint.Search)]
     public async Task<IActionResult> SearchTours(
+        [FromQuery] string? q,
         [FromQuery] string? destination,
         [FromQuery] string? classification,
         [FromQuery] DateOnly? date,
         [FromQuery] int? people,
+        [FromQuery] decimal? minPrice,
+        [FromQuery] decimal? maxPrice,
+        [FromQuery] int? minDays,
+        [FromQuery] int? maxDays,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var result = await Sender.Send(new SearchToursQuery(destination, classification, date, people, page, pageSize));
+        var result = await Sender.Send(new SearchToursQuery(
+            q,
+            destination,
+            classification,
+            date,
+            people,
+            minPrice,
+            maxPrice,
+            minDays,
+            maxDays,
+            page,
+            pageSize));
         return HandleResult(result);
     }
 

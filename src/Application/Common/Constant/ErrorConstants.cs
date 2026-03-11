@@ -50,6 +50,15 @@ public static class ErrorConstants
         public const string PublicNotFoundDescription = "Lịch trình tour không tồn tại hoặc không khả dụng";
     }
 
+    public static class DynamicPricing
+    {
+        public const string InvalidRangeCode = "DynamicPricing.InvalidRange";
+        public const string InvalidRangeDescription = "Khoảng số lượng khách không hợp lệ";
+
+        public const string OverlapCode = "DynamicPricing.Overlap";
+        public const string OverlapDescription = "Khoảng dynamic pricing bị chồng lấn";
+    }
+
     public static class TourRequest
     {
         public const string NotFoundCode = "TourRequest.NotFound";

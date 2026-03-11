@@ -28,6 +28,7 @@ public class AuthController : BaseApiController
         if (!result.IsError)
         {
             AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+            AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
         }
 
         return HandleResult(result);
@@ -48,10 +49,11 @@ public class AuthController : BaseApiController
         if (!result.IsError)
         {
             AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+            AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
         }
         else if (result.Errors.Any(error => error.Type is ErrorType.Unauthorized or ErrorType.NotFound))
         {
-            AuthCookieWriter.ClearAuthStatusCookie(Response, Request.IsHttps);
+            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
         }
 
         return HandleResult(result);
@@ -83,6 +85,13 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> GetUserInfo()
     {
         var result = await Sender.Send(new GetUserInfoQuery());
+
+        if (!result.IsError)
+        {
+            AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+            AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
+        }
+
         return HandleResult(result);
     }
 

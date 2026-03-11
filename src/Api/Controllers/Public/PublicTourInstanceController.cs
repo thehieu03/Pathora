@@ -1,5 +1,6 @@
 using Api.Endpoint;
 using Application.Features.Public.Queries;
+using Application.Features.TourInstance.Queries;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,13 @@ public class PublicTourInstanceController : BaseApiController
     public async Task<IActionResult> GetDetail(Guid id, [FromServices] ILanguageContext? languageContext = null)
     {
         var result = await Sender.Send(new GetPublicTourInstanceDetailQuery(id, languageContext?.CurrentLanguage));
+        return HandleResult(result);
+    }
+
+    [HttpGet(TourInstanceEndpoint.ResolvePricing)]
+    public async Task<IActionResult> ResolvePricing(Guid id, [FromQuery] int participants)
+    {
+        var result = await Sender.Send(new ResolveTourInstancePricingQuery(id, participants));
         return HandleResult(result);
     }
 }

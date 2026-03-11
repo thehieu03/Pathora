@@ -8,6 +8,7 @@ public static class AuthCookieWriter
     private const string AccessTokenCookieName = "access_token";
     private const string RefreshTokenCookieName = "refresh_token";
     private const string AuthStatusCookieName = "auth_status";
+    private const string AuthPortalCookieName = "auth_portal";
     private static readonly TimeSpan AccessTokenLifetime = TimeSpan.FromDays(1);
     private static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(7);
     private static readonly TimeSpan AuthStatusLifetime = RefreshTokenLifetime;
@@ -17,6 +18,7 @@ public static class AuthCookieWriter
         response.Cookies.Append(AccessTokenCookieName, tokens.AccessToken, BuildOptions(AccessTokenLifetime, secure));
         response.Cookies.Append(RefreshTokenCookieName, tokens.RefreshToken, BuildOptions(RefreshTokenLifetime, secure));
         WriteAuthStatusCookie(response, secure);
+        WriteAuthPortalCookie(response, tokens.Portal, secure);
     }
 
     public static void WriteAuthStatusCookie(HttpResponse response, bool secure)
@@ -29,11 +31,22 @@ public static class AuthCookieWriter
         response.Cookies.Delete(AccessTokenCookieName, BuildOptions(TimeSpan.Zero, secure));
         response.Cookies.Delete(RefreshTokenCookieName, BuildOptions(TimeSpan.Zero, secure));
         ClearAuthStatusCookie(response, secure);
+        ClearAuthPortalCookie(response, secure);
     }
 
     public static void ClearAuthStatusCookie(HttpResponse response, bool secure)
     {
         response.Cookies.Delete(AuthStatusCookieName, BuildOptions(TimeSpan.Zero, secure));
+    }
+
+    public static void WriteAuthPortalCookie(HttpResponse response, string? portal, bool secure)
+    {
+        response.Cookies.Append(AuthPortalCookieName, NormalizePortal(portal), BuildOptions(AuthStatusLifetime, secure));
+    }
+
+    public static void ClearAuthPortalCookie(HttpResponse response, bool secure)
+    {
+        response.Cookies.Delete(AuthPortalCookieName, BuildOptions(TimeSpan.Zero, secure));
     }
 
     private static CookieOptions BuildOptions(TimeSpan maxAge, bool secure)
@@ -47,5 +60,12 @@ public static class AuthCookieWriter
             SameSite = SameSiteMode.Lax,
             Secure = secure
         };
+    }
+
+    private static string NormalizePortal(string? portal)
+    {
+        return string.Equals(portal, "admin", StringComparison.OrdinalIgnoreCase)
+            ? "admin"
+            : "user";
     }
 }

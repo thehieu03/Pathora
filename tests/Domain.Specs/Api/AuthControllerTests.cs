@@ -18,7 +18,7 @@ public sealed class AuthControllerTests
     public async Task Login_WhenCommandSucceeds_ShouldReturnOkAndWrappedSuccessPayload()
     {
         var command = new LoginCommand("admin@example.com", "secret123");
-        var response = new LoginResponse("access-token", "refresh-token");
+        var response = new LoginResponse("access-token", "refresh-token", "admin", "/dashboard");
         var (controller, probe) = BuildController<LoginCommand, LoginResponse>(response, "/api/auth/login");
 
         var actionResult = await controller.Login(command);
@@ -31,10 +31,13 @@ public sealed class AuthControllerTests
         Assert.Equal("/api/auth/login", payload.Instance);
         Assert.Equal("Thành công", payload.Message);
         Assert.Equal(response, payload.Data);
+        Assert.Equal("admin", payload.Data?.Portal);
+        Assert.Equal("/dashboard", payload.Data?.DefaultPath);
         Assert.Equal(command, probe.CapturedRequest);
 
         var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
         Assert.Contains("auth_status=1", setCookie);
+        Assert.Contains("auth_portal=admin", setCookie);
         Assert.Contains("path=/", setCookie, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("samesite=lax", setCookie, StringComparison.OrdinalIgnoreCase);
     }
@@ -61,7 +64,7 @@ public sealed class AuthControllerTests
     public async Task Refresh_WhenCommandSucceeds_ShouldReturnOkAndWrappedSuccessPayload()
     {
         var command = new RefreshCommand("valid-refresh-token");
-        var response = new RefreshTokenResponse("new-access-token", "new-refresh-token");
+        var response = new RefreshTokenResponse("new-access-token", "new-refresh-token", "admin", "/dashboard");
         var (controller, probe) = BuildController<RefreshCommand, RefreshTokenResponse>(response, "/api/auth/refresh");
 
         var actionResult = await controller.Refresh(command);
@@ -74,10 +77,13 @@ public sealed class AuthControllerTests
         Assert.Equal("/api/auth/refresh", payload.Instance);
         Assert.Equal("Thành công", payload.Message);
         Assert.Equal(response, payload.Data);
+        Assert.Equal("admin", payload.Data?.Portal);
+        Assert.Equal("/dashboard", payload.Data?.DefaultPath);
         Assert.Equal(command, probe.CapturedRequest);
 
         var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
         Assert.Contains("auth_status=1", setCookie);
+        Assert.Contains("auth_portal=admin", setCookie);
         Assert.Contains("path=/", setCookie, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("samesite=lax", setCookie, StringComparison.OrdinalIgnoreCase);
     }
@@ -100,7 +106,10 @@ public sealed class AuthControllerTests
             expectedInstance: "/api/auth/refresh");
 
         var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("access_token=", setCookie);
+        Assert.Contains("refresh_token=", setCookie);
         Assert.Contains("auth_status=", setCookie);
+        Assert.Contains("auth_portal=", setCookie);
         Assert.Contains("expires=thu, 01 jan 1970", setCookie, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -165,6 +174,7 @@ public sealed class AuthControllerTests
         Assert.Contains("access_token=", setCookie);
         Assert.Contains("refresh_token=", setCookie);
         Assert.Contains("auth_status=", setCookie);
+        Assert.Contains("auth_portal=", setCookie);
     }
 
     [Fact]
@@ -178,7 +188,9 @@ public sealed class AuthControllerTests
             Avatar: null,
             ForcePasswordChange: false,
             Roles: [new UserRoleVm(1, "role-1", "Admin")],
-            Departments: [new UserDepartmentVm(Guid.CreateVersion7().ToString(), "IT", null, null)]);
+            Departments: [new UserDepartmentVm(Guid.CreateVersion7().ToString(), "IT", null, null)],
+            Portal: "admin",
+            DefaultPath: "/dashboard");
 
         var (controller, probe) = BuildController<GetUserInfoQuery, UserInfoVm>(response, "/api/auth/me");
 
@@ -193,6 +205,10 @@ public sealed class AuthControllerTests
         Assert.Equal("Thành công", payload.Message);
         Assert.Equal(response, payload.Data);
         Assert.IsType<GetUserInfoQuery>(probe.CapturedRequest);
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("auth_status=1", setCookie);
+        Assert.Contains("auth_portal=admin", setCookie);
     }
 
     [Fact]

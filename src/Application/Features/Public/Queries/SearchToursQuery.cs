@@ -8,10 +8,15 @@ using Domain.Entities;
 namespace Application.Features.Public.Queries;
 
 public sealed record SearchToursQuery(
+    string? Q,
     string? Destination,
     string? Classification,
     DateOnly? Date,
     int? People,
+    decimal? MinPrice,
+    decimal? MaxPrice,
+    int? MinDays,
+    int? MaxDays,
     int Page = 1,
     int PageSize = 10) : IQuery<ErrorOr<PaginatedList<SearchTourVm>>>;
 
@@ -23,26 +28,34 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
     public async Task<ErrorOr<PaginatedList<SearchTourVm>>> Handle(SearchToursQuery request, CancellationToken cancellationToken)
     {
         var tours = await _tourRepository.SearchTours(
+            request.Q,
             request.Destination,
             request.Classification,
+            request.Date,
+            request.People,
+            request.MinPrice,
+            request.MaxPrice,
+            request.MinDays,
+            request.MaxDays,
             request.Page,
             request.PageSize);
 
         var total = await _tourRepository.CountSearchTours(
+            request.Q,
             request.Destination,
-            request.Classification);
+            request.Classification,
+            request.Date,
+            request.People,
+            request.MinPrice,
+            request.MaxPrice,
+            request.MinDays,
+            request.MaxDays);
 
-        var filteredTours = ApplyOptionalFilters(tours, request).ToList();
-        if (request.Date.HasValue || request.People.HasValue)
-        {
-            total = filteredTours.Count;
-        }
-
-        var result = filteredTours.Select(t =>
+        var result = tours.Select(t =>
         {
             var classification = t.Classifications.FirstOrDefault();
             return new SearchTourVm(
-t.Id,
+                t.Id,
                 t.TourName,
                 t.Thumbnail?.PublicURL,
                 t.ShortDescription,
@@ -55,36 +68,6 @@ t.Id,
         }).ToList();
 
         return new PaginatedList<SearchTourVm>(total, result);
-    }
-
-    private static IEnumerable<TourEntity> ApplyOptionalFilters(IEnumerable<TourEntity> tours, SearchToursQuery request)
-    {
-        var query = tours;
-
-        if (request.Date.HasValue)
-        {
-            var latestCreatedOnUtc = new DateTimeOffset(
-                request.Date.Value.ToDateTime(TimeOnly.MaxValue),
-                TimeSpan.Zero);
-            query = query.Where(t => t.CreatedOnUtc <= latestCreatedOnUtc);
-        }
-
-        if (request.People.HasValue)
-        {
-            var requiredPeople = request.People.Value;
-            query = query.Where(t => HasEnoughCapacity(t, requiredPeople));
-        }
-
-        return query;
-    }
-
-    private static bool HasEnoughCapacity(TourEntity tour, int requiredPeople)
-    {
-        return tour.Classifications.Any(c =>
-            c.Plans.Any(p =>
-                p.Activities.Any(a =>
-                        a.Accommodation is not null &&
-                        a.Accommodation.RoomCapacity >= requiredPeople)));
     }
 
     private static string? GetMainLocation(TourEntity tour)

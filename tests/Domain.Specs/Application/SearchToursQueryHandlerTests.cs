@@ -9,58 +9,108 @@ namespace Domain.Specs.Application;
 public sealed class SearchToursQueryHandlerTests
 {
     [Fact]
-    public async Task Handle_WhenPeopleProvided_ShouldExcludeToursWithoutEnoughCapacity()
+    public async Task Handle_WhenFiltersProvided_ShouldPassFiltersToRepository()
     {
-        var lowCapacityTour = BuildTour("Low capacity", createdOnUtc: new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero), roomCapacity: 2);
-        var highCapacityTour = BuildTour("High capacity", createdOnUtc: new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero), roomCapacity: 6);
+        var query = new SearchToursQuery(
+            Q: "beach",
+            Destination: "Paris",
+            Classification: "VIP",
+            Date: new DateOnly(2026, 6, 15),
+            People: 4,
+            MinPrice: 1000m,
+            MaxPrice: 5000m,
+            MinDays: 3,
+            MaxDays: 7,
+            Page: 2,
+            PageSize: 10);
 
-        var tourRepository = Substitute.For<ITourRepository>();
-        tourRepository.SearchTours("Paris", "VIP", 1, 10)
-            .Returns([lowCapacityTour, highCapacityTour]);
-        tourRepository.CountSearchTours("Paris", "VIP")
-            .Returns(2);
+        var repository = Substitute.For<ITourRepository>();
+        repository.SearchTours(
+                "beach",
+                "Paris",
+                "VIP",
+                new DateOnly(2026, 6, 15),
+                4,
+                1000m,
+                5000m,
+                3,
+                7,
+                2,
+                10)
+            .Returns([BuildTour("Filtered")]);
+        repository.CountSearchTours(
+                "beach",
+                "Paris",
+                "VIP",
+                new DateOnly(2026, 6, 15),
+                4,
+                1000m,
+                5000m,
+                3,
+                7)
+            .Returns(11);
 
-        var handler = new SearchToursQueryHandler(tourRepository);
+        var handler = new SearchToursQueryHandler(repository);
 
-        var result = await handler.Handle(
-            new SearchToursQuery("Paris", "VIP", null, 4, 1, 10),
-            CancellationToken.None);
+        var result = await handler.Handle(query, CancellationToken.None);
 
         Assert.False(result.IsError);
+        Assert.Equal(11, result.Value.Total);
         Assert.Single(result.Value.Data);
-        Assert.Equal("High capacity", result.Value.Data[0].TourName);
-        Assert.Equal(1, result.Value.Total);
+        Assert.Equal("Filtered", result.Value.Data[0].TourName);
+
+        await repository.Received(1).SearchTours(
+            "beach",
+            "Paris",
+            "VIP",
+            new DateOnly(2026, 6, 15),
+            4,
+            1000m,
+            5000m,
+            3,
+            7,
+            2,
+            10);
+        await repository.Received(1).CountSearchTours(
+            "beach",
+            "Paris",
+            "VIP",
+            new DateOnly(2026, 6, 15),
+            4,
+            1000m,
+            5000m,
+            3,
+            7);
     }
 
     [Fact]
-    public async Task Handle_WhenDateProvided_ShouldExcludeToursCreatedAfterRequestedDate()
+    public async Task Handle_WhenRepositoryReturnsDifferentCount_ShouldKeepCountForPagination()
     {
-        var oldTour = BuildTour("Old tour", createdOnUtc: new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero), roomCapacity: 6);
-        var newTour = BuildTour("New tour", createdOnUtc: new DateTimeOffset(2026, 12, 1, 0, 0, 0, TimeSpan.Zero), roomCapacity: 6);
+        var repository = Substitute.For<ITourRepository>();
+        repository.SearchTours(null, null, null, null, null, null, null, null, null, 1, 10)
+            .Returns([BuildTour("Only one on this page")]);
+        repository.CountSearchTours(null, null, null, null, null, null, null, null, null)
+            .Returns(25);
 
-        var tourRepository = Substitute.For<ITourRepository>();
-        tourRepository.SearchTours(null, null, 1, 10)
-            .Returns([oldTour, newTour]);
-        tourRepository.CountSearchTours(null, null)
-            .Returns(2);
-
-        var handler = new SearchToursQueryHandler(tourRepository);
+        var handler = new SearchToursQueryHandler(repository);
 
         var result = await handler.Handle(
-            new SearchToursQuery(null, null, new DateOnly(2026, 6, 15), null, 1, 10),
+            new SearchToursQuery(null, null, null, null, null, null, null, null, null, 1, 10),
             CancellationToken.None);
 
         Assert.False(result.IsError);
+        Assert.Equal(25, result.Value.Total);
         Assert.Single(result.Value.Data);
-        Assert.Equal("Old tour", result.Value.Data[0].TourName);
-        Assert.Equal(1, result.Value.Total);
     }
 
-    private static TourEntity BuildTour(string tourName, DateTimeOffset createdOnUtc, int roomCapacity)
+    private static TourEntity BuildTour(string tourName)
     {
         var fromLocation = TourPlanLocationEntity.Create(
-            "Paris", LocationType.TouristAttraction, "tester",
-            city: "Paris", country: "France");
+            "Paris",
+            LocationType.TouristAttraction,
+            "tester",
+            city: "Paris",
+            country: "France");
 
         var route = TourPlanRouteEntity.Create(
             1,
@@ -79,7 +129,7 @@ public sealed class SearchToursQueryHandlerTests
         activity.Accommodation = TourPlanAccommodationEntity.Create(
             "Hotel",
             RoomType.Double,
-            roomCapacity,
+            6,
             MealType.None,
             "tester");
 
@@ -110,8 +160,8 @@ public sealed class SearchToursQueryHandlerTests
             Classifications = [classification],
             CreatedBy = "tester",
             LastModifiedBy = "tester",
-            CreatedOnUtc = createdOnUtc,
-            LastModifiedOnUtc = createdOnUtc
+            CreatedOnUtc = DateTimeOffset.UtcNow,
+            LastModifiedOnUtc = DateTimeOffset.UtcNow
         };
     }
 }

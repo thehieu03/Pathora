@@ -33,6 +33,20 @@ public class TourController(IFileService fileService) : BaseApiController
         return HandleResult(result);
     }
 
+    [HttpGet(TourEndpoint.ClassificationPricingTiers)]
+    public async Task<IActionResult> GetClassificationPricingTiers(Guid classificationId)
+    {
+        var result = await Sender.Send(new GetClassificationPricingTiersQuery(classificationId));
+        return HandleResult(result);
+    }
+
+    [HttpPut(TourEndpoint.ClassificationPricingTiers)]
+    public async Task<IActionResult> UpsertClassificationPricingTiers(Guid classificationId, [FromBody] List<DynamicPricingDto> tiers)
+    {
+        var result = await Sender.Send(new UpsertClassificationPricingTiersCommand(classificationId, tiers));
+        return HandleUpdated(result);
+    }
+
     [HttpPost]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create(

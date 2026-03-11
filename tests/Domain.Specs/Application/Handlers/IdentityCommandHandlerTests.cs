@@ -14,7 +14,7 @@ public sealed class IdentityCommandHandlerTests
     public async Task LoginHandler_ShouldDelegateToIdentityService()
     {
         var identityService = Substitute.For<IIdentityService>();
-        var expected = new LoginResponse("access-token", "refresh-token");
+        var expected = new LoginResponse("access-token", "refresh-token", "admin", "/dashboard");
         identityService.Login(Arg.Any<LoginRequest>()).Returns(expected);
 
         var handler = new LoginCommandHandler(identityService);
@@ -103,7 +103,7 @@ public sealed class IdentityCommandHandlerTests
     public async Task RefreshHandler_ShouldDelegateToIdentityService()
     {
         var identityService = Substitute.For<IIdentityService>();
-        var expected = new RefreshTokenResponse("new-access", "new-refresh");
+        var expected = new RefreshTokenResponse("new-access", "new-refresh", "admin", "/dashboard");
         identityService.Refresh(Arg.Any<RefreshTokenRequest>()).Returns(expected);
 
         var handler = new RefreshCommandHandler(identityService);
@@ -137,7 +137,7 @@ public sealed class IdentityCommandHandlerTests
     public async Task ExternalLoginHandler_ShouldDelegateToIdentityService()
     {
         var identityService = Substitute.For<IIdentityService>();
-        var expected = new ExternalLoginResponse("access-token", "refresh-token");
+        var expected = new ExternalLoginResponse("access-token", "refresh-token", "admin", "/dashboard");
         identityService.ExternalLogin(Arg.Any<ExternalLoginRequest>()).Returns(expected);
 
         var handler = new ExternalLoginCommandHandler(identityService);

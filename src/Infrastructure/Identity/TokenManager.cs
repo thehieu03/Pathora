@@ -83,7 +83,7 @@ internal sealed class TokenManager(
         return (accessToken, refreshTokenValue);
     }
 
-    public async Task<ErrorOr<(string, string)>> RefreshToken(string refreshToken)
+    public async Task<ErrorOr<(string AccessToken, string RefreshToken, Guid UserId)>> RefreshToken(string refreshToken)
     {
         var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();
         var tokens = await repo.GetListAsync(t => t.Token == refreshToken);
@@ -103,7 +103,13 @@ internal sealed class TokenManager(
         repo.Delete(tokenEntity);
 
         // Generate new token pair
-        return await GenerateToken(user);
+        var generatedTokens = await GenerateToken(user);
+        if (generatedTokens.IsError)
+        {
+            return generatedTokens.Errors;
+        }
+
+        return (generatedTokens.Value.AccessToken, generatedTokens.Value.RefreshToken, user.Id);
     }
 
     public async Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)

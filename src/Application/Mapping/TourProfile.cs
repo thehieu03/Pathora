@@ -12,7 +12,16 @@ public sealed class TourProfile : Profile
 
         CreateMap<TourEntity, TourDto>();
 
-        CreateMap<TourClassificationEntity, TourClassificationDto>();
+        CreateMap<TourClassificationEntity, TourClassificationDto>()
+            .ForCtorParam(
+                nameof(TourClassificationDto.DynamicPricing),
+                opt => opt.MapFrom(src => src.DynamicPricingTiers
+                    .OrderBy(tier => tier.MinParticipants)
+                    .ThenBy(tier => tier.MaxParticipants)
+                    .Select(tier => new DynamicPricingDto(
+                        tier.MinParticipants,
+                        tier.MaxParticipants,
+                        tier.PricePerPerson))));
 
         CreateMap<TourDayEntity, TourDayDto>();
 

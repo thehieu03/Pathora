@@ -10,6 +10,7 @@ public sealed record TourClassificationDto(
     string Description,
     int NumberOfDay,
     int NumberOfNight,
+    List<DynamicPricingDto>? DynamicPricing,
     List<TourDayDto> Plans,
     List<TourInsuranceDto> Insurances,
     string? CreatedBy,

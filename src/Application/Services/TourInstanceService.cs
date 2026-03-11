@@ -88,7 +88,7 @@ title: request.Title,
         {
             foreach (var tier in request.DynamicPricing)
             {
-                entity.DynamicPricingTiers.Add(DynamicPricingTierEntity.Create(
+                entity.DynamicPricingTiers.Add(DynamicPricingTierEntity.CreateForTourInstance(
                     entity.Id, tier.MinParticipants, tier.MaxParticipants, tier.PricePerPerson, performedBy));
             }
         }
@@ -135,7 +135,7 @@ title: request.Title,
             entity.DynamicPricingTiers.Clear();
             foreach (var tier in request.DynamicPricing)
             {
-                entity.DynamicPricingTiers.Add(DynamicPricingTierEntity.Create(
+                entity.DynamicPricingTiers.Add(DynamicPricingTierEntity.CreateForTourInstance(
                     entity.Id, tier.MinParticipants, tier.MaxParticipants, tier.PricePerPerson, performedBy));
             }
         }

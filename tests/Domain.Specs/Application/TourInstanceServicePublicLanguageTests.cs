@@ -109,7 +109,7 @@ public sealed class TourInstanceServicePublicLanguageTests
             IncludedServices = ["Xe khách", "Khách sạn 3 sao"],
             DynamicPricingTiers =
             [
-                DynamicPricingTierEntity.Create(instanceId, 10, 20, 2800000m, "tester")
+                DynamicPricingTierEntity.CreateForTourInstance(instanceId, 10, 20, 2800000m, "tester")
             ],
             Translations = new Dictionary<string, TourInstanceTranslationData>(StringComparer.OrdinalIgnoreCase)
             {

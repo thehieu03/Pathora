@@ -34,6 +34,8 @@ public class TourRepository(AppDbContext context) : ITourRepository
                         .ThenInclude(a => a.Routes)
                             .ThenInclude(r => r.ToLocation)
             .Include(t => t.Classifications)
+                .ThenInclude(c => c.DynamicPricingTiers)
+            .Include(t => t.Classifications)
                 .ThenInclude(c => c.Plans)
                     .ThenInclude(p => p.Activities)
                         .ThenInclude(a => a.Accommodation)
@@ -138,9 +140,29 @@ public class TourRepository(AppDbContext context) : ITourRepository
             .ToListAsync();
     }
 
-    public async Task<List<TourEntity>> SearchTours(string? destination, string? classification, int page, int pageSize)
+    public async Task<List<TourEntity>> SearchTours(
+        string? q,
+        string? destination,
+        string? classification,
+        DateOnly? date,
+        int? people,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? minDays,
+        int? maxDays,
+        int page,
+        int pageSize)
     {
-        var query = BuildSearchQuery(destination, classification)
+        var query = BuildSearchQuery(
+                q,
+                destination,
+                classification,
+                date,
+                people,
+                minPrice,
+                maxPrice,
+                minDays,
+                maxDays)
             .Include(t => t.Classifications)
                 .ThenInclude(c => c.Plans)
                     .ThenInclude(p => p.Activities)
@@ -155,17 +177,59 @@ public class TourRepository(AppDbContext context) : ITourRepository
             .ToListAsync();
     }
 
-    public async Task<int> CountSearchTours(string? destination, string? classification)
+    public async Task<int> CountSearchTours(
+        string? q,
+        string? destination,
+        string? classification,
+        DateOnly? date,
+        int? people,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? minDays,
+        int? maxDays)
     {
-        return await BuildSearchQuery(destination, classification).CountAsync();
+        return await BuildSearchQuery(
+            q,
+            destination,
+            classification,
+            date,
+            people,
+            minPrice,
+            maxPrice,
+            minDays,
+            maxDays).CountAsync();
     }
 
-    private IQueryable<TourEntity> BuildSearchQuery(string? destination, string? classification)
+    private IQueryable<TourEntity> BuildSearchQuery(
+        string? q,
+        string? destination,
+        string? classification,
+        DateOnly? date,
+        int? people,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? minDays,
+        int? maxDays)
     {
         var query = _context.Tours
             .AsNoTracking()
             .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
             .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var search = q.ToLower();
+            query = query.Where(t =>
+                t.TourName.ToLower().Contains(search) ||
+                t.TourCode.ToLower().Contains(search) ||
+                t.Classifications
+                    .SelectMany(c => c.Plans)
+                    .SelectMany(p => p.Activities)
+                    .SelectMany(a => a.Routes)
+                    .Any(r =>
+                        r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(search) ||
+                        r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(search)));
+        }
 
         if (!string.IsNullOrWhiteSpace(destination))
         {
@@ -181,6 +245,33 @@ public class TourRepository(AppDbContext context) : ITourRepository
         if (!string.IsNullOrWhiteSpace(classification))
         {
             query = query.Where(t => t.Classifications.Any(c => c.Name.ToLower() == classification.ToLower()));
+        }
+
+        if (date.HasValue)
+        {
+            var latestCreatedOnUtc = new DateTimeOffset(
+                date.Value.ToDateTime(TimeOnly.MaxValue),
+                TimeSpan.Zero);
+            query = query.Where(t => t.CreatedOnUtc <= latestCreatedOnUtc);
+        }
+
+        if (people.HasValue)
+        {
+            var requiredPeople = people.Value;
+            query = query.Where(t => t.Classifications.Any(c =>
+                c.Plans.Any(p =>
+                    p.Activities.Any(a =>
+                        a.Accommodation != null &&
+                        a.Accommodation.RoomCapacity >= requiredPeople))));
+        }
+
+        if (minPrice.HasValue || maxPrice.HasValue || minDays.HasValue || maxDays.HasValue)
+        {
+            query = query.Where(t => t.Classifications.Any(c =>
+                (!minPrice.HasValue || c.AdultPrice >= minPrice.Value) &&
+                (!maxPrice.HasValue || c.AdultPrice <= maxPrice.Value) &&
+                (!minDays.HasValue || c.NumberOfDay >= minDays.Value) &&
+                (!maxDays.HasValue || c.NumberOfDay <= maxDays.Value)));
         }
 
         return query;

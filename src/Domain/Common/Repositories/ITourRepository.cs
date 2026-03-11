@@ -13,8 +13,28 @@ public interface ITourRepository
     Task SoftDelete(Guid id);
     Task<List<TourEntity>> FindFeaturedTours(int limit);
     Task<List<TourEntity>> FindLatestTours(int limit);
-    Task<List<TourEntity>> SearchTours(string? destination, string? classification, int page, int pageSize);
-    Task<int> CountSearchTours(string? destination, string? classification);
+    Task<List<TourEntity>> SearchTours(
+        string? q,
+        string? destination,
+        string? classification,
+        DateOnly? date,
+        int? people,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? minDays,
+        int? maxDays,
+        int page,
+        int pageSize);
+    Task<int> CountSearchTours(
+        string? q,
+        string? destination,
+        string? classification,
+        DateOnly? date,
+        int? people,
+        decimal? minPrice,
+        decimal? maxPrice,
+        int? minDays,
+        int? maxDays);
     Task<List<(string City, string Country, int ToursCount)>> GetTrendingDestinations(int limit);
     Task<List<TourPlanLocationEntity>> GetTopAttractions(int limit);
     Task<int> GetTotalActiveTours();

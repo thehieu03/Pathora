@@ -61,6 +61,10 @@ public static class ValidationMessages
     public const string TourInstanceMinParticipantsNonNegative = "Min participants must not be negative.";
     public const string TourInstanceStatusRequired = "Status is required.";
     public const string TourInstanceIdRequired = "Tour instance ID is required.";
+    public const string DynamicPricingMinParticipantsGreaterThanZero = "Min participants must be greater than 0.";
+    public const string DynamicPricingMaxParticipantsGreaterThanOrEqualMin = "Max participants must be greater than or equal to min participants.";
+    public const string DynamicPricingPricePerPersonNonNegative = "Price per person must not be negative.";
+    public const string DynamicPricingRangeMustNotOverlap = "Dynamic pricing ranges must not overlap.";
 
     // ── TourRequest ─────────────────────────────────────────────
     public const string TourRequestIdRequired = "Tour request ID is required.";

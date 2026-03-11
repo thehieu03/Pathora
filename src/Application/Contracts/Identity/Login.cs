@@ -7,5 +7,7 @@ public sealed record LoginRequest(
 
 public sealed record LoginResponse(
     string AccessToken,
-    string RefreshToken
+    string RefreshToken,
+    string Portal,
+    string DefaultPath
 );
