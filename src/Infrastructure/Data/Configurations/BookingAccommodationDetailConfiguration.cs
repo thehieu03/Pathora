@@ -21,6 +21,9 @@ public class BookingAccommodationDetailConfiguration : IEntityTypeConfiguration<
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(x => x.RoomCount)
+            .HasDefaultValue(1);
+
         builder.Property(x => x.BedType)
             .HasMaxLength(100);
 

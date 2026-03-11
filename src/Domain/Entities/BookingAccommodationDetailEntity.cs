@@ -9,6 +9,7 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
 
     public string AccommodationName { get; set; } = null!;
     public RoomType RoomType { get; set; }
+    public int RoomCount { get; set; } = 1;
     public string? BedType { get; set; }
     public string? Address { get; set; }
     public string? ContactPhone { get; set; }
@@ -29,6 +30,7 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
         string accommodationName,
         RoomType roomType,
         string performedBy,
+        int roomCount = 1,
         Guid? supplierId = null,
         string? bedType = null,
         string? address = null,
@@ -44,6 +46,7 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
         string? note = null)
     {
         EnsureValidTimeRange(checkInAt, checkOutAt);
+        EnsurePositive(roomCount, nameof(roomCount));
         EnsureNonNegative(buyPrice, nameof(buyPrice));
         EnsureNonNegative(taxRate, nameof(taxRate));
 
@@ -56,6 +59,7 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
             SupplierId = supplierId,
             AccommodationName = accommodationName,
             RoomType = roomType,
+            RoomCount = roomCount,
             BedType = bedType,
             Address = address,
             ContactPhone = contactPhone,
@@ -81,6 +85,7 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
         string accommodationName,
         RoomType roomType,
         string performedBy,
+        int? roomCount = null,
         Guid? supplierId = null,
         string? bedType = null,
         string? address = null,
@@ -97,6 +102,12 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
         string? note = null)
     {
         EnsureValidTimeRange(checkInAt, checkOutAt);
+
+        if (roomCount.HasValue)
+        {
+            EnsurePositive(roomCount.Value, nameof(roomCount));
+            RoomCount = roomCount.Value;
+        }
 
         if (buyPrice.HasValue)
         {
@@ -131,9 +142,9 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
 
     private static void EnsureValidTimeRange(DateTimeOffset? checkInAt, DateTimeOffset? checkOutAt)
     {
-        if (checkInAt.HasValue && checkOutAt.HasValue && checkOutAt.Value < checkInAt.Value)
+        if (checkInAt.HasValue && checkOutAt.HasValue && checkOutAt.Value <= checkInAt.Value)
         {
-            throw new ArgumentException("CheckOutAt phải lớn hơn hoặc bằng CheckInAt.", nameof(checkOutAt));
+            throw new ArgumentException("CheckOutAt phải lớn hơn CheckInAt.", nameof(checkOutAt));
         }
     }
 
@@ -142,6 +153,14 @@ public class BookingAccommodationDetailEntity : Aggregate<Guid>
         if (value < 0)
         {
             throw new ArgumentOutOfRangeException(paramName, "Giá trị không được âm.");
+        }
+    }
+
+    private static void EnsurePositive(int value, string paramName)
+    {
+        if (value <= 0)
+        {
+            throw new ArgumentOutOfRangeException(paramName, "Giá trị phải lớn hơn 0.");
         }
     }
 }

@@ -13,6 +13,7 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
     public string? TicketNumber { get; set; }
     public string? ETicketNumber { get; set; }
     public string? SeatNumber { get; set; }
+    public int SeatCapacity { get; set; }
     public string? SeatClass { get; set; }
     public string? VehicleNumber { get; set; }
     public decimal BuyPrice { get; set; }
@@ -34,6 +35,7 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
         string? ticketNumber = null,
         string? eTicketNumber = null,
         string? seatNumber = null,
+        int seatCapacity = 0,
         string? seatClass = null,
         string? vehicleNumber = null,
         decimal buyPrice = 0,
@@ -44,6 +46,7 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
         string? note = null)
     {
         EnsureValidTimeRange(departureAt, arrivalAt);
+        EnsureNonNegative(seatCapacity, nameof(seatCapacity));
         EnsureNonNegative(buyPrice, nameof(buyPrice));
         EnsureNonNegative(taxRate, nameof(taxRate));
 
@@ -60,6 +63,7 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
             TicketNumber = ticketNumber,
             ETicketNumber = eTicketNumber,
             SeatNumber = seatNumber,
+            SeatCapacity = seatCapacity,
             SeatClass = seatClass,
             VehicleNumber = vehicleNumber,
             BuyPrice = buyPrice,
@@ -86,6 +90,7 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
         string? ticketNumber = null,
         string? eTicketNumber = null,
         string? seatNumber = null,
+        int? seatCapacity = null,
         string? seatClass = null,
         string? vehicleNumber = null,
         decimal? buyPrice = null,
@@ -97,6 +102,12 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
         string? note = null)
     {
         EnsureValidTimeRange(departureAt, arrivalAt);
+
+        if (seatCapacity.HasValue)
+        {
+            EnsureNonNegative(seatCapacity.Value, nameof(seatCapacity));
+            SeatCapacity = seatCapacity.Value;
+        }
 
         if (buyPrice.HasValue)
         {
@@ -131,13 +142,21 @@ public class BookingTransportDetailEntity : Aggregate<Guid>
 
     private static void EnsureValidTimeRange(DateTimeOffset? departureAt, DateTimeOffset? arrivalAt)
     {
-        if (departureAt.HasValue && arrivalAt.HasValue && arrivalAt.Value < departureAt.Value)
+        if (departureAt.HasValue && arrivalAt.HasValue && arrivalAt.Value <= departureAt.Value)
         {
-            throw new ArgumentException("ArrivalAt phải lớn hơn hoặc bằng DepartureAt.", nameof(arrivalAt));
+            throw new ArgumentException("ArrivalAt phải lớn hơn DepartureAt.", nameof(arrivalAt));
         }
     }
 
     private static void EnsureNonNegative(decimal value, string paramName)
+    {
+        if (value < 0)
+        {
+            throw new ArgumentOutOfRangeException(paramName, "Giá trị không được âm.");
+        }
+    }
+
+    private static void EnsureNonNegative(int value, string paramName)
     {
         if (value < 0)
         {

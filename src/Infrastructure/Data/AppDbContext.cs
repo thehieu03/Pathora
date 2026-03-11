@@ -75,7 +75,13 @@ public class AppDbContext : DbContext
     public DbSet<BookingActivityReservationEntity> BookingActivityReservations => Set<BookingActivityReservationEntity>();
     public DbSet<BookingTransportDetailEntity> BookingTransportDetails => Set<BookingTransportDetailEntity>();
     public DbSet<BookingAccommodationDetailEntity> BookingAccommodationDetails => Set<BookingAccommodationDetailEntity>();
+    public DbSet<BookingParticipantEntity> BookingParticipants => Set<BookingParticipantEntity>();
+    public DbSet<PassportEntity> Passports => Set<PassportEntity>();
+    public DbSet<VisaApplicationEntity> VisaApplications => Set<VisaApplicationEntity>();
+    public DbSet<VisaEntity> Visas => Set<VisaEntity>();
     public DbSet<SupplierEntity> Suppliers => Set<SupplierEntity>();
+    public DbSet<SupplierPayableEntity> SupplierPayables => Set<SupplierPayableEntity>();
+    public DbSet<SupplierReceiptEntity> SupplierReceipts => Set<SupplierReceiptEntity>();
     public DbSet<CustomerDepositEntity> CustomerDeposits => Set<CustomerDepositEntity>();
     public DbSet<CustomerPaymentEntity> CustomerPayments => Set<CustomerPaymentEntity>();
 

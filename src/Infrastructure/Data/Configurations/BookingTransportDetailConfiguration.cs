@@ -26,6 +26,9 @@ public class BookingTransportDetailConfiguration : IEntityTypeConfiguration<Book
         builder.Property(x => x.SeatNumber)
             .HasMaxLength(30);
 
+        builder.Property(x => x.SeatCapacity)
+            .HasDefaultValue(0);
+
         builder.Property(x => x.SeatClass)
             .HasMaxLength(50);
 

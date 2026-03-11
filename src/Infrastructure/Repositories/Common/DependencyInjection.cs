@@ -39,7 +39,13 @@ internal static class DependencyInjection
         services.AddScoped<IBookingActivityReservationRepository, BookingActivityReservationRepository>();
         services.AddScoped<IBookingTransportDetailRepository, BookingTransportDetailRepository>();
         services.AddScoped<IBookingAccommodationDetailRepository, BookingAccommodationDetailRepository>();
+        services.AddScoped<IBookingParticipantRepository, BookingParticipantRepository>();
+        services.AddScoped<IPassportRepository, PassportRepository>();
+        services.AddScoped<IVisaApplicationRepository, VisaApplicationRepository>();
+        services.AddScoped<IVisaRepository, VisaRepository>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
+        services.AddScoped<ISupplierPayableRepository, SupplierPayableRepository>();
+        services.AddScoped<ISupplierReceiptRepository, SupplierReceiptRepository>();
         services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
         services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
         services.AddScoped<IAdminOverviewRepository, AdminOverviewRepository>();
