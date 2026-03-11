@@ -25,6 +25,8 @@ import { useSelector, useDispatch } from "react-redux";
 import useDarkmode from "@/hooks/useDarkMode";
 import { handleCustomizer } from "@/store/layout";
 import { useLogoutMutation } from "@/store/api/auth/authApiSlice";
+import LogoDark from "@/assets/images/logo/logo.png";
+import LogoLight from "@/assets/images/logo/logo-white.svg";
 import {
   FiGlobe,
   FiChevronDown,
@@ -39,9 +41,6 @@ const languages = [
   { code: "en", label: "English" },
   { code: "vi", label: "Tiếng Việt" },
 ];
-
-const LOGO =
-  "https://www.figma.com/api/mcp/asset/b9cd8d76-4d7f-43c8-b45b-122fe4f71260";
 
 const navLinks = [
   { labelKey: "landing.nav.home", href: "/" },
@@ -430,6 +429,7 @@ export const LandingHeader = ({
   const userAvatarAlt = userDisplayName
     ? `${userDisplayName} avatar`
     : "User avatar";
+  const logoSource = isSolid ? LogoDark : LogoLight;
 
   const openAuth = (view: "signup" | "login" | "forgot") => {
     setAuthView(view);
@@ -499,15 +499,15 @@ export const LandingHeader = ({
       <header
         className={`${
           isSolid
-            ? "relative bg-white shadow-sm border-b border-landing-border"
-            : "absolute top-0 left-0 right-0 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm"
+            ? "relative bg-white dark:bg-slate-900 shadow-sm border-b border-landing-border dark:border-slate-700"
+            : "absolute top-0 left-0 right-0 bg-[rgba(255,255,255,0.2)] dark:bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
         } z-50 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 lg:px-12 py-4 md:py-5 min-h-17.5 md:h-32`}>
         <Link
           href="/"
           className="flex items-center shrink-0 justify-self-start">
           <div className="relative h-12 md:h-25 w-28 md:w-34">
             <Image
-              src={LOGO}
+              src={logoSource}
               alt="Pathora logo"
               fill
               sizes="(max-width: 768px) 112px, 136px"

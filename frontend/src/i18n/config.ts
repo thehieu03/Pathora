@@ -15,6 +15,12 @@ const normalizeLanguageCode = (value?: string): SupportedLanguage => {
     : DEFAULT_LANGUAGE;
 };
 
+const getLanguageFromCookie = (): SupportedLanguage => {
+  if (typeof document === "undefined") return DEFAULT_LANGUAGE;
+  const match = document.cookie.match(/i18next=([^;]+)/);
+  return match ? normalizeLanguageCode(match[1]) : DEFAULT_LANGUAGE;
+};
+
 const detectClientPreferredLanguage = (): SupportedLanguage => {
   if (typeof window === "undefined") return DEFAULT_LANGUAGE;
   return normalizeLanguageCode(
@@ -62,6 +68,13 @@ const mergeResources = () => {
 };
 const handleLanguageChanged = (language: string) => {
   const normalizedLanguage = normalizeLanguageCode(language);
+  if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+    console.debug("[i18n] languageChanged", {
+      language,
+      normalizedLanguage,
+      beforeStorage: window.localStorage.getItem("i18nextLng"),
+    });
+  }
   syncHtmlLanguage(normalizedLanguage);
   if (typeof window !== "undefined") {
     localStorage.setItem("i18nextLng", normalizedLanguage);
@@ -90,6 +103,18 @@ export const hydrateClientLanguage = () => {
   const currentLanguage = normalizeLanguageCode(
     i18n.resolvedLanguage || i18n.language,
   );
+
+  if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+    console.debug("[i18n] hydrateClientLanguage", {
+      preferredLanguage,
+      currentLanguage,
+      resolvedLanguage: i18n.resolvedLanguage,
+      language: i18n.language,
+      fromStorage: window.localStorage.getItem("i18nextLng"),
+      navigatorLanguage: window.navigator.language,
+      pathname: window.location.pathname,
+    });
+  }
 
   if (preferredLanguage !== currentLanguage) {
     void i18n.changeLanguage(preferredLanguage);

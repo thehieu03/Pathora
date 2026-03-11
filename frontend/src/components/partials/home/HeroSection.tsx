@@ -33,6 +33,7 @@ type FieldName = "people" | "date" | "destination" | "classification";
 
 export const HeroSection = () => {
   const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const router = useRouter();
   const [tourType, setTourType] = useState<TourType>("public");
   const [openField, setOpenField] = useState<FieldName | null>(null);
@@ -60,7 +61,7 @@ export const HeroSection = () => {
       }
     };
     fetchDestinations();
-  }, []);
+  }, [languageKey]);
 
   // Click-outside handler
   const closeDropdowns = useCallback(() => setOpenField(null), []);

@@ -156,6 +156,19 @@ export interface PublicTourInstanceEndpoints {
   GET_DETAIL: EndpointWithId;
 }
 
+// Public Custom Tour Request Endpoints Interface
+export interface PublicTourRequestEndpoints {
+  CREATE: string;
+  GET_MY: string;
+  GET_DETAIL: EndpointWithId;
+}
+
+// Admin Custom Tour Request Endpoints Interface
+export interface TourRequestEndpoints {
+  GET_ALL: string;
+  REVIEW: EndpointWithId;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -170,6 +183,8 @@ export interface ApiEndpoints {
   TOUR: TourEndpoints;
   TOUR_INSTANCE: TourInstanceEndpoints;
   PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints;
+  PUBLIC_TOUR_REQUEST: PublicTourRequestEndpoints;
+  TOUR_REQUEST: TourRequestEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -320,6 +335,19 @@ export const API_ENDPOINTS: ApiEndpoints = {
   PUBLIC_TOUR_INSTANCE: {
     GET_AVAILABLE: "/api/public/tour-instances/available",
     GET_DETAIL: (id: string): string => `/api/public/tour-instances/${id}`,
+  },
+
+  // Public Tour Request
+  PUBLIC_TOUR_REQUEST: {
+    CREATE: "/api/public/tour-requests",
+    GET_MY: "/api/public/tour-requests/my",
+    GET_DETAIL: (id: string): string => `/api/public/tour-requests/${id}`,
+  },
+
+  // Admin Tour Request
+  TOUR_REQUEST: {
+    GET_ALL: "/api/tour-requests",
+    REVIEW: (id: string): string => `/api/tour-requests/${id}/review`,
   },
 };
 

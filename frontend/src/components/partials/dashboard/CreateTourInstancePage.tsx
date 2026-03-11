@@ -170,7 +170,8 @@ const INSTANCE_TYPES = [
    CreateTourInstancePage – Main Export
    ══════════════════════════════════════════════════════════════ */
 export function CreateTourInstancePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const router = useRouter();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -200,7 +201,7 @@ export function CreateTourInstancePage() {
     } catch (error) {
       console.error("Failed to fetch tours:", error);
     }
-  }, []);
+  }, [languageKey]);
 
   useEffect(() => {
     fetchTours();
@@ -223,13 +224,13 @@ export function CreateTourInstancePage() {
         }
       } catch (error) {
         console.error("Failed to load tour detail:", error);
-        toast.error("Failed to load tour details");
+        toast.error(t("tourInstance.fetchError", "Failed to load tour instances"));
       } finally {
         setLoadingTour(false);
       }
     };
     loadDetail();
-  }, [selectedTourId]);
+  }, [selectedTourId, t, languageKey]);
 
   /* ── Derived ──────────────────────────────────────────────── */
   const classifications: TourClassificationDto[] =
@@ -239,7 +240,7 @@ export function CreateTourInstancePage() {
   );
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+    `${new Intl.NumberFormat(languageKey || "en-US").format(amount)} VND`;
 
   const canSubmit =
     selectedTourId &&
@@ -307,10 +308,10 @@ export function CreateTourInstancePage() {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
-                  Create Tour Instance
+                  {t("tourInstance.createTitle")}
                 </h1>
                 <p className="text-sm text-slate-500">
-                  Create a scheduled tour from a package template
+                  {t("tourInstance.createSubtitle")}
                 </p>
               </div>
             </div>
@@ -318,14 +319,16 @@ export function CreateTourInstancePage() {
               <button
                 onClick={() => router.push("/tour-instances")}
                 className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-                Cancel
+                {t("tourInstance.cancel")}
               </button>
               <button
                 disabled={!canSubmit || submitting}
                 onClick={handleSubmit}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
                 <Icon icon="heroicons:bookmark" className="size-4" />
-                {submitting ? "Creating..." : "Create Tour Instance"}
+                {submitting
+                  ? t("tourInstance.creating")
+                  : t("tourInstance.createTitle")}
               </button>
             </div>
           </div>
@@ -340,13 +343,10 @@ export function CreateTourInstancePage() {
             />
             <div>
               <p className="text-sm font-semibold text-blue-900">
-                Creating a Tour Instance
+                {t("tourInstance.createTitle")}
               </p>
               <p className="text-xs text-blue-700 mt-1">
-                A Tour Instance is a scheduled occurrence of a Package Tour with
-                specific dates, pricing, and participant capacity. All
-                itinerary, accommodations, and service details will be copied
-                from the selected package template.
+                {t("tourInstance.createInfo")}
               </p>
             </div>
           </div>
@@ -362,23 +362,23 @@ export function CreateTourInstancePage() {
                   className="size-5 text-slate-700"
                 />
                 <h2 className="text-lg font-bold text-slate-900">
-                  Step 1: Select Package Tour
+                  {t("tourInstance.step1Title")}
                 </h2>
               </div>
               <p className="text-sm text-slate-500">
-                Choose the base package tour template
+                {t("tourInstance.step1Subtitle")}
               </p>
             </div>
 
             <div className="space-y-3">
               <label className="text-sm font-semibold text-slate-700">
-                Package Tour <span className="text-red-500">*</span>
+                {t("tourInstance.packageTour")} <span className="text-red-500">*</span>
               </label>
               <select
                 value={selectedTourId}
                 onChange={(e) => setSelectedTourId(e.target.value)}
                 className={inputClass}>
-                <option value="">Select a package tour...</option>
+                <option value="">{t("tourInstance.selectPackageTour")}</option>
                 {tours.map((tour) => (
                   <option key={tour.id} value={tour.id}>
                     {tour.tourName}
@@ -403,11 +403,11 @@ export function CreateTourInstancePage() {
                   </p>
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
-                      {classifications.length} Packages
+                      {classifications.length} {t("tourInstance.packageClassification")}
                     </span>
                     {classifications[0] && (
                       <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
-                        {classifications[0].durationDays} Days Itinerary
+                        {classifications[0].durationDays} {t("tourInstance.days")} {t("tourInstance.itinerary")}
                       </span>
                     )}
                     {classifications[0]?.insurances?.length > 0 && (
@@ -416,7 +416,7 @@ export function CreateTourInstancePage() {
                           icon="heroicons:shield-check"
                           className="size-3"
                         />
-                        {classifications[0].insurances.length} Insurance Options
+                        {classifications[0].insurances.length} {t("tourInstance.insurance")}
                       </span>
                     )}
                   </div>
@@ -433,30 +433,30 @@ export function CreateTourInstancePage() {
               <div className="flex items-center gap-2 mb-1">
                 <Icon icon="heroicons:tag" className="size-5 text-slate-700" />
                 <h2 className="text-lg font-bold text-slate-900">
-                  Step 2: Select Package Classification
+                  {t("tourInstance.step2Title")}
                 </h2>
               </div>
               <p className="text-sm text-slate-500">
-                Choose which package type to instantiate
+                {t("tourInstance.step2Subtitle")}
               </p>
             </div>
 
             <div className="space-y-3">
               <label className="text-sm font-semibold text-slate-700">
-                Package Classification <span className="text-red-500">*</span>
+                {t("tourInstance.packageClassification")} <span className="text-red-500">*</span>
               </label>
 
               {!selectedTourId && (
-                <p className="text-sm text-slate-400 italic">
-                  Select a package tour first
-                </p>
+                  <p className="text-sm text-slate-400 italic">
+                    {t("tourInstance.selectTourFirst")}
+                  </p>
               )}
 
               {selectedTourId &&
                 classifications.length === 0 &&
                 !loadingTour && (
                   <p className="text-sm text-slate-400 italic">
-                    No classifications available for this tour
+                    {t("tourInstance.noClassifications")}
                   </p>
                 )}
 
@@ -497,7 +497,7 @@ export function CreateTourInstancePage() {
                                 {cls.name}
                               </h3>
                               <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
-                                {cls.durationDays} days
+                                {cls.durationDays} {t("tourInstance.days")}
                               </span>
                             </div>
                             <div className="text-right">
@@ -512,11 +512,9 @@ export function CreateTourInstancePage() {
                                   cls.salePrice > 0 ? cls.salePrice : cls.price,
                                 )}
                               </p>
-                              <p className="text-xs text-slate-500">
-                                per person
-                              </p>
+                                <p className="text-xs text-slate-500">{t("tourInstance.perPerson")}</p>
+                              </div>
                             </div>
-                          </div>
                           <p className="text-sm text-slate-500 line-clamp-2">
                             {cls.description}
                           </p>
@@ -540,11 +538,11 @@ export function CreateTourInstancePage() {
                   className="size-5 text-slate-700"
                 />
                 <h2 className="text-lg font-bold text-slate-900">
-                  Step 3: Tour Instance Details
+                  {t("tourInstance.step3Title")}
                 </h2>
               </div>
               <p className="text-sm text-slate-500">
-                Configure the specific details for this tour instance
+                {t("tourInstance.step3Subtitle")}
               </p>
             </div>
 
@@ -552,7 +550,7 @@ export function CreateTourInstancePage() {
               {/* Tour Instance Type */}
               <div className="space-y-3">
                 <label className="text-sm font-semibold text-slate-700">
-                  Tour Instance Type <span className="text-red-500">*</span>
+                  {t("tourInstance.instanceType")} <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {INSTANCE_TYPES.map((type) => {
@@ -578,6 +576,16 @@ export function CreateTourInstancePage() {
                       },
                     };
                     const colors = colorMap[type.color] ?? colorMap.blue;
+                    const typeLabelMap: Record<string, string> = {
+                      FIT: t("tourInstance.fit"),
+                      MICE: t("tourInstance.mice"),
+                      GROUP: t("tourInstance.group"),
+                    };
+                    const typeDescMap: Record<string, string> = {
+                      FIT: t("tourInstance.fitDescription"),
+                      MICE: t("tourInstance.miceDescription"),
+                      GROUP: t("tourInstance.groupDescription"),
+                    };
                     return (
                       <button
                         key={type.id}
@@ -594,10 +602,10 @@ export function CreateTourInstancePage() {
                         />
                         <p
                           className={`text-sm font-bold ${isSelected ? "text-slate-900" : "text-slate-600"}`}>
-                          {type.label}
+                          {typeLabelMap[type.id] ?? type.label}
                         </p>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          {type.description}
+                          {typeDescMap[type.id] ?? type.description}
                         </p>
                       </button>
                     );
@@ -614,13 +622,10 @@ export function CreateTourInstancePage() {
                   />
                   <div>
                     <p className="text-sm font-semibold text-purple-900">
-                      MICE Tour Instance
+                      {t("tourInstance.mice")} {t("tourInstance.title")}
                     </p>
                     <p className="text-xs text-purple-700 mt-1">
-                      MICE tours are designed for corporate events, meetings,
-                      incentive trips, conferences, and exhibitions. These
-                      instances typically have larger group sizes and additional
-                      requirements.
+                      {t("tourInstance.miceInfo")}
                     </p>
                   </div>
                 </div>
@@ -630,7 +635,7 @@ export function CreateTourInstancePage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">
-                    Start Date <span className="text-red-500">*</span>
+                    {t("tourInstance.startDate")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -641,7 +646,7 @@ export function CreateTourInstancePage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">
-                    End Date <span className="text-red-500">*</span>
+                    {t("tourInstance.endDate")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -655,14 +660,14 @@ export function CreateTourInstancePage() {
               {/* Max Participants */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">
-                  Maximum Participants <span className="text-red-500">*</span>
+                  {t("tourInstance.maxParticipants")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
                   min="1"
                   value={maxParticipants}
                   onChange={(e) => setMaxParticipants(e.target.value)}
-                  placeholder="e.g. 20"
+                  placeholder={t("tourInstance.maxParticipants")}
                   className={inputClass}
                 />
               </div>
@@ -675,39 +680,41 @@ export function CreateTourInstancePage() {
           {canSubmit && (
             <div className="bg-white border border-slate-200 rounded-xl p-6">
               <h3 className="text-base font-bold text-slate-900 mb-4">
-                Instance Summary
+                {t("tourInstance.instanceSummary")}
               </h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-slate-500">Package Tour</p>
+                  <p className="text-slate-500">{t("tourInstance.packageTour")}</p>
                   <p className="font-medium text-slate-900">
                     {tourDetail?.tourName}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Classification</p>
+                  <p className="text-slate-500">{t("tourInstance.classification")}</p>
                   <p className="font-medium text-slate-900">
                     {selectedClassification?.name}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Instance Type</p>
+                  <p className="text-slate-500">{t("tourInstance.instanceType")}</p>
                   <p className="font-medium text-slate-900">{instanceType}</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Duration</p>
+                  <p className="text-slate-500">{t("tourInstance.duration")}</p>
                   <p className="font-medium text-slate-900">
-                    {startDate && endDate ? `${startDate} → ${endDate}` : "—"}
+                    {startDate && endDate
+                      ? `${startDate} → ${endDate}`
+                      : t("common.noData", "No data")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Max Participants</p>
+                  <p className="text-slate-500">{t("tourInstance.maxParticipants")}</p>
                   <p className="font-medium text-slate-900">
                     {maxParticipants}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Base Price</p>
+                  <p className="text-slate-500">{t("tourInstance.basePrice")}</p>
                   <p className="font-medium text-orange-600">
                     {selectedClassification
                       ? formatCurrency(
@@ -715,7 +722,7 @@ export function CreateTourInstancePage() {
                             ? selectedClassification.salePrice
                             : selectedClassification.price,
                         )
-                      : "—"}
+                      : t("common.noData", "No data")}
                   </p>
                 </div>
               </div>

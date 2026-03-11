@@ -21,6 +21,8 @@ export interface UserInfo {
   forcePasswordChange: boolean;
   roles: UserRoleVm[];
   departments: UserDepartmentVm[];
+  portal?: string | null;
+  defaultPath?: string | null;
 }
 
 /** @deprecated Use UserInfo instead */

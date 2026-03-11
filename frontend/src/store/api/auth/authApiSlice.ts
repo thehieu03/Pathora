@@ -2,17 +2,36 @@ import { apiSlice } from "../apiSlice";
 import { setUser, setToken, logOut } from "../../infrastructure/authSlice";
 import type { UserInfo } from "../../domain/auth";
 import type { ApiSharedResponse } from "@/types";
+import {
+  clearAuthSession,
+  persistAuthSession,
+} from "../../../utils/authSession";
 
 // ─── Cookie helpers ────────────────────────────────────────────────────────
 
-const DAY_SECONDS = 60 * 60 * 24;
+type AuthDispatch = (
+  action: ReturnType<typeof setToken> | ReturnType<typeof logOut>,
+) => void;
 
-const setCookie = (name: string, value: string, maxAge = DAY_SECONDS): void => {
-  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
+export const clearSessionAndLogout = (
+  dispatch: AuthDispatch,
+): void => {
+  clearAuthSession();
+  dispatch(logOut());
 };
 
-const removeCookie = (name: string): void => {
-  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+const isUnauthorizedError = (error: unknown): boolean => {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeError = error as {
+    error?: {
+      status?: number;
+    };
+  };
+
+  return maybeError.error?.status === 401;
 };
 
 // ─── Request / Response shapes ─────────────────────────────────────────────
@@ -22,10 +41,25 @@ export interface LoginRequest {
   password: string;
 }
 
-interface TokenData {
+export interface TokenData {
   accessToken: string;
   refreshToken: string;
+  portal?: string | null;
+  defaultPath?: string | null;
 }
+
+export const applySuccessfulAuthSession = (
+  tokens: TokenData,
+  dispatch: AuthDispatch,
+): void => {
+  persistAuthSession(
+    tokens.accessToken,
+    tokens.refreshToken,
+    tokens.portal,
+    tokens.defaultPath,
+  );
+  dispatch(setToken(tokens.accessToken));
+};
 
 export interface LogoutRequest {
   refreshToken: string;
@@ -74,9 +108,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
           const tokens = data.data;
           if (!tokens) return;
 
-          setCookie("access_token", tokens.accessToken);
-          setCookie("refresh_token", tokens.refreshToken, DAY_SECONDS * 7);
-          dispatch(setToken(tokens.accessToken));
+          applySuccessfulAuthSession(tokens, dispatch);
 
           // Fetch user info right after login to populate Redux
           const result = await dispatch(
@@ -88,6 +120,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
             dispatch(setUser(result.data.data));
           }
         } catch {
+          clearSessionAndLogout(dispatch);
           // errors are handled by axiosInstance / apiSlice globally
         }
       },
@@ -106,8 +139,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
           if (data.data) {
             dispatch(setUser(data.data));
           }
-        } catch {
-          // unauthenticated — leave state as-is
+        } catch (error) {
+          if (isUnauthorizedError(error)) {
+            clearSessionAndLogout(dispatch);
+          }
         }
       },
     }),
@@ -131,14 +166,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
           const tokens = data.data;
           if (!tokens) return;
 
-          setCookie("access_token", tokens.accessToken);
-          setCookie("refresh_token", tokens.refreshToken, DAY_SECONDS * 7);
-          dispatch(setToken(tokens.accessToken));
+          applySuccessfulAuthSession(tokens, dispatch);
         } catch {
           // token expired — force logout
-          removeCookie("access_token");
-          removeCookie("refresh_token");
-          dispatch(logOut());
+          clearSessionAndLogout(dispatch);
         }
       },
     }),
@@ -156,9 +187,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Auth"],
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         // Clear client state immediately (optimistic), regardless of server result
-        removeCookie("access_token");
-        removeCookie("refresh_token");
-        dispatch(logOut());
+        clearSessionAndLogout(dispatch);
         try {
           await queryFulfilled;
         } catch {

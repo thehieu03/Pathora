@@ -44,6 +44,7 @@
     "confirm": "Xác nhận",
     "refresh": "Làm mới",
     "refreshing": "Đang làm mới...",
+    "processing": "Đang xử lý...",
     "deleteConfirmTitle": "Xác nhận xóa",
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa mục này? Hành động này không thể hoàn tác.",
     "deleteProductMessage": "Bạn có chắc chắn muốn xóa sản phẩm này?",
@@ -1235,6 +1236,13 @@
         "seatsAvailability": "Chỗ trống"
       }
     },
+    "customTour": {
+      "backToHome": "Quay lại trang chủ",
+      "title": "Yêu cầu tour theo nhu cầu",
+      "subtitle": "Thiết kế hành trình hoàn hảo của bạn - hãy cho chúng tôi biết mong muốn và chúng tôi sẽ tạo tour cá nhân hóa dành riêng cho bạn.",
+      "comingSoon": "Sắp ra mắt",
+      "comingSoonDesc": "Biểu mẫu yêu cầu tour theo nhu cầu đang được hoàn thiện. Vui lòng quay lại sớm để tạo hành trình mơ ước của bạn."
+    },
     "tourDetail": {
       "allTours": "Tất cả Tour",
       "home": "Trang chủ",
@@ -1269,20 +1277,28 @@
       "hereForYou": "Chúng tôi luôn sẵn sàng 24/7",
       "contactUs": "Liên Hệ",
       "notFound": "Không tìm thấy tour",
+      "notFoundDesc": "Tour bạn đang tìm không tồn tại hoặc đã bị gỡ.",
       "error": "Đã xảy ra lỗi",
+      "errorDesc": "Không thể tải chi tiết tour. Vui lòng thử lại.",
       "retry": "Thử lại",
       "package": "Gói",
       "plans": "Lịch trình",
       "days": "ngày",
+      "nights": "đêm",
+      "durationTbd": "Lịch trình linh hoạt",
       "insurance": "Bảo hiểm",
+      "insuranceCoverage": "Phạm vi bảo hiểm",
       "included": "bao gồm",
       "none": "Không có",
+      "coverage": "Mức bảo hiểm",
       "fee": "Phí",
+      "optional": "Tùy chọn",
       "reviewsTitle": "Đánh Giá Từ Khách Hàng",
       "averageRating": "Đánh giá trung bình",
       "totalReviews": "{{count}} đánh giá",
       "noReviews": "Chưa có đánh giá nào",
       "noReviewsCta": "Hãy là người đầu tiên chia sẻ trải nghiệm!",
+      "noItinerary": "Chưa có lịch trình cho gói tour này.",
       "perPerson": "/người",
       "selectDateFirst": "Vui lòng chọn ngày khởi hành trước",
       "morePhotos": "+{{count}} ảnh"
@@ -1647,6 +1663,7 @@
   "tourAdmin": {
     "title": "Quản lý Tour",
     "search": "Tìm kiếm tour...",
+    "searchPlaceholder": "Tìm theo tên hoặc mã tour...",
     "refresh": "Làm mới",
     "addTour": "Thêm Tour",
     "noTours": "Không tìm thấy tour nào",
@@ -1691,8 +1708,10 @@
     "classification": "Phân loại",
     "name": "Tên",
     "price": "Giá ($)",
+    "invalidPrice": "Giá phải lớn hơn hoặc bằng 0",
     "salePrice": "Giá khuyến mãi ($)",
     "durationDays": "Thời gian (ngày)",
+    "invalidDuration": "Thời lượng phải từ 1 ngày trở lên",
     "description": "Mô tả",
     "dayPlans": "Lịch trình theo ngày",
     "addDay": "Thêm ngày",
@@ -1706,6 +1725,7 @@
     "noActivities": "Không có hoạt động",
     "type": "Loại",
     "actTitle": "Tiêu đề",
+    "actDescription": "Mô tả hoạt động",
     "startTime": "Bắt đầu",
     "endTime": "Kết thúc",
     "cost": "Chi phí ước tính ($)",
@@ -1717,6 +1737,7 @@
     "insuranceType": "Loại",
     "provider": "Nhà cung cấp",
     "coverageAmount": "Mức bảo hiểm ($)",
+    "coverageDesc": "Mô tả phạm vi bảo hiểm",
     "coverageFee": "Phí ($)",
     "backToList": "Quay lại danh sách",
     "previous": "Trước",
@@ -1836,5 +1857,129 @@
     "pricingTiers": "Bảng Giá Theo Số Người",
     "people": "người",
     "fromPrice": "Từ"
+  },
+  "customTourRequest": {
+    "backToTours": "Quay lại danh sách tour",
+    "title": "Yêu cầu tour theo nhu cầu",
+    "subtitle": "Hãy chia sẻ mong muốn của bạn, chúng tôi sẽ thiết kế lịch trình cá nhân hóa phù hợp.",
+    "sections": {
+      "destinationDates": {
+        "title": "Điểm đến & Ngày đi",
+        "subtitle": "Cho chúng tôi biết bạn muốn đi đâu và khi nào."
+      },
+      "budgetPreferences": {
+        "title": "Ngân sách & Sở thích",
+        "subtitle": "Đặt ngân sách và sở thích để nhận đề xuất phù hợp hơn."
+      },
+      "additionalDetails": {
+        "title": "Thông tin bổ sung",
+        "subtitle": "Chia sẻ các yêu cầu đặc biệt nếu có."
+      }
+    },
+    "fields": {
+      "destination": "Điểm đến",
+      "startDate": "Ngày bắt đầu",
+      "endDate": "Ngày kết thúc",
+      "numberOfParticipants": "Số lượng người tham gia",
+      "budgetPerPersonUsd": "Ngân sách mỗi người (USD)",
+      "travelInterests": "Sở thích du lịch",
+      "preferredAccommodation": "Lưu trú mong muốn",
+      "transportationPreference": "Phương tiện mong muốn",
+      "specialRequests": "Yêu cầu đặc biệt"
+    },
+    "placeholders": {
+      "destination": "Ví dụ: Nhật Bản, Ý, Bali"
+    },
+    "interests": {
+      "adventure": "Phiêu lưu",
+      "cultureHistory": "Văn hóa & Lịch sử",
+      "natureWildlife": "Thiên nhiên & Hoang dã",
+      "foodCulinary": "Ẩm thực",
+      "relaxationWellness": "Thư giãn & Chăm sóc sức khỏe"
+    },
+    "labels": {
+      "travelWindow": "Khoảng thời gian đi",
+      "participant": "người",
+      "participants": "người",
+      "requestCode": "Mã yêu cầu",
+      "currentStatus": "Trạng thái hiện tại",
+      "travelDates": "Ngày đi",
+      "submittedOn": "Ngày gửi",
+      "preferences": "Sở thích",
+      "adminNote": "Ghi chú quản trị"
+    },
+    "actions": {
+      "goToMyRequests": "Xem yêu cầu của tôi",
+      "newRequest": "Tạo yêu cầu mới",
+      "viewMyRequests": "Xem yêu cầu của tôi",
+      "submitAnother": "Gửi yêu cầu khác",
+      "retry": "Thử lại"
+    },
+    "guide": {
+      "title": "Quy trình xử lý",
+      "step1": "Gửi điểm đến, ngân sách và sở thích du lịch của bạn.",
+      "step2": "Tư vấn viên sẽ xem xét và xây dựng đề xuất phù hợp.",
+      "step3": "Theo dõi trạng thái trong Yêu cầu của tôi và nhận cập nhật."
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "approved": "Đã duyệt",
+      "rejected": "Từ chối"
+    },
+    "submit": {
+      "cta": "Gửi yêu cầu tour tùy chỉnh",
+      "loading": "Đang gửi...",
+      "successTitle": "Gửi yêu cầu thành công",
+      "successSubtitle": "Đội ngũ của chúng tôi sẽ xem xét và sớm liên hệ với bạn.",
+      "nextStepsTitle": "Bước tiếp theo",
+      "nextStepsDescription": "Bạn có thể theo dõi tiến độ tại mục Yêu cầu của tôi. Chúng tôi có thể liên hệ để bổ sung thông tin.",
+      "errorMessage": "Không thể gửi yêu cầu. Vui lòng thử lại."
+    },
+    "validation": {
+      "destinationRequired": "Vui lòng nhập điểm đến.",
+      "startDateRequired": "Vui lòng chọn ngày bắt đầu.",
+      "startDateInvalid": "Ngày bắt đầu không hợp lệ.",
+      "endDateRequired": "Vui lòng chọn ngày kết thúc.",
+      "endDateInvalid": "Ngày kết thúc không hợp lệ.",
+      "endDateBeforeStartDate": "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.",
+      "participantsRequired": "Vui lòng nhập số lượng người tham gia.",
+      "participantsInvalid": "Số lượng người tham gia phải từ 1 trở lên.",
+      "budgetRequired": "Vui lòng nhập ngân sách mỗi người.",
+      "budgetInvalid": "Ngân sách mỗi người phải lớn hơn 0.",
+      "default": "Vui lòng kiểm tra lại trường này."
+    },
+    "myRequests": {
+      "title": "Yêu cầu tour của tôi",
+      "subtitle": "Theo dõi trạng thái các yêu cầu tour tùy chỉnh đã gửi.",
+      "loadError": "Không thể tải danh sách yêu cầu của bạn.",
+      "empty": "Bạn chưa gửi yêu cầu tour tùy chỉnh nào."
+    },
+    "detail": {
+      "back": "Quay lại yêu cầu của tôi",
+      "loadError": "Không thể tải chi tiết yêu cầu."
+    },
+    "admin": {
+      "filters": {
+        "keyword": "Tìm theo mã yêu cầu hoặc điểm đến"
+      },
+      "list": {
+        "title": "Yêu cầu tour tùy chỉnh",
+        "subtitle": "Xem xét và quản lý các yêu cầu đã gửi.",
+        "loadError": "Không thể tải danh sách yêu cầu tour tùy chỉnh.",
+        "empty": "Không có yêu cầu phù hợp với bộ lọc hiện tại."
+      },
+      "detail": {
+        "back": "Quay lại danh sách yêu cầu",
+        "loadError": "Không thể tải chi tiết yêu cầu tour tùy chỉnh."
+      },
+      "review": {
+        "title": "Thao tác duyệt",
+        "subtitle": "Duyệt hoặc từ chối yêu cầu. Bắt buộc nhập ghi chú khi từ chối.",
+        "rejectNoteRequired": "Bắt buộc nhập ghi chú quản trị khi từ chối yêu cầu.",
+        "actionError": "Không thể cập nhật trạng thái yêu cầu.",
+        "actionSuccess": "Đã cập nhật trạng thái yêu cầu.",
+        "alreadyReviewed": "Yêu cầu này đã được duyệt trước đó. Bạn vẫn có thể cập nhật lại với ghi chú mới."
+      }
+    }
   }
 }

@@ -42,6 +42,11 @@ const LoadingSpinner = ({ loadingClass }: { loadingClass?: string }) => (
   </svg>
 );
 
+type ButtonContentProps = Omit<
+  ButtonProps,
+  "onClick" | "link" | "type" | "disabled" | "className" | "ariaLabel"
+>;
+
 const ButtonContent = ({
   text,
   children,
@@ -50,10 +55,8 @@ const ButtonContent = ({
   iconPosition = "left",
   iconClass = "text-[20px]",
   loadingClass,
-}: Omit<
-  ButtonProps,
-  "onClick" | "link" | "type" | "disabled" | "className" | "ariaLabel"
->) => {
+  suppressHydrationWarning,
+}: ButtonContentProps) => {
   if (children && !isLoading) return children;
 
   if (!children && !isLoading) {
@@ -65,7 +68,11 @@ const ButtonContent = ({
             <Icon icon={icon} aria-hidden="true" />
           </span>
         )}
-        {text && <span>{text}</span>}
+        {text && (
+          <span suppressHydrationWarning={suppressHydrationWarning}>
+            {text}
+          </span>
+        )}
       </span>
     );
   }
@@ -74,7 +81,7 @@ const ButtonContent = ({
     return (
       <>
         <LoadingSpinner loadingClass={loadingClass} />
-        <span>Loading…</span>
+        <span suppressHydrationWarning={suppressHydrationWarning}>Loading…</span>
       </>
     );
   }

@@ -55,9 +55,15 @@ export const tourService = {
   },
 
   // Public operations
-  getPublicTourDetail: async (id: string) => {
+  getPublicTourDetail: async (id: string, language?: string) => {
+    const normalizedLanguage = language?.toLowerCase().split("-")[0];
+    const shouldSendLanguage = normalizedLanguage === "en" || normalizedLanguage === "vi";
+    const url = shouldSendLanguage
+      ? `${API_ENDPOINTS.PUBLIC_HOME.GET_TOUR_DETAIL(id)}?lang=${normalizedLanguage}`
+      : API_ENDPOINTS.PUBLIC_HOME.GET_TOUR_DETAIL(id);
+
     const response = await api.get<ApiResponse<TourDto>>(
-      API_ENDPOINTS.PUBLIC_HOME.GET_TOUR_DETAIL(id),
+      url,
     );
     return extractResult<TourDto>(response.data);
   },

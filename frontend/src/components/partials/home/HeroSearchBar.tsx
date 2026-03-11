@@ -78,30 +78,30 @@ export const CalendarDropdown = ({
     weekdayLabels.length === 7 ? weekdayLabels : DEFAULT_WEEKDAYS;
 
   return (
-    <div className="p-4 w-80 max-w-[calc(100vw-2rem)]">
+    <div className="p-4 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-slate-800 rounded-xl">
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-3">
         <Button
           type="button"
           onClick={prevMonth}
           aria-label={previousMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
           <Icon
             icon="heroicons-outline:chevron-left"
-            className="w-4 h-4 text-gray-600"
+            className="w-4 h-4 text-gray-600 dark:text-gray-300"
           />
         </Button>
-        <span className="text-sm font-semibold text-gray-900">
+        <span className="text-sm font-semibold text-gray-900 dark:text-white">
           {monthLabel} {viewYear}
         </span>
         <Button
           type="button"
           onClick={nextMonth}
           aria-label={nextMonthLabel}
-          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
+          className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer">
           <Icon
             icon="heroicons-outline:chevron-right"
-            className="w-4 h-4 text-gray-600"
+            className="w-4 h-4 text-gray-600 dark:text-gray-300"
           />
         </Button>
       </div>
@@ -130,7 +130,7 @@ export const CalendarDropdown = ({
             className={`w-11 h-11 mx-auto rounded-full text-sm flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
               isSelected(day)
                 ? "bg-landing-accent text-white font-bold"
-                : "text-gray-700 hover:bg-gray-100"
+                : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700"
             }`}>
             {day}
           </Button>
@@ -159,7 +159,7 @@ export const ListDropdown = ({
         className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
           value === item
             ? "bg-landing-accent/10 text-landing-accent font-medium"
-            : "text-gray-700 hover:bg-gray-50"
+            : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700"
         }`}>
         {item}
       </Button>
@@ -188,7 +188,7 @@ export const NumberDropdown = ({
         className={`w-full min-h-11 text-left px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
           value === num
             ? "bg-landing-accent/10 text-landing-accent font-medium"
-            : "text-gray-700 hover:bg-gray-50"
+            : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700"
         }`}>
         {num} {num === 1 ? singleLabel : pluralLabel}
       </Button>
@@ -224,27 +224,27 @@ export const SelectField = ({
       onClick={onToggle}
       aria-expanded={isOpen}
       aria-haspopup={children ? "listbox" : undefined}
-      className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white w-full text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${rounded ?? ""} ${
+      className={`flex items-center gap-2 md:gap-3 p-2 md:p-3 min-h-11 bg-white dark:bg-slate-800 w-full text-left overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${rounded ?? ""} ${
         isOpen ? "ring-2 ring-landing-accent/30" : ""
       }`}>
       <div className="relative w-4 h-4 md:w-6 md:h-6 shrink-0 flex items-center justify-center text-landing-accent">
         {icon}
       </div>
       <div className="flex min-w-0 flex-col gap-0.5 md:gap-1 w-full">
-        <span suppressHydrationWarning className="text-[#333] font-semibold text-xs md:text-sm leading-tight truncate w-full block">
+        <span suppressHydrationWarning className="text-[#333] dark:text-white font-semibold text-xs md:text-sm leading-tight truncate w-full block">
           {label}
         </span>
         <div className="flex min-w-0 items-center justify-between gap-1 w-full opacity-70">
           <span
             suppressHydrationWarning
             className={`text-[10px] md:text-xs font-normal truncate flex-1 ${
-              displayValue ? "text-[#333]" : "text-[#333] opacity-80"
+              displayValue ? "text-[#333] dark:text-gray-200" : "text-[#333] dark:text-gray-300 opacity-80"
             }`}>
             {displayValue || placeholder}
           </span>
           <Icon
             icon="heroicons-outline:chevron-down"
-            className={`w-3 h-3 md:w-4 md:h-4 shrink-0 text-[#333] transition-transform ${
+            className={`w-3 h-3 md:w-4 md:h-4 shrink-0 text-[#333] dark:text-gray-300 transition-transform ${
               isOpen ? "rotate-180" : ""
             }`}
           />
@@ -254,7 +254,7 @@ export const SelectField = ({
 
     {/* Dropdown panel */}
     {isOpen && children && (
-      <div className="absolute top-full left-0 right-0 md:left-auto md:right-auto md:min-w-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+      <div className="absolute top-full left-0 right-0 md:left-auto md:right-auto md:min-w-full mt-1 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-100 dark:border-slate-700 z-50">
         {children}
       </div>
     )}

@@ -21,12 +21,14 @@ const FALLBACK_STATS = {
 };
 
 export const StatsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [stats, setStats] = useState(FALLBACK_STATS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
+      setLoading(true);
       try {
         const data = await homeService.getHomeStats();
         if (data) {
@@ -40,7 +42,7 @@ export const StatsSection = () => {
     };
 
     fetchStats();
-  }, []);
+  }, [languageKey]);
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {

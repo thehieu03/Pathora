@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getCurrentApiLanguage } from "../../api/languageHeader";
-import { getCookie } from "@/utils/cookie";
+import { getValidAccessToken } from "../../utils/authSession";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
 
@@ -9,7 +9,7 @@ export const prepareApiHeaders = (
   cookieSource?: string | null,
   preferredLanguage?: string | null,
 ) => {
-  const token = getCookie("access_token", cookieSource);
+  const token = getValidAccessToken(cookieSource);
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }

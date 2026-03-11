@@ -42,7 +42,8 @@ const FALLBACK_TOURS = [
 ];
 
 export const LatestToursSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [tours, setTours] = useState<FallbackTour[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -54,6 +55,17 @@ export const LatestToursSection = () => {
 
   useEffect(() => {
     const fetchTours = async () => {
+      setLoading(true);
+      const localizedItems = t("landing.latestTours.items", {
+        returnObjects: true,
+        defaultValue: [],
+      }) as Array<{ title?: string; date?: string }>;
+      const fallbackTours = FALLBACK_TOURS.map((tour, index) => ({
+        image: tour.image,
+        title: localizedItems[index]?.title || tour.title,
+        createdAt: localizedItems[index]?.date || tour.createdAt,
+      }));
+
       try {
         const data = await homeService.getLatestTours(6);
         if (data && data.length > 0) {
@@ -64,21 +76,25 @@ export const LatestToursSection = () => {
           }));
           setTours(mapped);
         } else {
-          setTours(FALLBACK_TOURS);
+          setTours(fallbackTours);
         }
       } catch {
-        setTours(FALLBACK_TOURS);
+        setTours(fallbackTours);
       } finally {
         setLoading(false);
       }
     };
 
     fetchTours();
-  }, []);
+  }, [languageKey, t]);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", {
+    if (Number.isNaN(date.getTime())) {
+      return dateStr;
+    }
+
+    return date.toLocaleDateString(languageKey || "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",

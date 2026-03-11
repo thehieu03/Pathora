@@ -9,7 +9,7 @@ import { ToastPosition } from "react-toastify";
 import { handleResponseError, waitForRetry } from "./responseInterceptor";
 import { showErrorToast } from "./showErrorToast";
 import { getCurrentApiLanguage } from "./languageHeader";
-import { getCookie } from "@/utils/cookie";
+import { clearAuthSession, getValidAccessToken } from "../utils/authSession";
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
@@ -58,10 +58,8 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 const onUnauthorized = (): void => {
-  if (typeof document !== "undefined") {
-    document.cookie =
-      "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
+  clearAuthSession();
+
   if (typeof window !== "undefined") {
     window.location.href = "/";
   }
@@ -70,10 +68,12 @@ const onUnauthorized = (): void => {
 const attachInterceptors = (instance: AxiosInstance): void => {
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-      const token = getCookie("access_token");
+      const token = getValidAccessToken();
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        delete config.headers.Authorization;
       }
       config.headers["Accept-Language"] = getCurrentApiLanguage();
 

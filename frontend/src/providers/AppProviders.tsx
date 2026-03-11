@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import StoreProvider from "./StoreProvider";
 import DarkModeSync from "./DarkModeSync";
+import AuthSessionSync from "./AuthSessionSync";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,6 +23,7 @@ export default function AppProviders({
   return (
     <StoreProvider>
       <DarkModeSync />
+      <AuthSessionSync />
       {/*<AuthProvider>*/}
       {children}
       <ToastContainer />

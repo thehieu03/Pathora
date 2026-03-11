@@ -95,6 +95,11 @@ const nextConfig: NextConfig = {
         pathname: "/api/mcp/asset/**",
       },
       {
+        protocol: "https",
+        hostname: "cdn3.ivivu.com",
+        pathname: "/**",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "9000",

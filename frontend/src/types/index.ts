@@ -85,6 +85,8 @@ export interface UserInfo {
   forcePasswordChange: boolean;
   roles: UserRoleVm[];
   departments: UserDepartmentVm[];
+  portal?: string | null;
+  defaultPath?: string | null;
 }
 
 /** Generic wrapper for all backend ResultSharedResponse<T> payloads */

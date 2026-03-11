@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourInstanceService } from "@/services/tourInstanceService";
@@ -141,6 +142,7 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
    Status Badge
    ══════════════════════════════════════════════════════════════ */
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const lower = status.toLowerCase().replace(/\s+/g, "_");
   const config = TourInstanceStatusMap[lower] ?? {
     label: status,
@@ -149,11 +151,21 @@ function StatusBadge({ status }: { status: string }) {
     dot: "bg-slate-400",
   };
 
+  const localizedLabel =
+    {
+      available: t("tourInstance.available"),
+      confirmed: t("tourInstance.confirmed"),
+      sold_out: t("tourInstance.soldOut"),
+      cancelled: t("tourInstance.cancelled"),
+      completed: t("tourInstance.completed"),
+      in_progress: t("tourInstance.inProgress"),
+    }[lower] ?? config.label;
+
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${config.bg} ${config.text}`}>
       <span className={`w-2 h-2 rounded-full ${config.dot}`} />
-      {config.label}
+      {localizedLabel}
     </span>
   );
 }
@@ -161,36 +173,42 @@ function StatusBadge({ status }: { status: string }) {
 /* ══════════════════════════════════════════════════════════════
    Tab definitions
    ══════════════════════════════════════════════════════════════ */
-const TABS = [
-  { id: "overview", label: "Overview", icon: "heroicons:eye" },
-  { id: "itinerary", label: "Itinerary", icon: "heroicons:map" },
-  { id: "policy", label: "Policy", icon: "heroicons:document-text" },
-  { id: "insurance", label: "Insurance", icon: "heroicons:shield-check" },
-  { id: "bookings", label: "Bookings", icon: "heroicons:ticket", badge: true },
-  {
-    id: "participants",
-    label: "Participants",
-    icon: "heroicons:user-group",
-    badge: true,
-  },
-];
+interface TabItem {
+  id: string;
+  label: string;
+  icon: string;
+  badge?: boolean;
+}
 
 /* ══════════════════════════════════════════════════════════════
    Overview Tab
    ══════════════════════════════════════════════════════════════ */
-function OverviewTab({ data }: { data: TourInstanceDto }) {
+function OverviewTab({
+  data,
+  languageKey,
+}: {
+  data: TourInstanceDto;
+  languageKey: string;
+}) {
+  const { t } = useTranslation();
   const participantPercent =
     data.maxParticipants > 0
       ? Math.round((data.registeredParticipants / data.maxParticipants) * 100)
       : 0;
 
   const formatCurrency = (value: number) =>
-    new Intl.NumberFormat("vi-VN").format(value) + " VND";
+    `${new Intl.NumberFormat(languageKey || "en-US").format(value)} VND`;
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "—";
+    if (!dateStr) return t("common.noData", "No data");
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (Number.isNaN(d.getTime())) {
+      return t("common.noData", "No data");
+    }
+    return d.toLocaleDateString(languageKey || "en-US", {
+      month: "short",
+      day: "numeric",
+    });
   };
 
   return (
@@ -207,7 +225,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
           <p className="text-2xl font-bold text-slate-900">
             {data.registeredParticipants}/{data.maxParticipants}
           </p>
-          <p className="text-sm text-slate-500 mt-1">Participants</p>
+          <p className="text-sm text-slate-500 mt-1">{t("tourInstance.participants")}</p>
           <div className="mt-3">
             <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
               <div
@@ -216,7 +234,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
               />
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {participantPercent}% occupied
+              {participantPercent}% {t("tourInstance.occupied")}
             </p>
           </div>
         </div>
@@ -234,7 +252,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
           <p className="text-2xl font-bold text-slate-900">
             {formatCurrency(data.revenue)}
           </p>
-          <p className="text-sm text-slate-500 mt-1">Total Revenue</p>
+          <p className="text-sm text-slate-500 mt-1">{t("tourInstance.totalRevenue")}</p>
         </div>
 
         {/* Total Bookings */}
@@ -250,7 +268,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
           <p className="text-2xl font-bold text-slate-900">
             {data.totalBookings}
           </p>
-          <p className="text-sm text-slate-500 mt-1">Total Bookings</p>
+          <p className="text-sm text-slate-500 mt-1">{t("tourInstance.totalBookings")}</p>
         </div>
 
         {/* Confirmation Deadline */}
@@ -266,7 +284,9 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
           <p className="text-2xl font-bold text-slate-900">
             {formatDate(data.confirmationDeadline)}
           </p>
-          <p className="text-sm text-slate-500 mt-1">Confirmation Deadline</p>
+          <p className="text-sm text-slate-500 mt-1">
+            {t("tourInstance.confirmationDeadline")}
+          </p>
         </div>
       </div>
 
@@ -276,29 +296,31 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
             <Icon icon="heroicons:cube" className="size-5 text-slate-700" />
-            Tour Information
+            {t("tourInstance.tourInformation")}
           </h2>
           <div className="space-y-0">
             <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
-              <span className="text-sm text-slate-500">Category</span>
+              <span className="text-sm text-slate-500">{t("tourInstance.category")}</span>
               <span className="text-sm font-semibold text-slate-900">
-                {data.category || "—"}
+                {data.category || t("common.noData", "No data")}
               </span>
             </div>
             <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
-              <span className="text-sm text-slate-500">Classification</span>
+              <span className="text-sm text-slate-500">
+                {t("tourInstance.classification")}
+              </span>
               <span className="text-sm font-semibold text-slate-900">
                 {data.classificationName}
               </span>
             </div>
             <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
-              <span className="text-sm text-slate-500">Duration</span>
+              <span className="text-sm text-slate-500">{t("tourInstance.duration")}</span>
               <span className="text-sm font-semibold text-slate-900">
-                {data.durationDays} days
+                {data.durationDays} {t("tourInstance.days")}
               </span>
             </div>
             <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
-              <span className="text-sm text-slate-500">Rating</span>
+              <span className="text-sm text-slate-500">{t("tourInstance.rating")}</span>
               <span className="flex items-center gap-1">
                 <Icon
                   icon="heroicons:star-solid"
@@ -310,7 +332,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
               </span>
             </div>
             <div className="flex items-center justify-between py-2.5">
-              <span className="text-sm text-slate-500">Base Price</span>
+              <span className="text-sm text-slate-500">{t("tourInstance.basePrice")}</span>
               <span className="text-sm font-bold text-orange-500">
                 {formatCurrency(data.price)}
               </span>
@@ -322,7 +344,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
         <div className="bg-white rounded-xl border border-slate-200 p-6">
           <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-4">
             <Icon icon="heroicons:user" className="size-5 text-slate-700" />
-            Tour Guide
+            {t("tourInstance.tourGuide")}
           </h2>
           {data.guide ? (
             <div>
@@ -340,19 +362,19 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
                     {data.guide.name}
                   </p>
                   <p className="text-sm text-slate-500">
-                    Professional Tour Guide
+                    {t("tourInstance.guide")}
                   </p>
                 </div>
               </div>
               <div className="space-y-0">
                 <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Languages</span>
+                  <span className="text-sm text-slate-500">{t("tourInstance.languages")}</span>
                   <span className="text-sm font-semibold text-slate-900">
                     {data.guide.languages.join(", ")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-2.5">
-                  <span className="text-sm text-slate-500">Experience</span>
+                  <span className="text-sm text-slate-500">{t("tourInstance.experience")}</span>
                   <span className="text-sm font-semibold text-slate-900">
                     {data.guide.experience}
                   </span>
@@ -362,7 +384,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-slate-400">
               <Icon icon="heroicons:user-circle" className="size-12 mb-2" />
-              <p className="text-sm">No guide assigned</p>
+              <p className="text-sm">{t("tourInstance.noGuide")}</p>
             </div>
           )}
         </div>
@@ -376,7 +398,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
               icon="heroicons:check-circle"
               className="size-5 text-green-600"
             />
-            Included Services
+            {t("tourInstance.includedServices")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {data.includedServices.map((service) => (
@@ -402,7 +424,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
               icon="heroicons:currency-dollar"
               className="size-5 text-orange-500"
             />
-            Dynamic Pricing
+            {t("tourInstance.dynamicPricing")}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {data.dynamicPricing.map((tier, idx) => (
@@ -411,13 +433,13 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
                 className="rounded-xl border-2 border-slate-200 p-4">
                 <p className="text-sm text-slate-500">
                   {tier.minParticipants === tier.maxParticipants
-                    ? `${tier.minParticipants} participants`
-                    : `${tier.minParticipants}-${tier.maxParticipants} participants`}
+                    ? `${tier.minParticipants} ${t("tourInstance.people")}`
+                    : `${tier.minParticipants}-${tier.maxParticipants} ${t("tourInstance.people")}`}
                 </p>
                 <p className="text-2xl font-bold text-orange-500 mt-1">
                   {formatCurrency(tier.pricePerPerson)}
                 </p>
-                <p className="text-xs text-slate-500 mt-0.5">per person</p>
+                <p className="text-xs text-slate-500 mt-0.5">{t("tourInstance.perPerson")}</p>
               </div>
             ))}
           </div>
@@ -431,6 +453,7 @@ function OverviewTab({ data }: { data: TourInstanceDto }) {
    Placeholder tab content
    ══════════════════════════════════════════════════════════════ */
 function PlaceholderTab({ label }: { label: string }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
       <Icon
@@ -438,10 +461,10 @@ function PlaceholderTab({ label }: { label: string }) {
         className="size-12 mx-auto text-slate-300 mb-3"
       />
       <p className="text-lg font-semibold text-slate-400">
-        {label} content coming soon
+        {label} {t("tourInstance.comingSoon")}
       </p>
       <p className="text-sm text-slate-400 mt-1">
-        This section is under development.
+        {t("tourInstance.underDevelopment")}
       </p>
     </div>
   );
@@ -451,6 +474,8 @@ function PlaceholderTab({ label }: { label: string }) {
    Tour Instance Detail Page
    ══════════════════════════════════════════════════════════════ */
 export default function TourInstanceDetailPage() {
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
@@ -459,17 +484,40 @@ export default function TourInstanceDetailPage() {
   const [data, setData] = useState<TourInstanceDto | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const tabs: TabItem[] = [
+    { id: "overview", label: t("tourInstance.overview"), icon: "heroicons:eye" },
+    { id: "itinerary", label: t("tourInstance.itinerary"), icon: "heroicons:map" },
+    { id: "policy", label: t("tourInstance.policy"), icon: "heroicons:document-text" },
+    {
+      id: "insurance",
+      label: t("tourInstance.insurance"),
+      icon: "heroicons:shield-check",
+    },
+    {
+      id: "bookings",
+      label: t("tourInstance.bookings"),
+      icon: "heroicons:ticket",
+      badge: true,
+    },
+    {
+      id: "participants",
+      label: t("tourInstance.participantsTab"),
+      icon: "heroicons:user-group",
+      badge: true,
+    },
+  ];
+
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const result = await tourInstanceService.getInstanceDetail(id);
       setData(result);
     } catch {
-      toast.error("Failed to load tour instance details");
+      toast.error(t("tourInstance.fetchError", "Failed to load tour instances"));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t, languageKey]);
 
   useEffect(() => {
     loadData();
@@ -477,7 +525,7 @@ export default function TourInstanceDetailPage() {
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
+    return d.toLocaleDateString(languageKey || "en-US", {
       month: "numeric",
       day: "numeric",
       year: "numeric",
@@ -527,13 +575,13 @@ export default function TourInstanceDetailPage() {
                 className="size-12 mx-auto text-slate-300 mb-3"
               />
               <p className="text-lg font-semibold text-slate-500">
-                Tour instance not found
+                {t("tourInstance.notFound")}
               </p>
               <Link
                 href="/tour-instances"
                 className="mt-4 inline-flex items-center gap-2 text-sm text-orange-500 hover:text-orange-600 font-medium">
                 <Icon icon="heroicons:arrow-left" className="size-4" />
-                Back to Tour Instances
+                {t("tourInstance.backToInstances")}
               </Link>
             </div>
           </main>
@@ -559,7 +607,7 @@ export default function TourInstanceDetailPage() {
                 className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors">
                 <Icon icon="heroicons:arrow-left" className="size-5" />
                 <span className="text-base font-semibold">
-                  Back to Tour Instances
+                  {t("tourInstance.backToInstances")}
                 </span>
               </Link>
               <div className="flex items-center gap-3">
@@ -568,7 +616,7 @@ export default function TourInstanceDetailPage() {
                   onClick={() => router.push(`/tour-instances/${data.id}/edit`)}
                   className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-[10px] text-sm font-medium transition-colors">
                   <Icon icon="heroicons:pencil-square" className="size-4" />
-                  Edit Instance
+                  {t("tourInstance.editInstance")}
                 </button>
               </div>
             </div>
@@ -614,16 +662,16 @@ export default function TourInstanceDetailPage() {
                 <div className="flex items-center gap-4 mt-2">
                   <span className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Icon icon="heroicons:calendar" className="size-3.5" />
-                    Departure: {formatDate(data.startDate)}
+                    {t("tourInstance.departure")}: {formatDate(data.startDate)}
                   </span>
                   <span className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Icon icon="heroicons:clock" className="size-3.5" />
-                    {data.durationDays} days
+                    {data.durationDays} {t("tourInstance.days")}
                   </span>
                   <span className="flex items-center gap-1.5 text-xs text-slate-500">
                     <Icon icon="heroicons:users" className="size-3.5" />
                     {data.registeredParticipants}/{data.maxParticipants}{" "}
-                    participants
+                    {t("tourInstance.participants")}
                   </span>
                 </div>
               </div>
@@ -632,7 +680,7 @@ export default function TourInstanceDetailPage() {
 
           {/* ── Tab Bar ── */}
           <div className="px-8 mt-4 flex gap-1 border-t border-slate-200 overflow-x-auto">
-            {TABS.map((tab) => {
+            {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
@@ -667,13 +715,23 @@ export default function TourInstanceDetailPage() {
 
         {/* ── Tab Content ── */}
         <main id="main-content" className="flex-1 overflow-y-auto p-8">
-          {activeTab === "overview" && <OverviewTab data={data} />}
-          {activeTab === "itinerary" && <PlaceholderTab label="Itinerary" />}
-          {activeTab === "policy" && <PlaceholderTab label="Policy" />}
-          {activeTab === "insurance" && <PlaceholderTab label="Insurance" />}
-          {activeTab === "bookings" && <PlaceholderTab label="Bookings" />}
+          {activeTab === "overview" && (
+            <OverviewTab data={data} languageKey={languageKey} />
+          )}
+          {activeTab === "itinerary" && (
+            <PlaceholderTab label={t("tourInstance.itinerary")} />
+          )}
+          {activeTab === "policy" && (
+            <PlaceholderTab label={t("tourInstance.policy")} />
+          )}
+          {activeTab === "insurance" && (
+            <PlaceholderTab label={t("tourInstance.insurance")} />
+          )}
+          {activeTab === "bookings" && (
+            <PlaceholderTab label={t("tourInstance.bookings")} />
+          )}
           {activeTab === "participants" && (
-            <PlaceholderTab label="Participants" />
+            <PlaceholderTab label={t("tourInstance.participantsTab")} />
           )}
         </main>
       </div>

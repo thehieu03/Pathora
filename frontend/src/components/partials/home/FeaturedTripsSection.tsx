@@ -63,49 +63,58 @@ const TripCard = ({
   rating,
   days,
   price,
-}: TripCardProps) => (
-  <Link
-    href="/tours"
-    className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out">
-    <div className="relative h-53.75 overflow-hidden">
-      <Image
-        src={image}
-        alt={title}
-        fill
-        sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
-        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-      />
-    </div>
+}: TripCardProps) => {
+  const { t } = useTranslation();
 
-    <div className="p-5 flex flex-col gap-2 flex-1">
-      <div className="flex items-center gap-1 text-landing-body text-base">
-        <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
-        <span className="text-sm truncate">{location}</span>
-      </div>
-      <h3 className="h-11 overflow-hidden text-landing-heading font-medium text-[15px] leading-snug">
-        {title}
-      </h3>
-      <StarRating count={rating} />
-    </div>
-
-    <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
-      <div className="flex w-24 items-center gap-1 text-landing-heading text-xs">
-        <Icon
-          icon="heroicons-outline:calendar"
-          className="w-4 h-4 text-gray-500"
+  return (
+    <Link
+      href="/tours"
+      className="group bg-white border border-landing-border rounded-xl overflow-hidden w-full flex flex-col hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-out">
+      <div className="relative h-53.75 overflow-hidden">
+        <Image
+          src={image}
+          alt={title}
+          fill
+          sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <span className="truncate">{days} days</span>
       </div>
-      <div className="w-26 text-right text-landing-heading text-sm">
-        <span className="text-gray-500 text-xs font-normal">From </span>
-        <span className="font-medium text-[15px]">{price}</span>
+
+      <div className="p-5 flex flex-col gap-2 flex-1">
+        <div className="flex items-center gap-1 text-landing-body text-base">
+          <Icon icon="heroicons-solid:map-pin" className="w-4 h-4 shrink-0" />
+          <span className="text-sm truncate">{location}</span>
+        </div>
+        <h3 className="h-11 overflow-hidden text-landing-heading font-medium text-[15px] leading-snug">
+          {title}
+        </h3>
+        <StarRating count={rating} />
       </div>
-    </div>
-  </Link>
-);
+
+      <div className="px-5 pb-4 border-t border-landing-border pt-2.5 flex items-center justify-between">
+        <div className="flex w-24 items-center gap-1 text-landing-heading text-xs">
+          <Icon
+            icon="heroicons-outline:calendar"
+            className="w-4 h-4 text-gray-500"
+          />
+          <span className="truncate">
+            {t("landing.featured.days", { count: days })}
+          </span>
+        </div>
+        <div className="w-26 text-right text-landing-heading text-sm">
+          <span className="text-gray-500 text-xs font-normal">
+            {t("landing.featured.from")}{" "}
+          </span>
+          <span className="font-medium text-[15px]">{price}</span>
+        </div>
+      </div>
+    </Link>
+  );
+};
 
 export const FeaturedTripsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [trips, setTrips] = useState<FallbackTrip[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -120,12 +129,13 @@ export const FeaturedTripsSection = () => {
 
   useEffect(() => {
     const fetchTours = async () => {
+      setLoading(true);
       try {
         const data = await homeService.getFeaturedTours(8);
         if (data && data.length > 0) {
           const mapped = data.map((tour: FeaturedTour) => ({
             image: tour.thumbnail || FALLBACK_TRIPS[0].image,
-            location: tour.location || "Unknown",
+            location: tour.location || t("common.noData", "No data"),
             title: tour.tourName,
             rating: tour.rating || 5,
             days: tour.durationDays,
@@ -146,7 +156,7 @@ export const FeaturedTripsSection = () => {
     };
 
     fetchTours();
-  }, []);
+  }, [languageKey, t]);
 
   if (loading) {
     return (

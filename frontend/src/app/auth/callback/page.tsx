@@ -6,6 +6,17 @@ import { useDispatch } from "react-redux";
 import { logOut, setUser } from "@/store/infrastructure/authSlice";
 import { authApiSlice } from "@/store/api/auth/authApiSlice";
 import type { AppDispatch } from "@/store";
+import {
+  clearAuthSession,
+  markAuthenticatedSession,
+  syncAuthPortalSession,
+} from "@/utils/authSession";
+import { resolvePostLoginPath } from "@/utils/postLoginRouting";
+
+interface UserInfoRoutingMetadata {
+  defaultPath?: string | null;
+  portal?: string | null;
+}
 
 function CallbackHandler() {
   const router = useRouter();
@@ -16,8 +27,9 @@ function CallbackHandler() {
     const error = searchParams.get("error");
 
     if (error) {
+      clearAuthSession();
       dispatch(logOut());
-      router.replace("/");
+      router.replace("/home?login=true");
       return;
     }
 
@@ -28,10 +40,24 @@ function CallbackHandler() {
     ).then((result) => {
       if ("data" in result && result.data?.data) {
         dispatch(setUser(result.data.data));
+
+        const routingMetadata = result.data.data as UserInfoRoutingMetadata;
+        syncAuthPortalSession(
+          routingMetadata.portal,
+          routingMetadata.defaultPath,
+        );
+        markAuthenticatedSession();
+        router.replace(
+          resolvePostLoginPath(
+            routingMetadata.defaultPath,
+            routingMetadata.portal,
+          ),
+        );
       } else {
+        clearAuthSession();
         dispatch(logOut());
+        router.replace("/home?login=true");
       }
-      router.replace("/");
     });
   }, [searchParams, dispatch, router]);
 

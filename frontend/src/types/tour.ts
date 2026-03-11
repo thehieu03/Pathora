@@ -107,8 +107,13 @@ export interface TourClassificationDto {
   name: string;
   price: number;
   salePrice: number;
+  adultPrice?: number;
+  childPrice?: number;
+  infantPrice?: number;
   description: string;
   durationDays: number;
+  numberOfDay?: number;
+  numberOfNight?: number;
   plans: TourDayDto[];
   insurances: TourInsuranceDto[];
 }

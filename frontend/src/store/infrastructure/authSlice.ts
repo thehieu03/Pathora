@@ -1,14 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { AuthState, UserInfo } from "../domain/auth";
+import { getValidAccessToken } from "../../utils/authSession";
 
 const storedUser =
   typeof window !== "undefined"
     ? (JSON.parse(localStorage.getItem("user") || "null") as UserInfo | null)
     : null;
 
+const hasValidSession =
+  typeof window !== "undefined" ? Boolean(getValidAccessToken()) : false;
+
 const initialState: AuthState = {
-  user: storedUser || null,
-  isAuth: !!storedUser,
+  user: hasValidSession ? storedUser : null,
+  isAuth: hasValidSession && !!storedUser,
   token: null,
 };
 

@@ -53,7 +53,8 @@ const QuoteIcon = () => (
 );
 
 export const ReviewsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [reviews, setReviews] = useState<FallbackReview[]>([]);
   const [current, setCurrent] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -68,6 +69,19 @@ export const ReviewsSection = () => {
 
   useEffect(() => {
     const fetchReviews = async () => {
+      setLoading(true);
+      setCurrent(0);
+
+      const localizedItems = t("landing.reviews.items", {
+        returnObjects: true,
+        defaultValue: [],
+      }) as Array<{ role?: string; text?: string }>;
+      const fallbackReviews = FALLBACK_REVIEWS.map((review, index) => ({
+        ...review,
+        comment: localizedItems[index]?.text || review.comment,
+        tourName: localizedItems[index]?.role || review.tourName,
+      }));
+
       try {
         const data = await homeService.getTopReviews(6);
         if (data && data.length > 0) {
@@ -77,22 +91,24 @@ export const ReviewsSection = () => {
               "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
             name: review.userName,
             tourName: review.tourName,
-            comment: review.comment || "Great experience!",
+            comment:
+              review.comment ||
+              t("landing.reviews.items.0.text", "Great experience!"),
             stars: review.rating,
           }));
           setReviews(mapped);
         } else {
-          setReviews(FALLBACK_REVIEWS);
+          setReviews(fallbackReviews);
         }
       } catch {
-        setReviews(FALLBACK_REVIEWS);
+        setReviews(fallbackReviews);
       } finally {
         setLoading(false);
       }
     };
 
     fetchReviews();
-  }, []);
+  }, [languageKey, t]);
 
   const prev = () => setCurrent((c) => (c === 0 ? reviews.length - 1 : c - 1));
   const next = () => setCurrent((c) => (c === reviews.length - 1 ? 0 : c + 1));

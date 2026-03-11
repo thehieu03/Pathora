@@ -26,6 +26,14 @@ import {
   TourInstanceVm,
   TourInstanceStatusMap,
 } from "@/types/tour";
+import {
+  getAdultPrice,
+  getChildPrice,
+  getClassificationDays,
+  getClassificationNights,
+  getInfantPrice,
+  getOriginalPackagePrice,
+} from "./tourDetailPricing";
 
 /* ══════════════════════════════════════════════════════════════
    Sub-components
@@ -40,6 +48,25 @@ const pageVariants = {
 const fadeUpVariant = {
   hidden: { opacity: 0, y: 10 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
+
+const resolveInstanceStatusLabel = (
+  statusKey: string,
+  fallbackLabel: string,
+  t: any,
+) => {
+  const translatedStatus = {
+    available: t("tourInstance.available", "Available"),
+    confirmed: t("tourInstance.confirmed", "Confirmed"),
+    sold_out: t("tourInstance.soldOut", "Sold Out"),
+    cancelled: t("tourInstance.cancelled", "Cancelled"),
+    completed: t("tourInstance.completed", "Completed"),
+    in_progress: t("tourInstance.inProgress", "In Progress"),
+  } as const;
+
+  return String(
+    translatedStatus[statusKey as keyof typeof translatedStatus] || fallbackLabel,
+  );
 };
 
 /* ── Info Pill ─────────────────────────────────────────────── */
@@ -195,6 +222,7 @@ function ItineraryDayCard({ day }: { day: TourDayDto }) {
 
 /* ── Activity Item ─────────────────────────────────────────── */
 function ActivityItem({ activity }: { activity: TourDayActivityDto }) {
+  const { t } = useTranslation();
   const timeStr = [activity.startTime, activity.endTime]
     .filter(Boolean)
     .join(" – ");
@@ -208,7 +236,7 @@ function ActivityItem({ activity }: { activity: TourDayActivityDto }) {
           </span>
           {activity.isOptional && (
             <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
-              Optional
+              {t("landing.tourDetail.optional", "Optional")}
             </span>
           )}
           {timeStr && (
@@ -295,11 +323,13 @@ function ActivityItem({ activity }: { activity: TourDayActivityDto }) {
 
 /* ── Reviews Section ──────────────────────────────────────── */
 function ReviewsSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [reviews, setReviews] = useState<TopReview[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     homeService
       .getTopReviews(6)
       .then((data) => {
@@ -307,7 +337,7 @@ function ReviewsSection() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [languageKey]);
 
   const averageRating =
     reviews.length > 0
@@ -401,7 +431,9 @@ function ReviewsSection() {
                         {review.userName}
                       </span>
                       <span className="text-[10px] text-gray-400">
-                        {new Date(review.createdAt).toLocaleDateString("vi-VN")}
+                        {new Date(review.createdAt).toLocaleDateString(
+                          languageKey || "en-US",
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center gap-0.5">
@@ -431,11 +463,13 @@ function ReviewsSection() {
 
 /* ── Scheduled Departures Section ─────────────────────────── */
 function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [instances, setInstances] = useState<TourInstanceVm[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     homeService
       .getAvailablePublicInstances(undefined, 1, 50)
       .then((data) => {
@@ -446,7 +480,7 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [tourId]);
+  }, [tourId, languageKey]);
 
   if (loading) {
     return (
@@ -481,24 +515,31 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
         ) : (
           <div className="flex flex-col gap-3">
             {instances.map((instance) => {
-              const statusInfo = TourInstanceStatusMap[instance.status] ?? {
+              const statusKey = instance.status.toLowerCase().replace(/\s+/g, "_");
+              const statusInfo = TourInstanceStatusMap[statusKey] ?? {
                 label: instance.status,
                 bg: "bg-gray-100",
                 text: "text-gray-600",
                 dot: "bg-gray-400",
               };
+              const statusLabel = resolveInstanceStatusLabel(
+                statusKey,
+                statusInfo.label,
+                t,
+              );
               const spotsLeft =
-                instance.maxParticipants - instance.registeredParticipants;
+                (instance.maxParticipants ?? 0) - (instance.registeredParticipants ?? 0);
+              const displaySpotsLeft = spotsLeft > 0 ? spotsLeft : 0;
               const startDateStr = new Date(
                 instance.startDate,
-              ).toLocaleDateString("vi-VN", {
+              ).toLocaleDateString(languageKey || "en-US", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
               });
               const endDateStr = new Date(
                 instance.endDate,
-              ).toLocaleDateString("vi-VN", {
+              ).toLocaleDateString(languageKey || "en-US", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
@@ -534,7 +575,7 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
                       <span
                         className={`size-1.5 rounded-full ${statusInfo.dot}`}
                       />
-                      {statusInfo.label}
+                      {statusLabel}
                     </span>
                   </div>
 
@@ -553,7 +594,7 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
                       {/* Spots */}
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-[#05073c]">
-                          {spotsLeft}
+                          {displaySpotsLeft}
                         </span>
                         <span className="text-[10px] text-gray-400">
                           {t("tourInstance.spotsAvailable")}
@@ -562,7 +603,7 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
                     </div>
 
                     {/* Book button */}
-                    {spotsLeft > 0 &&
+                    {displaySpotsLeft > 0 &&
                       instance.status === "available" && (
                         <Button
                           type="button"
@@ -586,7 +627,8 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
    Main Component
    ══════════════════════════════════════════════════════════════ */
 export function TourDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const params = useParams();
   const tourId = params?.id as string;
 
@@ -599,9 +641,11 @@ export function TourDetailPage() {
   useEffect(() => {
     if (!tourId) return;
     let cancelled = false;
+    const currentLanguage = (languageKey || "vi").toLowerCase().split("-")[0];
+    setLoading(true);
 
     tourService
-      .getPublicTourDetail(tourId)
+      .getPublicTourDetail(tourId, currentLanguage)
       .then((data) => {
         if (!cancelled) {
           setTour(data);
@@ -620,7 +664,7 @@ export function TourDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [tourId, fetchKey]);
+  }, [tourId, fetchKey, languageKey]);
 
   /* ── UI State ────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState<"overview" | "itinerary">(
@@ -635,15 +679,19 @@ export function TourDetailPage() {
   /* ── Derived values ──────────────────────────────────────── */
   const classifications = tour?.classifications ?? [];
   const selectedClassification = classifications[selectedPackage] ?? null;
-  const totalGuests = adults + children;
+  const dayCount = getClassificationDays(selectedClassification);
+  const nightCount = getClassificationNights(selectedClassification);
 
-  const pricePerPerson =
-    selectedClassification?.salePrice ?? selectedClassification?.price ?? 0;
-  const originalPrice = selectedClassification?.price ?? 0;
+  const pricePerPerson = getAdultPrice(selectedClassification);
+  const childPricePerPerson = getChildPrice(selectedClassification);
+  const infantPricePerPerson = getInfantPrice(selectedClassification);
+  const originalPrice = getOriginalPackagePrice(selectedClassification);
 
   const adultTotal = adults * pricePerPerson;
+  const childTotal = children * childPricePerPerson;
+  const infantTotal = infants * infantPricePerPerson;
   const serviceFee = 0;
-  const estimatedTotal = adultTotal + serviceFee;
+  const estimatedTotal = adultTotal + childTotal + infantTotal + serviceFee;
   const canBook = adults > 0 && departureDate !== "";
 
   const heroImage = tour?.thumbnail?.publicURL ?? "";
@@ -654,9 +702,14 @@ export function TourDetailPage() {
     [tour?.images],
   );
 
-  const duration = selectedClassification
-    ? `${selectedClassification.durationDays} Days`
-    : "";
+  const duration =
+    dayCount > 0
+      ? `${dayCount} ${t("landing.tourDetail.days", "days")}${
+          nightCount > 0
+            ? ` • ${nightCount} ${t("landing.tourDetail.nights", "nights")}`
+            : ""
+        }`
+      : t("landing.tourDetail.durationTbd", "Flexible schedule");
 
   const aboutParagraphs = useMemo(
     () => tour?.longDescription?.split("\n").filter(Boolean) ?? [],
@@ -1089,39 +1142,51 @@ export function TourDetailPage() {
                       {t("landing.tourDetail.selectPackage")}
                     </span>
                     <div className="flex flex-col gap-2">
-                      {classifications.map((cls, i) => (
-                        <Button
-                          key={cls.id}
-                          type="button"
-                          onClick={() => setSelectedPackage(i)}
-                          className={`flex items-center justify-between px-3 py-3 rounded-[14px] border transition-colors ${
-                            selectedPackage === i
-                              ? "bg-orange-50 border-orange-500"
-                              : "border-gray-200 hover:border-gray-300"
-                          }`}>
-                          <div className="flex flex-col items-start">
-                            <span
-                              className={`text-xs font-bold ${selectedPackage === i ? "text-orange-500" : "text-[#05073c]"}`}>
-                              {cls.name}
-                            </span>
-                            <span className="text-[10px] text-gray-400 font-medium">
-                              {cls.durationDays}{" "}
-                              {t("landing.tourDetail.days", "days")}
-                            </span>
-                          </div>
-                          <div className="flex flex-col items-end">
-                            <span
-                              className={`text-sm font-bold ${selectedPackage === i ? "text-orange-500" : "text-[#05073c]"}`}>
-                              {formatCurrency(cls.salePrice)}
-                            </span>
-                            {cls.price !== cls.salePrice && (
-                              <span className="text-[10px] text-gray-400 line-through font-medium">
-                                {formatCurrency(cls.price)}
+                      {classifications.map((cls, i) => {
+                        const clsDays = getClassificationDays(cls);
+                        const clsNights = getClassificationNights(cls);
+                        const clsPrice = getAdultPrice(cls);
+                        const clsOriginalPrice = getOriginalPackagePrice(cls);
+
+                        return (
+                          <Button
+                            key={cls.id}
+                            type="button"
+                            onClick={() => setSelectedPackage(i)}
+                            className={`flex items-center justify-between px-3 py-3 rounded-[14px] border transition-colors ${
+                              selectedPackage === i
+                                ? "bg-orange-50 border-orange-500"
+                                : "border-gray-200 hover:border-gray-300"
+                            }`}>
+                            <div className="flex flex-col items-start">
+                              <span
+                                className={`text-xs font-bold ${selectedPackage === i ? "text-orange-500" : "text-[#05073c]"}`}>
+                                {cls.name}
                               </span>
-                            )}
-                          </div>
-                        </Button>
-                      ))}
+                              <span className="text-[10px] text-gray-400 font-medium">
+                                {clsDays > 0
+                                  ? `${clsDays} ${t("landing.tourDetail.days", "days")}${
+                                      clsNights > 0
+                                        ? ` • ${clsNights} ${t("landing.tourDetail.nights", "nights")}`
+                                        : ""
+                                    }`
+                                  : t("landing.tourDetail.durationTbd", "Flexible schedule")}
+                              </span>
+                            </div>
+                            <div className="flex flex-col items-end">
+                              <span
+                                className={`text-sm font-bold ${selectedPackage === i ? "text-orange-500" : "text-[#05073c]"}`}>
+                                {formatCurrency(clsPrice)}
+                              </span>
+                              {clsOriginalPrice > 0 && (
+                                <span className="text-[10px] text-gray-400 line-through font-medium">
+                                  {formatCurrency(clsOriginalPrice)}
+                                </span>
+                              )}
+                            </div>
+                          </Button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -1138,7 +1203,7 @@ export function TourDetailPage() {
                     <span className="text-sm text-gray-400">
                       {t("landing.tourDetail.perPerson", "/person")}
                     </span>
-                    {originalPrice !== pricePerPerson && (
+                    {originalPrice > 0 && (
                       <span className="text-sm text-gray-400 line-through">
                         {formatCurrency(originalPrice)}
                       </span>
@@ -1220,6 +1285,26 @@ export function TourDetailPage() {
                       {formatCurrency(adultTotal)}
                     </span>
                   </div>
+                  {children > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {t("landing.tourDetail.children")} × {children}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {formatCurrency(childTotal)}
+                      </span>
+                    </div>
+                  )}
+                  {infants > 0 && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        {t("landing.tourDetail.infants")} × {infants}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {formatCurrency(infantTotal)}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-500">
                       {t("landing.tourDetail.serviceFee")}

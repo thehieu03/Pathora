@@ -172,6 +172,7 @@ function StatCard({ label, value, icon, iconBg, iconColor }: StatCardProps) {
    Status Badge
    ══════════════════════════════════════════════════════════════ */
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const lower = status.toLowerCase().replace(/\s+/g, "_");
   const config = TourInstanceStatusMap[lower] ?? {
     label: status,
@@ -179,12 +180,21 @@ function StatusBadge({ status }: { status: string }) {
     text: "text-slate-600",
     dot: "bg-slate-400",
   };
+  const localizedLabel =
+    {
+      available: t("tourInstance.available"),
+      confirmed: t("tourInstance.confirmed"),
+      sold_out: t("tourInstance.soldOut"),
+      cancelled: t("tourInstance.cancelled"),
+      completed: t("tourInstance.completed"),
+      in_progress: t("tourInstance.inProgress"),
+    }[lower] ?? config.label;
 
   return (
     <span
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.text}`}>
       <span className={`w-2 h-2 rounded-full ${config.dot}`} />
-      {config.label}
+      {localizedLabel}
     </span>
   );
 }
@@ -201,6 +211,7 @@ function ParticipantsCell({
   max: number;
   min: number;
 }) {
+  const { t } = useTranslation();
   const pct = max > 0 ? (registered / max) * 100 : 0;
   return (
     <div className="space-y-1">
@@ -211,12 +222,14 @@ function ParticipantsCell({
         </span>
       </div>
       <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-orange-500 rounded-full transition-all"
-          style={{ width: `${Math.min(pct, 100)}%` }}
-        />
+      <div
+        className="h-full bg-orange-500 rounded-full transition-all"
+        style={{ width: `${Math.min(pct, 100)}%` }}
+      />
       </div>
-      <p className="text-xs text-slate-400">Min: {min}</p>
+      <p className="text-xs text-slate-400">
+        {t("tourInstance.min", "Min")}: {min}
+      </p>
     </div>
   );
 }
@@ -225,7 +238,8 @@ function ParticipantsCell({
    TourInstanceListPage – Main Export
    ══════════════════════════════════════════════════════════════ */
 export function TourInstanceListPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const router = useRouter();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -266,7 +280,7 @@ export function TourInstanceListPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchText, statusFilter, currentPage, t]);
+  }, [searchText, statusFilter, currentPage, t, languageKey]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -275,7 +289,7 @@ export function TourInstanceListPage() {
     } catch {
       // Fallback — derive from list data
     }
-  }, []);
+  }, [languageKey]);
 
   useEffect(() => {
     fetchInstances();
@@ -294,15 +308,21 @@ export function TourInstanceListPage() {
   /* ── Pagination ───────────────────────────────────────────── */
   const totalPages = Math.ceil(totalItems / pageSize);
 
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-US", {
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) {
+      return t("common.noData", "No data");
+    }
+
+    return date.toLocaleDateString(languageKey || "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
+  };
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+    `${new Intl.NumberFormat(languageKey || "en-US").format(amount)} VND`;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -328,46 +348,46 @@ export function TourInstanceListPage() {
                   className="size-6 text-slate-700"
                 />
                 <h1 className="text-2xl font-bold text-slate-900">
-                  Tour Instances
+                  {t("tourInstance.title")}
                 </h1>
               </div>
               <p className="text-sm text-slate-500 mt-0.5">
-                Manage scheduled tour instances and track departures
+                {t("tourInstance.description")}
               </p>
             </div>
             <button
               onClick={() => router.push("/tour-instances/create")}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-colors">
               <Icon icon="heroicons:plus" className="size-4" />
-              Create Instance
+              {t("tourInstance.createInstance")}
             </button>
           </div>
 
           {/* ── Stat Cards ─────────────────────────────────── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              label="Total Instances"
+              label={t("tourInstance.totalInstances")}
               value={stats.totalInstances}
               icon="heroicons:calendar-days"
               iconBg="bg-slate-100"
               iconColor="text-slate-600"
             />
             <StatCard
-              label="Available"
+              label={t("tourInstance.available")}
               value={stats.available}
               icon="heroicons:check-circle"
               iconBg="bg-blue-100"
               iconColor="text-blue-600"
             />
             <StatCard
-              label="Confirmed"
+              label={t("tourInstance.confirmed")}
               value={stats.confirmed}
               icon="heroicons:clipboard-document-check"
               iconBg="bg-green-100"
               iconColor="text-green-600"
             />
             <StatCard
-              label="Sold Out"
+              label={t("tourInstance.soldOut")}
               value={stats.soldOut}
               icon="heroicons:x-circle"
               iconBg="bg-red-100"
@@ -387,7 +407,7 @@ export function TourInstanceListPage() {
                   type="text"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Search by title, location, or country..."
+                  placeholder={t("tourInstance.searchPlaceholder")}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
                 />
               </div>
@@ -400,12 +420,12 @@ export function TourInstanceListPage() {
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500">
-                  <option value="all">All Status</option>
-                  <option value="available">Available</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="sold_out">Sold Out</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="completed">Completed</option>
+                  <option value="all">{t("tourInstance.allStatus")}</option>
+                  <option value="available">{t("tourInstance.available")}</option>
+                  <option value="confirmed">{t("tourInstance.confirmed")}</option>
+                  <option value="sold_out">{t("tourInstance.soldOut")}</option>
+                  <option value="cancelled">{t("tourInstance.cancelled")}</option>
+                  <option value="completed">{t("tourInstance.completed")}</option>
                 </select>
               </div>
             </div>
@@ -440,25 +460,25 @@ export function TourInstanceListPage() {
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Tour Instance
+                        {t("tourInstance.tourInstanceLabel")}
                       </th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Departure
+                        {t("tourInstance.departure")}
                       </th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Duration
+                        {t("tourInstance.duration")}
                       </th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Participants
+                        {t("tourInstance.participants")}
                       </th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Price
+                        {t("tourInstance.price")}
                       </th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Status
+                        {t("tourInstance.status")}
                       </th>
                       <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Actions
+                        {t("tourInstance.actions")}
                       </th>
                     </tr>
                   </thead>
@@ -514,7 +534,7 @@ export function TourInstanceListPage() {
                               </span>
                             </div>
                             <p className="text-xs text-slate-400 mt-0.5">
-                              Return: {formatDate(inst.endDate)}
+                              {t("tourInstance.return")}: {formatDate(inst.endDate)}
                             </p>
                           </div>
                         </td>
@@ -527,7 +547,7 @@ export function TourInstanceListPage() {
                               className="size-4 text-slate-400"
                             />
                             <span className="text-sm text-slate-700">
-                              {inst.durationDays} days
+                              {inst.durationDays} {t("tourInstance.days")}
                             </span>
                           </div>
                         </td>
@@ -546,7 +566,9 @@ export function TourInstanceListPage() {
                           <p className="text-sm font-medium text-slate-900">
                             {formatCurrency(inst.price)}
                           </p>
-                          <p className="text-xs text-slate-400">per person</p>
+                          <p className="text-xs text-slate-400">
+                            {t("tourInstance.perPerson")}
+                          </p>
                         </td>
 
                         {/* Status */}
@@ -579,14 +601,14 @@ export function TourInstanceListPage() {
           {!loading && totalPages > 1 && (
             <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4">
               <span className="text-sm text-slate-600">
-                Page {currentPage} of {totalPages}
+                {t("tourInstance.page")} {currentPage} {t("tourInstance.of")} {totalPages}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   className="px-3 py-1 rounded text-sm text-slate-600 disabled:opacity-50 hover:bg-slate-100">
-                  Previous
+                  {t("tourInstance.previous")}
                 </button>
                 <button
                   disabled={currentPage === totalPages}
@@ -594,7 +616,7 @@ export function TourInstanceListPage() {
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   className="px-3 py-1 rounded text-sm text-slate-600 disabled:opacity-50 hover:bg-slate-100">
-                  Next
+                  {t("tourInstance.next")}
                 </button>
               </div>
             </div>

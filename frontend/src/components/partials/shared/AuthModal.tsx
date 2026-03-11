@@ -6,10 +6,12 @@ import { FcGoogle } from "react-icons/fc";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Button, Icon } from "@/components/ui";
+import { useRouter } from "next/navigation";
 import {
   useLoginMutation,
   useRegisterMutation,
 } from "@/store/api/auth/authApiSlice";
+import { resolvePostLoginPath } from "@/utils/postLoginRouting";
 
 const GOOGLE_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_GATEWAY}/api/auth/google-login`;
 
@@ -36,13 +38,20 @@ const ModalShell = ({
   closeLabel: string;
   dialogRef?: React.RefObject<HTMLDivElement | null>;
 }) => (
-  <div className="fixed inset-0 z-200 flex items-center justify-center">
+  <div className="fixed inset-0 z-[200] flex items-center justify-center">
     <Button
       type="button"
       className="absolute inset-0 bg-[#333]/80"
       onClick={onClose}
-      aria-label={closeLabel}
+      ariaLabel={closeLabel}
     />
+    <Button
+      type="button"
+      onClick={onClose}
+      className="absolute right-4 top-4 z-30 !min-h-0 !h-12 !w-12 !px-0 !py-0 rounded-full border-2 border-white bg-landing-accent text-white shadow-[0_8px_24px_rgba(0,0,0,0.35)] hover:bg-landing-accent-hover transition-colors"
+      ariaLabel={closeLabel}>
+      <Icon icon="heroicons-outline:x-mark" className="w-7 h-7" />
+    </Button>
     <div
       ref={dialogRef}
       className="relative bg-white rounded-3xl px-6 sm:px-10 py-8 shadow-[0px_4px_20px_0px_rgba(255,255,255,0.25)] w-[calc(100%-32px)] max-w-md max-h-[90vh] overflow-y-auto"
@@ -153,7 +162,7 @@ const SignUpView = ({
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label={t("landing.auth.close")}>
+          ariaLabel={t("landing.auth.close")}>
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </Button>
       </div>
@@ -198,7 +207,7 @@ const SignUpView = ({
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333]/40 hover:text-[#333]/70 transition-colors"
-              aria-label={
+              ariaLabel={
                 showPassword
                   ? t("landing.auth.hidePassword")
                   : t("landing.auth.showPassword")
@@ -284,6 +293,7 @@ const LoginView = ({
   goToForgot: () => void;
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [login, { isLoading }] = useLoginMutation();
@@ -294,9 +304,16 @@ const LoginView = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ email: form.email, password: form.password }).unwrap();
+      const response = await login({
+        email: form.email,
+        password: form.password,
+      }).unwrap();
+      const defaultPath = response.data?.defaultPath ?? null;
+      const portal = response.data?.portal ?? null;
+
       toast.success(t("landing.auth.loginSuccess"));
       onClose();
+      router.replace(resolvePostLoginPath(defaultPath, portal));
     } catch {
       // Global error toast is handled by apiSlice / middleware
     }
@@ -313,7 +330,7 @@ const LoginView = ({
           type="button"
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center text-[#333]/60 hover:text-[#333] transition-colors"
-          aria-label={t("landing.auth.close")}>
+          ariaLabel={t("landing.auth.close")}>
           <Icon icon="heroicons-outline:x-mark" className="w-6 h-6" />
         </Button>
       </div>
@@ -343,7 +360,7 @@ const LoginView = ({
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-[#333]/40 hover:text-[#333]/70 transition-colors"
-                aria-label={
+                ariaLabel={
                   showPassword
                     ? t("landing.auth.hidePassword")
                     : t("landing.auth.showPassword")

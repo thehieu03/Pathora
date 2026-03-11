@@ -94,12 +94,14 @@ interface AttractionData {
 }
 
 export const TrendingDestinationsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [destinations, setDestinations] = useState<DestinationData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDestinations = async () => {
+      setLoading(true);
       try {
         const data = await homeService.getTrendingDestinations(6);
         if (data && data.length > 0) {
@@ -121,7 +123,7 @@ export const TrendingDestinationsSection = () => {
     };
 
     fetchDestinations();
-  }, []);
+  }, [languageKey]);
 
   if (loading) {
     return (
@@ -185,12 +187,14 @@ export const TrendingDestinationsSection = () => {
 };
 
 export const TopAttractionsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const [attractions, setAttractions] = useState<AttractionData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAttractions = async () => {
+      setLoading(true);
       try {
         const data = await homeService.getTopAttractions(8);
         if (data && data.length > 0) {
@@ -200,7 +204,7 @@ export const TopAttractionsSection = () => {
             location:
               attr.city && attr.country
                 ? `${attr.city}, ${attr.country}`
-                : attr.location || "Unknown",
+                : attr.location || t("common.noData", "No data"),
           }));
           setAttractions(mapped);
         } else {
@@ -214,7 +218,7 @@ export const TopAttractionsSection = () => {
     };
 
     fetchAttractions();
-  }, []);
+  }, [languageKey, t]);
 
   if (loading) {
     return (

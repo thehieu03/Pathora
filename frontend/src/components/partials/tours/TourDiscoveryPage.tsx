@@ -62,6 +62,25 @@ const DURATION_OPTIONS = [
 
 const PRICE_QUICK_FILTERS = ["< 2tr", "2tr–5tr", "5tr–15tr", "15tr+"];
 
+const resolveInstanceStatusLabel = (
+  statusKey: string,
+  fallbackLabel: string,
+  t: any,
+) => {
+  const translatedStatus = {
+    available: t("tourInstance.available", "Available"),
+    confirmed: t("tourInstance.confirmed", "Confirmed"),
+    sold_out: t("tourInstance.soldOut", "Sold Out"),
+    cancelled: t("tourInstance.cancelled", "Cancelled"),
+    completed: t("tourInstance.completed", "Completed"),
+    in_progress: t("tourInstance.inProgress", "In Progress"),
+  } as const;
+
+  return String(
+    translatedStatus[statusKey as keyof typeof translatedStatus] || fallbackLabel,
+  );
+};
+
 /* ── Hero Banner ───────────────────────────────────────────── */
 const HeroBanner = () => {
   const { t } = useTranslation();
@@ -455,8 +474,9 @@ const CustomizeTourCTA = () => {
   const { t } = useTranslation();
   return (
     <Link
-      href="/tours/customize"
-      className="block lg:hidden bg-gradient-to-b from-[#fa8b02] via-[#eb662b] to-[#fa8b02] rounded-2xl p-5 shadow-lg mb-4 overflow-hidden">
+      href="/custom-tour-request"
+      prefetch={false}
+      className="block bg-gradient-to-b from-[#fa8b02] via-[#eb662b] to-[#fa8b02] rounded-2xl p-5 shadow-lg mb-4 overflow-hidden">
       <div className="flex items-center gap-2 mb-2">
         <Icon
           icon="heroicons-outline:sparkles"
@@ -552,7 +572,7 @@ const TourCard = ({ tour }: { tour: SearchTour }) => {
               icon="heroicons-outline:clock"
               className="w-3 h-3 text-[#6a7282]"
             />
-            {tour.durationDays} {tour.durationDays === 1 ? "day" : "days"}
+            {tour.durationDays} {t("landing.tourDetail.days", "days")}
           </span>
         </div>
 
@@ -574,11 +594,11 @@ const TourCard = ({ tour }: { tour: SearchTour }) => {
                 {formatCurrency(tour.price)}
               </span>
             )}
-            <span> /pax</span>
+            <span> {t("tourInstance.perPersonShort", "/person")}</span>
           </p>
           <Link
             href={`/tours/${tour.id}`}
-            aria-label={`View details for ${tour.tourName}`}
+            aria-label={`${t("landing.tourDiscovery.viewDetails", "View Details")}: ${tour.tourName}`}
             className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b]">
             <Icon
               icon="heroicons-outline:arrow-right"
@@ -839,6 +859,7 @@ const TourCardSkeleton = () => (
 /* ── Scheduled Tour Instance Card ──────────────────────────── */
 const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
   const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
 
   const statusKey = instance.status.toLowerCase().replace(/\s+/g, "_");
   const statusConfig = TourInstanceStatusMap[statusKey] ?? {
@@ -847,12 +868,13 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
     text: "text-slate-600",
     dot: "bg-slate-400",
   };
+  const statusLabel = resolveInstanceStatusLabel(statusKey, statusConfig.label, t);
 
   const spotsLeft = instance.maxParticipants - instance.registeredParticipants;
 
   const formatDate = (dateStr: string) => {
     try {
-      return new Intl.DateTimeFormat(i18n.language || "en-US", {
+      return new Intl.DateTimeFormat(languageKey || "en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -894,7 +916,7 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
         <span
           className={`absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${statusConfig.bg} ${statusConfig.text}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`} />
-          {statusConfig.label}
+          {statusLabel}
         </span>
         {/* Date badge */}
         <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -935,7 +957,7 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
               icon="heroicons-outline:clock"
               className="w-3 h-3 text-[#6a7282]"
             />
-            {instance.durationDays} {instance.durationDays === 1 ? "day" : "days"}
+            {instance.durationDays} {t("landing.tourDetail.days", "days")}
           </span>
           <span className="inline-flex items-center gap-1 bg-[#f9fafb] border border-[#f3f4f6] text-[10px] text-[#6a7282] px-2 py-0.5 rounded-full">
             <Icon
@@ -955,11 +977,11 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
             <span className="text-[14px] font-bold text-[#eb662b]">
               {formatCurrency(instance.price)}
             </span>
-            <span> /pax</span>
+            <span> {t("tourInstance.perPersonShort", "/person")}</span>
           </p>
           <Link
             href={`/tours/${instance.tourId}?instanceId=${instance.id}`}
-            aria-label={`View details for ${instance.tourName}`}
+            aria-label={`${t("landing.tourDiscovery.viewDetails", "View Details")}: ${instance.tourName}`}
             className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#eb662b]">
             <Icon
               icon="heroicons-outline:arrow-right"
@@ -974,7 +996,8 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
 
 /* ── Main Tour Discovery Page ──────────────────────────────── */
 export const TourDiscoveryPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const languageKey = i18n.resolvedLanguage || i18n.language;
   const searchParams = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -1027,7 +1050,7 @@ export const TourDiscoveryPage = () => {
         setLoading(false);
       }
     },
-    [t],
+    [t, languageKey],
   );
 
   const fetchInstances = useCallback(
@@ -1055,7 +1078,7 @@ export const TourDiscoveryPage = () => {
         setInstanceLoading(false);
       }
     },
-    [t],
+    [t, languageKey],
   );
 
   // Read ?tab=scheduled from URL to auto-switch to instance mode
@@ -1067,19 +1090,22 @@ export const TourDiscoveryPage = () => {
 
   // Initial load + fetch destinations
   useEffect(() => {
+    setCurrentPage(1);
+    setInstancePage(1);
     fetchTours(1);
     homeService
       .getDestinations()
       .then(setDestinations)
       .catch(() => {});
-  }, [fetchTours]);
+  }, [fetchTours, languageKey]);
 
   // Fetch instances when switching to instance mode
   useEffect(() => {
-    if (viewMode === "instances" && instanceData.length === 0 && !instanceLoading) {
+    if (viewMode === "instances") {
+      setInstancePage(1);
       fetchInstances(1, searchText);
     }
-  }, [viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [viewMode, languageKey, fetchInstances, searchText]);
 
   // Refetch when page or filters change
   const handlePageChange = (page: number) => {

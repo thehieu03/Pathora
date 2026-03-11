@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import Image from "../shared/LandingImage";
 import { Button, Card } from "@/components/ui";
 import { SectionContainer } from "../shared/shared";
@@ -40,7 +41,17 @@ const BRANDS = [
 ];
 
 export const CTASection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development") return;
+    console.debug("[i18n] CTASection hydrated", {
+      language: i18n.language,
+      resolvedLanguage: i18n.resolvedLanguage,
+      ctaText: t("landing.cta.exploreNow"),
+    });
+  }, [i18n, t]);
+
   return (
     <section className="relative w-full h-112.5 overflow-hidden">
       <Image

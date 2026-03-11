@@ -24,4 +24,19 @@ describe("apiSlice headers", () => {
     expect(result.get("Authorization")).toBeNull();
     expect(result.get("Accept-Language")).toBe("vi");
   });
+
+  it("does not attach expired access token", () => {
+    const headers = new Headers();
+    const expiredJwt =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjF9.signature";
+
+    const result = prepareApiHeaders(
+      headers,
+      `access_token=${expiredJwt}; path=/`,
+      "en-US",
+    );
+
+    expect(result.get("Authorization")).toBeNull();
+    expect(result.get("Accept-Language")).toBe("en");
+  });
 });
