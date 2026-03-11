@@ -32,6 +32,7 @@ public class BookingEntity : Aggregate<Guid>
     public string? CancelReason { get; set; }
 
     // Navigation
+    public virtual List<BookingActivityReservationEntity> BookingActivityReservations { get; set; } = [];
     public virtual List<CustomerDepositEntity> Deposits { get; set; } = [];
     public virtual List<CustomerPaymentEntity> Payments { get; set; } = [];
 

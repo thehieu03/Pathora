@@ -72,6 +72,10 @@ public class AppDbContext : DbContext
     public DbSet<DynamicPricingTierEntity> TourInstancePricingTiers => Set<DynamicPricingTierEntity>();
     public DbSet<TourRequestEntity> TourRequests => Set<TourRequestEntity>();
     public DbSet<BookingEntity> Bookings => Set<BookingEntity>();
+    public DbSet<BookingActivityReservationEntity> BookingActivityReservations => Set<BookingActivityReservationEntity>();
+    public DbSet<BookingTransportDetailEntity> BookingTransportDetails => Set<BookingTransportDetailEntity>();
+    public DbSet<BookingAccommodationDetailEntity> BookingAccommodationDetails => Set<BookingAccommodationDetailEntity>();
+    public DbSet<SupplierEntity> Suppliers => Set<SupplierEntity>();
     public DbSet<CustomerDepositEntity> CustomerDeposits => Set<CustomerDepositEntity>();
     public DbSet<CustomerPaymentEntity> CustomerPayments => Set<CustomerPaymentEntity>();
 
