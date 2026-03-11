@@ -10,6 +10,7 @@ import Link from "next/link";
 import Image from "./LandingImage";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button, Icon } from "@/components/ui";
+import LandingLogo from "@/assets/images/logo/pathora-logo.svg";
 import dynamic from "next/dynamic";
 import { Transition, TransitionChild } from "@headlessui/react";
 
@@ -40,8 +41,7 @@ const languages = [
   { code: "vi", label: "Tiếng Việt" },
 ];
 
-const LOGO =
-  "https://www.figma.com/api/mcp/asset/b9cd8d76-4d7f-43c8-b45b-122fe4f71260";
+const LOGO = LandingLogo;
 
 const navLinks = [
   { labelKey: "landing.nav.home", href: "/" },

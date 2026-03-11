@@ -27,6 +27,7 @@ export const useAuth = (): AuthContextValue => {
       localStorage.removeItem("user");
       document.cookie = "access_token=; path=/; max-age=0";
       document.cookie = "auth_status=; path=/; max-age=0";
+      document.cookie = "auth_portal=; path=/; max-age=0";
     }
     dispatch(logOut());
   };

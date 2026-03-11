@@ -105,10 +105,16 @@ export interface TourClassificationDto {
   id: string;
   tourId: string;
   name: string;
+  adultPrice?: number;
+  childPrice?: number;
+  infantPrice?: number;
   price: number;
   salePrice: number;
   description: string;
+  numberOfDay?: number;
+  numberOfNight?: number;
   durationDays: number;
+  dynamicPricing?: DynamicPricingDto[];
   plans: TourDayDto[];
   insurances: TourInsuranceDto[];
 }
@@ -242,6 +248,7 @@ export const LocationTypeMap: Record<number, string> = {
 export interface TourInstanceVm {
   id: string;
   tourId: string;
+  tourInstanceCode?: string;
   tourName: string;
   tourCode: string;
   classificationName: string;
@@ -250,9 +257,12 @@ export interface TourInstanceVm {
   startDate: string;
   endDate: string;
   durationDays: number;
+  currentParticipation?: number;
   registeredParticipants: number;
   maxParticipants: number;
   minParticipants: number;
+  basePrice?: number;
+  sellingPrice?: number;
   price: number;
   status: string;
   instanceType: string;
@@ -271,9 +281,17 @@ export interface DynamicPricingDto {
   pricePerPerson: number;
 }
 
+export interface DynamicPricingResolutionDto {
+  resolvedPricePerPerson: number;
+  pricingSource: "instance" | "classification" | "fallback";
+  minParticipants: number | null;
+  maxParticipants: number | null;
+}
+
 export interface TourInstanceDto {
   id: string;
   tourId: string;
+  tourInstanceCode?: string;
   tourName: string;
   tourCode: string;
   classificationId: string;
@@ -283,13 +301,18 @@ export interface TourInstanceDto {
   startDate: string;
   endDate: string;
   durationDays: number;
+  currentParticipation?: number;
   registeredParticipants: number;
   maxParticipants: number;
   minParticipants: number;
+  basePrice?: number;
+  sellingPrice?: number;
+  operatingCost?: number;
   price: number;
   salePrice: number;
   status: string;
   instanceType: string;
+  cancellationReason?: string | null;
   category: string;
   rating: number;
   totalBookings: number;
@@ -298,6 +321,7 @@ export interface TourInstanceDto {
   guide: TourInstanceGuideDto | null;
   includedServices: string[];
   dynamicPricing: DynamicPricingDto[];
+  pricingResolution?: DynamicPricingResolutionDto | null;
 }
 
 export interface TourInstanceStats {

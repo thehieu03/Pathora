@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { logOut, setUser } from "@/store/infrastructure/authSlice";
 import { authApiSlice } from "@/store/api/auth/authApiSlice";
 import type { AppDispatch } from "@/store";
+import { resolvePostLoginPath } from "@/utils/authRouting";
 
 function CallbackHandler() {
   const router = useRouter();
@@ -27,11 +28,20 @@ function CallbackHandler() {
       }),
     ).then((result) => {
       if ("data" in result && result.data?.data) {
-        dispatch(setUser(result.data.data));
+        const userInfo = result.data.data;
+        dispatch(setUser(userInfo));
+        router.replace(
+          resolvePostLoginPath({
+            defaultPath: userInfo.defaultPath,
+            portal: userInfo.portal,
+            roles: userInfo.roles,
+          }),
+        );
+        return;
       } else {
         dispatch(logOut());
+        router.replace("/home");
       }
-      router.replace("/");
     });
   }, [searchParams, dispatch, router]);
 

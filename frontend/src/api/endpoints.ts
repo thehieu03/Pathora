@@ -124,10 +124,15 @@ export interface PublicHomeEndpoints {
 }
 
 export interface SearchToursParams {
+  q?: string;
   destination?: string;
   classification?: string;
   date?: string;
   people?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  minDays?: number;
+  maxDays?: number;
   page?: number;
   pageSize?: number;
 }
@@ -136,24 +141,31 @@ export interface SearchToursParams {
 export interface TourEndpoints {
   GET_ALL: string;
   GET_DETAIL: EndpointWithId;
+  GET_CLASSIFICATION_PRICING_TIERS: EndpointWithId;
   CREATE: string;
   UPDATE: string;
   DELETE: EndpointWithId;
+  UPSERT_CLASSIFICATION_PRICING_TIERS: EndpointWithId;
 }
 
 // Tour Instance Endpoints Interface
 export interface TourInstanceEndpoints {
   GET_ALL: string;
   GET_DETAIL: EndpointWithId;
+  GET_PRICING_TIERS: EndpointWithId;
   CREATE: string;
   UPDATE: EndpointWithId;
   DELETE: EndpointWithId;
+  UPSERT_PRICING_TIERS: EndpointWithId;
+  CLEAR_PRICING_TIERS: EndpointWithId;
+  RESOLVE_PRICING: (id: string, participants: number) => string;
 }
 
 // Public Tour Instance Endpoints Interface
 export interface PublicTourInstanceEndpoints {
   GET_AVAILABLE: string;
   GET_DETAIL: EndpointWithId;
+  RESOLVE_PRICING: (id: string, participants: number) => string;
 }
 
 // Main API Endpoints Interface
@@ -286,10 +298,15 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_TOP_REVIEWS: (limit = 6): string => `/api/public/reviews/top?limit=${limit}`,
     SEARCH_TOURS: (params?: SearchToursParams): string => {
       const url = new URLSearchParams();
+      if (params?.q) url.append("q", params.q);
       if (params?.destination) url.append("destination", params.destination);
       if (params?.classification) url.append("classification", params.classification);
       if (params?.date) url.append("date", params.date);
       if (params?.people) url.append("people", params.people.toString());
+      if (params?.minPrice !== undefined) url.append("minPrice", params.minPrice.toString());
+      if (params?.maxPrice !== undefined) url.append("maxPrice", params.maxPrice.toString());
+      if (params?.minDays !== undefined) url.append("minDays", params.minDays.toString());
+      if (params?.maxDays !== undefined) url.append("maxDays", params.maxDays.toString());
       if (params?.page) url.append("page", params.page.toString());
       if (params?.pageSize) url.append("pageSize", params.pageSize.toString());
       return `/api/public/tours/search?${url.toString()}`;
@@ -302,24 +319,38 @@ export const API_ENDPOINTS: ApiEndpoints = {
   TOUR: {
     GET_ALL: "/api/tour/",
     GET_DETAIL: (id: string): string => `/api/tour/${id}`,
+    GET_CLASSIFICATION_PRICING_TIERS: (classificationId: string): string =>
+      `/api/tour/classifications/${classificationId}/pricing-tiers`,
     CREATE: "/api/tour/",
     UPDATE: "/api/tour/",
     DELETE: (id: string): string => `/api/tour/${id}`,
+    UPSERT_CLASSIFICATION_PRICING_TIERS: (classificationId: string): string =>
+      `/api/tour/classifications/${classificationId}/pricing-tiers`,
   },
 
   // Tour Instance
   TOUR_INSTANCE: {
     GET_ALL: "/api/tour-instance/",
     GET_DETAIL: (id: string): string => `/api/tour-instance/${id}`,
+    GET_PRICING_TIERS: (id: string): string =>
+      `/api/tour-instance/${id}/pricing-tiers`,
     CREATE: "/api/tour-instance/",
     UPDATE: (id: string): string => `/api/tour-instance/${id}`,
     DELETE: (id: string): string => `/api/tour-instance/${id}`,
+    UPSERT_PRICING_TIERS: (id: string): string =>
+      `/api/tour-instance/${id}/pricing-tiers`,
+    CLEAR_PRICING_TIERS: (id: string): string =>
+      `/api/tour-instance/${id}/pricing-tiers/clear`,
+    RESOLVE_PRICING: (id: string, participants: number): string =>
+      `/api/tour-instance/${id}/pricing/resolve?participants=${participants}`,
   },
 
   // Public Tour Instance
   PUBLIC_TOUR_INSTANCE: {
     GET_AVAILABLE: "/api/public/tour-instances/available",
     GET_DETAIL: (id: string): string => `/api/public/tour-instances/${id}`,
+    RESOLVE_PRICING: (id: string, participants: number): string =>
+      `/api/public/tour-instances/${id}/pricing/resolve?participants=${participants}`,
   },
 };
 

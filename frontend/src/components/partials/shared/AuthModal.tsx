@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import Checkbox from "@/components/ui/Checkbox";
 import TextInput from "@/components/ui/TextInput";
 import React, { useState, useEffect, useCallback, useRef } from "react";
@@ -10,6 +11,7 @@ import {
   useLoginMutation,
   useRegisterMutation,
 } from "@/store/api/auth/authApiSlice";
+import { resolvePostLoginPath } from "@/utils/authRouting";
 
 const GOOGLE_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_GATEWAY}/api/auth/google-login`;
 
@@ -287,6 +289,7 @@ const LoginView = ({
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [login, { isLoading }] = useLoginMutation();
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -294,9 +297,17 @@ const LoginView = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login({ email: form.email, password: form.password }).unwrap();
+      const loginResult = await login({
+        email: form.email,
+        password: form.password,
+      }).unwrap();
+      const destination = resolvePostLoginPath({
+        defaultPath: loginResult.data?.defaultPath ?? null,
+        portal: loginResult.data?.portal ?? null,
+      });
       toast.success(t("landing.auth.loginSuccess"));
       onClose();
+      router.replace(destination);
     } catch {
       // Global error toast is handled by apiSlice / middleware
     }

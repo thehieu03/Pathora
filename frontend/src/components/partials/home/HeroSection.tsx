@@ -104,7 +104,7 @@ export const HeroSection = () => {
     if (people) params.append("people", people.toString());
 
     const queryString = params.toString();
-    router.push(`/tours/search${queryString ? `?${queryString}` : ""}`);
+    router.push(`/tours${queryString ? `?${queryString}` : ""}`);
   };
 
   return (

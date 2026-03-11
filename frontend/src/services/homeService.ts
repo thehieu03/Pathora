@@ -64,10 +64,15 @@ export const homeService = {
   },
 
   searchTours: async (params?: {
+    q?: string;
     destination?: string;
     classification?: string;
     date?: string;
     people?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    minDays?: number;
+    maxDays?: number;
     page?: number;
     pageSize?: number;
   }) => {

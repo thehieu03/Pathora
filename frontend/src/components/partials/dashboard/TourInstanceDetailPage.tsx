@@ -5,8 +5,15 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
+import { PricingTierEditor } from "@/components/partials/dashboard/PricingTierEditor";
 import { tourInstanceService } from "@/services/tourInstanceService";
-import { TourInstanceDto, TourInstanceStatusMap } from "@/types/tour";
+import { handleApiError } from "@/utils/apiResponse";
+import {
+  DynamicPricingDto,
+  DynamicPricingResolutionDto,
+  TourInstanceDto,
+  TourInstanceStatusMap,
+} from "@/types/tour";
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -457,19 +464,102 @@ export default function TourInstanceDetailPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [data, setData] = useState<TourInstanceDto | null>(null);
+  const [overrideTiers, setOverrideTiers] = useState<DynamicPricingDto[]>([]);
+  const [savingOverrideTiers, setSavingOverrideTiers] = useState(false);
+  const [clearingOverrideTiers, setClearingOverrideTiers] = useState(false);
+  const [resolutionParticipants, setResolutionParticipants] = useState("4");
+  const [resolutionResult, setResolutionResult] =
+    useState<DynamicPricingResolutionDto | null>(null);
+  const [resolvingPricing, setResolvingPricing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await tourInstanceService.getInstanceDetail(id);
-      setData(result);
-    } catch {
-      toast.error("Failed to load tour instance details");
+      const [detail, tiers] = await Promise.all([
+        tourInstanceService.getInstanceDetail(id),
+        tourInstanceService.getPricingTiers(id),
+      ]);
+
+      if (detail) {
+        setData({ ...detail, dynamicPricing: tiers });
+      } else {
+        setData(null);
+      }
+
+      setOverrideTiers(tiers);
+      setResolutionResult(null);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      toast.error(apiError.message || "Failed to load tour instance details");
     } finally {
       setLoading(false);
     }
   }, [id]);
+
+  const handleSaveOverrideTiers = useCallback(async () => {
+    try {
+      setSavingOverrideTiers(true);
+      await tourInstanceService.upsertPricingTiers(id, overrideTiers);
+      toast.success("Instance pricing overrides saved.");
+
+      setData((current) =>
+        current
+          ? {
+              ...current,
+              dynamicPricing: overrideTiers,
+            }
+          : current,
+      );
+    } catch (error) {
+      const apiError = handleApiError(error);
+      toast.error(apiError.message || "Failed to save instance override tiers.");
+    } finally {
+      setSavingOverrideTiers(false);
+    }
+  }, [id, overrideTiers]);
+
+  const handleClearOverrideTiers = useCallback(async () => {
+    try {
+      setClearingOverrideTiers(true);
+      await tourInstanceService.clearPricingTiers(id);
+      setOverrideTiers([]);
+      setData((current) =>
+        current
+          ? {
+              ...current,
+              dynamicPricing: [],
+            }
+          : current,
+      );
+      setResolutionResult(null);
+      toast.success("Instance override tiers cleared.");
+    } catch (error) {
+      const apiError = handleApiError(error);
+      toast.error(apiError.message || "Failed to clear instance override tiers.");
+    } finally {
+      setClearingOverrideTiers(false);
+    }
+  }, [id]);
+
+  const handleResolvePricing = useCallback(async () => {
+    const participants = Number(resolutionParticipants);
+    if (!Number.isFinite(participants) || participants <= 0) {
+      toast.error("Participants must be greater than 0.");
+      return;
+    }
+
+    try {
+      setResolvingPricing(true);
+      const result = await tourInstanceService.resolvePricing(id, participants);
+      setResolutionResult(result ?? null);
+    } catch (error) {
+      const apiError = handleApiError(error);
+      toast.error(apiError.message || "Failed to resolve pricing preview.");
+    } finally {
+      setResolvingPricing(false);
+    }
+  }, [id, resolutionParticipants]);
 
   useEffect(() => {
     loadData();
@@ -483,6 +573,9 @@ export default function TourInstanceDetailPage() {
       year: "numeric",
     });
   };
+
+  const formatCurrency = (value: number) =>
+    `${new Intl.NumberFormat("vi-VN").format(value)} VND`;
 
   /* ── Loading State ── */
   if (loading) {
@@ -667,7 +760,74 @@ export default function TourInstanceDetailPage() {
 
         {/* ── Tab Content ── */}
         <main id="main-content" className="flex-1 overflow-y-auto p-8">
-          {activeTab === "overview" && <OverviewTab data={data} />}
+          {activeTab === "overview" && (
+            <div className="space-y-6">
+              <OverviewTab data={data} />
+
+              <PricingTierEditor
+                title="Instance Override Pricing"
+                subtitle="Configure participant-tier overrides for this specific departure."
+                tiers={overrideTiers}
+                saving={savingOverrideTiers}
+                saveLabel="Save override tiers"
+                allowClear
+                clearing={clearingOverrideTiers}
+                clearLabel="Clear overrides"
+                infoMessage="Instance tiers take precedence over classification default tiers. Clear overrides to fall back to classification pricing."
+                onChange={setOverrideTiers}
+                onSave={handleSaveOverrideTiers}
+                onClear={handleClearOverrideTiers}
+              />
+
+              <div className="bg-white rounded-xl border border-slate-200 p-6">
+                <h3 className="text-lg font-bold text-slate-900 mb-3">
+                  Effective Price Preview
+                </h3>
+                <p className="text-sm text-slate-500 mb-4">
+                  Preview resolved price source for a participant count.
+                </p>
+
+                <div className="flex flex-wrap items-end gap-3">
+                  <label>
+                    <span className="text-xs font-semibold text-slate-500 uppercase">
+                      Participants
+                    </span>
+                    <input
+                      type="number"
+                      min={1}
+                      value={resolutionParticipants}
+                      onChange={(event) => setResolutionParticipants(event.target.value)}
+                      className="mt-1 w-40 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleResolvePricing}
+                    disabled={resolvingPricing}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors">
+                    {resolvingPricing && (
+                      <Icon icon="heroicons:arrow-path" className="size-4 animate-spin" />
+                    )}
+                    Resolve price
+                  </button>
+                </div>
+
+                {resolutionResult && (
+                  <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-sm text-slate-600">
+                      Source: <span className="font-semibold">{resolutionResult.pricingSource}</span>
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Price: <span className="font-semibold">{formatCurrency(resolutionResult.resolvedPricePerPerson)}</span>
+                    </p>
+                    <p className="text-sm text-slate-600 mt-1">
+                      Matched range: {resolutionResult.minParticipants ?? "-"} - {resolutionResult.maxParticipants ?? "-"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           {activeTab === "itinerary" && <PlaceholderTab label="Itinerary" />}
           {activeTab === "policy" && <PlaceholderTab label="Policy" />}
           {activeTab === "insurance" && <PlaceholderTab label="Insurance" />}

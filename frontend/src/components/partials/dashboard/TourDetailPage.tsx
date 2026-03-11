@@ -6,8 +6,11 @@ import { useRouter, useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
+import { PricingTierEditor } from "@/components/partials/dashboard/PricingTierEditor";
 import { tourService } from "@/services/tourService";
+import { handleApiError } from "@/utils/apiResponse";
 import {
+  DynamicPricingDto,
   TourDto,
   TourStatusMap,
   TourClassificationDto,
@@ -221,6 +224,11 @@ export function TourDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedPackageIdx, setSelectedPackageIdx] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
+  const [classificationTiers, setClassificationTiers] = useState<
+    Record<string, DynamicPricingDto[]>
+  >({});
+  const [savingTierForClassificationId, setSavingTierForClassificationId] =
+    useState<string | null>(null);
 
   /* ── Fetch tour detail ────────────────────────────────────── */
   const fetchTour = useCallback(async () => {
@@ -252,6 +260,57 @@ export function TourDetailPage() {
   const selectedPackage: TourClassificationDto | undefined =
     classifications[selectedPackageIdx];
 
+  useEffect(() => {
+    if (!tour) {
+      return;
+    }
+
+    setClassificationTiers((current) => {
+      const next = { ...current };
+
+      for (const classification of tour.classifications ?? []) {
+        if (!next[classification.id]) {
+          next[classification.id] = classification.dynamicPricing ?? [];
+        }
+      }
+
+      return next;
+    });
+  }, [tour]);
+
+  useEffect(() => {
+    if (!selectedPackage?.id) {
+      return;
+    }
+
+    let mounted = true;
+
+    const fetchClassificationTiers = async () => {
+      try {
+        const tiers = await tourService.getClassificationPricingTiers(
+          selectedPackage.id,
+        );
+
+        if (!mounted) {
+          return;
+        }
+
+        setClassificationTiers((current) => ({
+          ...current,
+          [selectedPackage.id]: tiers,
+        }));
+      } catch (error) {
+        console.error("Failed to load classification pricing tiers:", error);
+      }
+    };
+
+    fetchClassificationTiers();
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedPackage?.id]);
+
   /* ── Format helpers ───────────────────────────────────────── */
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return "—";
@@ -274,6 +333,30 @@ export function TourDetailPage() {
     selectedPackage?.plans?.flatMap((day) =>
       day.activities.flatMap((activity) => activity.routes),
     ) ?? [];
+
+  const selectedClassificationTiers = selectedPackage
+    ? classificationTiers[selectedPackage.id] ?? []
+    : [];
+
+  const handleSaveClassificationTiers = useCallback(async () => {
+    if (!selectedPackage?.id) {
+      return;
+    }
+
+    const tiers = classificationTiers[selectedPackage.id] ?? [];
+
+    try {
+      setSavingTierForClassificationId(selectedPackage.id);
+      await tourService.upsertClassificationPricingTiers(selectedPackage.id, tiers);
+      toast.success("Classification pricing tiers saved.");
+    } catch (error) {
+      console.error("Failed to save classification pricing tiers:", error);
+      const apiError = handleApiError(error);
+      toast.error(apiError.message || "Failed to save classification pricing tiers.");
+    } finally {
+      setSavingTierForClassificationId(null);
+    }
+  }, [classificationTiers, selectedPackage?.id]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -458,13 +541,33 @@ export function TourDetailPage() {
                 ══════════════════════════════════════════════════ */}
             <div className="p-8 space-y-6">
               {activeTab === "overview" && (
-                <OverviewTab
-                  tour={tour}
-                  classifications={classifications}
-                  selectedPackageIdx={selectedPackageIdx}
-                  allRoutes={allRoutes}
-                  formatCurrency={formatCurrency}
-                />
+                <>
+                  <OverviewTab
+                    tour={tour}
+                    classifications={classifications}
+                    selectedPackageIdx={selectedPackageIdx}
+                    allRoutes={allRoutes}
+                    formatCurrency={formatCurrency}
+                  />
+
+                  {selectedPackage && (
+                    <PricingTierEditor
+                      title="Classification Tier Pricing"
+                      subtitle={`Manage default participant-tier pricing for ${selectedPackage.name}.`}
+                      tiers={selectedClassificationTiers}
+                      saving={savingTierForClassificationId === selectedPackage.id}
+                      saveLabel="Save classification tiers"
+                      infoMessage="These are default tiers. Instance-level override tiers will take precedence when configured."
+                      onChange={(tiers) =>
+                        setClassificationTiers((current) => ({
+                          ...current,
+                          [selectedPackage.id]: tiers,
+                        }))
+                      }
+                      onSave={handleSaveClassificationTiers}
+                    />
+                  )}
+                </>
               )}
 
               {activeTab === "itinerary" && selectedPackage && (
@@ -553,9 +656,6 @@ function OverviewTab({
   }[];
   formatCurrency: (n: number) => string;
 }) {
-  const selectedPackage: TourClassificationDto | undefined =
-    classifications[selectedPackageIdx];
-
   return (
     <>
       {/* Tour Information */}

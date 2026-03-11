@@ -2,7 +2,7 @@
 import TextInput from "@/components/ui/TextInput";
 import Button from "@/components/ui/Button";
 import React, { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "../shared/LandingImage";
 import { Icon } from "@/components/ui";
@@ -13,6 +13,14 @@ import { homeService } from "@/services/homeService";
 import { formatCurrency } from "@/utils/format";
 import { SearchTour } from "@/types/home";
 import { TourInstanceVm, TourInstanceStatusMap } from "@/types/tour";
+import {
+  areTourDiscoveryFiltersEqual,
+  buildTourDiscoverySearchParams,
+  DEFAULT_TOUR_DISCOVERY_FILTERS,
+  parseTourDiscoveryFilters,
+  TourDiscoveryFilters,
+  TourDiscoveryView,
+} from "@/utils/tourDiscoveryFilters";
 
 /* ── Sample Tour Data — replaced by API ───────────────────── */
 const PAGE_SIZE = 12;
@@ -27,16 +35,6 @@ const CLASSIFICATION_OPTIONS = [
   "Group Tour",
 ];
 
-const CATEGORY_OPTIONS = [
-  "Adventure Tour",
-  "Cultural Tour",
-  "Relaxation Tour",
-  "Eco Tour",
-  "Food Tour",
-  "Religious Tour",
-  "Honeymoon Tour",
-];
-
 const DURATION_OPTIONS = [
   "One-day Tour",
   "1-3 Days Tour",
@@ -44,6 +42,23 @@ const DURATION_OPTIONS = [
   "7-15 Days Tour",
   "> 15 Days Tour",
 ];
+
+const DURATION_OPTION_RANGES: Record<string, [number | null, number | null]> = {
+  "One-day Tour": [1, 1],
+  "1-3 Days Tour": [1, 3],
+  "4-7 Days Tour": [4, 7],
+  "7-15 Days Tour": [7, 15],
+  "> 15 Days Tour": [16, null],
+};
+
+const PRICE_DEFAULT_RANGE: [number, number] = [0, 50000000];
+
+const PRICE_QUICK_RANGES: Record<string, [number, number]> = {
+  "< 2tr": [0, 2000000],
+  "2tr–5tr": [2000000, 5000000],
+  "5tr–15tr": [5000000, 15000000],
+  "15tr+": [15000000, 50000000],
+};
 
 const PRICE_QUICK_FILTERS = ["< 2tr", "2tr–5tr", "5tr–15tr", "15tr+"];
 
@@ -195,6 +210,12 @@ const FilterRadioList = ({
       <label
         key={option}
         className="flex items-center gap-2.5 cursor-pointer py-1 text-[12px] text-[#6a7282] hover:text-[#05073c] transition-colors">
+        <input
+          type="checkbox"
+          checked={selected.includes(option)}
+          onChange={() => onToggle(option)}
+          className="sr-only"
+        />
         <div
           className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
             selected.includes(option)
@@ -215,50 +236,52 @@ const FilterRadioList = ({
 const TourSidebar = ({
   isMobileOpen,
   onClose,
+  classificationFilter,
+  durationFilter,
+  priceRange,
   onClassificationChange,
   onDurationChange,
   onPriceRangeChange,
 }: {
   isMobileOpen?: boolean;
   onClose?: () => void;
+  classificationFilter?: string;
+  durationFilter?: string;
+  priceRange?: [number, number];
   onClassificationChange?: (value: string) => void;
   onDurationChange?: (value: string) => void;
   onPriceRangeChange?: (range: [number, number]) => void;
 }) => {
   const { t } = useTranslation();
-  const [classFilters, setClassFilters] = useState<string[]>([]);
-  const [catFilters, setCatFilters] = useState<string[]>([]);
-  const [durFilters, setDurFilters] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000000]);
-  const [activePriceQuick, setActivePriceQuick] = useState<string | null>(null);
 
-  const toggleFilter = (
-    option: string,
-    current: string[],
-    setter: React.Dispatch<React.SetStateAction<string[]>>,
-  ) => {
-    setter(
-      current.includes(option)
-        ? current.filter((f) => f !== option)
-        : [...current, option],
-    );
-  };
+  const selectedClassifications = classificationFilter ? [classificationFilter] : [];
+  const selectedDurations = durationFilter ? [durationFilter] : [];
+  const selectedPriceRange = priceRange ?? PRICE_DEFAULT_RANGE;
+  const activePriceQuick =
+    PRICE_QUICK_FILTERS.find((label) => {
+      const [min, max] = PRICE_QUICK_RANGES[label];
+      return min === selectedPriceRange[0] && max === selectedPriceRange[1];
+    }) ?? null;
 
   const handleClassToggle = (option: string) => {
-    const newValue = classFilters.includes(option) ? "" : option;
-    toggleFilter(option, classFilters, setClassFilters);
+    const newValue = classificationFilter === option ? "" : option;
     onClassificationChange?.(newValue);
   };
 
   const handleDurToggle = (option: string) => {
-    const newValue = durFilters.includes(option) ? "" : option;
-    toggleFilter(option, durFilters, setDurFilters);
+    const newValue = durationFilter === option ? "" : option;
     onDurationChange?.(newValue);
   };
 
   const handlePriceRangeChange = (newRange: [number, number]) => {
-    setPriceRange(newRange);
-    onPriceRangeChange?.(newRange);
+    const [min, max] = newRange;
+    const boundedMin = Math.max(PRICE_DEFAULT_RANGE[0], min);
+    const boundedMax = Math.min(PRICE_DEFAULT_RANGE[1], max);
+    if (boundedMin > boundedMax) {
+      return;
+    }
+
+    onPriceRangeChange?.([boundedMin, boundedMax]);
   };
 
   const sidebarContent = (
@@ -281,17 +304,8 @@ const TourSidebar = ({
         <FilterSection title={t("landing.tourDiscovery.classification")}>
           <FilterRadioList
             options={CLASSIFICATION_OPTIONS}
-            selected={classFilters}
+            selected={selectedClassifications}
             onToggle={handleClassToggle}
-          />
-        </FilterSection>
-
-        {/* Category */}
-        <FilterSection title={t("landing.tourDiscovery.category")}>
-          <FilterRadioList
-            options={CATEGORY_OPTIONS}
-            selected={catFilters}
-            onToggle={(o) => toggleFilter(o, catFilters, setCatFilters)}
           />
         </FilterSection>
 
@@ -299,7 +313,7 @@ const TourSidebar = ({
         <FilterSection title={t("landing.tourDiscovery.duration")}>
           <FilterRadioList
             options={DURATION_OPTIONS}
-            selected={durFilters}
+            selected={selectedDurations}
             onToggle={handleDurToggle}
           />
         </FilterSection>
@@ -309,8 +323,8 @@ const TourSidebar = ({
           <div className="flex flex-col gap-3">
             {/* Min/Max labels */}
             <div className="flex items-center justify-between text-[12px] text-[#99a1af]">
-              <span>{formatCurrency(priceRange[0])}</span>
-              <span>{formatCurrency(priceRange[1])}</span>
+              <span>{formatCurrency(selectedPriceRange[0])}</span>
+              <span>{formatCurrency(selectedPriceRange[1])}</span>
             </div>
 
             {/* Slider */}
@@ -318,30 +332,32 @@ const TourSidebar = ({
               <div
                 className="absolute h-full bg-[#eb662b] rounded-full"
                 style={{
-                  left: `${(priceRange[0] / 50000000) * 100}%`,
-                  right: `${100 - (priceRange[1] / 50000000) * 100}%`,
+                  left: `${(selectedPriceRange[0] / PRICE_DEFAULT_RANGE[1]) * 100}%`,
+                  right: `${100 - (selectedPriceRange[1] / PRICE_DEFAULT_RANGE[1]) * 100}%`,
                 }}
               />
               <input
                 type="range"
-                min={0}
-                max={50000000}
+                min={PRICE_DEFAULT_RANGE[0]}
+                max={PRICE_DEFAULT_RANGE[1]}
                 step={500000}
-                value={priceRange[0]}
-                onChange={(e) =>
-                  handlePriceRangeChange([+e.target.value, priceRange[1]])
-                }
+                value={selectedPriceRange[0]}
+                onChange={(e) => {
+                  const nextMin = Number(e.target.value);
+                  handlePriceRangeChange([nextMin, selectedPriceRange[1]]);
+                }}
                 className="absolute w-full h-full opacity-0 cursor-pointer"
               />
               <input
                 type="range"
-                min={0}
-                max={50000000}
+                min={PRICE_DEFAULT_RANGE[0]}
+                max={PRICE_DEFAULT_RANGE[1]}
                 step={500000}
-                value={priceRange[1]}
-                onChange={(e) =>
-                  handlePriceRangeChange([priceRange[0], +e.target.value])
-                }
+                value={selectedPriceRange[1]}
+                onChange={(e) => {
+                  const nextMax = Number(e.target.value);
+                  handlePriceRangeChange([selectedPriceRange[0], nextMax]);
+                }}
                 className="absolute w-full h-full opacity-0 cursor-pointer"
               />
             </div>
@@ -353,7 +369,7 @@ const TourSidebar = ({
                   {t("landing.tourDiscovery.from")}
                 </p>
                 <p className="text-sm font-bold text-[#eb662b]">
-                  {formatCurrency(priceRange[0])}
+                  {formatCurrency(selectedPriceRange[0])}
                 </p>
               </div>
               <div className="w-4 h-[1px] bg-[#d1d5db]" />
@@ -362,7 +378,7 @@ const TourSidebar = ({
                   {t("landing.tourDiscovery.to")}
                 </p>
                 <p className="text-sm font-bold text-[#eb662b]">
-                  {formatCurrency(priceRange[1])}
+                  {formatCurrency(selectedPriceRange[1])}
                 </p>
               </div>
             </div>
@@ -373,11 +389,15 @@ const TourSidebar = ({
                 <Button
                   key={label}
                   type="button"
-                  onClick={() =>
-                    setActivePriceQuick(
-                      activePriceQuick === label ? null : label,
-                    )
-                  }
+                  onClick={() => {
+                    if (activePriceQuick === label) {
+                      onPriceRangeChange?.(PRICE_DEFAULT_RANGE);
+                      return;
+                    }
+
+                    const quickRange = PRICE_QUICK_RANGES[label];
+                    onPriceRangeChange?.(quickRange);
+                  }}
                   className={`px-2 py-1 rounded-md text-[10px] border transition-colors ${
                     activePriceQuick === label
                       ? "bg-[#eb662b] text-white border-[#eb662b]"
@@ -936,43 +956,90 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
 };
 
 /* ── Main Tour Discovery Page ──────────────────────────────── */
+const getDurationRangeFromOption = (
+  option: string,
+): [number | null, number | null] => {
+  if (!option) {
+    return [null, null];
+  }
+
+  return DURATION_OPTION_RANGES[option] ?? [null, null];
+};
+
+const getDurationOptionFromRange = (
+  minDays: number | null,
+  maxDays: number | null,
+): string => {
+  const found = Object.entries(DURATION_OPTION_RANGES).find(
+    ([, range]) => range[0] === minDays && range[1] === maxDays,
+  );
+
+  return found?.[0] ?? "";
+};
+
+const normalizePriceRangeToFilters = (
+  range: [number, number],
+): Pick<TourDiscoveryFilters, "minPrice" | "maxPrice"> => {
+  const [min, max] = range;
+  return {
+    minPrice: min <= PRICE_DEFAULT_RANGE[0] ? null : min,
+    maxPrice: max >= PRICE_DEFAULT_RANGE[1] ? null : max,
+  };
+};
+
 export const TourDiscoveryPage = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [classificationFilter, setClassificationFilter] = useState("");
 
-  // View mode: tours (default) or instances (departures)
-  const [viewMode, setViewMode] = useState<"tours" | "instances">("tours");
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [isHydratedFromUrl, setIsHydratedFromUrl] = useState(false);
+
+  const [filters, setFilters] = useState<TourDiscoveryFilters>(
+    DEFAULT_TOUR_DISCOVERY_FILTERS,
+  );
+  const [searchText, setSearchText] = useState("");
 
   // API state — tours
   const [tours, setTours] = useState<SearchTour[]>([]);
   const [totalTours, setTotalTours] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [destinations, setDestinations] = useState<string[]>([]);
 
   // API state — instances (departure mode)
   const [instanceData, setInstanceData] = useState<TourInstanceVm[]>([]);
   const [instanceTotal, setInstanceTotal] = useState(0);
-  const [instancePage, setInstancePage] = useState(1);
   const [instanceLoading, setInstanceLoading] = useState(false);
   const [instanceError, setInstanceError] = useState<string | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(totalTours / PAGE_SIZE));
   const instanceTotalPages = Math.max(1, Math.ceil(instanceTotal / PAGE_SIZE));
+  const durationFilter = getDurationOptionFromRange(
+    filters.minDays,
+    filters.maxDays,
+  );
+  const selectedPriceRange: [number, number] = [
+    filters.minPrice ?? PRICE_DEFAULT_RANGE[0],
+    filters.maxPrice ?? PRICE_DEFAULT_RANGE[1],
+  ];
+  const viewMode = filters.view;
 
   const fetchTours = useCallback(
-    async (page: number, destination?: string, classification?: string) => {
+    async (activeFilters: TourDiscoveryFilters) => {
       setLoading(true);
       setError(null);
       try {
         const result = await homeService.searchTours({
-          destination: destination || undefined,
-          classification: classification || undefined,
-          page,
+          q: activeFilters.destination || undefined,
+          classification: activeFilters.classification || undefined,
+          date: activeFilters.date || undefined,
+          people: activeFilters.people ?? undefined,
+          minPrice: activeFilters.minPrice ?? undefined,
+          maxPrice: activeFilters.maxPrice ?? undefined,
+          minDays: activeFilters.minDays ?? undefined,
+          maxDays: activeFilters.maxDays ?? undefined,
+          page: activeFilters.page,
           pageSize: PAGE_SIZE,
         });
         if (result) {
@@ -994,13 +1061,13 @@ export const TourDiscoveryPage = () => {
   );
 
   const fetchInstances = useCallback(
-    async (page: number, destination?: string) => {
+    async (activeFilters: TourDiscoveryFilters) => {
       setInstanceLoading(true);
       setInstanceError(null);
       try {
         const result = await homeService.getAvailablePublicInstances(
-          destination || undefined,
-          page,
+          activeFilters.destination || undefined,
+          activeFilters.page,
           PAGE_SIZE,
         );
         if (result) {
@@ -1021,65 +1088,92 @@ export const TourDiscoveryPage = () => {
     [t],
   );
 
-  // Read ?tab=scheduled from URL to auto-switch to instance mode
+  // Hydrate from URL query params
   useEffect(() => {
-    if (searchParams.get("tab") === "scheduled") {
-      setViewMode("instances");
-    }
+    const parsedFilters = parseTourDiscoveryFilters(searchParams);
+
+    setFilters((prev) =>
+      areTourDiscoveryFiltersEqual(prev, parsedFilters) ? prev : parsedFilters,
+    );
+    setSearchText(parsedFilters.destination);
+    setIsHydratedFromUrl(true);
   }, [searchParams]);
 
-  // Initial load + fetch destinations
+  // Keep URL in sync with active filter state
   useEffect(() => {
-    fetchTours(1);
-    homeService
-      .getDestinations()
-      .then(setDestinations)
-      .catch(() => {});
-  }, [fetchTours]);
-
-  // Fetch instances when switching to instance mode
-  useEffect(() => {
-    if (viewMode === "instances" && instanceData.length === 0 && !instanceLoading) {
-      fetchInstances(1, searchText);
+    if (!isHydratedFromUrl) {
+      return;
     }
-  }, [viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Refetch when page or filters change
+    const nextQuery = buildTourDiscoverySearchParams(filters).toString();
+    const currentQuery = searchParams.toString();
+
+    if (nextQuery === currentQuery) {
+      return;
+    }
+
+    const targetPath = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+    router.replace(targetPath, { scroll: false });
+  }, [filters, isHydratedFromUrl, pathname, router, searchParams]);
+
+  // Fetch data when active filters/page/view changes
+  useEffect(() => {
+    if (!isHydratedFromUrl) {
+      return;
+    }
+
+    if (filters.view === "tours") {
+      fetchTours(filters);
+      return;
+    }
+
+    fetchInstances(filters);
+  }, [fetchInstances, fetchTours, filters, isHydratedFromUrl]);
+
   const handlePageChange = (page: number) => {
-    if (viewMode === "tours") {
-      setCurrentPage(page);
-      fetchTours(page, searchText, classificationFilter);
-    } else {
-      setInstancePage(page);
-      fetchInstances(page, searchText);
-    }
+    setFilters((prev) => ({ ...prev, page }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleSearch = () => {
-    setCurrentPage(1);
-    setInstancePage(1);
-    if (viewMode === "tours") {
-      fetchTours(1, searchText, classificationFilter);
-    } else {
-      fetchInstances(1, searchText);
-    }
+    setFilters((prev) => ({
+      ...prev,
+      destination: searchText.trim(),
+      page: 1,
+    }));
   };
 
-  const handleViewModeChange = (mode: "tours" | "instances") => {
-    setViewMode(mode);
+  const handleViewModeChange = (mode: TourDiscoveryView) => {
+    setFilters((prev) => ({ ...prev, view: mode, page: 1 }));
   };
 
   const handleClassificationChange = (classification: string) => {
-    setClassificationFilter(
-      classification === classificationFilter ? "" : classification,
-    );
-    setCurrentPage(1);
-    fetchTours(
-      1,
-      searchText,
-      classification === classificationFilter ? "" : classification,
-    );
+    setFilters((prev) => ({
+      ...prev,
+      classification,
+      page: 1,
+    }));
+  };
+
+  const handleDurationChange = (duration: string) => {
+    const [minDays, maxDays] = getDurationRangeFromOption(duration);
+
+    setFilters((prev) => ({
+      ...prev,
+      minDays,
+      maxDays,
+      page: 1,
+    }));
+  };
+
+  const handlePriceRangeChange = (range: [number, number]) => {
+    const normalizedPrice = normalizePriceRangeToFilters(range);
+
+    setFilters((prev) => ({
+      ...prev,
+      ...normalizedPrice,
+      page: 1,
+    }));
   };
 
   return (
@@ -1110,14 +1204,12 @@ export const TourDiscoveryPage = () => {
             <TourSidebar
               isMobileOpen={isMobileFilterOpen}
               onClose={() => setIsMobileFilterOpen(false)}
+              classificationFilter={filters.classification}
+              durationFilter={durationFilter}
+              priceRange={selectedPriceRange}
               onClassificationChange={handleClassificationChange}
-              onDurationChange={(dur) => {
-                setCurrentPage(1);
-                fetchTours(1, searchText, classificationFilter);
-              }}
-              onPriceRangeChange={() => {
-                setCurrentPage(1);
-              }}
+              onDurationChange={handleDurationChange}
+              onPriceRangeChange={handlePriceRangeChange}
             />
 
             {/* Main Content */}
@@ -1147,9 +1239,7 @@ export const TourDiscoveryPage = () => {
                       <p className="text-sm text-[#6a7282] mb-4">{error}</p>
                       <Button
                         type="button"
-                        onClick={() =>
-                          fetchTours(currentPage, searchText, classificationFilter)
-                        }
+                        onClick={() => fetchTours(filters)}
                         className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
                         <Icon
                           icon="heroicons-outline:arrow-path"
@@ -1196,7 +1286,7 @@ export const TourDiscoveryPage = () => {
 
                       {/* Pagination */}
                       <Pagination
-                        currentPage={currentPage}
+                        currentPage={filters.page}
                         totalPages={totalPages}
                         onPageChange={handlePageChange}
                       />
@@ -1218,7 +1308,7 @@ export const TourDiscoveryPage = () => {
                       <p className="text-sm text-[#6a7282] mb-4">{instanceError}</p>
                       <Button
                         type="button"
-                        onClick={() => fetchInstances(instancePage, searchText)}
+                        onClick={() => fetchInstances(filters)}
                         className="inline-flex items-center gap-2 bg-[#eb662b] text-white text-sm font-medium px-4 py-2 rounded-lg hover:opacity-90 transition-opacity">
                         <Icon
                           icon="heroicons-outline:arrow-path"
@@ -1265,7 +1355,7 @@ export const TourDiscoveryPage = () => {
 
                       {/* Pagination */}
                       <Pagination
-                        currentPage={instancePage}
+                        currentPage={filters.page}
                         totalPages={instanceTotalPages}
                         onPageChange={handlePageChange}
                       />

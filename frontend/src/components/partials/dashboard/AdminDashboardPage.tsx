@@ -34,7 +34,7 @@ const NAV_ITEMS = [
   {
     label: "Tour Instances",
     icon: "heroicons:calendar-days",
-    href: "/dashboard/tour-management",
+    href: "/dashboard/tour-instances",
   },
   { label: "Bookings", icon: "heroicons:ticket", href: "/bookings" },
   {
