@@ -24,6 +24,8 @@ public static class AppDbContextSeed
             return hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations;
         }
 
+        SeedDataPreflightValidator.ValidateRequiredSeedFiles();
+
         // ── Batch 1: Core entities (no FK dependencies) ──
         RoleContextSeed.SeedData(context.Roles);
         FunctionContextSeed.SeedData(context.Functions);
