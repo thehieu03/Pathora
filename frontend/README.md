@@ -32,6 +32,16 @@ NEXT_PUBLIC_REMOTE_IMAGE_HOSTS=cdn.example.com,images.example.org,https://localh
 - Supports plain host (`cdn.example.com`) or full URL (`https://cdn.example.com`)
 - Non-allowlisted avatar URLs automatically fall back to standard `<img>`
 
+## Seeded Backend Data (Admin Pages)
+
+Admin pages should use backend API data as the primary source (not local hardcoded data).
+
+- Admin overview endpoint: `GET /api/admin/overview`
+- Frontend service wrapper: `src/services/adminService.ts`
+- Integration guide: `../docs/seed-data-integration.md`
+
+For local verification against seeded backend data, follow the checklist in `../docs/seed-data-integration.md`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

@@ -97,6 +97,7 @@ import { useAuth } from "@/contexts/AuthContext";
 - **Services** (`src/services/`): Domain services (catalogService, orderService, etc.)
 - **RTK Query**: Data fetching/caching via `src/store/api/apiSlice.ts`
 - **Response handling**: Use helpers from `src/utils/apiResponse.ts`
+- **Admin seeded-data policy**: For dashboard/admin pages, use backend API as primary data source; avoid introducing new hardcoded datasets as default behavior.
 
 ---
 
