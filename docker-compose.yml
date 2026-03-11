@@ -10,17 +10,17 @@ services:
       - .env
     environment:
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__Default=Host=postgres;Port=5432;Database=Pathora;Username=postgres;Password=postgres
+      - "ConnectionStrings__Default=Host=postgres;Port=5432;Database=postgres;Username=postgres;Password=123abc@A;SSL Mode=Disable"
       - Redis__ConnectionString=redis:6379
       - MinIO__Endpoint=minio:9000
     restart: unless-stopped
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_started
       minio:
         condition: service_started
+      postgres:
+        condition: service_healthy
     logging:
       driver: json-file
       options:
@@ -47,30 +47,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  postgres:
-    container_name: postgres
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=Pathora
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d Pathora"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-
   redis:
     container_name: redis
     image: redis:7-alpine
@@ -78,6 +54,30 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgres:
+    container_name: postgres
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123abc@A
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: unless-stopped
     logging:
       driver: json-file
@@ -122,10 +122,10 @@ services:
         max-file: "3"
 
 volumes:
-  postgres-data:
   redis-data:
-  portainer-data:
+  postgres-data:
   minio-data:
+  portainer-data:
 
 networks:
   default:

@@ -14,11 +14,7 @@ internal static class DependencyInjection
 
         services.AddSingleton<IMailBodyBuilder, MailBodyBuilder>();
 
-        var environment = configuration.GetValue<string>("Environment") ?? "Development";
-        if (!environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
-        {
-            services.AddHostedService<MailProcessor>();
-        }
+        // services.AddHostedService<MailProcessor>();
 
         services.AddResiliencePipeline("mail-pipeline", cfg =>
         {

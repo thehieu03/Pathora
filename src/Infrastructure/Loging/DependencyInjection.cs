@@ -13,7 +13,7 @@ public static class DependencyInjection
     internal static IServiceCollection AddLogingService(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<LogQueue>();
-        services.AddHostedService<LogProcessor>();
+        // services.AddHostedService<LogProcessor>();
         return services;
     }
 }
