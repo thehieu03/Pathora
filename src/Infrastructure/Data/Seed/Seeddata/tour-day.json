@@ -5,6 +5,16 @@
     "DayNumber": 1,
     "Title": "Hà Nội – Hạ Long",
     "Description": "Khởi hành từ Hà Nội, di chuyển đến Hạ Long, lên du thuyền.",
+    "Translations": {
+      "vi": {
+        "title": "Hà Nội – Hạ Long",
+        "description": "Khởi hành từ Hà Nội, di chuyển đến Hạ Long, lên du thuyền."
+      },
+      "en": {
+        "title": "Hanoi - Ha Long",
+        "description": "Depart from Hanoi, transfer to Ha Long, and board the cruise."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -17,6 +27,16 @@
     "DayNumber": 2,
     "Title": "Khám phá vịnh Hạ Long",
     "Description": "Tham quan hang Sửng Sốt, chèo kayak, tắm biển Ti Tốp.",
+    "Translations": {
+      "vi": {
+        "title": "Khám phá vịnh Hạ Long",
+        "description": "Tham quan hang Sửng Sốt, chèo kayak, tắm biển Ti Tốp."
+      },
+      "en": {
+        "title": "Explore Ha Long Bay",
+        "description": "Visit Sung Sot Cave, go kayaking, and swim at Ti Top Beach."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -29,6 +49,16 @@
     "DayNumber": 3,
     "Title": "Hạ Long – Hà Nội",
     "Description": "Ngắm bình minh trên vịnh, trở về Hà Nội.",
+    "Translations": {
+      "vi": {
+        "title": "Hạ Long – Hà Nội",
+        "description": "Ngắm bình minh trên vịnh, trở về Hà Nội."
+      },
+      "en": {
+        "title": "Ha Long - Hanoi",
+        "description": "Watch the sunrise on the bay and return to Hanoi."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -41,6 +71,16 @@
     "DayNumber": 1,
     "Title": "Đà Nẵng – Bà Nà Hills",
     "Description": "Đón sân bay, lên Bà Nà Hills, check-in cầu Vàng.",
+    "Translations": {
+      "vi": {
+        "title": "Đà Nẵng – Bà Nà Hills",
+        "description": "Đón sân bay, lên Bà Nà Hills, check-in cầu Vàng."
+      },
+      "en": {
+        "title": "Da Nang - Ba Na Hills",
+        "description": "Airport pickup, transfer to Ba Na Hills, check in at the Golden Bridge."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -53,6 +93,16 @@
     "DayNumber": 2,
     "Title": "Hội An cổ kính",
     "Description": "Tham quan phố cổ Hội An, chùa Cầu, nhà cổ, đêm đèn lồng.",
+    "Translations": {
+      "vi": {
+        "title": "Hội An cổ kính",
+        "description": "Tham quan phố cổ Hội An, chùa Cầu, nhà cổ, đêm đèn lồng."
+      },
+      "en": {
+        "title": "Ancient Hoi An",
+        "description": "Visit Hoi An Ancient Town, the Japanese Bridge, old houses, and the lantern night."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -65,6 +115,16 @@
     "DayNumber": 3,
     "Title": "Thánh địa Mỹ Sơn",
     "Description": "Khám phá di sản UNESCO, tìm hiểu văn hoá Chăm.",
+    "Translations": {
+      "vi": {
+        "title": "Thánh địa Mỹ Sơn",
+        "description": "Khám phá di sản UNESCO, tìm hiểu văn hoá Chăm."
+      },
+      "en": {
+        "title": "My Son Sanctuary",
+        "description": "Explore the UNESCO heritage site and learn about Cham culture."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -77,6 +137,16 @@
     "DayNumber": 4,
     "Title": "Biển Mỹ Khê – Về",
     "Description": "Thư giãn biển Mỹ Khê, shopping, ra sân bay.",
+    "Translations": {
+      "vi": {
+        "title": "Biển Mỹ Khê – Về",
+        "description": "Thư giãn biển Mỹ Khê, shopping, ra sân bay."
+      },
+      "en": {
+        "title": "My Khe Beach - Return",
+        "description": "Relax at My Khe Beach, go shopping, and transfer to the airport."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -89,6 +159,16 @@
     "DayNumber": 1,
     "Title": "Bay đến Phú Quốc",
     "Description": "Đón sân bay, nhận phòng resort, tự do tắm biển.",
+    "Translations": {
+      "vi": {
+        "title": "Bay đến Phú Quốc",
+        "description": "Đón sân bay, nhận phòng resort, tự do tắm biển."
+      },
+      "en": {
+        "title": "Fly to Phu Quoc",
+        "description": "Airport pickup, resort check-in, and free time at the beach."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -101,6 +181,16 @@
     "DayNumber": 2,
     "Title": "Vinpearl Safari",
     "Description": "Tham quan Safari, công viên Vinwonders.",
+    "Translations": {
+      "vi": {
+        "title": "Vinpearl Safari",
+        "description": "Tham quan Safari, công viên Vinwonders."
+      },
+      "en": {
+        "title": "Vinpearl Safari",
+        "description": "Visit the safari and VinWonders park."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -113,6 +203,16 @@
     "DayNumber": 3,
     "Title": "Lặn biển An Thới",
     "Description": "Lặn ngắm san hô, câu cá, thưởng thức hải sản.",
+    "Translations": {
+      "vi": {
+        "title": "Lặn biển An Thới",
+        "description": "Lặn ngắm san hô, câu cá, thưởng thức hải sản."
+      },
+      "en": {
+        "title": "An Thoi Snorkeling",
+        "description": "Snorkel to see coral reefs, go fishing, and enjoy seafood."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -125,6 +225,16 @@
     "DayNumber": 4,
     "Title": "Làng chài Hàm Ninh",
     "Description": "Thăm làng chài, chợ đêm Phú Quốc.",
+    "Translations": {
+      "vi": {
+        "title": "Làng chài Hàm Ninh",
+        "description": "Thăm làng chài, chợ đêm Phú Quốc."
+      },
+      "en": {
+        "title": "Ham Ninh Fishing Village",
+        "description": "Visit the fishing village and Phu Quoc night market."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -137,6 +247,16 @@
     "DayNumber": 5,
     "Title": "Tự do – Về",
     "Description": "Nghỉ ngơi resort, ra sân bay.",
+    "Translations": {
+      "vi": {
+        "title": "Tự do – Về",
+        "description": "Nghỉ ngơi resort, ra sân bay."
+      },
+      "en": {
+        "title": "Free Time - Departure",
+        "description": "Relax at the resort and transfer to the airport."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -149,6 +269,16 @@
     "DayNumber": 1,
     "Title": "Hà Nội – Sapa",
     "Description": "Di chuyển bằng xe du lịch, nhận phòng, dạo phố Sapa.",
+    "Translations": {
+      "vi": {
+        "title": "Hà Nội – Sapa",
+        "description": "Di chuyển bằng xe du lịch, nhận phòng, dạo phố Sapa."
+      },
+      "en": {
+        "title": "Hanoi - Sapa",
+        "description": "Travel by tourist coach, hotel check-in, and walk around Sapa town."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -161,6 +291,16 @@
     "DayNumber": 2,
     "Title": "Fansipan – Bản Cát Cát",
     "Description": "Chinh phục Fansipan bằng cáp treo, trekking bản Cát Cát.",
+    "Translations": {
+      "vi": {
+        "title": "Fansipan – Bản Cát Cát",
+        "description": "Chinh phục Fansipan bằng cáp treo, trekking bản Cát Cát."
+      },
+      "en": {
+        "title": "Fansipan - Cat Cat Village",
+        "description": "Conquer Fansipan by cable car and trek through Cat Cat Village."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -173,6 +313,16 @@
     "DayNumber": 3,
     "Title": "Ruộng bậc thang – Về",
     "Description": "Ngắm ruộng bậc thang Mường Hoa, trở về Hà Nội.",
+    "Translations": {
+      "vi": {
+        "title": "Ruộng bậc thang – Về",
+        "description": "Ngắm ruộng bậc thang Mường Hoa, trở về Hà Nội."
+      },
+      "en": {
+        "title": "Terraced Fields - Return",
+        "description": "Visit Muong Hoa terraced fields and return to Hanoi."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -185,6 +335,16 @@
     "DayNumber": 1,
     "Title": "Arrive Bangkok",
     "Description": "Airport transfer, hotel check-in, Khao San Road evening.",
+    "Translations": {
+      "vi": {
+        "title": "Đến Bangkok",
+        "description": "Đón sân bay, nhận phòng khách sạn, buổi tối khám phá Khao San Road."
+      },
+      "en": {
+        "title": "Arrive Bangkok",
+        "description": "Airport transfer, hotel check-in, Khao San Road evening."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -197,6 +357,16 @@
     "DayNumber": 2,
     "Title": "Grand Palace & Temples",
     "Description": "Grand Palace, Wat Pho, Wat Arun, Chatuchak Market.",
+    "Translations": {
+      "vi": {
+        "title": "Hoàng cung & Chùa",
+        "description": "Tham quan Grand Palace, Wat Pho, Wat Arun, chợ Chatuchak."
+      },
+      "en": {
+        "title": "Grand Palace & Temples",
+        "description": "Grand Palace, Wat Pho, Wat Arun, Chatuchak Market."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -209,6 +379,16 @@
     "DayNumber": 3,
     "Title": "Pattaya & Coral Island",
     "Description": "Transfer to Pattaya, Coral Island, beach activities.",
+    "Translations": {
+      "vi": {
+        "title": "Pattaya & Đảo San Hô",
+        "description": "Di chuyển đến Pattaya, tham quan Đảo San Hô, hoạt động bãi biển."
+      },
+      "en": {
+        "title": "Pattaya & Coral Island",
+        "description": "Transfer to Pattaya, Coral Island, beach activities."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -221,6 +401,16 @@
     "DayNumber": 4,
     "Title": "Departure",
     "Description": "Free time, airport transfer.",
+    "Translations": {
+      "vi": {
+        "title": "Khởi hành",
+        "description": "Tự do tham quan, ra sân bay."
+      },
+      "en": {
+        "title": "Departure",
+        "description": "Free time, airport transfer."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -233,6 +423,16 @@
     "DayNumber": 1,
     "Title": "Arrive Tokyo",
     "Description": "Narita transfer, Sensō-ji Temple, Shibuya Crossing.",
+    "Translations": {
+      "vi": {
+        "title": "Đến Tokyo",
+        "description": "Di chuyển từ Narita, tham quan chùa Senso-ji, ngã tư Shibuya."
+      },
+      "en": {
+        "title": "Arrive Tokyo",
+        "description": "Narita transfer, Sensō-ji Temple, Shibuya Crossing."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -245,6 +445,16 @@
     "DayNumber": 2,
     "Title": "Tokyo Exploration",
     "Description": "Meiji Shrine, Harajuku, Tokyo Skytree, Akihabara.",
+    "Translations": {
+      "vi": {
+        "title": "Khám phá Tokyo",
+        "description": "Đền Meiji, Harajuku, Tokyo Skytree, Akihabara."
+      },
+      "en": {
+        "title": "Tokyo Exploration",
+        "description": "Meiji Shrine, Harajuku, Tokyo Skytree, Akihabara."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -257,6 +467,16 @@
     "DayNumber": 3,
     "Title": "Mount Fuji Day Trip",
     "Description": "Day trip to Mt Fuji 5th Station and Lake Kawaguchi.",
+    "Translations": {
+      "vi": {
+        "title": "Tham quan Núi Phú Sĩ trong ngày",
+        "description": "Tham quan trong ngày tới trạm 5 Núi Phú Sĩ và hồ Kawaguchi."
+      },
+      "en": {
+        "title": "Mount Fuji Day Trip",
+        "description": "Day trip to Mt Fuji 5th Station and Lake Kawaguchi."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -269,6 +489,16 @@
     "DayNumber": 4,
     "Title": "Shinkansen to Osaka",
     "Description": "Bullet train, Osaka Castle, Dotonbori.",
+    "Translations": {
+      "vi": {
+        "title": "Shinkansen đến Osaka",
+        "description": "Đi tàu cao tốc, tham quan lâu đài Osaka, Dotonbori."
+      },
+      "en": {
+        "title": "Shinkansen to Osaka",
+        "description": "Bullet train, Osaka Castle, Dotonbori."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -281,6 +511,16 @@
     "DayNumber": 5,
     "Title": "Kyoto & Departure",
     "Description": "Fushimi Inari, Kinkaku-ji, departure from Kansai.",
+    "Translations": {
+      "vi": {
+        "title": "Kyoto & Khởi hành",
+        "description": "Tham quan Fushimi Inari, Kinkaku-ji, khởi hành từ Kansai."
+      },
+      "en": {
+        "title": "Kyoto & Departure",
+        "description": "Fushimi Inari, Kinkaku-ji, departure from Kansai."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -293,6 +533,16 @@
     "DayNumber": 1,
     "Title": "Arrive Seoul",
     "Description": "Incheon transfer, Gyeongbokgung Palace, Bukchon Village.",
+    "Translations": {
+      "vi": {
+        "title": "Đến Seoul",
+        "description": "Di chuyển từ Incheon, tham quan cung Gyeongbokgung, làng Bukchon."
+      },
+      "en": {
+        "title": "Arrive Seoul",
+        "description": "Incheon transfer, Gyeongbokgung Palace, Bukchon Village."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -305,6 +555,16 @@
     "DayNumber": 2,
     "Title": "Seoul Shopping & Culture",
     "Description": "Myeongdong, Namsan Tower, Gangnam.",
+    "Translations": {
+      "vi": {
+        "title": "Mua sắm & Văn hoá Seoul",
+        "description": "Myeongdong, tháp Namsan, Gangnam."
+      },
+      "en": {
+        "title": "Seoul Shopping & Culture",
+        "description": "Myeongdong, Namsan Tower, Gangnam."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -317,6 +577,16 @@
     "DayNumber": 3,
     "Title": "Fly to Jeju",
     "Description": "Hallasan National Park, Seongsan Ilchulbong.",
+    "Translations": {
+      "vi": {
+        "title": "Bay đến Jeju",
+        "description": "Vườn quốc gia Hallasan, Seongsan Ilchulbong."
+      },
+      "en": {
+        "title": "Fly to Jeju",
+        "description": "Hallasan National Park, Seongsan Ilchulbong."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -329,6 +599,16 @@
     "DayNumber": 4,
     "Title": "Jeju & Departure",
     "Description": "Manjanggul Cave, Jeju Folk Village, departure.",
+    "Translations": {
+      "vi": {
+        "title": "Jeju & Khởi hành",
+        "description": "Hang Manjanggul, làng dân gian Jeju, khởi hành."
+      },
+      "en": {
+        "title": "Jeju & Departure",
+        "description": "Manjanggul Cave, Jeju Folk Village, departure."
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",

@@ -1,11 +1,20 @@
+using System.Text.Json;
+
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Data.Configurations;
 
 public class TourRequestConfiguration : IEntityTypeConfiguration<TourRequestEntity>
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true
+    };
+
     public void Configure(EntityTypeBuilder<TourRequestEntity> builder)
     {
         builder.ToTable("TourRequests");
@@ -37,6 +46,24 @@ public class TourRequestConfiguration : IEntityTypeConfiguration<TourRequestEnti
 
         builder.Property(t => t.Budget)
             .HasColumnType("numeric(18,2)");
+
+        builder.Property(t => t.TravelInterests)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                value => SerializeTravelInterests(value),
+                value => DeserializeTravelInterests(value));
+        builder.Property(t => t.TravelInterests)
+            .Metadata.SetValueComparer(
+                new ValueComparer<List<string>>(
+                    (left, right) => SerializeTravelInterests(left) == SerializeTravelInterests(right),
+                    value => SerializeTravelInterests(value).GetHashCode(StringComparison.Ordinal),
+                    value => DeserializeTravelInterests(SerializeTravelInterests(value))));
+
+        builder.Property(t => t.PreferredAccommodation)
+            .HasMaxLength(500);
+
+        builder.Property(t => t.TransportationPreference)
+            .HasMaxLength(500);
 
         builder.Property(t => t.SpecialRequirements)
             .HasMaxLength(2000);
@@ -78,5 +105,20 @@ public class TourRequestConfiguration : IEntityTypeConfiguration<TourRequestEnti
             .WithOne(b => b.TourRequest)
             .HasForeignKey(b => b.TourRequestId)
             .OnDelete(DeleteBehavior.Restrict);
+    }
+
+    private static string SerializeTravelInterests(List<string>? value)
+    {
+        return JsonSerializer.Serialize(value ?? [], JsonOptions);
+    }
+
+    private static List<string> DeserializeTravelInterests(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        return JsonSerializer.Deserialize<List<string>>(json, JsonOptions) ?? [];
     }
 }

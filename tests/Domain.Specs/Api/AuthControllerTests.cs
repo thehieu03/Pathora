@@ -32,6 +32,11 @@ public sealed class AuthControllerTests
         Assert.Equal("Thành công", payload.Message);
         Assert.Equal(response, payload.Data);
         Assert.Equal(command, probe.CapturedRequest);
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("auth_status=1", setCookie);
+        Assert.Contains("path=/", setCookie, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("samesite=lax", setCookie, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -70,6 +75,11 @@ public sealed class AuthControllerTests
         Assert.Equal("Thành công", payload.Message);
         Assert.Equal(response, payload.Data);
         Assert.Equal(command, probe.CapturedRequest);
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("auth_status=1", setCookie);
+        Assert.Contains("path=/", setCookie, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("samesite=lax", setCookie, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -88,6 +98,10 @@ public sealed class AuthControllerTests
             expectedCode: "Identity.InvalidRefreshToken",
             expectedMessage: "Refresh token không hợp lệ",
             expectedInstance: "/api/auth/refresh");
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("auth_status=", setCookie);
+        Assert.Contains("expires=thu, 01 jan 1970", setCookie, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -150,6 +164,7 @@ public sealed class AuthControllerTests
         var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
         Assert.Contains("access_token=", setCookie);
         Assert.Contains("refresh_token=", setCookie);
+        Assert.Contains("auth_status=", setCookie);
     }
 
     [Fact]

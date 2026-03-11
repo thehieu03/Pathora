@@ -1581,6 +1581,10 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("PreferredAccommodation")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<DateTimeOffset?>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1601,6 +1605,14 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<Guid?>("TourInstanceId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("TransportationPreference")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("TravelInterests")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");

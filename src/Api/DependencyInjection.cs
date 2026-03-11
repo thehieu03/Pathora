@@ -175,12 +175,16 @@ public static class DependencyInjection
 
     private static IServiceCollection AddIdentityServices(this IServiceCollection services)
     {
-        services.AddAuthorizationBuilder()
-            .AddPolicy(Policies.EndpointAccess, policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.AddRequirements(new EndpointAccessRequirement());
-            });
+        var endpointAccessPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .AddRequirements(new EndpointAccessRequirement())
+            .Build();
+
+        services.AddAuthorization(options =>
+        {
+            options.DefaultPolicy = endpointAccessPolicy;
+            options.AddPolicy(Policies.EndpointAccess, endpointAccessPolicy);
+        });
 
         services.AddSingleton<IAuthorizationHandler, EndpointAccessHandler>();
         services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationResultHandler>();

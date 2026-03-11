@@ -17,8 +17,10 @@ public sealed class AuthCookieWriterTests
         var setCookie = httpContext.Response.Headers.SetCookie.ToString();
         Assert.Contains("access_token=access-token", setCookie);
         Assert.Contains("refresh_token=refresh-token", setCookie);
+        Assert.Contains("auth_status=1", setCookie);
         Assert.Contains("httponly", setCookie, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("samesite=lax", setCookie, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("path=/", setCookie, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -31,6 +33,7 @@ public sealed class AuthCookieWriterTests
         var setCookie = httpContext.Response.Headers.SetCookie.ToString();
         Assert.Contains("access_token=", setCookie);
         Assert.Contains("refresh_token=", setCookie);
+        Assert.Contains("auth_status=", setCookie);
         Assert.Contains("expires=thu, 01 jan 1970", setCookie, StringComparison.OrdinalIgnoreCase);
     }
 }

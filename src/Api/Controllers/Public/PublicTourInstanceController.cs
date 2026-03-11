@@ -1,5 +1,6 @@
 using Api.Endpoint;
 using Application.Features.Public.Queries;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,16 +14,17 @@ public class PublicTourInstanceController : BaseApiController
     public async Task<IActionResult> GetAvailable(
         [FromQuery] string? destination,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 10,
+        [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetPublicTourInstancesQuery(destination, page, pageSize));
+        var result = await Sender.Send(new GetPublicTourInstancesQuery(destination, page, pageSize, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 
     [HttpGet(PublicEndpoint.Detail)]
-    public async Task<IActionResult> GetDetail(Guid id)
+    public async Task<IActionResult> GetDetail(Guid id, [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetPublicTourInstanceDetailQuery(id));
+        var result = await Sender.Send(new GetPublicTourInstanceDetailQuery(id, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 }

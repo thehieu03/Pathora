@@ -10,6 +10,7 @@ public sealed class TranslationPersistenceTests
     private static readonly Type[] TranslatableEntityTypes =
     [
         typeof(TourEntity),
+        typeof(TourInstanceEntity),
         typeof(TourClassificationEntity),
         typeof(TourDayEntity),
         typeof(TourDayActivityEntity),
@@ -68,6 +69,28 @@ public sealed class TranslationPersistenceTests
                     file.Content.Contains($"UPDATE \"{table}\"", StringComparison.Ordinal)) &&
                 file.Content.Contains("name: \"Translations\"", StringComparison.Ordinal) &&
                 file.Content.Contains("\"Translations\" IS NULL", StringComparison.Ordinal));
+
+        Assert.NotNull(migration);
+    }
+
+    [Fact]
+    public void Migration_ShouldBackfillTourInstanceTranslationsForViAndEn_WithoutOverwritingExistingJson()
+    {
+        var migrationDirectory = Path.Combine(GetSolutionRoot(), "src", "Infrastructure", "Data", "Migrations");
+        var migrationFiles = Directory.GetFiles(migrationDirectory, "*.cs")
+            .Where(path =>
+                !path.EndsWith(".Designer.cs", StringComparison.OrdinalIgnoreCase) &&
+                !path.EndsWith("AppDbContextModelSnapshot.cs", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var migration = migrationFiles
+            .Select(path => new { Path = path, Content = File.ReadAllText(path) })
+            .FirstOrDefault(file =>
+                file.Content.Contains("UPDATE \"TourInstances\"", StringComparison.Ordinal) &&
+                file.Content.Contains("'{vi}'", StringComparison.Ordinal) &&
+                file.Content.Contains("'{en}'", StringComparison.Ordinal) &&
+                file.Content.Contains("\"NormalizedTranslations\"->'vi'", StringComparison.Ordinal) &&
+                file.Content.Contains("\"NormalizedTranslations\"->'en'", StringComparison.Ordinal));
 
         Assert.NotNull(migration);
     }

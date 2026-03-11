@@ -10,10 +10,11 @@ namespace Api.Controllers;
 [Route(UserEndpoint.Base)]
 public class UserController : BaseApiController
 {
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        [FromQuery] Guid departmentId,
-        [FromQuery] string? textSearch,
+        [FromQuery] Guid departmentId = default,
+        [FromQuery] string? textSearch = null,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {

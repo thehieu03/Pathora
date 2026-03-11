@@ -19,6 +19,7 @@ namespace Infrastructure.Identity;
 internal sealed class TokenManager(
     IOptions<JwtOptions> jwtOptions,
     IUserRepository userRepository,
+    IRoleRepository roleRepository,
     IFusionCache fusionCache,
     IToken token,
     IUnitOfWork unitOfWork)
@@ -29,17 +30,37 @@ internal sealed class TokenManager(
 
     public async Task<ErrorOr<(string AccessToken, string RefreshToken)>> GenerateToken(UserEntity user)
     {
+        var rolesResult = await roleRepository.FindByUserId(user.Id.ToString());
+        if (rolesResult.IsError)
+        {
+            return rolesResult.Errors;
+        }
+
+        var roleClaims = rolesResult.Value
+            .GroupBy(role => role.Id)
+            .Select(group => group.First())
+            .SelectMany(role => new[]
+            {
+                new Claim(ClaimTypes.Role, role.Name),
+                new Claim("roles", role.Name)
+            })
+            .ToList();
+
         var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
         var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
 
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
+            new Claim(JwtRegisteredClaimNames.Aud, _jwtOptions.Audience)
+        };
+        claims.AddRange(roleClaims);
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
-                new Claim(JwtRegisteredClaimNames.Aud, _jwtOptions.Audience)
-            ]),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpireInMinutes),
             SigningCredentials = credentials
         };

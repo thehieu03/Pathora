@@ -3,6 +3,7 @@ using Api.Infrastructure;
 using Contracts.Interfaces;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
+using ErrorOr;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,6 +24,12 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
         var result = await Sender.Send(command);
+
+        if (!result.IsError)
+        {
+            AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+        }
+
         return HandleResult(result);
     }
 
@@ -37,6 +44,16 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> Refresh([FromBody] RefreshCommand command)
     {
         var result = await Sender.Send(command);
+
+        if (!result.IsError)
+        {
+            AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+        }
+        else if (result.Errors.Any(error => error.Type is ErrorType.Unauthorized or ErrorType.NotFound))
+        {
+            AuthCookieWriter.ClearAuthStatusCookie(Response, Request.IsHttps);
+        }
+
         return HandleResult(result);
     }
     [HttpPost(AuthEndpoint.ConfirmRegister)]
@@ -101,6 +118,36 @@ public class AuthController : BaseApiController
         return Ok(new { message = $"Đã đổi mật khẩu cho {user.Email} (username: {user.Username})" });
     }
 
+    /// <summary>DEV ONLY – reset password for all active users.</summary>
+    [HttpPost(AuthEndpoint.DevResetAllPasswords)]
+    public async Task<IActionResult> DevResetAllPasswords(
+        [FromBody] DevResetAllPasswordsRequest request,
+        [FromServices] AppDbContext db,
+        [FromServices] IPasswordHasher hasher,
+        [FromServices] IWebHostEnvironment env,
+        [FromServices] IConfiguration configuration)
+    {
+        if (!env.IsDevelopment() || !configuration.GetValue<bool>("Dev:EnableDevEndpoints"))
+            return NotFound();
+
+        if (string.IsNullOrWhiteSpace(request.NewPassword))
+            return BadRequest(new { message = "Mật khẩu mới không được để trống" });
+
+        var users = await db.Users
+            .Where(u => !u.IsDeleted)
+            .ToListAsync();
+
+        var hashedPassword = hasher.HashPassword(request.NewPassword);
+        foreach (var user in users)
+        {
+            user.ChangePassword(hashedPassword, "dev-reset-all");
+        }
+
+        await db.SaveChangesAsync();
+
+        return Ok(new { message = $"Đã đổi mật khẩu cho {users.Count} tài khoản" });
+    }
+
     [HttpGet(AuthEndpoint.GoogleLogin)]
     public IActionResult GoogleLogin([FromServices] IConfiguration configuration)
     {
@@ -162,3 +209,4 @@ public class AuthController : BaseApiController
 }
 
 public sealed record DevResetPasswordRequest(string Email, string NewPassword);
+public sealed record DevResetAllPasswordsRequest(string NewPassword);

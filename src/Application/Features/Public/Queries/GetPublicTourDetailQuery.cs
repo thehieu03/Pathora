@@ -1,6 +1,7 @@
 using Application.Dtos;
 using Application.Common;
 using Application.Common.Constant;
+using Application.Common.Localization;
 using Contracts.Interfaces;
 using AutoMapper;
 using Domain.Common.Repositories;
@@ -11,17 +12,17 @@ using ErrorOr;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetPublicTourDetailQuery(Guid Id) : IQuery<ErrorOr<TourDto>>, ICacheable
+public sealed record GetPublicTourDetailQuery(Guid Id, string? Language = null) : IQuery<ErrorOr<TourDto>>, ICacheable
 {
-    public string CacheKey => $"{Common.CacheKey.Tour}:public:detail:{Id}";
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
+    public string CacheKey => $"{Common.CacheKey.Tour}:public:detail:{Id}:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
-public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourRepository, IMapper mapper, ILanguageContext? languageContext = null)
+public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourRepository, IMapper mapper)
     : IQueryHandler<GetPublicTourDetailQuery, ErrorOr<TourDto>>
 {
-    private readonly ILanguageContext _languageContext = languageContext ?? new FallbackLanguageContext();
-
     public async Task<ErrorOr<TourDto>> Handle(GetPublicTourDetailQuery request, CancellationToken cancellationToken)
     {
         var tour = await tourRepository.FindById(request.Id, asNoTracking: true);
@@ -29,12 +30,7 @@ public sealed class GetPublicTourDetailQueryHandler(ITourRepository tourReposito
         if (tour is null || tour.IsDeleted || tour.Status != TourStatus.Active)
             return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.PublicNotFoundDescription);
 
-        tour.ApplyResolvedTranslations(_languageContext.CurrentLanguage);
+        tour.ApplyResolvedTranslations(request.ResolvedLanguage);
         return mapper.Map<TourDto>(tour);
-    }
-
-    private sealed class FallbackLanguageContext : ILanguageContext
-    {
-        public string CurrentLanguage { get; set; } = ILanguageContext.DefaultLanguage;
     }
 }

@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Localization;
 using Contracts.Interfaces;
 using Application.Contracts.Public;
 using BuildingBlocks.CORS;
@@ -7,9 +8,11 @@ using Domain.Common.Repositories;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetTrendingDestinationsQuery(int Limit = 6) : IQuery<ErrorOr<List<TrendingDestinationVm>>>, ICacheable
+public sealed record GetTrendingDestinationsQuery(int Limit = 6, string? Language = null) : IQuery<ErrorOr<List<TrendingDestinationVm>>>, ICacheable
 {
-    public string CacheKey => $"{Common.CacheKey.Tour}:trending:{Limit}";
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
+    public string CacheKey => $"{Common.CacheKey.Tour}:trending:{Limit}:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 

@@ -1,12 +1,14 @@
 using Contracts;
 using Contracts.Interfaces;
 using Application.Common.Constant;
+using Application.Common.Localization;
 using Application.Dtos;
 using Application.Features.TourInstance.Commands;
 using Application.Features.TourInstance.Queries;
 using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Entities.Translations;
 using Domain.Enums;
 using Domain.ValueObjects;
 using ErrorOr;
@@ -22,8 +24,8 @@ public interface ITourInstanceService
     Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetAll(GetAllTourInstancesQuery request);
     Task<ErrorOr<TourInstanceDto>> GetDetail(Guid id);
     Task<ErrorOr<TourInstanceStatsDto>> GetStats();
-    Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, int page, int pageSize);
-    Task<ErrorOr<TourInstanceDto>> GetPublicDetail(Guid id);
+    Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, int page, int pageSize, string? language = null);
+    Task<ErrorOr<TourInstanceDto>> GetPublicDetail(Guid id, string? language = null);
 }
 
 public class TourInstanceService(
@@ -188,20 +190,28 @@ title: request.Title,
         return new TourInstanceStatsDto(total, available, confirmed, soldOut);
     }
 
-    public async Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, int page, int pageSize)
+    public async Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, int page, int pageSize, string? language = null)
     {
         var entities = await _tourInstanceRepository.FindPublicAvailable(destination, page, pageSize);
         var total = await _tourInstanceRepository.CountPublicAvailable(destination);
+        var resolvedLanguage = PublicLanguageResolver.Resolve(language);
+
+        foreach (var entity in entities)
+        {
+            entity.ApplyResolvedTranslation(resolvedLanguage);
+        }
 
         var vms = entities.Select(e => _mapper.Map<TourInstanceVm>(e)).ToList();
         return new PaginatedList<TourInstanceVm>(total, vms);
     }
 
-    public async Task<ErrorOr<TourInstanceDto>> GetPublicDetail(Guid id)
+    public async Task<ErrorOr<TourInstanceDto>> GetPublicDetail(Guid id, string? language = null)
     {
         var entity = await _tourInstanceRepository.FindPublicById(id);
         if (entity is null)
             return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.PublicNotFoundDescription);
+
+        entity.ApplyResolvedTranslation(PublicLanguageResolver.Resolve(language));
 
         return _mapper.Map<TourInstanceDto>(entity);
     }

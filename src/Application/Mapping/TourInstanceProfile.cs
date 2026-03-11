@@ -10,13 +10,16 @@ public sealed class TourInstanceProfile : Profile
     public TourInstanceProfile()
     {
         CreateMap<TourInstanceEntity, TourInstanceVm>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.InstanceType, opt => opt.MapFrom(src => src.InstanceType.ToString()));
+            .ForCtorParam(nameof(TourInstanceVm.Status), opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForCtorParam(nameof(TourInstanceVm.InstanceType), opt => opt.MapFrom(src => src.InstanceType.ToString()));
 
         CreateMap<TourInstanceEntity, TourInstanceDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-            .ForMember(dest => dest.InstanceType, opt => opt.MapFrom(src => src.InstanceType.ToString()))
-            .ForMember(dest => dest.DynamicPricing, opt => opt.MapFrom(src => src.DynamicPricingTiers));
+            .ForCtorParam(nameof(TourInstanceDto.Status), opt => opt.MapFrom(src => src.Status.ToString()))
+            .ForCtorParam(nameof(TourInstanceDto.InstanceType), opt => opt.MapFrom(src => src.InstanceType.ToString()))
+            .ForCtorParam(nameof(TourInstanceDto.Rating), opt => opt.MapFrom(_ => 0m))
+            .ForCtorParam(nameof(TourInstanceDto.TotalBookings), opt => opt.MapFrom(_ => 0))
+            .ForCtorParam(nameof(TourInstanceDto.Revenue), opt => opt.MapFrom(_ => 0m))
+            .ForCtorParam(nameof(TourInstanceDto.DynamicPricing), opt => opt.MapFrom(src => src.DynamicPricingTiers));
 
         CreateMap<TourInstanceGuide, TourInstanceGuideDto>();
 

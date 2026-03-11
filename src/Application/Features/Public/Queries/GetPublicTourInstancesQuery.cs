@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Localization;
 using Contracts;
 using Contracts.Interfaces;
 using Application.Dtos;
@@ -11,9 +12,12 @@ namespace Application.Features.Public.Queries;
 public sealed record GetPublicTourInstancesQuery(
     string? Destination = null,
     int Page = 1,
-    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<TourInstanceVm>>>, ICacheable
+    int PageSize = 10,
+    string? Language = null) : IQuery<ErrorOr<PaginatedList<TourInstanceVm>>>, ICacheable
 {
-    public string CacheKey => $"{Common.CacheKey.TourInstance}:public:list:{Destination}:{Page}:{PageSize}";
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
+    public string CacheKey => $"{Common.CacheKey.TourInstance}:public:list:{Destination}:{Page}:{PageSize}:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
@@ -22,7 +26,7 @@ public sealed class GetPublicTourInstancesQueryHandler(ITourInstanceService tour
 {
     public async Task<ErrorOr<PaginatedList<TourInstanceVm>>> Handle(GetPublicTourInstancesQuery request, CancellationToken cancellationToken)
     {
-        return await tourInstanceService.GetPublicAvailable(request.Destination, request.Page, request.PageSize);
+        return await tourInstanceService.GetPublicAvailable(request.Destination, request.Page, request.PageSize, request.ResolvedLanguage);
     }
 }
 

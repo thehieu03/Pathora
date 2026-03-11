@@ -7,19 +7,33 @@ public static class AuthCookieWriter
 {
     private const string AccessTokenCookieName = "access_token";
     private const string RefreshTokenCookieName = "refresh_token";
+    private const string AuthStatusCookieName = "auth_status";
     private static readonly TimeSpan AccessTokenLifetime = TimeSpan.FromDays(1);
     private static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(7);
+    private static readonly TimeSpan AuthStatusLifetime = RefreshTokenLifetime;
 
     public static void WriteAuthCookies(HttpResponse response, ExternalLoginResponse tokens, bool secure)
     {
         response.Cookies.Append(AccessTokenCookieName, tokens.AccessToken, BuildOptions(AccessTokenLifetime, secure));
         response.Cookies.Append(RefreshTokenCookieName, tokens.RefreshToken, BuildOptions(RefreshTokenLifetime, secure));
+        WriteAuthStatusCookie(response, secure);
+    }
+
+    public static void WriteAuthStatusCookie(HttpResponse response, bool secure)
+    {
+        response.Cookies.Append(AuthStatusCookieName, "1", BuildOptions(AuthStatusLifetime, secure));
     }
 
     public static void ClearAuthCookies(HttpResponse response, bool secure)
     {
         response.Cookies.Delete(AccessTokenCookieName, BuildOptions(TimeSpan.Zero, secure));
         response.Cookies.Delete(RefreshTokenCookieName, BuildOptions(TimeSpan.Zero, secure));
+        ClearAuthStatusCookie(response, secure);
+    }
+
+    public static void ClearAuthStatusCookie(HttpResponse response, bool secure)
+    {
+        response.Cookies.Delete(AuthStatusCookieName, BuildOptions(TimeSpan.Zero, secure));
     }
 
     private static CookieOptions BuildOptions(TimeSpan maxAge, bool secure)

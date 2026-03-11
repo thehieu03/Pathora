@@ -1,0 +1,92 @@
+using Application.Common.Constant;
+using Application.Dtos;
+using BuildingBlocks.CORS;
+using Contracts;
+using Contracts.Interfaces;
+using Domain.Common.Repositories;
+using Domain.Enums;
+using ErrorOr;
+using FluentValidation;
+
+namespace Application.Features.TourRequest.Queries;
+
+public sealed record GetAllTourRequestsQuery(
+    TourRequestStatus? Status = null,
+    DateTimeOffset? FromDate = null,
+    DateTimeOffset? ToDate = null,
+    string? SearchText = null,
+    int PageNumber = 1,
+    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<TourRequestVm>>>;
+
+public sealed class GetAllTourRequestsQueryValidator : AbstractValidator<GetAllTourRequestsQuery>
+{
+    public GetAllTourRequestsQueryValidator()
+    {
+        RuleFor(x => x.PageNumber)
+            .GreaterThan(0).WithMessage("Page number must be greater than 0.");
+
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, 100).WithMessage("Page size must be between 1 and 100.");
+
+        RuleFor(x => x.ToDate)
+            .GreaterThanOrEqualTo(x => x.FromDate!.Value)
+            .When(x => x.FromDate.HasValue && x.ToDate.HasValue)
+            .WithMessage("To date must be greater than or equal to from date.");
+    }
+}
+
+public sealed class GetAllTourRequestsQueryHandler(
+    IUser user,
+    IRoleRepository roleRepository,
+    ITourRequestRepository tourRequestRepository)
+    : IQueryHandler<GetAllTourRequestsQuery, ErrorOr<PaginatedList<TourRequestVm>>>
+{
+    public async Task<ErrorOr<PaginatedList<TourRequestVm>>> Handle(GetAllTourRequestsQuery request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(user.Id) || !Guid.TryParse(user.Id, out var currentUserId))
+        {
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
+        }
+
+        var adminCheck = await EnsureAdminAsync(currentUserId, roleRepository);
+        if (adminCheck.IsError)
+        {
+            return adminCheck.Errors;
+        }
+
+        var entities = await tourRequestRepository.GetAllAsync(
+            request.Status,
+            request.FromDate,
+            request.ToDate,
+            request.SearchText,
+            request.PageNumber,
+            request.PageSize,
+            asNoTracking: true);
+
+        var total = await tourRequestRepository.CountAllAsync(
+            request.Status,
+            request.FromDate,
+            request.ToDate,
+            request.SearchText);
+
+        return new PaginatedList<TourRequestVm>(total, entities.Select(x => x.ToVm()).ToList());
+    }
+
+    private static async Task<ErrorOr<Success>> EnsureAdminAsync(Guid currentUserId, IRoleRepository roleRepository)
+    {
+        var rolesResult = await roleRepository.FindByUserId(currentUserId.ToString());
+        if (rolesResult.IsError)
+        {
+            return rolesResult.Errors;
+        }
+
+        var isAdmin = rolesResult.Value.Any(role =>
+            role.Type == 9
+            || string.Equals(role.Name, "Admin", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(role.Name, "SuperAdmin", StringComparison.OrdinalIgnoreCase));
+
+        return isAdmin
+            ? Result.Success
+            : Error.Forbidden(ErrorConstants.TourRequest.AdminOnlyCode, ErrorConstants.TourRequest.AdminOnlyDescription);
+    }
+}

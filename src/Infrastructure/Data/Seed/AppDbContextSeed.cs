@@ -11,9 +11,17 @@ public static class AppDbContextSeed
         // This prevents partial-batch failures from being treated as "fully seeded".
         var hasFullSeedData = await context.CustomerPayments.AsNoTracking().AnyAsync(cancellationToken);
 
+        var hasBackfilledTourDayTranslations = TourDayContextSeed.BackfillTranslations(context);
+        var hasBackfilledTourInstanceTranslations = TourInstanceContextSeed.BackfillTranslations(context);
+
+        if (hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations)
+        {
+            await SaveChangesUtcAsync(context, cancellationToken);
+        }
+
         if (hasFullSeedData)
         {
-            return false;
+            return hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations;
         }
 
         // ── Batch 1: Core entities (no FK dependencies) ──

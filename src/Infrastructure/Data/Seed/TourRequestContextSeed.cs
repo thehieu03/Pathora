@@ -42,6 +42,9 @@ public static class TourRequestContextSeed
                 NumberChild = item.NumberChild,
                 NumberInfant = item.NumberInfant,
                 Budget = item.Budget,
+                TravelInterests = item.TravelInterests ?? [],
+                PreferredAccommodation = item.PreferredAccommodation,
+                TransportationPreference = item.TransportationPreference,
                 SpecialRequirements = item.SpecialRequirements,
                 Note = item.Note,
                 Status = item.Status,
@@ -75,6 +78,9 @@ public static class TourRequestContextSeed
         public int NumberChild { get; set; }
         public int NumberInfant { get; set; }
         public decimal? Budget { get; set; }
+        public List<string>? TravelInterests { get; set; }
+        public string? PreferredAccommodation { get; set; }
+        public string? TransportationPreference { get; set; }
         public string? SpecialRequirements { get; set; }
         public string? Note { get; set; }
         public TourRequestStatus Status { get; set; }

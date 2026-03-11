@@ -1,5 +1,6 @@
 using Api.Endpoint;
 using Application.Features.Public.Queries;
+using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,37 +11,45 @@ namespace Api.Controllers;
 public class PublicHomeController : BaseApiController
 {
     [HttpGet(PublicEndpoint.Tours + "/" + PublicEndpoint.Featured)]
-    public async Task<IActionResult> GetFeaturedTours([FromQuery] int limit = 8)
+    public async Task<IActionResult> GetFeaturedTours(
+        [FromQuery] int limit = 8,
+        [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetFeaturedToursQuery(limit));
+        var result = await Sender.Send(new GetFeaturedToursQuery(limit, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 
     [HttpGet(PublicEndpoint.Tours + "/" + PublicEndpoint.Latest)]
-    public async Task<IActionResult> GetLatestTours([FromQuery] int limit = 6)
+    public async Task<IActionResult> GetLatestTours(
+        [FromQuery] int limit = 6,
+        [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetLatestToursQuery(limit));
+        var result = await Sender.Send(new GetLatestToursQuery(limit, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 
     [HttpGet(PublicEndpoint.Destinations + "/" + PublicEndpoint.Trending)]
-    public async Task<IActionResult> GetTrendingDestinations([FromQuery] int limit = 6)
+    public async Task<IActionResult> GetTrendingDestinations(
+        [FromQuery] int limit = 6,
+        [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetTrendingDestinationsQuery(limit));
+        var result = await Sender.Send(new GetTrendingDestinationsQuery(limit, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 
     [HttpGet(PublicEndpoint.Attractions + "/" + PublicEndpoint.Top)]
-    public async Task<IActionResult> GetTopAttractions([FromQuery] int limit = 8)
+    public async Task<IActionResult> GetTopAttractions(
+        [FromQuery] int limit = 8,
+        [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetTopAttractionsQuery(limit));
+        var result = await Sender.Send(new GetTopAttractionsQuery(limit, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 
     [HttpGet(PublicEndpoint.Stats)]
-    public async Task<IActionResult> GetHomeStats()
+    public async Task<IActionResult> GetHomeStats([FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetHomeStatsQuery());
+        var result = await Sender.Send(new GetHomeStatsQuery(languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 

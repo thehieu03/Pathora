@@ -1,16 +1,20 @@
 using Application.Common;
+using Application.Common.Localization;
 using Contracts.Interfaces;
 using Application.Contracts.Public;
 using BuildingBlocks.CORS;
 using ErrorOr;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Entities.Translations;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetFeaturedToursQuery(int Limit = 8) : IQuery<ErrorOr<List<FeaturedTourVm>>>, ICacheable
+public sealed record GetFeaturedToursQuery(int Limit = 8, string? Language = null) : IQuery<ErrorOr<List<FeaturedTourVm>>>, ICacheable
 {
-    public string CacheKey => $"{Common.CacheKey.Tour}:featured:{Limit}";
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
+    public string CacheKey => $"{Common.CacheKey.Tour}:featured:{Limit}:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
@@ -22,6 +26,11 @@ public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository)
     public async Task<ErrorOr<List<FeaturedTourVm>>> Handle(GetFeaturedToursQuery request, CancellationToken cancellationToken)
     {
         var tours = await _tourRepository.FindFeaturedTours(request.Limit);
+
+        foreach (var tour in tours)
+        {
+            tour.ApplyResolvedTranslations(request.ResolvedLanguage);
+        }
 
         var result = tours.Select(t =>
         {
