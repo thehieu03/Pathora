@@ -5,8 +5,6 @@ using Api.Swagger.Extensions;
 using Application;
 using Infrastructure;
 using Infrastructure.Data;
-using Infrastructure.Data.Seed;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 
@@ -22,11 +20,13 @@ builder.Services.AddHealthChecks()
 
 var app = builder.Build();
 
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await AppDbContextSeed.SeedIfNeededAsync(dbContext);
-}
+// NOTE: Auto migration/seed disabled for existing database environments.
+// await using (var scope = app.Services.CreateAsyncScope())
+// {
+//     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//     await dbContext.Database.MigrateAsync();
+//     await AppDbContextSeed.SeedIfNeededAsync(dbContext);
+// }
 
 if (!app.Environment.IsDevelopment())
 {

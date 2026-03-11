@@ -10,6 +10,7 @@ public class TourInsuranceEntity : Aggregate<Guid>
     public decimal CoverageFee { get; set; }
     public bool IsOptional { get; set; } = false;
     public string? Note { get; set; }
+    public Guid TourClassificationId { get; set; }
     public virtual TourClassificationEntity TourClassification { get; set; } = null!;
 
     public static TourInsuranceEntity Create(string insuranceName, InsuranceType insuranceType, string insuranceProvider, string coverageDescription, decimal coverageAmount, decimal coverageFee, string performedBy, bool isOptional = false, string? note = null)

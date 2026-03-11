@@ -20,7 +20,23 @@ public sealed class IdentityServiceTests
     private readonly IUserService _userService = Substitute.For<IUserService>();
     private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
     private readonly IRoleRepository _roleRepository = Substitute.For<IRoleRepository>();
+    private readonly IRegisterRepository _registerRepository = Substitute.For<IRegisterRepository>();
+    private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
     private readonly IdentityService _sut;
+
+    public IdentityServiceTests()
+    {
+        _sut = new IdentityService(
+            _user,
+            _tokenManager,
+            _unitOfWork,
+            _passwordHasher,
+            _userService,
+            _userRepository,
+            _roleRepository,
+            _registerRepository,
+            _mailRepository);
+    }
 
 
 

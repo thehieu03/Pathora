@@ -4,7 +4,7 @@ services:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__Default: "Host=34.87.55.176;Port=3306;Database=Pathora;Username=postgres;Password=123abc@A"
+      ConnectionStrings__Default: "Host=postgres;Port=5432;Database=Pathora;Username=postgres;Password=postgres"
       Redis__ConnectionString: "redis:6379"
       MinIO__Endpoint: "minio:9000"
       MinIO__PublicUrl: "http://localhost:9000"
@@ -24,6 +24,10 @@ services:
   redis:
     ports:
       - "6379:6379"
+
+  postgres:
+    ports:
+      - "5432:5432"
 
   minio:
     command: server /data --console-address ":9001"

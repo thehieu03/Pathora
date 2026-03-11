@@ -16,7 +16,14 @@ public static class TourPlanLocationContextSeed
 
         if (items is { Count: > 0 })
         {
-            tourplanlocationCollection.AddRange(items);
+            var validItems = items
+                .Where(item => item.TourDayActivityId != Guid.Empty)
+                .ToList();
+
+            if (validItems.Count > 0)
+            {
+                tourplanlocationCollection.AddRange(validItems);
+            }
         }
     }
 }
