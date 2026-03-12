@@ -1,122 +1,28 @@
-[
-  {
-    "Id": 1,
-    "Name": "SuperAdmin",
-    "Description": "Quản trị viên cao nhất hệ thống, toàn quyền",
-    "Type": 9,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+{
+  "entity": "RoleEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "Name": null,
+    "Description": null,
+    "Type": null,
+    "Status": null,
+    "IsDeleted": null
   },
-  {
-    "Id": 2,
-    "Name": "Admin",
-    "Description": "Quản trị viên, quản lý hệ thống",
-    "Type": 9,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  "types": {
+    "Id": "int",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "Name": "string",
+    "Description": "string",
+    "Type": "int",
+    "Status": "RoleStatus",
+    "IsDeleted": "bool"
   },
-  {
-    "Id": 3,
-    "Name": "TourManager",
-    "Description": "Trưởng phòng Tour & Điều hành",
-    "Type": 1,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 4,
-    "Name": "SalesManager",
-    "Description": "Trưởng phòng Kinh doanh",
-    "Type": 1,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 5,
-    "Name": "TourOperator",
-    "Description": "Nhân viên điều hành tour",
-    "Type": 2,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 6,
-    "Name": "SalesStaff",
-    "Description": "Nhân viên kinh doanh",
-    "Type": 2,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 7,
-    "Name": "TourGuide",
-    "Description": "Hướng dẫn viên du lịch",
-    "Type": 2,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 8,
-    "Name": "Accountant",
-    "Description": "Nhân viên kế toán",
-    "Type": 2,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 9,
-    "Name": "MarketingStaff",
-    "Description": "Nhân viên marketing",
-    "Type": 2,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  },
-  {
-    "Id": 10,
-    "Name": "Customer",
-    "Description": "Khách hàng đăng ký tài khoản",
-    "Type": 3,
-    "Status": 1,
-    "IsDeleted": false,
-    "CreatedBy": "system",
-    "CreatedOnUtc": "2026-03-10T00:00:00Z",
-    "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
-  }
-]
+  "data": []
+}

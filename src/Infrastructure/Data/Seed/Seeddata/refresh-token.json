@@ -1,1 +1,24 @@
-[]
+{
+  "entity": "RefreshTokenEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "UserId": null,
+    "Token": null,
+    "ExpiresOnUtc": null
+  },
+  "types": {
+    "Id": "Guid",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "UserId": "Guid",
+    "Token": "string",
+    "ExpiresOnUtc": "DateTimeOffset"
+  },
+  "data": []
+}

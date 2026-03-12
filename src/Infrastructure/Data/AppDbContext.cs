@@ -88,6 +88,7 @@ public class AppDbContext : DbContext
     public DbSet<BookingTourGuideEntity> BookingTourGuides => Set<BookingTourGuideEntity>();
     public DbSet<TourDayActivityStatusEntity> TourDayActivityStatuses => Set<TourDayActivityStatusEntity>();
     public DbSet<TourDayActivityGuideEntity> TourDayActivityGuides => Set<TourDayActivityGuideEntity>();
+    public DbSet<PaymentEntity> Payments => Set<PaymentEntity>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
