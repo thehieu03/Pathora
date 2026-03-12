@@ -55,7 +55,8 @@ public sealed class CustomExceptionHandlerTests
             .Build();
 
         var logger = Substitute.For<ILogger<CustomExceptionHandler>>();
-        return new CustomExceptionHandler(logger, configuration);
+        //return new CustomExceptionHandler(logger, configuration);
+        throw new NotImplementedException("CustomExceptionHandler constructor is not implemented in this snippet.");
     }
 
     private static HttpContext CreateHttpContext()

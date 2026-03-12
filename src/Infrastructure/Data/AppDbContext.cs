@@ -71,8 +71,7 @@ public class AppDbContext : DbContext
     public DbSet<DynamicPricingTierEntity> TourInstancePricingTiers => Set<DynamicPricingTierEntity>();
     public DbSet<TourRequestEntity> TourRequests => Set<TourRequestEntity>();
     public DbSet<BookingEntity> Bookings => Set<BookingEntity>();
-    public DbSet<CustomerDepositEntity> CustomerDeposits => Set<CustomerDepositEntity>();
-    public DbSet<CustomerPaymentEntity> CustomerPayments => Set<CustomerPaymentEntity>();
+    public DbSet<PaymentEntity> Payments => Set<PaymentEntity>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -68,15 +68,5 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
             .WithMany()
             .HasForeignKey(b => b.UserId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasMany(b => b.Deposits)
-            .WithOne(d => d.Booking)
-            .HasForeignKey(d => d.BookingId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(b => b.Payments)
-            .WithOne(p => p.Booking)
-            .HasForeignKey(p => p.BookingId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }
