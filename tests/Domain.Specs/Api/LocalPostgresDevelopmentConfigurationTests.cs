@@ -5,7 +5,7 @@ namespace Domain.Specs.Api;
 public sealed class LocalPostgresDevelopmentConfigurationTests
 {
     [Fact]
-    public void ConnectionString_WhenLoadingDevelopmentConfig_ShouldUseCloudHost()
+    public void ConnectionString_WhenLoadingDevelopmentConfig_ShouldUseLocalHost()
     {
         var apiProjectPath = Path.Combine(GetSolutionRoot(), "src", "Api");
         var configuration = new ConfigurationBuilder()
@@ -17,12 +17,12 @@ public sealed class LocalPostgresDevelopmentConfigurationTests
         var connectionString = configuration.GetConnectionString("Default");
 
         Assert.False(string.IsNullOrWhiteSpace(connectionString));
-        Assert.Contains("Host=pathora-db.duckdns.org", connectionString!, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Host=localhost", connectionString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Host=localhost", connectionString!, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Host=pathora-db.duckdns.org", connectionString, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void DotEnvConnectionString_WhenUsingCompose_ShouldUseCloudHost()
+    public void DotEnvConnectionString_WhenUsingCompose_ShouldUseLocalHost()
     {
         var envPath = Path.Combine(GetSolutionRoot(), ".env");
         var lines = File.ReadAllLines(envPath);
@@ -31,8 +31,8 @@ public sealed class LocalPostgresDevelopmentConfigurationTests
             line.StartsWith("ConnectionStrings__Default=", StringComparison.Ordinal));
 
         Assert.NotNull(connectionLine);
-        Assert.Contains("Host=pathora-db.duckdns.org", connectionLine!, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Host=postgres", connectionLine, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Host=localhost", connectionLine!, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Host=pathora-db.duckdns.org", connectionLine, StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetSolutionRoot()

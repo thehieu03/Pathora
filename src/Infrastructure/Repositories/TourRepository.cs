@@ -15,7 +15,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
         var query = asNoTracking
             ? BuildTourDetailQueryNoTracking()
             : _context.Tours;
-        
+
         return await query.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 

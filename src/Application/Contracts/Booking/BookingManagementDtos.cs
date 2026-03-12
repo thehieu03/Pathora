@@ -228,6 +228,130 @@ public sealed record SupplierPayableDto(
     List<SupplierReceiptDto> Receipts
 );
 
+public sealed record TourGuideDto(
+    Guid TourGuideId,
+    string FullName,
+    string? NickName,
+    GenderType? Gender,
+    DateTimeOffset? DateOfBirth,
+    string? PhoneNumber,
+    string? Email,
+    string? Address,
+    string LicenseNumber,
+    DateTimeOffset? LicenseExpiryDate,
+    string? Languages,
+    string? Specializations,
+    string? ProfileImageUrl,
+    int YearsOfExperience,
+    decimal? Rating,
+    bool IsAvailable,
+    bool IsActive,
+    string? Note
+);
+
+public sealed record CreateTourGuideDto(
+    string FullName,
+    string LicenseNumber,
+    string? NickName,
+    GenderType? Gender,
+    DateTimeOffset? DateOfBirth,
+    string? PhoneNumber,
+    string? Email,
+    string? Address,
+    DateTimeOffset? LicenseExpiryDate,
+    string? Languages,
+    string? Specializations,
+    string? ProfileImageUrl,
+    int YearsOfExperience,
+    decimal? Rating,
+    bool IsAvailable,
+    bool IsActive,
+    string? Note
+);
+
+public sealed record UpdateTourGuideDto(
+    Guid TourGuideId,
+    string FullName,
+    string LicenseNumber,
+    string? NickName,
+    GenderType? Gender,
+    DateTimeOffset? DateOfBirth,
+    string? PhoneNumber,
+    string? Email,
+    string? Address,
+    DateTimeOffset? LicenseExpiryDate,
+    string? Languages,
+    string? Specializations,
+    string? ProfileImageUrl,
+    int YearsOfExperience,
+    decimal? Rating,
+    bool IsAvailable,
+    bool IsActive,
+    string? Note
+);
+
+public sealed record BookingTeamMemberDto(
+    Guid BookingTourGuideId,
+    Guid BookingId,
+    Guid UserId,
+    Guid? TourGuideId,
+    AssignedRole AssignedRole,
+    bool IsLead,
+    AssignmentStatus Status,
+    DateTimeOffset AssignedDate,
+    string? Note
+);
+
+public sealed record AssignTeamMemberDto(
+    Guid UserId,
+    AssignedRole AssignedRole,
+    bool IsLead,
+    Guid? TourGuideId,
+    string? Note
+);
+
+public sealed record BookingTourGuideDto(
+    Guid BookingTourGuideId,
+    Guid BookingId,
+    Guid UserId,
+    Guid? TourGuideId,
+    AssignedRole AssignedRole,
+    bool IsLead,
+    AssignmentStatus Status,
+    DateTimeOffset AssignedDate,
+    string? Note
+);
+
+public sealed record TourDayActivityGuideDto(
+    Guid TourDayActivityGuideId,
+    Guid TourDayActivityStatusId,
+    Guid TourGuideId,
+    GuideRole Role,
+    DateTimeOffset? CheckInTime,
+    DateTimeOffset? CheckOutTime,
+    string? Note
+);
+
+public sealed record TourDayActivityStatusDto(
+    Guid TourDayActivityStatusId,
+    Guid BookingId,
+    Guid TourDayId,
+    ActivityStatus ActivityStatus,
+    DateTimeOffset? ActualStartTime,
+    DateTimeOffset? ActualEndTime,
+    DateTimeOffset? CompletedAt,
+    string? CancellationReason,
+    DateTimeOffset? CancelledAt,
+    string? Note,
+    List<TourDayActivityGuideDto> Guides
+);
+
+public sealed record UpdateActivityStatusDto(
+    DateTimeOffset? ActualTime,
+    string? Reason,
+    string? Note
+);
+
 public sealed record CreateBookingRequest(
     Guid TourInstanceId,
     string CustomerName,
@@ -257,5 +381,7 @@ public sealed record BookingDetailResponse(
     List<TransportDetailDto> TransportDetails,
     List<AccommodationDetailDto> AccommodationDetails,
     List<ParticipantDto> Participants,
-    List<SupplierPayableDto> SupplierPayables
+    List<SupplierPayableDto> SupplierPayables,
+    List<BookingTourGuideDto> AssignedTourGuides,
+    List<TourDayActivityStatusDto> ActivityStatuses
 );

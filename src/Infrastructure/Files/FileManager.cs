@@ -24,11 +24,11 @@ public class FileManager(
         Path.GetExtension(fileName).ToLowerInvariant() switch
         {
             ".jpg" or ".jpeg" => "image/jpeg",
-            ".png"           => "image/png",
-            ".gif"           => "image/gif",
-            ".webp"          => "image/webp",
-            ".pdf"           => "application/pdf",
-            _                => "application/octet-stream"
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".webp" => "image/webp",
+            ".pdf" => "application/pdf",
+            _ => "application/octet-stream"
         };
 
     public async Task<string> UploadFileAsync(

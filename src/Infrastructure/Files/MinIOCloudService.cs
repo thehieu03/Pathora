@@ -34,10 +34,10 @@ public sealed class MinIOCloudService : IMinIOCloudService
     {
         try
         {
-            var args=new PresignedGetObjectArgs()
+            var args = new PresignedGetObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(objectName)
-                .WithExpiry(expireTime*60);
+                .WithExpiry(expireTime * 60);
             return await _minioClient.PresignedGetObjectAsync(args);
         }
         catch (Exception ex)
@@ -49,8 +49,8 @@ public sealed class MinIOCloudService : IMinIOCloudService
 
     public async Task<List<UploadFileResult>> UploadFilesAsync(List<UploadFileBytes> files, string bucketName, bool isPublicBucket = false, CancellationToken ct = default)
     {
-        var results= new List<UploadFileResult>();
-        if(files is null || files.Count == 0)
+        var results = new List<UploadFileResult>();
+        if (files is null || files.Count == 0)
         {
             return results;
         }
@@ -60,25 +60,25 @@ public sealed class MinIOCloudService : IMinIOCloudService
             foreach (var f in files)
             {
                 var fileCloudId = Guid.NewGuid();
-                var ext=Path.GetExtension(f.FileName);
-                var objectName=$"{fileCloudId}{ext}";
+                var ext = Path.GetExtension(f.FileName);
+                var objectName = $"{fileCloudId}{ext}";
                 using var stream = new MemoryStream(f.Bytes, 0, f.Bytes.Length, writable: false, publiclyVisible: true);
-                var putArgs=new PutObjectArgs()
+                var putArgs = new PutObjectArgs()
                     .WithBucket(bucketName)
                     .WithObject(objectName)
                     .WithStreamData(stream)
                     .WithObjectSize(f.Bytes.Length)
                     .WithContentType(f.ContentType);
-                var putResult=await _minioClient.PutObjectAsync(putArgs, ct);
+                var putResult = await _minioClient.PutObjectAsync(putArgs, ct);
                 results.Add(new UploadFileResult
                 {
                     FileId = fileCloudId.ToString(),
                     FolderName = bucketName,
                     OriginalFileName = f.FileName,
-                    FileName=objectName,
-                    FileSize=f.Bytes.Length,
-                    ContentType=f.ContentType,
-                    PublicURL=isPublicBucket?  $"{_publicBaseUrl}/{bucketName}/{objectName}" : string.Empty,
+                    FileName = objectName,
+                    FileSize = f.Bytes.Length,
+                    ContentType = f.ContentType,
+                    PublicURL = isPublicBucket ? $"{_publicBaseUrl}/{bucketName}/{objectName}" : string.Empty,
                 });
             }
             return results;
@@ -112,7 +112,7 @@ public sealed class MinIOCloudService : IMinIOCloudService
                         }
                     }
                 };
-                var policyJson=JsonSerializer.Serialize(policy);
+                var policyJson = JsonSerializer.Serialize(policy);
                 await _minioClient.SetPolicyAsync(
                         new SetPolicyArgs()
                         .WithBucket(bucketName)

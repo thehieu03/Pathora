@@ -7,7 +7,7 @@ public interface IPaymentService
 {
     Task<ErrorOr<string>> GetQR(Guid id);
     Task<ErrorOr<string>> GetQRTest(string note, long amount);
-    
+
 
 }
 public class PaymentService : IPaymentService

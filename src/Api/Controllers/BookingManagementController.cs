@@ -1,8 +1,10 @@
 using Api.Endpoint;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Activity;
+using Application.Features.BookingManagement.ActivityStatus;
 using Application.Features.BookingManagement.Participant;
 using Application.Features.BookingManagement.Payable;
+using Application.Features.BookingManagement.TourGuide;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -120,6 +122,115 @@ public class BookingManagementController : BaseApiController
         var result = await Sender.Send(command);
         return HandleCreated(result);
     }
+
+    [HttpGet(BookingManagementEndpoint.ActivityStatuses)]
+    public async Task<IActionResult> GetActivityStatuses(Guid id)
+    {
+        var result = await Sender.Send(new GetActivityStatusesQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpGet(BookingManagementEndpoint.ActivityStatusDetail)]
+    public async Task<IActionResult> GetActivityStatusDetail(Guid id, Guid tourDayId)
+    {
+        var result = await Sender.Send(new GetActivityStatusByTourDayQuery(id, tourDayId));
+        return HandleResult(result);
+    }
+
+    [HttpPost(BookingManagementEndpoint.ActivityStatusStart)]
+    public async Task<IActionResult> StartActivity(Guid id, Guid tourDayId, [FromBody] UpdateActivityStatusDto request)
+    {
+        var result = await Sender.Send(new StartActivityCommand(id, tourDayId, request.ActualTime));
+        return HandleUpdated(result);
+    }
+
+    [HttpPost(BookingManagementEndpoint.ActivityStatusComplete)]
+    public async Task<IActionResult> CompleteActivity(Guid id, Guid tourDayId, [FromBody] UpdateActivityStatusDto request)
+    {
+        var result = await Sender.Send(new CompleteActivityCommand(id, tourDayId, request.ActualTime));
+        return HandleUpdated(result);
+    }
+
+    [HttpPost(BookingManagementEndpoint.ActivityStatusCancel)]
+    public async Task<IActionResult> CancelActivity(Guid id, Guid tourDayId, [FromBody] UpdateActivityStatusDto request)
+    {
+        var reason = string.IsNullOrWhiteSpace(request.Reason) ? "Hủy hoạt động" : request.Reason;
+        var result = await Sender.Send(new CancelActivityCommand(id, tourDayId, reason));
+        return HandleUpdated(result);
+    }
+
+    [HttpGet(BookingManagementEndpoint.Team)]
+    public async Task<IActionResult> GetTeam(Guid id)
+    {
+        var result = await Sender.Send(new GetBookingTeamQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpPost(BookingManagementEndpoint.Team)]
+    public async Task<IActionResult> AssignTeamMember(Guid id, [FromBody] AssignTeamMemberDto request)
+    {
+        var command = new AssignTourGuideToBookingCommand(
+            id,
+            request.UserId,
+            request.AssignedRole,
+            request.IsLead,
+            request.TourGuideId,
+            AssignedBy: null,
+            request.Note);
+
+        var result = await Sender.Send(command);
+        return HandleCreated(result);
+    }
+
+    [HttpPut(BookingManagementEndpoint.TeamMember)]
+    public async Task<IActionResult> UpdateTeamMember(Guid id, Guid userId, [FromBody] UpdateTeamMemberRequest request)
+    {
+        var command = new UpdateTeamMemberAssignmentCommand(
+            id,
+            userId,
+            request.AssignedRole,
+            request.IsLead,
+            request.TourGuideId,
+            request.Note);
+
+        var result = await Sender.Send(command);
+        return HandleUpdated(result);
+    }
+
+    [HttpDelete(BookingManagementEndpoint.TeamMember)]
+    public async Task<IActionResult> DeleteTeamMember(Guid id, Guid userId)
+    {
+        var result = await Sender.Send(new DeleteTeamMemberAssignmentCommand(id, userId));
+        return HandleDeleted(result);
+    }
+
+    [HttpPost(BookingManagementEndpoint.TeamMemberConfirm)]
+    public async Task<IActionResult> ConfirmTeamMember(Guid id, Guid userId)
+    {
+        var result = await Sender.Send(new ConfirmTeamMemberAssignmentCommand(id, userId));
+        return HandleUpdated(result);
+    }
+
+    [HttpGet(BookingManagementEndpoint.TeamTourManager)]
+    public async Task<IActionResult> GetTourManager(Guid id)
+    {
+        var result = await Sender.Send(new GetBookingTourManagerQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpGet(BookingManagementEndpoint.TeamTourOperators)]
+    public async Task<IActionResult> GetTourOperators(Guid id)
+    {
+        var result = await Sender.Send(new GetBookingTourOperatorsQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpGet(BookingManagementEndpoint.TeamTourGuides)]
+    public async Task<IActionResult> GetTourGuides(Guid id)
+    {
+        var result = await Sender.Send(new GetBookingAssignedTourGuidesQuery(id));
+        return HandleResult(result);
+    }
 }
 
 public sealed record CreateBookingActivityReservationRequest(
@@ -151,4 +262,10 @@ public sealed record CreateSupplierPayableRequest(
     Guid SupplierId,
     decimal ExpectedAmount,
     DateTimeOffset? DueAt,
+    string? Note);
+
+public sealed record UpdateTeamMemberRequest(
+    AssignedRole AssignedRole,
+    bool IsLead,
+    Guid? TourGuideId,
     string? Note);

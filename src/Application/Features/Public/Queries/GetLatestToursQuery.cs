@@ -17,7 +17,7 @@ public sealed record GetLatestToursQuery(int Limit = 6, string? Language = null)
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
-public sealed class GetLatestToursQueryHandler(ITourRepository tourRepository) 
+public sealed class GetLatestToursQueryHandler(ITourRepository tourRepository)
     : IQueryHandler<GetLatestToursQuery, ErrorOr<List<LatestTourVm>>>
 {
     private readonly ITourRepository _tourRepository = tourRepository;

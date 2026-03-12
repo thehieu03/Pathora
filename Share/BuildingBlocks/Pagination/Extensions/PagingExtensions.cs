@@ -1,6 +1,7 @@
 using MongoDB.Driver;
 
 namespace BuildingBlocks.Pagination.Extensions;
+
 public sealed record PaginationRequest(int PageNumber = 1, int PageSize = 1000);
 public static class PagingExtensions
 {

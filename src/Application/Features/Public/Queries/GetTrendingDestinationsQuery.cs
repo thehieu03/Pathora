@@ -16,7 +16,7 @@ public sealed record GetTrendingDestinationsQuery(int Limit = 6, string? Languag
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
-public sealed class GetTrendingDestinationsQueryHandler(ITourRepository tourRepository) 
+public sealed class GetTrendingDestinationsQueryHandler(ITourRepository tourRepository)
     : IQueryHandler<GetTrendingDestinationsQuery, ErrorOr<List<TrendingDestinationVm>>>
 {
     private readonly ITourRepository _tourRepository = tourRepository;

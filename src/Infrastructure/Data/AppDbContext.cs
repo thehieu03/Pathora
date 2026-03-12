@@ -84,6 +84,10 @@ public class AppDbContext : DbContext
     public DbSet<SupplierReceiptEntity> SupplierReceipts => Set<SupplierReceiptEntity>();
     public DbSet<CustomerDepositEntity> CustomerDeposits => Set<CustomerDepositEntity>();
     public DbSet<CustomerPaymentEntity> CustomerPayments => Set<CustomerPaymentEntity>();
+    public DbSet<TourGuideEntity> TourGuides => Set<TourGuideEntity>();
+    public DbSet<BookingTourGuideEntity> BookingTourGuides => Set<BookingTourGuideEntity>();
+    public DbSet<TourDayActivityStatusEntity> TourDayActivityStatuses => Set<TourDayActivityStatusEntity>();
+    public DbSet<TourDayActivityGuideEntity> TourDayActivityGuides => Set<TourDayActivityGuideEntity>();
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

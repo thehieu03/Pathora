@@ -1,6 +1,7 @@
 namespace Common.Constants;
 
-public static class ButtonShow {
+public static class ButtonShow
+{
     public const string IsVisitTab = nameof(IsVisitTab);
     public const string IsCreate = nameof(IsCreate);
     public const string IsUpdate = nameof(IsUpdate);
