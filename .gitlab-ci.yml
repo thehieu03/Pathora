@@ -14,5 +14,6 @@ deploy-app:
     - docker build -t pathora-be:latest .
     # 3. Dùng Compose để cập nhật hệ thống
     - echo "Đang cập nhật các container qua Docker Compose..."
+    - cd /home/huynqhe180309
     - touch .env
     - docker compose -f server_docker_compose.yml up -d
