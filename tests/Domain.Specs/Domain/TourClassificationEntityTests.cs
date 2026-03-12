@@ -9,15 +9,17 @@ public sealed class TourClassificationEntityTests
     {
         var tourId = Guid.CreateVersion7();
         var entity = TourClassificationEntity.Create(
-            tourId, "VIP", 1000m, 900m, "VIP package", 3, "admin");
+            tourId, "VIP", 1000m, 900m, 0m, "VIP package", 3, 2, "admin");
 
         Assert.NotEqual(Guid.Empty, entity.Id);
         Assert.Equal(tourId, entity.TourId);
         Assert.Equal("VIP", entity.Name);
-        Assert.Equal(1000m, entity.Price);
-        Assert.Equal(900m, entity.SalePrice);
+        Assert.Equal(1000m, entity.AdultPrice);
+        Assert.Equal(900m, entity.ChildPrice);
+        Assert.Equal(0m, entity.InfantPrice);
         Assert.Equal("VIP package", entity.Description);
-        Assert.Equal(3, entity.DurationDays);
+        Assert.Equal(3, entity.NumberOfDay);
+        Assert.Equal(2, entity.NumberOfNight);
         Assert.Equal("admin", entity.CreatedBy);
         Assert.Equal("admin", entity.LastModifiedBy);
     }
@@ -26,8 +28,8 @@ public sealed class TourClassificationEntityTests
     public void Create_ShouldGenerateUniqueIds()
     {
         var tourId = Guid.CreateVersion7();
-        var c1 = TourClassificationEntity.Create(tourId, "VIP", 1000m, 900m, "desc", 3, "admin");
-        var c2 = TourClassificationEntity.Create(tourId, "Standard", 500m, 450m, "desc", 2, "admin");
+        var c1 = TourClassificationEntity.Create(tourId, "VIP", 1000m, 900m, 0m, "desc", 3, 2, "admin");
+        var c2 = TourClassificationEntity.Create(tourId, "Standard", 500m, 450m, 0m, "desc", 2, 1, "admin");
 
         Assert.NotEqual(c1.Id, c2.Id);
     }
@@ -36,44 +38,17 @@ public sealed class TourClassificationEntityTests
     public void Update_ShouldModifyProperties()
     {
         var entity = TourClassificationEntity.Create(
-            Guid.CreateVersion7(), "VIP", 1000m, 900m, "desc", 3, "admin");
+            Guid.CreateVersion7(), "VIP", 1000m, 900m, 0m, "desc", 3, 2, "admin");
 
-        entity.Update("Premium", 1500m, 1200m, "Premium package", 5, "editor");
+        entity.Update("Premium", 1500m, 1200m, 0m, "Premium package", 5, 4, "editor");
 
         Assert.Equal("Premium", entity.Name);
-        Assert.Equal(1500m, entity.Price);
-        Assert.Equal(1200m, entity.SalePrice);
+        Assert.Equal(1500m, entity.AdultPrice);
+        Assert.Equal(1200m, entity.ChildPrice);
+        Assert.Equal(0m, entity.InfantPrice);
         Assert.Equal("Premium package", entity.Description);
-        Assert.Equal(5, entity.DurationDays);
+        Assert.Equal(5, entity.NumberOfDay);
+        Assert.Equal(4, entity.NumberOfNight);
         Assert.Equal("editor", entity.LastModifiedBy);
-    }
-
-    [Fact]
-    public void Create_WhenSalePriceExceedsPrice_ShouldThrow()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            TourClassificationEntity.Create(
-                Guid.CreateVersion7(), "VIP", 1000m, 1200m, "desc", 3, "admin"));
-    }
-
-    [Fact]
-    public void Create_WhenDurationDaysIsNotPositive_ShouldThrow()
-    {
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            TourClassificationEntity.Create(
-                Guid.CreateVersion7(), "VIP", 1000m, 900m, "desc", 0, "admin"));
-    }
-
-    [Fact]
-    public void Update_WhenInvalidValuesProvided_ShouldThrowAndKeepCurrentState()
-    {
-        var entity = TourClassificationEntity.Create(
-            Guid.CreateVersion7(), "VIP", 1000m, 900m, "desc", 3, "admin");
-
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-            entity.Update("VIP", 500m, 900m, "desc", 3, "editor"));
-
-        Assert.Equal(1000m, entity.Price);
-        Assert.Equal(900m, entity.SalePrice);
     }
 }

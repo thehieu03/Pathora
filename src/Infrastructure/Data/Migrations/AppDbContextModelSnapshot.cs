@@ -335,14 +335,26 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal>("PricePerPerson")
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<Guid>("TourInstanceId")
+                    b.Property<Guid?>("TourClassificationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("TourInstanceId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TourInstanceId");
+                    b.HasIndex("TourClassificationId", "MinParticipants", "MaxParticipants")
+                        .HasFilter("\"TourClassificationId\" IS NOT NULL");
 
-                    b.ToTable("TourInstancePricingTiers", (string)null);
+                    b.HasIndex("TourInstanceId", "MinParticipants", "MaxParticipants")
+                        .HasFilter("\"TourInstanceId\" IS NOT NULL");
+
+                    b.ToTable("TourInstancePricingTiers", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_TourInstancePricingTiers_ExactlyOneOwner", "((\"TourInstanceId\" IS NOT NULL AND \"TourClassificationId\" IS NULL) OR (\"TourInstanceId\" IS NULL AND \"TourClassificationId\" IS NOT NULL))");
+
+                            t.HasCheckConstraint("CK_TourInstancePricingTiers_ValidRange", "(\"MinParticipants\" >= 1 AND \"MaxParticipants\" >= \"MinParticipants\")");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.FileMetadataEntity", b =>
@@ -781,6 +793,12 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("AdultPrice")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<decimal>("ChildPrice")
+                        .HasColumnType("numeric(18,2)");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
@@ -791,8 +809,8 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("DurationDays")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("InfantPrice")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -805,11 +823,11 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric(18,2)");
+                    b.Property<int>("NumberOfDay")
+                        .HasColumnType("integer");
 
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("numeric(18,2)");
+                    b.Property<int>("NumberOfNight")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("TourId")
                         .HasColumnType("uuid");
@@ -1026,12 +1044,15 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("BasePrice")
+                    b.Property<decimal>("AdultPrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("CancellationReason")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal>("ChildPrice")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<Guid>("ClassificationId")
                         .HasColumnType("uuid");
@@ -1065,6 +1086,9 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<decimal>("InfantPrice")
+                        .HasColumnType("numeric(18,2)");
+
                     b.Property<string>("InstanceType")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1090,12 +1114,6 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<int>("MinParticipation")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("OperatingCost")
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal>("SellingPrice")
-                        .HasColumnType("numeric(18,2)");
 
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
@@ -1546,6 +1564,10 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("PreferredAccommodation")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<DateTimeOffset?>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -1566,6 +1588,14 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<Guid?>("TourInstanceId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("TransportationPreference")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("TravelInterests")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
@@ -1781,11 +1811,17 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.DynamicPricingTierEntity", b =>
                 {
+                    b.HasOne("Domain.Entities.TourClassificationEntity", "TourClassification")
+                        .WithMany("DynamicPricingTiers")
+                        .HasForeignKey("TourClassificationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Domain.Entities.TourInstanceEntity", "TourInstance")
                         .WithMany("DynamicPricingTiers")
                         .HasForeignKey("TourInstanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("TourClassification");
 
                     b.Navigation("TourInstance");
                 });
@@ -2167,6 +2203,8 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.TourClassificationEntity", b =>
                 {
+                    b.Navigation("DynamicPricingTiers");
+
                     b.Navigation("Insurances");
 
                     b.Navigation("Plans");

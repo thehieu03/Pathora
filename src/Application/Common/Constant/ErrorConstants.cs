@@ -50,6 +50,30 @@ public static class ErrorConstants
         public const string PublicNotFoundDescription = "Lịch trình tour không tồn tại hoặc không khả dụng";
     }
 
+    public static class DynamicPricing
+    {
+        public const string InvalidRangeCode = "DynamicPricing.InvalidRange";
+        public const string InvalidRangeDescription = "Khoảng số lượng khách không hợp lệ";
+
+        public const string OverlapCode = "DynamicPricing.Overlap";
+        public const string OverlapDescription = "Khoảng dynamic pricing bị chồng lấn";
+    }
+
+    public static class TourRequest
+    {
+        public const string NotFoundCode = "TourRequest.NotFound";
+        public const string NotFoundDescription = "Yêu cầu tour không tồn tại";
+
+        public const string ForbiddenCode = "TourRequest.Forbidden";
+        public const string ForbiddenDescription = "Bạn không có quyền truy cập yêu cầu tour này";
+
+        public const string AdminOnlyCode = "TourRequest.AdminOnly";
+        public const string AdminOnlyDescription = "Chỉ quản trị viên mới có quyền thực hiện thao tác này";
+
+        public const string InvalidStatusTransitionCode = "TourRequest.InvalidStatusTransition";
+        public const string InvalidStatusTransitionDescription = "Không thể chuyển trạng thái yêu cầu tour";
+    }
+
     public static class User
     {
         public const string NotFoundCode = "User.NotFound";

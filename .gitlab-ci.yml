@@ -4,7 +4,7 @@ stages:
 deploy-app:
   stage: build-and-deploy
   tags:
-    - do-an
+    - do-an-2
   only:
     - main
   script:
@@ -12,10 +12,6 @@ deploy-app:
     
     # 1. Build image mới (Đặt tên pathora-be cho khớp với compose của bạn)
     - docker build -t pathora-be:latest .
-    
-    # 2. Di chuyển vào thư mục chứa Docker Compose
-    - cd ~/my-database/my-project
-    
     # 3. Dùng Compose để cập nhật hệ thống
     - echo "Đang cập nhật các container qua Docker Compose..."
     - docker compose up -d --remove-orphans

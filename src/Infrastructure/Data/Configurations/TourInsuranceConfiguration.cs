@@ -41,14 +41,14 @@ public class TourInsuranceConfiguration : IEntityTypeConfiguration<TourInsurance
         builder.Property(i => i.Note)
             .HasMaxLength(1000);
 
-        builder.Property<Guid>("TourClassificationId")
+        builder.Property(i => i.TourClassificationId)
             .IsRequired();
 
-        builder.HasIndex("TourClassificationId");
+        builder.HasIndex(i => i.TourClassificationId);
 
         builder.HasOne(i => i.TourClassification)
             .WithMany(c => c.Insurances)
-            .HasForeignKey("TourClassificationId")
+            .HasForeignKey(i => i.TourClassificationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

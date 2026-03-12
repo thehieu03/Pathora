@@ -17,6 +17,9 @@ public class TourRequestEntity : Aggregate<Guid>
     public int NumberChild { get; set; }
     public int NumberInfant { get; set; }
     public decimal? Budget { get; set; }
+    public List<string> TravelInterests { get; set; } = [];
+    public string? PreferredAccommodation { get; set; }
+    public string? TransportationPreference { get; set; }
     public string? SpecialRequirements { get; set; }
     public string? Note { get; set; }
 
@@ -47,6 +50,9 @@ public class TourRequestEntity : Aggregate<Guid>
         int numberChild = 0,
         int numberInfant = 0,
         decimal? budget = null,
+        List<string>? travelInterests = null,
+        string? preferredAccommodation = null,
+        string? transportationPreference = null,
         string? specialRequirements = null,
         string? note = null)
     {
@@ -66,6 +72,9 @@ public class TourRequestEntity : Aggregate<Guid>
             NumberChild = numberChild,
             NumberInfant = numberInfant,
             Budget = budget,
+            TravelInterests = NormalizeTravelInterests(travelInterests),
+            PreferredAccommodation = preferredAccommodation,
+            TransportationPreference = transportationPreference,
             SpecialRequirements = specialRequirements,
             Note = note,
             Status = TourRequestStatus.Pending,
@@ -127,5 +136,19 @@ public class TourRequestEntity : Aggregate<Guid>
 
         if (!valid)
             throw new InvalidOperationException($"Không thể chuyển trạng thái từ {current} sang {next}.");
+    }
+
+    private static List<string> NormalizeTravelInterests(List<string>? travelInterests)
+    {
+        if (travelInterests is null || travelInterests.Count == 0)
+        {
+            return [];
+        }
+
+        return travelInterests
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .Select(x => x.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
     }
 }

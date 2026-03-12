@@ -1,4 +1,3 @@
-using Contracts.Interfaces;
 using Application.Features.Public.Queries;
 using Application.Mapping;
 using AutoMapper;
@@ -13,7 +12,6 @@ namespace Domain.Specs.Application;
 public sealed class GetPublicTourDetailLanguageTests
 {
     private readonly ITourRepository _tourRepository = Substitute.For<ITourRepository>();
-    private readonly ILanguageContext _languageContext = Substitute.For<ILanguageContext>();
     private readonly IMapper _mapper;
 
     public GetPublicTourDetailLanguageTests()
@@ -25,8 +23,6 @@ public sealed class GetPublicTourDetailLanguageTests
     [Fact]
     public async Task Handle_ShouldReturnTourInRequestedLanguage()
     {
-        _languageContext.CurrentLanguage.Returns("en");
-
         var tour = TourEntity.Create("Tour tiếng Việt", "Mô tả vi", "Mô tả dài vi", "tester", TourStatus.Active);
         tour.Translations["en"] = new TourTranslationData
         {
@@ -36,8 +32,8 @@ public sealed class GetPublicTourDetailLanguageTests
         };
         _tourRepository.FindById(tour.Id, Arg.Any<bool>()).Returns(tour);
 
-        var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper, _languageContext);
-        var result = await handler.Handle(new GetPublicTourDetailQuery(tour.Id), CancellationToken.None);
+        var handler = new GetPublicTourDetailQueryHandler(_tourRepository, _mapper);
+        var result = await handler.Handle(new GetPublicTourDetailQuery(tour.Id, "en"), CancellationToken.None);
 
         Assert.False(result.IsError);
         Assert.Equal("English tour", result.Value.TourName);

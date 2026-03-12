@@ -59,6 +59,49 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
 
         RuleFor(x => x.OperatingCost)
             .GreaterThanOrEqualTo(0).WithMessage("Chi phí vận hành không được âm.");
+
+        RuleForEach(x => x.DynamicPricing)
+            .ChildRules(tier =>
+            {
+                tier.RuleFor(x => x.MinParticipants)
+                    .GreaterThan(0).WithMessage(ValidationMessages.DynamicPricingMinParticipantsGreaterThanZero);
+
+                tier.RuleFor(x => x.MaxParticipants)
+                    .GreaterThanOrEqualTo(x => x.MinParticipants)
+                    .WithMessage(ValidationMessages.DynamicPricingMaxParticipantsGreaterThanOrEqualMin);
+
+                tier.RuleFor(x => x.PricePerPerson)
+                    .GreaterThanOrEqualTo(0)
+                    .WithMessage(ValidationMessages.DynamicPricingPricePerPersonNonNegative);
+            });
+
+        RuleFor(x => x.DynamicPricing)
+            .Must(HaveNoOverlappingRanges)
+            .WithMessage(ValidationMessages.DynamicPricingRangeMustNotOverlap)
+            .When(x => x.DynamicPricing is { Count: > 1 });
+    }
+
+    private static bool HaveNoOverlappingRanges(List<DynamicPricingDto>? tiers)
+    {
+        if (tiers is null || tiers.Count <= 1)
+        {
+            return true;
+        }
+
+        var ordered = tiers
+            .OrderBy(tier => tier.MinParticipants)
+            .ThenBy(tier => tier.MaxParticipants)
+            .ToList();
+
+        for (var index = 1; index < ordered.Count; index++)
+        {
+            if (ordered[index].MinParticipants <= ordered[index - 1].MaxParticipants)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 

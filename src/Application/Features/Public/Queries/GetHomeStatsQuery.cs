@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Localization;
 using Contracts.Interfaces;
 using Application.Contracts.Public;
 using BuildingBlocks.CORS;
@@ -7,9 +8,11 @@ using Domain.Common.Repositories;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetHomeStatsQuery : IQuery<ErrorOr<HomeStatsVm>>, ICacheable
+public sealed record GetHomeStatsQuery(string? Language = null) : IQuery<ErrorOr<HomeStatsVm>>, ICacheable
 {
-    public string CacheKey => $"{Common.CacheKey.Tour}:home-stats";
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
+    public string CacheKey => $"{Common.CacheKey.Tour}:home-stats:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 

@@ -8,7 +8,9 @@ public record UserInfoVm(
     string? Avatar,
     bool ForcePasswordChange,
     IEnumerable<UserRoleVm> Roles,
-    IEnumerable<UserDepartmentVm> Departments
+    IEnumerable<UserDepartmentVm> Departments,
+    string? Portal = null,
+    string? DefaultPath = null
 );
 
 public record UserRoleVm(int Type, string Id, string Name);

@@ -61,4 +61,26 @@ public static class ValidationMessages
     public const string TourInstanceMinParticipantsNonNegative = "Min participants must not be negative.";
     public const string TourInstanceStatusRequired = "Status is required.";
     public const string TourInstanceIdRequired = "Tour instance ID is required.";
+    public const string DynamicPricingMinParticipantsGreaterThanZero = "Min participants must be greater than 0.";
+    public const string DynamicPricingMaxParticipantsGreaterThanOrEqualMin = "Max participants must be greater than or equal to min participants.";
+    public const string DynamicPricingPricePerPersonNonNegative = "Price per person must not be negative.";
+    public const string DynamicPricingRangeMustNotOverlap = "Dynamic pricing ranges must not overlap.";
+
+    // ── TourRequest ─────────────────────────────────────────────
+    public const string TourRequestIdRequired = "Tour request ID is required.";
+    public const string TourRequestDestinationRequired = "Destination is required.";
+    public const string TourRequestDestinationMaxLength500 = "Destination must not exceed 500 characters.";
+    public const string TourRequestStartDateRequired = "Start date is required.";
+    public const string TourRequestEndDateRequired = "End date is required.";
+    public const string TourRequestEndDateAfterOrEqualStartDate = "End date must be greater than or equal to start date.";
+    public const string TourRequestParticipantsGreaterThanZero = "Number of participants must be greater than 0.";
+    public const string TourRequestBudgetGreaterThanZero = "Budget per person must be greater than 0.";
+    public const string TourRequestTravelInterestsRequired = "At least one travel interest is required.";
+    public const string TourRequestTravelInterestInvalid = "Travel interest is invalid.";
+    public const string TourRequestPreferredAccommodationMaxLength500 = "Preferred accommodation must not exceed 500 characters.";
+    public const string TourRequestTransportationPreferenceMaxLength500 = "Transportation preference must not exceed 500 characters.";
+    public const string TourRequestSpecialRequestsMaxLength2000 = "Special requests must not exceed 2000 characters.";
+    public const string TourRequestReviewStatusRequired = "Review status is required.";
+    public const string TourRequestReviewStatusInvalid = "Review status must be Approved or Rejected.";
+    public const string TourRequestAdminNoteMaxLength2000 = "Admin note must not exceed 2000 characters.";
 }

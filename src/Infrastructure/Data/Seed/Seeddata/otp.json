@@ -1,0 +1,18 @@
+{
+  "entity": "OtpEntity",
+  "template": {
+    "Id": null,
+    "Email": null,
+    "Code": null,
+    "ExpiryDate": null,
+    "IsDeleted": null
+  },
+  "types": {
+    "Id": "Guid",
+    "Email": "string",
+    "Code": "string",
+    "ExpiryDate": "DateTimeOffset",
+    "IsDeleted": "bool"
+  },
+  "data": []
+}

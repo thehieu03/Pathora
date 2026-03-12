@@ -19,6 +19,7 @@ namespace Infrastructure.Identity;
 internal sealed class TokenManager(
     IOptions<JwtOptions> jwtOptions,
     IUserRepository userRepository,
+    IRoleRepository roleRepository,
     IFusionCache fusionCache,
     IToken token,
     IUnitOfWork unitOfWork)
@@ -29,17 +30,37 @@ internal sealed class TokenManager(
 
     public async Task<ErrorOr<(string AccessToken, string RefreshToken)>> GenerateToken(UserEntity user)
     {
+        var rolesResult = await roleRepository.FindByUserId(user.Id.ToString());
+        if (rolesResult.IsError)
+        {
+            return rolesResult.Errors;
+        }
+
+        var roleClaims = rolesResult.Value
+            .GroupBy(role => role.Id)
+            .Select(group => group.First())
+            .SelectMany(role => new[]
+            {
+                new Claim(ClaimTypes.Role, role.Name),
+                new Claim("roles", role.Name)
+            })
+            .ToList();
+
         var key = Encoding.UTF8.GetBytes(_jwtOptions.Secret);
         var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
 
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
+            new Claim(JwtRegisteredClaimNames.Aud, _jwtOptions.Audience)
+        };
+        claims.AddRange(roleClaims);
+
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Iss, _jwtOptions.Issuer),
-                new Claim(JwtRegisteredClaimNames.Aud, _jwtOptions.Audience)
-            ]),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(_jwtOptions.ExpireInMinutes),
             SigningCredentials = credentials
         };
@@ -62,7 +83,7 @@ internal sealed class TokenManager(
         return (accessToken, refreshTokenValue);
     }
 
-    public async Task<ErrorOr<(string, string)>> RefreshToken(string refreshToken)
+    public async Task<ErrorOr<(string AccessToken, string RefreshToken, Guid UserId)>> RefreshToken(string refreshToken)
     {
         var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();
         var tokens = await repo.GetListAsync(t => t.Token == refreshToken);
@@ -82,7 +103,13 @@ internal sealed class TokenManager(
         repo.Delete(tokenEntity);
 
         // Generate new token pair
-        return await GenerateToken(user);
+        var generatedTokens = await GenerateToken(user);
+        if (generatedTokens.IsError)
+        {
+            return generatedTokens.Errors;
+        }
+
+        return (generatedTokens.Value.AccessToken, generatedTokens.Value.RefreshToken, user.Id);
     }
 
     public async Task<ErrorOr<Success>> RevokeToken(string userId, string refreshToken)

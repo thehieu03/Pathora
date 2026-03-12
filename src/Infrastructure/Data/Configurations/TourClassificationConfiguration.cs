@@ -19,11 +19,15 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(c => c.Price)
+        builder.Property(c => c.AdultPrice)
             .IsRequired()
             .HasColumnType("numeric(18,2)");
 
-        builder.Property(c => c.SalePrice)
+        builder.Property(c => c.ChildPrice)
+            .IsRequired()
+            .HasColumnType("numeric(18,2)");
+
+        builder.Property(c => c.InfantPrice)
             .IsRequired()
             .HasColumnType("numeric(18,2)");
 
@@ -33,7 +37,10 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
         builder.Property(c => c.Translations)
             .ConfigureTranslationsJsonb();
 
-        builder.Property(c => c.DurationDays)
+        builder.Property(c => c.NumberOfDay)
+            .IsRequired();
+
+        builder.Property(c => c.NumberOfNight)
             .IsRequired();
 
         builder.HasIndex(c => c.TourId);
@@ -41,6 +48,11 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
         builder.HasMany(c => c.Plans)
             .WithOne(d => d.Classification)
             .HasForeignKey(d => d.ClassificationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(c => c.DynamicPricingTiers)
+            .WithOne(d => d.TourClassification)
+            .HasForeignKey(d => d.TourClassificationId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -36,10 +36,15 @@ public class TourInstanceEntity : Aggregate<Guid>
     public int MaxParticipation { get; set; }
     public int CurrentParticipation { get; set; }
 
-    // Pricing
-    public decimal BasePrice { get; set; }
-    public decimal SellingPrice { get; set; }
-    public decimal OperatingCost { get; set; }
+// Pricing
+    public decimal AdultPrice { get; set; }
+    public decimal ChildPrice { get; set; }
+    public decimal InfantPrice { get; set; }
+    
+    // Aliases for backward compatibility
+    public decimal BasePrice => AdultPrice;
+    public decimal SellingPrice => ChildPrice;
+    public decimal OperatingCost => InfantPrice;
 
     // Media & Location
     public string? Location { get; set; }
@@ -67,7 +72,7 @@ public class TourInstanceEntity : Aggregate<Guid>
         return (endDate.Date - startDate.Date).Days + 1;
     }
 
-    public static TourInstanceEntity Create(
+public static TourInstanceEntity Create(
         Guid tourId,
         Guid classificationId,
         string title,
@@ -79,9 +84,9 @@ public class TourInstanceEntity : Aggregate<Guid>
         DateTimeOffset endDate,
         int minParticipation,
         int maxParticipation,
-        decimal basePrice,
-        decimal sellingPrice,
-        decimal operatingCost,
+        decimal adultPrice,
+        decimal childPrice,
+        decimal infantPrice,
         string performedBy,
         string? location = null,
         ImageEntity? thumbnail = null,
@@ -92,7 +97,6 @@ public class TourInstanceEntity : Aggregate<Guid>
     {
         EnsureValidDateRange(startDate, endDate);
         EnsureValidParticipants(minParticipation, maxParticipation);
-        EnsureValidPricing(basePrice, sellingPrice, operatingCost);
 
         return new TourInstanceEntity
         {
@@ -112,9 +116,9 @@ public class TourInstanceEntity : Aggregate<Guid>
             MinParticipation = minParticipation,
             MaxParticipation = maxParticipation,
             CurrentParticipation = 0,
-            BasePrice = basePrice,
-            SellingPrice = sellingPrice,
-            OperatingCost = operatingCost,
+            AdultPrice = adultPrice,
+            ChildPrice = childPrice,
+            InfantPrice = infantPrice,
             Location = location,
             Thumbnail = thumbnail ?? new ImageEntity(),
             Images = images ?? [],
@@ -135,9 +139,9 @@ public class TourInstanceEntity : Aggregate<Guid>
         DateTimeOffset endDate,
         int minParticipation,
         int maxParticipation,
-        decimal basePrice,
-        decimal sellingPrice,
-        decimal operatingCost,
+        decimal adultPrice,
+        decimal childPrice,
+        decimal infantPrice,
         string performedBy,
         string? location = null,
         ImageEntity? thumbnail = null,
@@ -148,7 +152,6 @@ public class TourInstanceEntity : Aggregate<Guid>
     {
         EnsureValidDateRange(startDate, endDate);
         EnsureValidParticipants(minParticipation, maxParticipation);
-        EnsureValidPricing(basePrice, sellingPrice, operatingCost);
 
         Title = title;
         StartDate = startDate;
@@ -156,9 +159,9 @@ public class TourInstanceEntity : Aggregate<Guid>
         DurationDays = CalculateDurationDays(startDate, endDate);
         MinParticipation = minParticipation;
         MaxParticipation = maxParticipation;
-        BasePrice = basePrice;
-        SellingPrice = sellingPrice;
-        OperatingCost = operatingCost;
+        AdultPrice = adultPrice;
+        ChildPrice = childPrice;
+        InfantPrice = infantPrice;
         Location = location;
         ConfirmationDeadline = confirmationDeadline;
         if (thumbnail is not null)
@@ -239,17 +242,7 @@ public class TourInstanceEntity : Aggregate<Guid>
             throw new ArgumentOutOfRangeException(nameof(maxParticipation), "Số người tối đa phải lớn hơn 0.");
         if (minParticipation > maxParticipation)
             throw new ArgumentOutOfRangeException(nameof(minParticipation), "Số người tối thiểu phải nhỏ hơn hoặc bằng số người tối đa.");
-    }
-
-    private static void EnsureValidPricing(decimal basePrice, decimal sellingPrice, decimal operatingCost)
-    {
-        if (basePrice < 0)
-            throw new ArgumentOutOfRangeException(nameof(basePrice), "Giá cơ bản không được âm.");
-        if (sellingPrice < 0)
-            throw new ArgumentOutOfRangeException(nameof(sellingPrice), "Giá bán không được âm.");
-        if (operatingCost < 0)
-            throw new ArgumentOutOfRangeException(nameof(operatingCost), "Chi phí vận hành không được âm.");
-    }
+}
 
     private static void EnsureValidTransition(TourInstanceStatus current, TourInstanceStatus next)
     {

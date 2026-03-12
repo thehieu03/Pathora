@@ -44,15 +44,20 @@ public static class DependencyInjection
 
     private static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddFusionCache()
+        var redisConnection = configuration["Redis:ConnectionString"];
+
+        var fusionCacheBuilder = services.AddFusionCache()
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
             {
                 Duration = TimeSpan.FromMinutes(5)
             })
-            .WithSerializer(new FusionCacheSystemTextJsonSerializer())
-            .WithRegisteredDistributedCache();
+            .WithSerializer(new FusionCacheSystemTextJsonSerializer());
 
-        services.AddStackExchangeRedisCache(options => options.Configuration = configuration["Redis:ConnectionString"]);
+        if (!string.IsNullOrEmpty(redisConnection))
+        {
+            services.AddStackExchangeRedisCache(options => options.Configuration = redisConnection);
+            fusionCacheBuilder.WithRegisteredDistributedCache();
+        }
 
         return services;
     }

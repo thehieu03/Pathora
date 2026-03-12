@@ -175,7 +175,7 @@ public sealed class GetPublicTourDetailQueryHandlerTests
             "Full coverage", 100000m, 50m, "tester", isOptional: true);
 
         var classification = TourClassificationEntity.Create(
-            Guid.CreateVersion7(), "VIP", 1000m, 900m, "VIP package", 3, "tester");
+            Guid.CreateVersion7(), "VIP", 1000m, 900m, 0m, "VIP package", 3, 2, "tester");
         classification.Plans = [day];
         classification.Insurances = [insurance];
 

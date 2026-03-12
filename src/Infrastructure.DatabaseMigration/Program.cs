@@ -7,11 +7,11 @@ var connectionString =
 
 Console.WriteLine($"Connection string: {connectionString}");
 
-EnsureDatabase.For.MySqlDatabase(connectionString, "utf8mb4_unicode_ci");
+EnsureDatabase.For.PostgresqlDatabase(connectionString);
 
 var upgrader =
     DeployChanges.To
-        .MySqlDatabase(connectionString)
+        .PostgresqlDatabase(connectionString)
         .WithVariablesDisabled()
         .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
         .LogToConsole()

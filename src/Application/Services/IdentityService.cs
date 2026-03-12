@@ -1,4 +1,5 @@
 using Application.Common.Interfaces;
+using Application.Common.Auth;
 using Application.Common.Constant;
 using Contracts.Interfaces;
 using Application.Contracts.Identity;
@@ -110,8 +111,14 @@ public class IdentityService(
         if (tokenResult.IsError)
             return tokenResult.Errors;
 
+        var portalResult = await ResolvePortalAsync(userEntity.Id);
+        if (portalResult.IsError)
+        {
+            return portalResult.Errors;
+        }
+
         var (accessToken, refreshToken) = tokenResult.Value;
-        return new LoginResponse(accessToken, refreshToken);
+        return new LoginResponse(accessToken, refreshToken, portalResult.Value.Portal, portalResult.Value.DefaultPath);
     }
 
     public async Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request)
@@ -165,8 +172,14 @@ public class IdentityService(
         if (tokenResult.IsError)
             return tokenResult.Errors;
 
+        var portalResult = await ResolvePortalAsync(userEntity.Id);
+        if (portalResult.IsError)
+        {
+            return portalResult.Errors;
+        }
+
         var (accessToken, refreshToken) = tokenResult.Value;
-        return new ExternalLoginResponse(accessToken, refreshToken);
+        return new ExternalLoginResponse(accessToken, refreshToken, portalResult.Value.Portal, portalResult.Value.DefaultPath);
     }
 
     public async Task<ErrorOr<RefreshTokenResponse>> Refresh(RefreshTokenRequest request)
@@ -175,8 +188,14 @@ public class IdentityService(
         if (result.IsError)
             return result.Errors;
 
-        var (accessToken, refreshToken) = result.Value;
-        return new RefreshTokenResponse(accessToken, refreshToken);
+        var portalResult = await ResolvePortalAsync(result.Value.UserId);
+        if (portalResult.IsError)
+        {
+            return portalResult.Errors;
+        }
+
+        var (accessToken, refreshToken, _) = result.Value;
+        return new RefreshTokenResponse(accessToken, refreshToken, portalResult.Value.Portal, portalResult.Value.DefaultPath);
     }
 
     public async Task<ErrorOr<Success>> Logout(LogoutRequest request)
@@ -234,6 +253,8 @@ public class IdentityService(
             ? []
             : rolesResult.Value.Select(r => new UserRoleVm(r.Type, r.Id.ToString(), r.Name)).ToList();
 
+        var portalRouting = AuthPortalResolver.Resolve(roles.Select(role => role.Type));
+
         return new UserInfoVm(
             userEntity.Id,
             userEntity.Username,
@@ -242,7 +263,9 @@ public class IdentityService(
             userEntity.AvatarUrl,
             userEntity.ForcePasswordChange,
             roles,
-            []);
+            [],
+            portalRouting.Portal,
+            portalRouting.DefaultPath);
     }
 
     public Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request)
@@ -293,5 +316,16 @@ public class IdentityService(
         {
             return Error.Failure("Register.ConfirmationFailed", "Xác nhận đăng ký thất bại.");
         }
+    }
+
+    private async Task<ErrorOr<PortalRouting>> ResolvePortalAsync(Guid userId)
+    {
+        var rolesResult = await _roleRepository.FindByUserId(userId.ToString());
+        if (rolesResult.IsError)
+        {
+            return rolesResult.Errors;
+        }
+
+        return AuthPortalResolver.Resolve(rolesResult.Value.Select(role => role.Type));
     }
 }

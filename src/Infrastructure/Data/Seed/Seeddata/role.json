@@ -1,0 +1,28 @@
+{
+  "entity": "RoleEntity",
+  "template": {
+    "Id": null,
+    "CreatedOnUtc": null,
+    "CreatedBy": null,
+    "LastModifiedOnUtc": null,
+    "LastModifiedBy": null,
+    "Name": null,
+    "Description": null,
+    "Type": null,
+    "Status": null,
+    "IsDeleted": null
+  },
+  "types": {
+    "Id": "int",
+    "CreatedOnUtc": "DateTimeOffset",
+    "CreatedBy": "string?",
+    "LastModifiedOnUtc": "DateTimeOffset?",
+    "LastModifiedBy": "string?",
+    "Name": "string",
+    "Description": "string",
+    "Type": "int",
+    "Status": "RoleStatus",
+    "IsDeleted": "bool"
+  },
+  "data": []
+}

@@ -11,16 +11,31 @@ public sealed class SearchToursQueryValidatorTests
     [Fact]
     public void Validate_WhenValid_ShouldHaveNoErrors()
     {
-        var query = new SearchToursQuery("Hà Nội", "VIP", null, null, 1, 10);
+        var query = new SearchToursQuery(
+            Q: "beach",
+            Destination: "Hà Nội",
+            Classification: "VIP",
+            Date: new DateOnly(2026, 5, 20),
+            People: 4,
+            MinPrice: 1000000,
+            MaxPrice: 5000000,
+            MinDays: 3,
+            MaxDays: 7,
+            Page: 1,
+            PageSize: 10);
+
         var result = _validator.TestValidate(query);
+
         result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
     public void Validate_WhenPageZero_ShouldHaveError()
     {
-        var query = new SearchToursQuery(null, null, null, null, 0, 10);
+        var query = new SearchToursQuery(null, null, null, null, null, null, null, null, null, 0, 10);
+
         var result = _validator.TestValidate(query);
+
         result.ShouldHaveValidationErrorFor(x => x.Page);
     }
 
@@ -29,8 +44,10 @@ public sealed class SearchToursQueryValidatorTests
     [InlineData(51)]
     public void Validate_WhenPageSizeOutOfRange_ShouldHaveError(int pageSize)
     {
-        var query = new SearchToursQuery(null, null, null, null, 1, pageSize);
+        var query = new SearchToursQuery(null, null, null, null, null, null, null, null, null, 1, pageSize);
+
         var result = _validator.TestValidate(query);
+
         result.ShouldHaveValidationErrorFor(x => x.PageSize);
     }
 
@@ -39,27 +56,42 @@ public sealed class SearchToursQueryValidatorTests
     [InlineData(51)]
     public void Validate_WhenPeopleOutOfRange_ShouldHaveError(int people)
     {
-        var query = new SearchToursQuery(null, null, null, people, 1, 10);
+        var query = new SearchToursQuery(null, null, null, null, people, null, null, null, null, 1, 10);
+
         var result = _validator.TestValidate(query);
+
         result.ShouldHaveValidationErrorFor(x => x.People);
     }
 
-    [Fact]
-    public void Validate_WhenPeopleNull_ShouldPass()
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(-100)]
+    public void Validate_WhenMinPriceNegative_ShouldHaveError(decimal minPrice)
     {
-        var query = new SearchToursQuery(null, null, null, null, 1, 10);
+        var query = new SearchToursQuery(null, null, null, null, null, minPrice, null, null, null, 1, 10);
+
         var result = _validator.TestValidate(query);
-        result.ShouldNotHaveValidationErrorFor(x => x.People);
+
+        result.ShouldHaveValidationErrorFor(x => x.MinPrice);
     }
 
-    [Theory]
-    [InlineData(1)]
-    [InlineData(25)]
-    [InlineData(50)]
-    public void Validate_WhenPeopleInRange_ShouldPass(int people)
+    [Fact]
+    public void Validate_WhenMaxPriceLowerThanMinPrice_ShouldHaveError()
     {
-        var query = new SearchToursQuery(null, null, null, people, 1, 10);
+        var query = new SearchToursQuery(null, null, null, null, null, 3000000, 2000000, null, null, 1, 10);
+
         var result = _validator.TestValidate(query);
-        result.ShouldNotHaveValidationErrorFor(x => x.People);
+
+        result.ShouldHaveValidationErrorFor(x => x.MaxPrice);
+    }
+
+    [Fact]
+    public void Validate_WhenMaxDaysLowerThanMinDays_ShouldHaveError()
+    {
+        var query = new SearchToursQuery(null, null, null, null, null, null, null, 7, 3, 1, 10);
+
+        var result = _validator.TestValidate(query);
+
+        result.ShouldHaveValidationErrorFor(x => x.MaxDays);
     }
 }

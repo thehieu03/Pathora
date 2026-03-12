@@ -1,6 +1,7 @@
 using Api.Controllers.Public;
 using Application.Dtos;
 using Application.Features.Public.Queries;
+using Contracts.Interfaces;
 using Domain.Enums;
 using ErrorOr;
 using Microsoft.AspNetCore.Http;
@@ -34,15 +35,16 @@ public sealed class PublicTourControllerTests
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<PublicTourController, GetPublicTourDetailQuery, TourDto>(
                 tourDto, $"/api/public/tours/{id}");
+        var languageContext = new TestLanguageContext { CurrentLanguage = "vi" };
 
-        var actionResult = await controller.GetTourDetail(id);
+        var actionResult = await controller.GetTourDetail(id, languageContext);
 
         ApiControllerTestHelper.AssertSuccessResponse(
             actionResult,
             expectedStatusCode: StatusCodes.Status200OK,
             expectedInstance: $"/api/public/tours/{id}",
             expectedData: tourDto);
-        Assert.Equal(new GetPublicTourDetailQuery(id), probe.CapturedRequest);
+        Assert.Equal(new GetPublicTourDetailQuery(id, "vi"), probe.CapturedRequest);
     }
 
     [Fact]
@@ -53,8 +55,9 @@ public sealed class PublicTourControllerTests
             .BuildController<PublicTourController, GetPublicTourDetailQuery, TourDto>(
                 Error.NotFound("Tour.NotFound", "Tour không tìm thấy"),
                 $"/api/public/tours/{id}");
+        var languageContext = new TestLanguageContext { CurrentLanguage = "en" };
 
-        var actionResult = await controller.GetTourDetail(id);
+        var actionResult = await controller.GetTourDetail(id, languageContext);
 
         ApiControllerTestHelper.AssertErrorResponse(
             actionResult,
@@ -62,6 +65,11 @@ public sealed class PublicTourControllerTests
             expectedCode: "Tour.NotFound",
             expectedMessage: "Tour không tìm thấy",
             expectedInstance: $"/api/public/tours/{id}");
-        Assert.Equal(new GetPublicTourDetailQuery(id), probe.CapturedRequest);
+        Assert.Equal(new GetPublicTourDetailQuery(id, "en"), probe.CapturedRequest);
+    }
+
+    private sealed class TestLanguageContext : ILanguageContext
+    {
+        public string CurrentLanguage { get; set; } = ILanguageContext.DefaultLanguage;
     }
 }

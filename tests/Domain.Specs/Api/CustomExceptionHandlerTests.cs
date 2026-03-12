@@ -3,6 +3,7 @@ using Common.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Infrastructure.Loging;
 using NSubstitute;
 
 namespace Domain.Specs.Api;
@@ -55,8 +56,8 @@ public sealed class CustomExceptionHandlerTests
             .Build();
 
         var logger = Substitute.For<ILogger<CustomExceptionHandler>>();
-        //return new CustomExceptionHandler(logger, configuration);
-        throw new NotImplementedException("CustomExceptionHandler constructor is not implemented in this snippet.");
+        var logQueue = new LogQueue();
+        return new CustomExceptionHandler(logger, configuration, logQueue);
     }
 
     private static HttpContext CreateHttpContext()

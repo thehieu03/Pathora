@@ -11,25 +11,41 @@
 
 //namespace Domain.Specs.Application;
 
-//public sealed class IdentityServiceTests
-//{
-//    private readonly IUser _user = Substitute.For<IUser>();
-//    private readonly ITokenManager _tokenManager = Substitute.For<ITokenManager>();
-//    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
-//    private readonly IPasswordHasher _passwordHasher = Substitute.For<IPasswordHasher>();
-//    private readonly IUserService _userService = Substitute.For<IUserService>();
-//    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
-//    private readonly IRoleRepository _roleRepository = Substitute.For<IRoleRepository>();
-//    //public  readonly required IdentityService _sut;
+public sealed class IdentityServiceTests
+{
+    private readonly IUser _user = Substitute.For<IUser>();
+    private readonly ITokenManager _tokenManager = Substitute.For<ITokenManager>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IPasswordHasher _passwordHasher = Substitute.For<IPasswordHasher>();
+    private readonly IUserService _userService = Substitute.For<IUserService>();
+    private readonly IUserRepository _userRepository = Substitute.For<IUserRepository>();
+    private readonly IRoleRepository _roleRepository = Substitute.For<IRoleRepository>();
+    private readonly IRegisterRepository _registerRepository = Substitute.For<IRegisterRepository>();
+    private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
+    private readonly IdentityService _sut;
+
+    public IdentityServiceTests()
+    {
+        _sut = new IdentityService(
+            _user,
+            _tokenManager,
+            _unitOfWork,
+            _passwordHasher,
+            _userService,
+            _userRepository,
+            _roleRepository,
+            _registerRepository,
+            _mailRepository);
+    }
 
 
 
-//    [Fact]
-//    public async Task Register_WhenRoleAssignmentSucceeds_ShouldCreateUserWithZeroBalanceAndCustomerRole()
-//    {
-//        _userRepository.IsEmailUnique("new@example.com").Returns(true);
-//        _passwordHasher.HashPassword("secret123").Returns("hashed-secret");
-//        _roleRepository.AddUser(Arg.Any<Guid>(), Arg.Any<List<int>>()).Returns(Result.Success);
+    [Fact]
+    public async Task Register_WhenRoleAssignmentSucceeds_ShouldCreateUserWithZeroBalanceAndCustomerRole()
+    {
+        _userRepository.IsEmailUnique("new@example.com").Returns(true);
+        _passwordHasher.HashPassword("secret123").Returns("hashed-secret");
+        _roleRepository.AddUser(Arg.Any<Guid>(), Arg.Any<List<int>>()).Returns(Result.Success);
 
 //        var result = await _sut.Register(new RegisterRequest("newuser", "New User", "new@example.com", "secret123"));
 

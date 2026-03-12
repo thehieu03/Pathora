@@ -1,7 +1,6 @@
 using Application.Features.Public.Queries;
 using Application.Mapping;
 using AutoMapper;
-using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Entities.Translations;
@@ -24,12 +23,11 @@ public sealed class GetPublicTourDetailNoTrackingTranslationTests
         using var dbContext = new AppDbContext(options);
         ITourRepository repository = new TourRepository(dbContext);
         var mapper = CreateMapper();
-        ILanguageContext languageContext = new StaticLanguageContext("en");
 
-        var handler = new GetPublicTourDetailQueryHandler(repository, mapper, languageContext);
+        var handler = new GetPublicTourDetailQueryHandler(repository, mapper);
 
         // Act
-        var result = await handler.Handle(new GetPublicTourDetailQuery(tourId), CancellationToken.None);
+        var result = await handler.Handle(new GetPublicTourDetailQuery(tourId, "en"), CancellationToken.None);
 
         // Assert
         Assert.False(result.IsError);
@@ -67,7 +65,7 @@ public sealed class GetPublicTourDetailNoTrackingTranslationTests
             LongDescription = "English long"
         };
 
-        var classification = TourClassificationEntity.Create(tour.Id, "VIP", 1000m, 900m, "Mô tả hạng", 3, "tester");
+        var classification = TourClassificationEntity.Create(tour.Id, "VIP", 1000m, 900m, 0m, "Mô tả hạng", 3, 2, "tester");
         classification.Translations["en"] = new TourClassificationTranslationData
         {
             Name = "English VIP",
@@ -165,8 +163,4 @@ public sealed class GetPublicTourDetailNoTrackingTranslationTests
         return tour.Id;
     }
 
-    private sealed class StaticLanguageContext(string currentLanguage) : ILanguageContext
-    {
-        public string CurrentLanguage { get; set; } = currentLanguage;
-    }
 }

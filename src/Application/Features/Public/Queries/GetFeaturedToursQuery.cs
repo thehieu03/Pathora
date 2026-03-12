@@ -1,16 +1,20 @@
 using Application.Common;
+using Application.Common.Localization;
 using Contracts.Interfaces;
 using Application.Contracts.Public;
 using BuildingBlocks.CORS;
 using ErrorOr;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Entities.Translations;
 
 namespace Application.Features.Public.Queries;
 
-public sealed record GetFeaturedToursQuery(int Limit = 8) : IQuery<ErrorOr<List<FeaturedTourVm>>>, ICacheable
+public sealed record GetFeaturedToursQuery(int Limit = 8, string? Language = null) : IQuery<ErrorOr<List<FeaturedTourVm>>>, ICacheable
 {
-    public string CacheKey => $"{Common.CacheKey.Tour}:featured:{Limit}";
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
+    public string CacheKey => $"{Common.CacheKey.Tour}:featured:{Limit}:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
@@ -23,18 +27,23 @@ public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository)
     {
         var tours = await _tourRepository.FindFeaturedTours(request.Limit);
 
+        foreach (var tour in tours)
+        {
+            tour.ApplyResolvedTranslations(request.ResolvedLanguage);
+        }
+
         var result = tours.Select(t =>
         {
             var classification = t.Classifications.FirstOrDefault();
             return new FeaturedTourVm(
-                t.Id,
+t.Id,
                 t.TourName,
                 t.Thumbnail?.PublicURL,
                 GetMainLocation(t),
                 null,
-                classification?.DurationDays ?? 0,
-                classification?.Price ?? 0,
-                classification?.SalePrice ?? 0,
+                classification?.NumberOfDay ?? 0,
+                classification?.AdultPrice ?? 0,
+                classification?.ChildPrice ?? 0,
                 classification?.Name);
         }).ToList();
 

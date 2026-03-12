@@ -13,7 +13,8 @@ internal static class DependencyInjection
         services.AddScoped<IMailClient, MailClient>();
 
         services.AddSingleton<IMailBodyBuilder, MailBodyBuilder>();
-        services.AddHostedService<MailProcessor>();
+
+        // services.AddHostedService<MailProcessor>();
 
         services.AddResiliencePipeline("mail-pipeline", cfg =>
         {
