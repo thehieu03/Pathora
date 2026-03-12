@@ -156,7 +156,7 @@ public class UserService(
 
         var newPassword = PasswordGenerator.Generate();
         userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
-         _userRepository.Update(userEntity);
+        _userRepository.Update(userEntity);
         await _unitOfWork.SaveChangeAsync();
 
         return Result.Success;

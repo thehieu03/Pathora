@@ -33,7 +33,7 @@ public static class DependencyInjection
                     npgsqlOptions.EnableRetryOnFailure(3);
                 });
             })
-            .AddLogingService(configuration)           
+            .AddLogingService(configuration)
             .AddIdentityServices(configuration)
             .AddMailService(configuration)
             .AddFileService(configuration)

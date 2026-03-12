@@ -7,7 +7,7 @@ namespace Application.Features.Public.Queries;
 
 public sealed record GetDestinationsQuery : IQuery<ErrorOr<List<string>>>;
 
-public sealed class GetDestinationsQueryHandler(ITourRepository tourRepository) 
+public sealed class GetDestinationsQueryHandler(ITourRepository tourRepository)
     : IQueryHandler<GetDestinationsQuery, ErrorOr<List<string>>>
 {
     private readonly ITourRepository _tourRepository = tourRepository;

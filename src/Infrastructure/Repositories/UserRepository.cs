@@ -36,7 +36,7 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
         await _context.Users.AddAsync(user);
     }
 
-  
+
 
     public async Task SoftDelete(Guid id)
     {

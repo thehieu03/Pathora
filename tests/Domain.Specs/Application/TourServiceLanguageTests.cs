@@ -55,6 +55,35 @@ public sealed class TourServiceLanguageTests
     }
 
     [Fact]
+    public async Task GetAll_ShouldIncludeThumbnailMetadataInListViewModel()
+    {
+        _languageContext.CurrentLanguage.Returns("vi");
+        var thumbnail = ImageEntity.Create(
+            "thumb-file-id",
+            "thumbnail-original.jpg",
+            "thumbnail.jpg",
+            "https://cdn.pathora.test/tours/thumbnail.jpg");
+        var tour = TourEntity.Create(
+            "Tour có ảnh",
+            "Mô tả ngắn",
+            "Mô tả dài",
+            "tester",
+            thumbnail: thumbnail);
+
+        _tourRepository.FindAll(null, 1, 10).Returns([tour]);
+        _tourRepository.CountAll(null).Returns(1);
+
+        var result = await _sut.GetAll(new GetAllToursQuery(null, 1, 10));
+
+        Assert.False(result.IsError);
+        Assert.Single(result.Value.Data);
+        Assert.Equal("thumb-file-id", result.Value.Data[0].Thumbnail?.FileId);
+        Assert.Equal(
+            "https://cdn.pathora.test/tours/thumbnail.jpg",
+            result.Value.Data[0].Thumbnail?.PublicURL);
+    }
+
+    [Fact]
     public async Task GetDetail_ShouldFallbackToVietnameseWhenRequestedMissing()
     {
         _languageContext.CurrentLanguage.Returns("en");

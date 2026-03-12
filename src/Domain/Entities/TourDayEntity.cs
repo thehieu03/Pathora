@@ -11,8 +11,10 @@ public class TourDayEntity : Aggregate<Guid>
     public string? Description { get; set; }
     public Dictionary<string, TourDayTranslationData> Translations { get; set; } = [];
     public virtual List<TourDayActivityEntity> Activities { get; set; } = [];
+    public virtual List<TourDayActivityStatusEntity> ActivityStatuses { get; set; } = [];
 
-    public static TourDayEntity Create(Guid classificationId, int dayNumber, string title, string performedBy, string? description = null) {
+    public static TourDayEntity Create(Guid classificationId, int dayNumber, string title, string performedBy, string? description = null)
+    {
         return new TourDayEntity
         {
             Id = Guid.CreateVersion7(),
@@ -27,7 +29,8 @@ public class TourDayEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(int dayNumber, string title, string performedBy, string? description = null) {
+    public void Update(int dayNumber, string title, string performedBy, string? description = null)
+    {
         DayNumber = dayNumber;
         Title = title;
         Description = description;

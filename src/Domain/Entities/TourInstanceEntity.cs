@@ -36,11 +36,11 @@ public class TourInstanceEntity : Aggregate<Guid>
     public int MaxParticipation { get; set; }
     public int CurrentParticipation { get; set; }
 
-// Pricing
+    // Pricing
     public decimal AdultPrice { get; set; }
     public decimal ChildPrice { get; set; }
     public decimal InfantPrice { get; set; }
-    
+
     // Aliases for backward compatibility
     public decimal BasePrice => AdultPrice;
     public decimal SellingPrice => ChildPrice;
@@ -62,38 +62,40 @@ public class TourInstanceEntity : Aggregate<Guid>
     // Translations (vi/en)
     public Dictionary<string, TourInstanceTranslationData> Translations { get; set; } = [];
 
-    public static string GenerateInstanceCode() {
+    public static string GenerateInstanceCode()
+    {
         var timestamp = DateTimeOffset.UtcNow.ToString("yyyyMMddHHmmss");
         var random = Random.Shared.Next(1000, 9999);
         return $"TI-{timestamp}-{random}";
     }
 
-    private static int CalculateDurationDays(DateTimeOffset startDate, DateTimeOffset endDate) {
+    private static int CalculateDurationDays(DateTimeOffset startDate, DateTimeOffset endDate)
+    {
         return (endDate.Date - startDate.Date).Days + 1;
     }
 
-public static TourInstanceEntity Create(
-        Guid tourId,
-        Guid classificationId,
-        string title,
-        string tourName,
-        string tourCode,
-        string classificationName,
-        TourType instanceType,
-        DateTimeOffset startDate,
-        DateTimeOffset endDate,
-        int minParticipation,
-        int maxParticipation,
-        decimal adultPrice,
-        decimal childPrice,
-        decimal infantPrice,
-        string performedBy,
-        string? location = null,
-        ImageEntity? thumbnail = null,
-        List<ImageEntity>? images = null,
-        DateTimeOffset? confirmationDeadline = null,
-        List<string>? includedServices = null,
-        TourInstanceGuide? guide = null)
+    public static TourInstanceEntity Create(
+            Guid tourId,
+            Guid classificationId,
+            string title,
+            string tourName,
+            string tourCode,
+            string classificationName,
+            TourType instanceType,
+            DateTimeOffset startDate,
+            DateTimeOffset endDate,
+            int minParticipation,
+            int maxParticipation,
+            decimal adultPrice,
+            decimal childPrice,
+            decimal infantPrice,
+            string performedBy,
+            string? location = null,
+            ImageEntity? thumbnail = null,
+            List<ImageEntity>? images = null,
+            DateTimeOffset? confirmationDeadline = null,
+            List<string>? includedServices = null,
+            TourInstanceGuide? guide = null)
     {
         EnsureValidDateRange(startDate, endDate);
         EnsureValidParticipants(minParticipation, maxParticipation);
@@ -242,7 +244,7 @@ public static TourInstanceEntity Create(
             throw new ArgumentOutOfRangeException(nameof(maxParticipation), "Số người tối đa phải lớn hơn 0.");
         if (minParticipation > maxParticipation)
             throw new ArgumentOutOfRangeException(nameof(minParticipation), "Số người tối thiểu phải nhỏ hơn hoặc bằng số người tối đa.");
-}
+    }
 
     private static void EnsureValidTransition(TourInstanceStatus current, TourInstanceStatus next)
     {

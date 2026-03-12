@@ -48,7 +48,9 @@ public sealed class MailProcessor : BackgroundService
                 continue;
             }
 
-            var sendTasks = mailsResult.Value.Select(async mail =>
+            var pendingMails = mailsResult.Value ?? [];
+
+            var sendTasks = pendingMails.Select(async mail =>
             {
                 await _semaphore.WaitAsync(stoppingToken);
                 try

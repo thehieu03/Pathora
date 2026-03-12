@@ -37,4 +37,4 @@ internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundS
         }
     }
 }
-    
+

@@ -18,7 +18,7 @@ public sealed record GetFeaturedToursQuery(int Limit = 8, string? Language = nul
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
-public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository) 
+public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository)
     : IQueryHandler<GetFeaturedToursQuery, ErrorOr<List<FeaturedTourVm>>>
 {
     private readonly ITourRepository _tourRepository = tourRepository;
@@ -65,7 +65,7 @@ t.Id,
             return null;
 
         var firstRoute = firstActivity.Routes.FirstOrDefault();
-        return firstRoute?.FromLocation != null 
+        return firstRoute?.FromLocation != null
             ? $"{firstRoute.FromLocation.City}, {firstRoute.FromLocation.Country}"
             : null;
     }

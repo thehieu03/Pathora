@@ -3,7 +3,7 @@ using ErrorOr;
 
 namespace Domain.Common.Repositories;
 
-public interface IUserRepository: IRepository<UserEntity>
+public interface IUserRepository : IRepository<UserEntity>
 {
     Task<UserEntity?> FindByEmail(string email);
     Task<UserEntity?> FindById(Guid id);

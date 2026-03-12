@@ -1,6 +1,7 @@
 namespace Common.Constants;
 
-public static class MessageCode {
+public static class MessageCode
+{
     public const string BadRequest = "BAD_REQUEST";
     public const string NotFound = "NOT_FOUND";
     public const string Unauthorized = "UNAUTHORIZED";

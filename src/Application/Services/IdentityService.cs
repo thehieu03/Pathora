@@ -53,11 +53,11 @@ public class IdentityService(
 
     public async Task<ErrorOr<Success>> Register(RegisterRequest request)
     {
-       
+
         var isUnique = await _userRepository.IsEmailUnique(request.Email);
         if (!isUnique)
             return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
-        
+
         try
         {
             await _unitOfWork.ExecuteTransactionAsync(async () =>
@@ -89,11 +89,11 @@ public class IdentityService(
                 await mailRepo.AddAsync(mailEntity);
             });
         }
-        catch(Exception) 
+        catch (Exception)
         {
             await _unitOfWork.RollbackTransactionAsync();
         }
-       
+
         return Result.Success;
     }
 
@@ -285,7 +285,7 @@ public class IdentityService(
     public async Task<ErrorOr<Success>> ConfirmRegister(ConfirmRegisterRequest request)
     {
         if (!Guid.TryParse(request.code, out var guidCode))
-             return Error.Validation("Register.InvalidCode", "Mã xác nhận không đúng định dạng Guid.");
+            return Error.Validation("Register.InvalidCode", "Mã xác nhận không đúng định dạng Guid.");
 
         var register = await _registerRepository.GetByIdAsync(guidCode);
 
@@ -326,6 +326,7 @@ public class IdentityService(
             return rolesResult.Errors;
         }
 
-        return AuthPortalResolver.Resolve(rolesResult.Value.Select(role => role.Type));
+        var roleTypes = (rolesResult.Value ?? []).Select(role => role.Type);
+        return AuthPortalResolver.Resolve(roleTypes);
     }
 }
