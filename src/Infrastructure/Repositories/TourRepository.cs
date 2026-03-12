@@ -55,6 +55,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
                 t.TourCode.ToLower().Contains(search));
         }
         return await query
+            .Include(t => t.Thumbnail)
             .OrderByDescending(t => t.CreatedOnUtc)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

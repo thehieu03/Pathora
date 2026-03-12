@@ -112,4 +112,30 @@ public sealed class AppDbContextSeedIdempotencyTests
             || !instance.Translations.ContainsKey("vi")
             || !instance.Translations.ContainsKey("en"));
     }
+
+    [Fact]
+    public async Task SeedIfNeededAsync_WhenExtendedOperationalSeedsExist_ShouldPopulateOperationalTables()
+    {
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"seed-operational-entities-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var dbContext = new AppDbContext(options);
+        await AppDbContextSeed.SeedIfNeededAsync(dbContext);
+
+        Assert.NotEmpty(await dbContext.Suppliers.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.TourGuides.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.BookingActivityReservations.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.BookingParticipants.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.BookingTourGuides.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.BookingTransportDetails.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.BookingAccommodationDetails.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.Passports.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.VisaApplications.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.Visas.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.SupplierPayables.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.SupplierReceipts.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.TourDayActivityStatuses.AsNoTracking().ToListAsync());
+        Assert.NotEmpty(await dbContext.TourDayActivityGuides.AsNoTracking().ToListAsync());
+    }
 }

@@ -15,4 +15,11 @@ public class AdminController : BaseApiController
         var result = await Sender.Send(new GetAdminOverviewQuery());
         return HandleResult(result);
     }
+
+    [HttpGet(AdminEndpoint.Dashboard)]
+    public async Task<IActionResult> GetDashboard()
+    {
+        var result = await Sender.Send(new GetAdminDashboardQuery());
+        return HandleResult(result);
+    }
 }

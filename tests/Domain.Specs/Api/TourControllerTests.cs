@@ -41,6 +41,7 @@ public sealed class TourControllerTests
                 "Tour Đà Nẵng",
                 "Mô tả ngắn",
                 "Active",
+                null,
                 DateTimeOffset.UtcNow)
         };
         var response = new PaginatedList<TourVm>(tours.Count, tours);

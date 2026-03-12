@@ -1,0 +1,53 @@
+[
+  {
+    "Id": "01952910-0000-7000-8000-000000000001",
+    "SupplierCode": "SUP-TRP-001",
+    "SupplierType": "Transport",
+    "Name": "Blue Ocean Transport",
+    "TaxCode": "0101234567",
+    "Phone": "0903000001",
+    "Email": "ops@blueocean-transport.vn",
+    "Address": "Ha Dong, Ha Noi",
+    "Note": "Coach fleet for domestic routes.",
+    "IsActive": true,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952910-0000-7000-8000-000000000002",
+    "SupplierCode": "SUP-ACC-001",
+    "SupplierType": "Accommodation",
+    "Name": "Sapphire Bay Cruise",
+    "TaxCode": "0107654321",
+    "Phone": "0903000002",
+    "Email": "sales@sapphirebaycruise.vn",
+    "Address": "Tuan Chau Port, Ha Long",
+    "Note": "Preferred accommodation partner for Ha Long routes.",
+    "IsActive": true,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952910-0000-7000-8000-000000000003",
+    "SupplierCode": "SUP-ACT-001",
+    "SupplierType": "Activity",
+    "Name": "Hoi An Heritage Services",
+    "TaxCode": "0409988776",
+    "Phone": "0903000003",
+    "Email": "booking@hoianheritage.vn",
+    "Address": "Hoi An, Quang Nam",
+    "Note": "Local guide and cultural walk operator.",
+    "IsActive": true,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

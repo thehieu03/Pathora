@@ -8,7 +8,12 @@ Each `*ContextSeed` class that loads file-based data must have exactly one JSON 
 
 | Seed class | JSON file |
 | --- | --- |
+| `BookingAccommodationDetailContextSeed` | `booking-accommodation-detail.json` |
+| `BookingActivityReservationContextSeed` | `booking-activity-reservation.json` |
 | `BookingContextSeed` | `booking.json` |
+| `BookingParticipantContextSeed` | `booking-participant.json` |
+| `BookingTourGuideContextSeed` | `booking-tour-guide.json` |
+| `BookingTransportDetailContextSeed` | `booking-transport-detail.json` |
 | `CustomerDepositContextSeed` | `customer-deposit.json` |
 | `CustomerPaymentContextSeed` | `customer-payment.json` |
 | `DepartmentContextSeed` | `department.json` |
@@ -16,16 +21,23 @@ Each `*ContextSeed` class that loads file-based data must have exactly one JSON 
 | `FileMetadataContextSeed` | `file-metadata.json` |
 | `FunctionContextSeed` | `function.json` |
 | `OtpContextSeed` | `otp.json` |
+| `PassportContextSeed` | `passport.json` |
 | `PositionContextSeed` | `position.json` |
 | `RefreshTokenContextSeed` | `refresh-token.json` |
 | `RegisterContextSeed` | `register.json` |
 | `ReviewContextSeed` | `review.json` |
 | `RoleContextSeed` | `role.json` |
 | `RoleFunctionContextSeed` | `role-function.json` |
+| `SupplierContextSeed` | `supplier.json` |
+| `SupplierPayableContextSeed` | `supplier-payable.json` |
+| `SupplierReceiptContextSeed` | `supplier-receipt.json` |
 | `TourClassificationContextSeed` | `tour-classification.json` |
 | `TourContextSeed` | `tour.json` |
 | `TourDayActivityContextSeed` | `tour-day-activity.json` |
+| `TourDayActivityGuideContextSeed` | `tour-day-activity-guide.json` |
+| `TourDayActivityStatusContextSeed` | `tour-day-activity-status.json` |
 | `TourDayContextSeed` | `tour-day.json` |
+| `TourGuideContextSeed` | `tour-guide.json` |
 | `TourInstanceContextSeed` | `tour-instance.json` |
 | `TourInsuranceContextSeed` | `tour-insurance.json` |
 | `TourPlanAccommodationContextSeed` | `tour-plan-accommodation.json` |
@@ -34,6 +46,8 @@ Each `*ContextSeed` class that loads file-based data must have exactly one JSON 
 | `TourRequestContextSeed` | `tour-request.json` |
 | `UserContextSeed` | `user.json` |
 | `UserRoleContextSeed` | `user-role.json` |
+| `VisaApplicationContextSeed` | `visa-application.json` |
+| `VisaContextSeed` | `visa.json` |
 
 The canonical mapping and required field checks are defined in `SeedFileManifest`.
 

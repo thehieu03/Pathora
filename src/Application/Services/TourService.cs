@@ -38,6 +38,23 @@ public class TourService(
     private static ImageEntity ToImageEntity(ImageInputDto dto) =>
         ImageEntity.Create(dto.FileId, dto.OriginalFileName, dto.FileName, dto.PublicURL);
 
+    private static ImageDto? ToImageDto(ImageEntity? image)
+    {
+        if (image is null)
+        {
+            return null;
+        }
+
+        var hasValue = !string.IsNullOrWhiteSpace(image.FileId)
+            || !string.IsNullOrWhiteSpace(image.OriginalFileName)
+            || !string.IsNullOrWhiteSpace(image.FileName)
+            || !string.IsNullOrWhiteSpace(image.PublicURL);
+
+        return hasValue
+            ? new ImageDto(image.FileId, image.OriginalFileName, image.FileName, image.PublicURL)
+            : null;
+    }
+
     public async Task<ErrorOr<Guid>> Create(CreateTourCommand request)
     {
         var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : new ImageEntity();
@@ -117,6 +134,7 @@ public class TourService(
                 translated.TourName,
                 translated.ShortDescription,
                 t.Status.ToString(),
+                ToImageDto(t.Thumbnail),
                 t.CreatedOnUtc);
         }).ToList();
 
