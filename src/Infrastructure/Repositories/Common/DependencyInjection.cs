@@ -50,8 +50,6 @@ internal static class DependencyInjection
         services.AddScoped<IBookingTourGuideRepository, BookingTourGuideRepository>();
         services.AddScoped<ITourDayActivityStatusRepository, TourDayActivityStatusRepository>();
         services.AddScoped<ITourDayActivityGuideRepository, TourDayActivityGuideRepository>();
-        services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
-        services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
         services.AddScoped<IAdminOverviewRepository, AdminOverviewRepository>();
         services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
 

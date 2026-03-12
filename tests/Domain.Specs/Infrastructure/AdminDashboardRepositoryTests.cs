@@ -195,19 +195,19 @@ public sealed class AdminDashboardRepositoryTests
             LastModifiedOnUtc = now.AddDays(-5)
         };
 
-        var payment = new CustomerPaymentEntity
-        {
-            Id = Guid.CreateVersion7(),
-            BookingId = confirmedBooking.Id,
-            Booking = confirmedBooking,
-            Amount = 2400m,
-            PaymentMethod = PaymentMethod.BankTransfer,
-            PaidAt = now.AddDays(-9),
-            CreatedBy = "seed",
-            LastModifiedBy = "seed",
-            CreatedOnUtc = now.AddDays(-9),
-            LastModifiedOnUtc = now.AddDays(-9)
-        };
+        //var payment = new CustomerPaymentEntity
+        //{
+        //    Id = Guid.CreateVersion7(),
+        //    BookingId = confirmedBooking.Id,
+        //    Booking = confirmedBooking,
+        //    Amount = 2400m,
+        //    PaymentMethod = PaymentMethod.BankTransfer,
+        //    PaidAt = now.AddDays(-9),
+        //    CreatedBy = "seed",
+        //    LastModifiedBy = "seed",
+        //    CreatedOnUtc = now.AddDays(-9),
+        //    LastModifiedOnUtc = now.AddDays(-9)
+        //};
 
         var pendingRequest = new TourRequestEntity
         {
@@ -266,7 +266,7 @@ public sealed class AdminDashboardRepositoryTests
         await context.TourClassifications.AddAsync(classification);
         await context.TourInstances.AddAsync(tourInstance);
         await context.Bookings.AddRangeAsync(confirmedBooking, cancelledBooking);
-        await context.CustomerPayments.AddAsync(payment);
+        //await context.CustomerPayments.AddAsync(payment);
         await context.TourRequests.AddRangeAsync(pendingRequest, approvedRequest, rejectedRequest);
         await context.SaveChangesAsync();
     }

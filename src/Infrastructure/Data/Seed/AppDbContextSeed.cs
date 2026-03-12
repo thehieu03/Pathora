@@ -9,8 +9,8 @@ public static class AppDbContextSeed
     {
         // Check if full seed data already exists by verifying late-batch tables.
         // This prevents partial-batch failures from being treated as "fully seeded".
-        var hasFullSeedData = await context.CustomerPayments.AsNoTracking().AnyAsync(cancellationToken)
-            && await context.Visas.AsNoTracking().AnyAsync(cancellationToken)
+        var hasFullSeedData =
+             await context.Visas.AsNoTracking().AnyAsync(cancellationToken)
             && await context.TourDayActivityGuides.AsNoTracking().AnyAsync(cancellationToken);
 
         var hasBackfilledTourDayTranslations = TourDayContextSeed.BackfillTranslations(context);
@@ -71,10 +71,8 @@ public static class AppDbContextSeed
         ReviewContextSeed.SeedData(context.Reviews);
         await SaveChangesUtcAsync(context, cancellationToken);
 
-        // ── Batch 6: Payment entities depending on Bookings ──
-        CustomerDepositContextSeed.SeedData(context.CustomerDeposits);
-        CustomerPaymentContextSeed.SeedData(context.CustomerPayments);
-        await SaveChangesUtcAsync(context, cancellationToken);
+      
+
 
         // ── Batch 7: Operational entities depending on Bookings/TourDays/TourGuides ──
         BookingActivityReservationContextSeed.SeedData(context.BookingActivityReservations);

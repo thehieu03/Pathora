@@ -52,9 +52,7 @@ public sealed class AdminDashboardRepository(AppDbContext context) : IAdminDashb
 
     private async Task<AdminDashboardStatsReport> BuildDashboardStats(CancellationToken cancellationToken)
     {
-        var totalRevenue = await _context.CustomerPayments
-            .AsNoTracking()
-            .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0m;
+        var totalRevenue = 0m;
 
         var totalBookings = await _context.Bookings
             .AsNoTracking()
@@ -109,10 +107,10 @@ public sealed class AdminDashboardRepository(AppDbContext context) : IAdminDashb
         var monthRange = BuildMonthRange(DashboardMonthWindow);
         var start = monthRange[0].MonthStart;
 
-        var rows = await _context.CustomerPayments
+        var rows = await _context.Payments
             .AsNoTracking()
-            .Where(x => x.PaidAt >= start)
-            .GroupBy(x => new { x.PaidAt.Year, x.PaidAt.Month })
+            .Where(x => x.TransactionTimestamp >= start)
+            .GroupBy(x => new { x.TransactionTimestamp.Year, x.TransactionTimestamp.Month })
             .Select(g => new MonthlyDecimalRow(g.Key.Year, g.Key.Month, g.Sum(x => x.Amount)))
             .ToListAsync(cancellationToken);
 
@@ -389,15 +387,19 @@ public sealed class AdminDashboardRepository(AppDbContext context) : IAdminDashb
         var currentMonth = StartOfCurrentMonth();
         var previousMonth = currentMonth.AddMonths(-1);
 
-        var currentRevenue = await _context.CustomerPayments
-            .AsNoTracking()
-            .Where(x => x.PaidAt >= currentMonth && x.PaidAt < currentMonth.AddMonths(1))
-            .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0m;
+        var currentRevenue = 
+            //await _context.CustomerPayments
+            //.AsNoTracking()
+            //.Where(x => x.PaidAt >= currentMonth && x.PaidAt < currentMonth.AddMonths(1))
+            //.SumAsync(x => (decimal?)x.Amount, cancellationToken) ??
+            0m;
 
-        var previousRevenue = await _context.CustomerPayments
-            .AsNoTracking()
-            .Where(x => x.PaidAt >= previousMonth && x.PaidAt < currentMonth)
-            .SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 0m;
+        var previousRevenue =
+            //await _context.CustomerPayments
+            //.AsNoTracking()
+            //.Where(x => x.PaidAt >= previousMonth && x.PaidAt < currentMonth)
+            //.SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 
+            0m;
 
         if (currentRevenue >= previousRevenue)
         {

@@ -3,6 +3,7 @@
 public class PaymentEntity : Aggregate<Guid>
 {
     public Guid PaidUser { get; set; }
+    public Guid? BookingId { get; set; }
     public string? TransactionId { get; set; } 
     public decimal Amount { get; set; }
     public string Currency { get; set; } = "VND";
