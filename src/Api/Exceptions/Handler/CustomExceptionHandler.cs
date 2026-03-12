@@ -118,9 +118,9 @@ public sealed class CustomExceptionHandler(
         {
             logger.LogWarning("Message: {exceptionMessage}, Time of occurrence {time}", exception.Message, DateTime.UtcNow);
         }
-        var log = new LogError 
+        var log = new LogError
         {
-            Content ="["+exception.GetType().Name+"]" + exception.Message+exception.StackTrace,
+            Content = "[" + exception.GetType().Name + "]" + exception.Message + exception.StackTrace,
         };
         logQueue.Writer.TryWrite(log);
         await context.Response.WriteAsJsonAsync(response, cancellationToken: cancellationToken);

@@ -7,9 +7,11 @@ public static class AppDbContextSeed
 {
     public static async Task<bool> SeedIfNeededAsync(AppDbContext context, CancellationToken cancellationToken = default)
     {
-        // Check if full seed data already exists by verifying a late-batch table.
+        // Check if full seed data already exists by verifying late-batch tables.
         // This prevents partial-batch failures from being treated as "fully seeded".
-        //var hasFullSeedData = await context.CustomerPayments.AsNoTracking().AnyAsync(cancellationToken);
+        var hasFullSeedData = await context.CustomerPayments.AsNoTracking().AnyAsync(cancellationToken)
+            && await context.Visas.AsNoTracking().AnyAsync(cancellationToken)
+            && await context.TourDayActivityGuides.AsNoTracking().AnyAsync(cancellationToken);
 
         var hasBackfilledTourDayTranslations = TourDayContextSeed.BackfillTranslations(context);
         var hasBackfilledTourInstanceTranslations = TourInstanceContextSeed.BackfillTranslations(context);
@@ -19,18 +21,22 @@ public static class AppDbContextSeed
             await SaveChangesUtcAsync(context, cancellationToken);
         }
 
-        //if (hasFullSeedData)
-        //{
-        //    return hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations;
-        //}
+        if (hasFullSeedData)
+        {
+            return hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations;
+        }
+
+        SeedDataPreflightValidator.ValidateRequiredSeedFiles();
 
         // ── Batch 1: Core entities (no FK dependencies) ──
         RoleContextSeed.SeedData(context.Roles);
         FunctionContextSeed.SeedData(context.Functions);
         DepartmentContextSeed.SeedData(context.Departments);
         PositionContextSeed.SeedData(context.Positions);
+        SupplierContextSeed.SeedData(context.Suppliers);
         UserContextSeed.SeedData(context.Users);
         TourContextSeed.SeedData(context.Tours);
+        TourGuideContextSeed.SeedData(context.TourGuides);
         await SaveChangesUtcAsync(context, cancellationToken);
 
         // ── Batch 2: Entities depending on Batch 1 (Users, Roles, Tours) ──
@@ -65,8 +71,30 @@ public static class AppDbContextSeed
         ReviewContextSeed.SeedData(context.Reviews);
         await SaveChangesUtcAsync(context, cancellationToken);
 
-        // ── Batch 6: Entities depending on Bookings ──
+        // ── Batch 6: Payment entities depending on Bookings ──
+        CustomerDepositContextSeed.SeedData(context.CustomerDeposits);
+        CustomerPaymentContextSeed.SeedData(context.CustomerPayments);
+        await SaveChangesUtcAsync(context, cancellationToken);
 
+        // ── Batch 7: Operational entities depending on Bookings/TourDays/TourGuides ──
+        BookingActivityReservationContextSeed.SeedData(context.BookingActivityReservations);
+        BookingParticipantContextSeed.SeedData(context.BookingParticipants);
+        BookingTourGuideContextSeed.SeedData(context.BookingTourGuides);
+        TourDayActivityStatusContextSeed.SeedData(context.TourDayActivityStatuses);
+        SupplierPayableContextSeed.SeedData(context.SupplierPayables);
+        await SaveChangesUtcAsync(context, cancellationToken);
+
+        // ── Batch 8: Entities depending on operational reservations/participants/payables ──
+        BookingTransportDetailContextSeed.SeedData(context.BookingTransportDetails);
+        BookingAccommodationDetailContextSeed.SeedData(context.BookingAccommodationDetails);
+        PassportContextSeed.SeedData(context.Passports);
+        SupplierReceiptContextSeed.SeedData(context.SupplierReceipts);
+        await SaveChangesUtcAsync(context, cancellationToken);
+
+        // ── Batch 9: Visa and activity-guide entities depending on previous batches ──
+        VisaApplicationContextSeed.SeedData(context.VisaApplications);
+        VisaContextSeed.SeedData(context.Visas);
+        TourDayActivityGuideContextSeed.SeedData(context.TourDayActivityGuides);
         await SaveChangesUtcAsync(context, cancellationToken);
 
         return true;

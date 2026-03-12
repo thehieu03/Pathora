@@ -24,10 +24,10 @@ internal class LogProcessor(LogQueue queue, IServiceScopeFactory scopeFactory) :
                 using (var scope = scopeFactory.CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    await db.Set<LogError>().AddRangeAsync(batch); 
+                    await db.Set<LogError>().AddRangeAsync(batch);
                     await db.SaveChangesAsync(stoppingToken);
                 }
-                batch.Clear(); 
+                batch.Clear();
             }
             await Task.Delay(5000, stoppingToken);
         }

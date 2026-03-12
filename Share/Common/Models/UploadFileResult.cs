@@ -1,6 +1,7 @@
 namespace Common.Models;
 
-public sealed class UploadFileResult {
+public sealed class UploadFileResult
+{
     public string FileId { get; set; } = Guid.NewGuid().ToString();
     public string? FolderName { get; set; }
     public string? OriginalFileName { get; set; }

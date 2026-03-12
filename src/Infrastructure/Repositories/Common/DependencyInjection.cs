@@ -36,6 +36,24 @@ internal static class DependencyInjection
 
         services.AddScoped<ITourRequestRepository, TourRequestRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IBookingActivityReservationRepository, BookingActivityReservationRepository>();
+        services.AddScoped<IBookingTransportDetailRepository, BookingTransportDetailRepository>();
+        services.AddScoped<IBookingAccommodationDetailRepository, BookingAccommodationDetailRepository>();
+        services.AddScoped<IBookingParticipantRepository, BookingParticipantRepository>();
+        services.AddScoped<IPassportRepository, PassportRepository>();
+        services.AddScoped<IVisaApplicationRepository, VisaApplicationRepository>();
+        services.AddScoped<IVisaRepository, VisaRepository>();
+        services.AddScoped<ISupplierRepository, SupplierRepository>();
+        services.AddScoped<ISupplierPayableRepository, SupplierPayableRepository>();
+        services.AddScoped<ISupplierReceiptRepository, SupplierReceiptRepository>();
+        services.AddScoped<ITourGuideRepository, TourGuideRepository>();
+        services.AddScoped<IBookingTourGuideRepository, BookingTourGuideRepository>();
+        services.AddScoped<ITourDayActivityStatusRepository, TourDayActivityStatusRepository>();
+        services.AddScoped<ITourDayActivityGuideRepository, TourDayActivityGuideRepository>();
+        services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
+        services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
+        services.AddScoped<IAdminOverviewRepository, AdminOverviewRepository>();
+        services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegisterRepository, RegisterRepository>();

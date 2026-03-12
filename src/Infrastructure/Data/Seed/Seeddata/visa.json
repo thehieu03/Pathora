@@ -1,0 +1,32 @@
+[
+  {
+    "Id": "01952970-0000-7000-8000-000000000001",
+    "VisaApplicationId": "01952960-0000-7000-8000-000000000001",
+    "VisaNumber": "TH-2026-0001",
+    "Country": "Thailand",
+    "Status": "Approved",
+    "EntryType": "Single",
+    "IssuedAt": "2026-03-20T00:00:00Z",
+    "ExpiresAt": "2026-09-20T00:00:00Z",
+    "FileUrl": null,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952970-0000-7000-8000-000000000002",
+    "VisaApplicationId": "01952960-0000-7000-8000-000000000002",
+    "VisaNumber": null,
+    "Country": "Japan",
+    "Status": "Processing",
+    "EntryType": "Single",
+    "IssuedAt": null,
+    "ExpiresAt": null,
+    "FileUrl": null,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

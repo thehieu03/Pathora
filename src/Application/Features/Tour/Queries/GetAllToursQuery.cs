@@ -1,9 +1,10 @@
 using Application.Common;
+using Application.Dtos;
+using Application.Services;
+using BuildingBlocks.CORS;
 using Contracts;
 using Contracts.Interfaces;
-using BuildingBlocks.CORS;
 using ErrorOr;
-using Application.Services;
 
 namespace Application.Features.Tour.Queries;
 
@@ -20,6 +21,7 @@ public sealed record TourVm(
     string TourName,
     string ShortDescription,
     string Status,
+    ImageDto? Thumbnail,
     DateTimeOffset CreatedOnUtc);
 
 public sealed class GetAllToursQueryHandler(ITourService tourService)

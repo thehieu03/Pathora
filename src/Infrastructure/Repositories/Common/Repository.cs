@@ -31,7 +31,7 @@ public class Repository<T> : IRepository<T> where T : class
         IQueryable<T> query = _dbSet.TagWith($"GetById: {typeof(T).Name}");
         query = query.Where(e => EF.Property<Guid>(e, GetPrimaryKeyName()) == id);
         if (typeof(T).GetProperty("IsDeleted") != null)
-             query = query.Where(e => !EF.Property<bool>(e, "IsDeleted"));
+            query = query.Where(e => !EF.Property<bool>(e, "IsDeleted"));
         return await query.FirstOrDefaultAsync();
     }
 

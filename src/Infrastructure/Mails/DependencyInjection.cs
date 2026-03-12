@@ -19,14 +19,14 @@ internal static class DependencyInjection
         services.AddResiliencePipeline("mail-pipeline", cfg =>
         {
             cfg.AddRetry(new RetryStrategyOptions
-                {
-                    ShouldHandle = new PredicateBuilder().Handle<Exception>(),
-                    BackoffType = DelayBackoffType.Exponential,
-                    Delay = TimeSpan.FromSeconds(1),
-                    MaxRetryAttempts = 3,
-                    MaxDelay = TimeSpan.FromMilliseconds(1500),
-                    UseJitter = true
-                })
+            {
+                ShouldHandle = new PredicateBuilder().Handle<Exception>(),
+                BackoffType = DelayBackoffType.Exponential,
+                Delay = TimeSpan.FromSeconds(1),
+                MaxRetryAttempts = 3,
+                MaxDelay = TimeSpan.FromMilliseconds(1500),
+                UseJitter = true
+            })
                 .AddTimeout(TimeSpan.FromSeconds(30));
         });
 

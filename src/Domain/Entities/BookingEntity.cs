@@ -30,6 +30,16 @@ public class BookingEntity : Aggregate<Guid>
     public DateTimeOffset BookingDate { get; set; }
     public DateTimeOffset? CancelledAt { get; set; }
     public string? CancelReason { get; set; }
+
+    // Navigation
+    public virtual List<BookingActivityReservationEntity> BookingActivityReservations { get; set; } = [];
+    public virtual List<BookingParticipantEntity> BookingParticipants { get; set; } = [];
+    public virtual List<BookingTourGuideEntity> BookingTourGuides { get; set; } = [];
+    public virtual List<TourDayActivityStatusEntity> TourDayActivityStatuses { get; set; } = [];
+    public virtual List<SupplierPayableEntity> SupplierPayables { get; set; } = [];
+    public virtual List<CustomerDepositEntity> Deposits { get; set; } = [];
+    public virtual List<CustomerPaymentEntity> Payments { get; set; } = [];
+
     public static BookingEntity Create(
         Guid tourInstanceId,
         string customerName,

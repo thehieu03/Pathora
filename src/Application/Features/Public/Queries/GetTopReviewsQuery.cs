@@ -7,7 +7,7 @@ namespace Application.Features.Public.Queries;
 
 public sealed record GetTopReviewsQuery(int Limit = 6) : IQuery<ErrorOr<List<TopReviewVm>>>;
 
-public sealed class GetTopReviewsQueryHandler(IReviewRepository reviewRepository) 
+public sealed class GetTopReviewsQueryHandler(IReviewRepository reviewRepository)
     : IQueryHandler<GetTopReviewsQuery, ErrorOr<List<TopReviewVm>>>
 {
     private readonly IReviewRepository _reviewRepository = reviewRepository;

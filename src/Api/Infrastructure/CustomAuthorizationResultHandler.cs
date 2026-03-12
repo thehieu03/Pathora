@@ -20,7 +20,7 @@ public class CustomAuthorizationResultHandler : IAuthorizationMiddlewareResultHa
             //sử lý không có quyền truy cập chức năng này
 
             throw new NoPermissionException("Người dùng không có quyền truy cập chức năng này");
-           
+
         }
         else if (authorizeResult.Challenged)
         {

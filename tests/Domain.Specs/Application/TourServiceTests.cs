@@ -1,6 +1,7 @@
 using Contracts.Interfaces;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
+using Application.Features.Tour.Queries;
 using Application.Services;
 using AutoMapper;
 using Domain.Common.Repositories;
@@ -151,6 +152,57 @@ public sealed class TourServiceTests
             t.Images.Count == 2 &&
             t.Images[0].FileId == "new1" &&
             t.Images[1].FileId == "new2"));
+    }
+
+    // ── GetAll ──────────────────────────────────────────────
+
+    [Fact]
+    public async Task GetAll_WithThumbnailMetadata_ShouldReturnThumbnailInVm()
+    {
+        var thumbnail = ImageEntity.Create(
+            "thumb-id",
+            "thumb.jpg",
+            "thumb.jpg",
+            "https://cdn.pathora.test/thumb.jpg");
+        var tour = TourEntity.Create(
+            "Tour with thumbnail",
+            "Short",
+            "Long",
+            "creator",
+            TourStatus.Active,
+            thumbnail: thumbnail);
+
+        _tourRepository.FindAll(null, 1, 10).Returns(new List<TourEntity> { tour });
+        _tourRepository.CountAll(null).Returns(1);
+
+        var result = await _sut.GetAll(new GetAllToursQuery(null, 1, 10));
+
+        Assert.False(result.IsError);
+        var item = Assert.Single(result.Value.Data);
+        Assert.NotNull(item.Thumbnail);
+        Assert.Equal("thumb-id", item.Thumbnail!.FileId);
+        Assert.Equal("https://cdn.pathora.test/thumb.jpg", item.Thumbnail.PublicURL);
+    }
+
+    [Fact]
+    public async Task GetAll_WithEmptyThumbnailMetadata_ShouldReturnNullThumbnail()
+    {
+        var tour = TourEntity.Create(
+            "Tour without thumbnail",
+            "Short",
+            "Long",
+            "creator",
+            TourStatus.Active,
+            thumbnail: new ImageEntity());
+
+        _tourRepository.FindAll(null, 1, 10).Returns(new List<TourEntity> { tour });
+        _tourRepository.CountAll(null).Returns(1);
+
+        var result = await _sut.GetAll(new GetAllToursQuery(null, 1, 10));
+
+        Assert.False(result.IsError);
+        var item = Assert.Single(result.Value.Data);
+        Assert.Null(item.Thumbnail);
     }
 
     // ── Delete ──────────────────────────────────────────────

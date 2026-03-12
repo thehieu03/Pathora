@@ -1,0 +1,28 @@
+[
+  {
+    "Id": "01952981-0000-7000-8000-000000000001",
+    "SupplierPayableId": "01952980-0000-7000-8000-000000000001",
+    "Amount": 1000000,
+    "PaidAt": "2026-04-15T18:00:00Z",
+    "PaymentMethod": "BankTransfer",
+    "TransactionRef": "SUP-VCB-20260415-001",
+    "Note": "Advance transfer for transport supplier.",
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952981-0000-7000-8000-000000000002",
+    "SupplierPayableId": "01952980-0000-7000-8000-000000000002",
+    "Amount": 3456000,
+    "PaidAt": "2026-04-17T12:00:00Z",
+    "PaymentMethod": "Cash",
+    "TransactionRef": null,
+    "Note": "Final payment on cruise checkout.",
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

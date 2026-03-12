@@ -1,5 +1,6 @@
 namespace Contracts.Interfaces;
 
-public interface ICacheInvalidator {
+public interface ICacheInvalidator
+{
     IReadOnlyList<string> CacheKeysToInvalidate { get; }
 }

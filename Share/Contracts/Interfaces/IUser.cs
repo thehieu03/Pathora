@@ -1,5 +1,6 @@
 namespace Contracts.Interfaces;
 
-public interface IUser {
+public interface IUser
+{
     string? Id { get; }
 }

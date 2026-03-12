@@ -4,7 +4,7 @@ namespace Domain.Common.Repositories;
 public interface IRepository<T> where T : class
 {
     Task<T?> GetByIdAsync(Guid id);
-    Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>>? predicate = null,Expression<Func<T, object>>[] ? includes = null);
+    Task<IReadOnlyList<T>> GetListAsync(Expression<Func<T, bool>>? predicate = null, Expression<Func<T, object>>[]? includes = null);
     Task DeleteAsync(Guid id);
     Task<IEnumerable<T>> GetAllAsync();
     Task AddAsync(T entity);

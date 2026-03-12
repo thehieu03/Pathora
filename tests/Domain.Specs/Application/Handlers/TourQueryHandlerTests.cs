@@ -19,7 +19,14 @@ public sealed class TourQueryHandlerTests
         var tourService = Substitute.For<ITourService>();
         var tours = new List<TourVm>
         {
-            new(Guid.CreateVersion7(), "TOUR-001", "Tour Đà Nẵng", "Short", "Active", DateTimeOffset.UtcNow)
+            new(
+                Guid.CreateVersion7(),
+                "TOUR-001",
+                "Tour Đà Nẵng",
+                "Short",
+                "Active",
+                null,
+                DateTimeOffset.UtcNow)
         };
         var payload = new PaginatedList<TourVm>(1, tours);
         tourService.GetAll(Arg.Any<GetAllToursQuery>()).Returns(payload);
