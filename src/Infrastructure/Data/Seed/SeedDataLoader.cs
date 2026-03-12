@@ -25,14 +25,17 @@ internal static class SeedDataLoader
         return DeserializeSeedList<T>(seedFilePath);
     }
 
-    public static SeedFileValidationResult ValidateSeedFile(string fileName, IReadOnlyCollection<string> requiredFields, string? basePath = null)
+    public static SeedFileValidationResult ValidateSeedFile(
+        string fileName,
+        IReadOnlyCollection<string> requiredFieldPaths,
+        string? basePath = null)
     {
         var seedFilePath = ResolveSeedFilePath(fileName, basePath);
         var issues = new List<SeedFileValidationIssue>();
 
         if (!File.Exists(seedFilePath))
         {
-            issues.Add(new SeedFileValidationIssue(null, $"Missing seed file: {seedFilePath}"));
+            issues.Add(new SeedFileValidationIssue(null, null, null, $"Missing seed file: {seedFilePath}"));
             return new SeedFileValidationResult(fileName, seedFilePath, issues);
         }
 
@@ -42,7 +45,7 @@ internal static class SeedDataLoader
             return new SeedFileValidationResult(fileName, seedFilePath, issues);
         }
 
-        ValidateJsonShapeAndRequiredFields(rawJson, requiredFields, issues);
+        ValidateJsonShapeAndRequiredFields(rawJson, requiredFieldPaths, issues);
         return new SeedFileValidationResult(fileName, seedFilePath, issues);
     }
 
@@ -94,16 +97,19 @@ internal static class SeedDataLoader
         }
         catch (Exception ex)
         {
-            issues.Add(new SeedFileValidationIssue(null, $"Unable to read seed file '{filePath}': {ex.Message}"));
+            issues.Add(new SeedFileValidationIssue(null, null, null, $"Unable to read seed file '{filePath}': {ex.Message}"));
             return null;
         }
     }
 
-    private static void ValidateJsonShapeAndRequiredFields(string rawJson, IReadOnlyCollection<string> requiredFields, List<SeedFileValidationIssue> issues)
+    private static void ValidateJsonShapeAndRequiredFields(
+        string rawJson,
+        IReadOnlyCollection<string> requiredFieldPaths,
+        List<SeedFileValidationIssue> issues)
     {
         if (string.IsNullOrWhiteSpace(rawJson))
         {
-            issues.Add(new SeedFileValidationIssue(null, "Seed JSON is empty."));
+            issues.Add(new SeedFileValidationIssue(null, null, null, "Seed JSON is empty."));
             return;
         }
 
@@ -112,7 +118,7 @@ internal static class SeedDataLoader
             using var document = JsonDocument.Parse(rawJson);
             if (!TryGetArrayRoot(document.RootElement, out var arrayRoot, out var shapeError))
             {
-                issues.Add(new SeedFileValidationIssue(null, shapeError));
+                issues.Add(new SeedFileValidationIssue(null, null, null, shapeError));
                 return;
             }
 
@@ -121,28 +127,32 @@ internal static class SeedDataLoader
             {
                 if (item.ValueKind != JsonValueKind.Object)
                 {
-                    issues.Add(new SeedFileValidationIssue(index, "Each seed item must be a JSON object."));
+                    issues.Add(new SeedFileValidationIssue(index, null, null, "Each seed item must be a JSON object."));
                     index++;
                     continue;
                 }
 
-                foreach (var field in requiredFields)
+                var itemKey = TryGetPropertyIgnoreCase(item, "Id", out var idValue)
+                    ? GetElementDisplayValue(idValue)
+                    : null;
+
+                foreach (var fieldPath in requiredFieldPaths)
                 {
-                    if (!item.TryGetProperty(field, out var fieldValue))
+                    if (!TryGetValueByPath(item, fieldPath, out var fieldValue))
                     {
-                        issues.Add(new SeedFileValidationIssue(index, $"Missing required field '{field}'."));
+                        issues.Add(new SeedFileValidationIssue(index, itemKey, fieldPath, $"Missing required field path '{fieldPath}'."));
                         continue;
                     }
 
                     if (fieldValue.ValueKind == JsonValueKind.Null)
                     {
-                        issues.Add(new SeedFileValidationIssue(index, $"Required field '{field}' must not be null."));
+                        issues.Add(new SeedFileValidationIssue(index, itemKey, fieldPath, $"Required field path '{fieldPath}' must not be null."));
                         continue;
                     }
 
                     if (fieldValue.ValueKind == JsonValueKind.String && string.IsNullOrWhiteSpace(fieldValue.GetString()))
                     {
-                        issues.Add(new SeedFileValidationIssue(index, $"Required field '{field}' must not be empty."));
+                        issues.Add(new SeedFileValidationIssue(index, itemKey, fieldPath, $"Required field path '{fieldPath}' must not be empty."));
                     }
                 }
 
@@ -151,7 +161,7 @@ internal static class SeedDataLoader
         }
         catch (JsonException ex)
         {
-            issues.Add(new SeedFileValidationIssue(null, $"Malformed JSON: {ex.Message}"));
+            issues.Add(new SeedFileValidationIssue(null, null, null, $"Malformed JSON: {ex.Message}"));
         }
     }
 
@@ -177,9 +187,62 @@ internal static class SeedDataLoader
         error = "Unsupported JSON root shape. Expected either an array [] or an object with a 'data' array property.";
         return false;
     }
+
+    private static bool TryGetValueByPath(JsonElement root, string fieldPath, out JsonElement value)
+    {
+        value = root;
+        if (string.IsNullOrWhiteSpace(fieldPath))
+        {
+            return false;
+        }
+
+        var segments = fieldPath.Split('.', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0)
+        {
+            return false;
+        }
+
+        foreach (var segment in segments)
+        {
+            if (!TryGetPropertyIgnoreCase(value, segment, out value))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool TryGetPropertyIgnoreCase(JsonElement element, string propertyName, out JsonElement value)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                if (string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    value = property.Value;
+                    return true;
+                }
+            }
+        }
+
+        value = default;
+        return false;
+    }
+
+    private static string? GetElementDisplayValue(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString(),
+            JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False => element.GetRawText(),
+            _ => null
+        };
+    }
 }
 
-internal sealed record SeedFileValidationIssue(int? ItemIndex, string Message);
+internal sealed record SeedFileValidationIssue(int? ItemIndex, string? ItemKey, string? FieldPath, string Message);
 
 internal sealed record SeedFileValidationResult(
     string FileName,

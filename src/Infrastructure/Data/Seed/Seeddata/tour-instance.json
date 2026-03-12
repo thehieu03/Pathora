@@ -50,9 +50,23 @@
         "OriginalFileName": "ha-long-4.jpg",
         "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5885.jpg",
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
-      }
+}
     ],
     "IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "Translations": {
+      "vi": {
+        "Title": "Hà Nội - Hạ Long 3N2Đ - 15/04/2026",
+        "TourName": "Hà Nội - Hạ Long 3 Ngày 2 Đêm",
+        "Location": "Hạ Long, Quảng Ninh",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Hanoi - Ha Long 3D2N - 15/04/2026",
+        "TourName": "Hanoi - Ha Long 3 Days 2 Nights",
+        "Location": "Ha Long, Quang Ninh",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -112,7 +126,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe limousine", "Khách sạn 5 sao", "Ăn sáng + tối", "Hướng dẫn viên riêng", "Vé tham quan VIP"],
+"IncludedServices": ["Xe limousine", "Khách sạn 5 sao", "Ăn sáng + tối", "Hướng dẫn viên riêng", "Vé tham quan VIP"],
+    "Translations": {
+      "vi": {
+        "Title": "Hà Nội - Hạ Long VIP 3N2Đ - 20/04/2026",
+        "TourName": "Hà Nội - Hạ Long 3 Ngày 2 Đêm",
+        "Location": "Hạ Long, Quảng Ninh",
+        "ClassificationName": "Cao cấp"
+      },
+      "en": {
+        "Title": "Hanoi - Ha Long VIP 3D2N - 20/04/2026",
+        "TourName": "Hanoi - Ha Long 3 Days 2 Nights",
+        "Location": "Ha Long, Quang Ninh",
+        "ClassificationName": "Premium"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -172,7 +200,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cầu Vàng"],
+"IncludedServices": ["Xe khách", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cầu Vàng"],
+    "Translations": {
+      "vi": {
+        "Title": "Đà Nẵng - Hội An 4N3Đ - 01/05/2026",
+        "TourName": "Đà Nẵng - Hội An - Bà Nà 4 Ngày 3 Đêm",
+        "Location": "Đà Nẵng, Hội An",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Da Nang - Hoi An 4D3N - 01/05/2026",
+        "TourName": "Da Nang - Hoi An - Ba Na 4 Days 3 Nights",
+        "Location": "Da Nang, Hoi An",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -232,7 +274,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé Safari"],
+"IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé Safari"],
+    "Translations": {
+      "vi": {
+        "Title": "Phú Quốc 5N4Đ - 10/05/2026",
+        "TourName": "Phú Quốc Đảo Ngọc 5 Ngày 4 Đêm",
+        "Location": "Phú Quốc, Kiên Giang",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Phu Quoc 5D4N - 10/05/2026",
+        "TourName": "Phu Quoc Pearl Island 5 Days 4 Nights",
+        "Location": "Phu Quoc, Kien Giang",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -292,7 +348,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cáp treo Fansipan"],
+"IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cáp treo Fansipan"],
+    "Translations": {
+      "vi": {
+        "Title": "Sapa - Fansipan 3N2Đ - 01/06/2026",
+        "TourName": "Sapa - Bản Cát Cát - Fansipan 3 Ngày 2 Đêm",
+        "Location": "Sapa, Lào Cai",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Sapa - Fansipan 3D2N - 01/06/2026",
+        "TourName": "Sapa - Cat Cat Village - Fansipan 3 Days 2 Nights",
+        "Location": "Sapa, Lao Cai",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -305,7 +375,7 @@
     "ClassificationId": "019527c0-0000-7000-8000-00000000000b",
     "TourInstanceCode": "TH-BKK-PTY-4D3N-20260615",
     "Title": "Bangkok - Pattaya 4N3Đ - 15/06/2026",
-    "TourName": "Bangkok - Pattaya 4 Days 3 Nights",
+    "TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
     "TourCode": "TH-BKK-PTY-4D3N",
     "ClassificationName": "Tiêu chuẩn",
     "InstanceType": "Public",
@@ -352,7 +422,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+"IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "Translations": {
+      "vi": {
+        "Title": "Bangkok - Pattaya 4N3Đ - 15/06/2026",
+        "TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
+        "Location": "Bangkok, Pattaya, Thái Lan",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Bangkok - Pattaya 4D3N - 15/06/2026",
+        "TourName": "Bangkok - Pattaya 4 Days 3 Nights",
+        "Location": "Bangkok, Pattaya, Thailand",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -365,7 +449,7 @@
     "ClassificationId": "019527c0-0000-7000-8000-00000000000d",
     "TourInstanceCode": "JP-TKO-OSK-5D4N-20260401",
     "Title": "Tokyo - Osaka Hoa Anh Đào 5N4Đ - 01/04/2026",
-    "TourName": "Tokyo - Osaka Cherry Blossom 5 Days 4 Nights",
+    "TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
     "TourCode": "JP-TKO-OSK-5D4N",
     "ClassificationName": "Tiêu chuẩn",
     "InstanceType": "Public",
@@ -412,7 +496,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé Shinkansen"],
+"IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé Shinkansen"],
+    "Translations": {
+      "vi": {
+        "Title": "Tokyo - Osaka Hoa Anh Đào 5N4Đ - 01/04/2026",
+        "TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
+        "Location": "Tokyo, Osaka, Nhật Bản",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Tokyo - Osaka Cherry Blossom 5D4N - 01/04/2026",
+        "TourName": "Tokyo - Osaka Cherry Blossom 5 Days 4 Nights",
+        "Location": "Tokyo, Osaka, Japan",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -425,7 +523,7 @@
     "ClassificationId": "019527c0-0000-7000-8000-00000000000f",
     "TourInstanceCode": "KR-SEL-JEJ-4D3N-20260520",
     "Title": "Seoul - Jeju 4N3Đ - 20/05/2026",
-    "TourName": "Seoul - Jeju Island 4 Days 3 Nights",
+    "TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
     "TourCode": "KR-SEL-JEJ-4D3N",
     "ClassificationName": "Tiêu chuẩn",
     "InstanceType": "Public",
@@ -472,7 +570,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+"IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "Translations": {
+      "vi": {
+        "Title": "Seoul - Jeju 4N3Đ - 20/05/2026",
+        "TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
+        "Location": "Seoul, Jeju, Hàn Quốc",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Seoul - Jeju 4D3N - 20/05/2026",
+        "TourName": "Seoul - Jeju Island 4 Days 3 Nights",
+        "Location": "Seoul, Jeju, Korea",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -532,7 +644,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+"IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "Translations": {
+      "vi": {
+        "Title": "Hà Nội - Hạ Long 3N2Đ - 01/03/2026",
+        "TourName": "Hà Nội - Hạ Long 3 Ngày 2 Đêm",
+        "Location": "Hạ Long, Quảng Ninh",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Hanoi - Ha Long 3D2N - 01/03/2026",
+        "TourName": "Hanoi - Ha Long 3 Days 2 Nights",
+        "Location": "Ha Long, Quang Ninh",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
@@ -593,7 +719,21 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cầu Vàng"],
+"IncludedServices": ["Xe khách", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cầu Vàng"],
+    "Translations": {
+      "vi": {
+        "Title": "Đà Nẵng - Hội An 4N3Đ - 20/03/2026",
+        "TourName": "Đà Nẵng - Hội An - Bà Nà 4 Ngày 3 Đêm",
+        "Location": "Đà Nẵng, Hội An",
+        "ClassificationName": "Tiêu chuẩn"
+      },
+      "en": {
+        "Title": "Da Nang - Hoi An 4D3N - 20/03/2026",
+        "TourName": "Da Nang - Hoi An - Ba Na 4 Days 3 Nights",
+        "Location": "Da Nang, Hoi An",
+        "ClassificationName": "Standard"
+      }
+    },
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",

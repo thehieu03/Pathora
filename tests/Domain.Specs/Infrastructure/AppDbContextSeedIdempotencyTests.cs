@@ -114,6 +114,35 @@ public sealed class AppDbContextSeedIdempotencyTests
     }
 
     [Fact]
+    public async Task SeedIfNeededAsync_WhenSeedingBilingualReferenceData_ShouldPersistQueryableViAndEnTranslations()
+    {
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase($"seed-bilingual-reference-data-{Guid.NewGuid():N}")
+            .Options;
+
+        await using var dbContext = new AppDbContext(options);
+        await AppDbContextSeed.SeedIfNeededAsync(dbContext);
+
+        var classifications = await dbContext.TourClassifications.AsNoTracking().ToListAsync();
+        var tours = await dbContext.Tours.AsNoTracking().ToListAsync();
+
+        Assert.NotEmpty(classifications);
+        Assert.NotEmpty(tours);
+
+        Assert.Contains(classifications, classification =>
+            classification.Translations.TryGetValue("vi", out var vi)
+            && classification.Translations.TryGetValue("en", out var en)
+            && !string.IsNullOrWhiteSpace(vi.Name)
+            && !string.IsNullOrWhiteSpace(en.Name));
+
+        Assert.Contains(tours, tour =>
+            tour.Translations.TryGetValue("vi", out var vi)
+            && tour.Translations.TryGetValue("en", out var en)
+            && !string.IsNullOrWhiteSpace(vi.TourName)
+            && !string.IsNullOrWhiteSpace(en.TourName));
+    }
+
+    [Fact]
     public async Task SeedIfNeededAsync_WhenExtendedOperationalSeedsExist_ShouldPopulateOperationalTables()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()

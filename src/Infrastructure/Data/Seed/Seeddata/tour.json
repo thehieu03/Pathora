@@ -331,15 +331,62 @@
   },
   {
     "Id": "019527b0-0000-7000-8000-000000000006",
-    "TourCode": "TH-BKK-PTY-4D3N",
-"TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
+"TourCode": "TH-BKK-PTY-4D3N",
+    "TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
     "ShortDescription": "Khám phá thủ đô Thái Lan nhộn nhịp và bãi biển tuyệt đẹp của Pattaya.",
     "LongDescription": "Khám phá Hoàng cung Grand Palace và Wat Pho nổi tiếng, mua sắm tại chợ Chatuchak, sau đó đến Pattaya nghỉ dưởng và khám đảo san hô.",
     "Status": "Active",
     "TourScope": "International",
     "CustomerSegment": "Group",
     "SEOTitle": "Tour Bangkok Pattaya 4N3Đ - Chùa & Biển",
-    "SEODescription": "Tour Bangkok Pattaya 4 ngày 3 đêm. Grand Palace, đảo san hô, ẩm thực Thái."
+    "SEODescription": "Tour Bangkok Pattaya 4 ngày 3 đêm. Grand Palace, đảo san hô, ẩm thực Thái.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5902",
+      "OriginalFileName": "bangkok-pattaya.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5902.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5902",
+        "OriginalFileName": "bangkok-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5902.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5903",
+        "OriginalFileName": "bangkok-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5903.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5904",
+        "OriginalFileName": "bangkok-3.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5904.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5905",
+        "OriginalFileName": "bangkok-4.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5905.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
+        "ShortDescription": "Khám phá thủ đô Thái Lan nhộn nhịp và bãi biển tuyệt đẹp của Pattaya.",
+        "LongDescription": "Khám phá Hoàng cung Grand Palace và Wat Pho nổi tiếng, mua sắm tại chợ Chatuchak, sau đó đến Pattaya nghỉ dưởng và khám đảo san hô.",
+        "SEOTitle": "Tour Bangkok Pattaya 4N3Đ - Chùa & Biển",
+        "SEODescription": "Tour Bangkok Pattaya 4 ngày 3 đêm. Grand Palace, đảo san hô, ẩm thực Thái."
+      },
+      "en": {
+        "TourName": "Bangkok - Pattaya 4 Days 3 Nights",
+        "ShortDescription": "Explore the vibrant Thai capital and the stunning beaches of Pattaya.",
+        "LongDescription": "Discover Bangkok's magnificent Grand Palace and Wat Pho, shop at Chatuchak Weekend Market, then head to Pattaya for beach relaxation and Coral Island adventures.",
+        "SEOTitle": "Bangkok Pattaya Tour 4D3N - Temples & Beaches",
+        "SEODescription": "Bangkok Pattaya 4 days 3 nights tour. Grand Palace, Coral Island, Thai street food."
       }
     },
     "Classifications": [],
@@ -348,17 +395,64 @@
     "LastModifiedBy": "system",
     "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  {
+{
     "Id": "019527b0-0000-7000-8000-000000000007",
     "TourCode": "JP-TKO-OSK-5D4N",
-"TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
+    "TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
     "ShortDescription": "Trải nghiệm mùa hoa anh đào nổi tiếng từ Tokyo đến Osaka bằng Shinkansen.",
     "LongDescription": "Tham quan đền Sensō-ji, Tokyo Skytree, đền Meiji, chuyến đi trong ngày đến núi Phú Sĩ, sau đó đi tàu cao tốc đến Osaka thăm lâu đài và đền Kyoto.",
     "Status": "Active",
     "TourScope": "International",
     "CustomerSegment": "Group",
     "SEOTitle": "Tour Tokyo Osaka Hoa Anh Đào 5N4Đ",
-    "SEODescription": "Tour Nhật Bản 5 ngày. Tokyo, núi Phú Sĩ, Shinkansen, lâu đài Osaka, đền Kyoto."
+    "SEODescription": "Tour Nhật Bản 5 ngày. Tokyo, núi Phú Sĩ, Shinkansen, lâu đài Osaka, đền Kyoto.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5906",
+      "OriginalFileName": "tokyo-osaka.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5906.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5906",
+        "OriginalFileName": "tokyo-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5906.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5907",
+        "OriginalFileName": "tokyo-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5907.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5908",
+        "OriginalFileName": "tokyo-3.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5908.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5909",
+        "OriginalFileName": "tokyo-4.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5909.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
+        "ShortDescription": "Trải nghiệm mùa hoa anh đào nổi tiếng từ Tokyo đến Osaka bằng Shinkansen.",
+        "LongDescription": "Tham quan đền Sensō-ji, Tokyo Skytree, đền Meiji, chuyến đi trong ngày đến núi Phú Sĩ, sau đó đi tàu cao tốc đến Osaka thăm lâu đài và đền Kyoto.",
+        "SEOTitle": "Tour Tokyo Osaka Hoa Anh Đào 5N4Đ",
+        "SEODescription": "Tour Nhật Bản 5 ngày. Tokyo, núi Phú Sĩ, Shinkansen, lâu đài Osaka, đền Kyoto."
+      },
+      "en": {
+        "TourName": "Tokyo - Osaka Cherry Blossom 5 Days 4 Nights",
+        "ShortDescription": "Experience Japan's iconic cherry blossoms from Tokyo to Osaka via Shinkansen.",
+        "LongDescription": "Visit Sensō-ji Temple, Tokyo Skytree, Meiji Shrine, take a day trip to Mount Fuji, then ride the bullet train to Osaka for castle visits and Kyoto temples.",
+        "SEOTitle": "Tokyo Osaka Cherry Blossom Tour 5D4N",
+        "SEODescription": "Japan tour 5 days. Tokyo, Mount Fuji, Shinkansen, Osaka Castle, Kyoto temples."
       }
     },
     "Classifications": [],
@@ -367,17 +461,64 @@
     "LastModifiedBy": "system",
     "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  {
+{
     "Id": "019527b0-0000-7000-8000-000000000008",
     "TourCode": "KR-SEL-JEJ-4D3N",
-"TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
+    "TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
     "ShortDescription": "Khám phá cung điện hoàng gia Seoul và cảnh quan núi lửa Jeju.",
     "LongDescription": "Khám phá cung điện Gyeongbokgung và mua sắm ở Myeongdong tại Seoul, sau đó bay đến đảo Jeju thăm vườn quốc gia Hallasan và đỉnh núi lửa Seongsan Ilchulbong.",
     "Status": "Active",
     "TourScope": "International",
     "CustomerSegment": "FIT",
     "SEOTitle": "Tour Seoul Jeju 4N3Đ - Cung điện & Đảo núi lửa",
-    "SEODescription": "Tour Hàn Quốc 4 ngày. Cung điện Seoul, Myeongdong, Jeju Hallasan, đỉnh Seongsan."
+    "SEODescription": "Tour Hàn Quốc 4 ngày. Cung điện Seoul, Myeongdong, Jeju Hallasan, đỉnh Seongsan.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5910",
+      "OriginalFileName": "seoul-jeju.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5910.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5910",
+        "OriginalFileName": "seoul-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5910.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5911",
+        "OriginalFileName": "seoul-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5911.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5912",
+        "OriginalFileName": "seoul-3.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5912.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5913",
+        "OriginalFileName": "seoul-4.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5913.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
+        "ShortDescription": "Khám phá cung điện hoàng gia Seoul và cảnh quan núi lửa Jeju.",
+        "LongDescription": "Khám phá cung điện Gyeongbokgung và mua sắm ở Myeongdong tại Seoul, sau đó bay đến đảo Jeju thăm vườn quốc gia Hallasan và đỉnh núi lửa Seongsan Ilchulbong.",
+        "SEOTitle": "Tour Seoul Jeju 4N3Đ - Cung điện & Đảo núi lửa",
+        "SEODescription": "Tour Hàn Quốc 4 ngày. Cung điện Seoul, Myeongdong, Jeju Hallasan, đỉnh Seongsan."
+      },
+      "en": {
+        "TourName": "Seoul - Jeju Island 4 Days 3 Nights",
+        "ShortDescription": "Discover Seoul's royal palaces and Jeju's volcanic landscapes.",
+        "LongDescription": "Explore Gyeongbokgung Palace and Myeongdong shopping in Seoul, then fly to Jeju Island for Hallasan National Park and Seongsan Ilchulbong sunrise peak.",
+        "SEOTitle": "Seoul Jeju Tour 4D3N - Palaces & Volcanic Island",
+        "SEODescription": "Korea tour 4 days. Seoul palaces, Myeongdong, Jeju Hallasan, Seongsan peak."
       }
     },
     "Classifications": [],
