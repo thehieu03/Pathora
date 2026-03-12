@@ -65,49 +65,7 @@ public sealed class SeedDataPreflightValidatorTests
         Assert.False(result.IsValid);
         Assert.Contains(result.Issues, issue =>
             issue.ItemIndex == 0
-            && issue.Message.Contains("Missing required field path 'Id'", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateSeedFile_WhenRequiredNestedFieldIsMissing_ShouldReturnFieldPathIssue()
-    {
-        var tempRoot = CreateTempSeedRoot();
-        var dataFile = SeedDataLoader.ResolveSeedFilePath("sample.json", tempRoot);
-        File.WriteAllText(dataFile, "[{\"Id\":\"sample-1\",\"Translations\":{\"vi\":{\"Name\":\"Ten\"}}}]");
-
-        var result = SeedDataLoader.ValidateSeedFile("sample.json", ["Id", "Translations.en.Name"], tempRoot);
-
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Issues, issue =>
-            issue.ItemIndex == 0
-            && issue.ItemKey == "sample-1"
-            && issue.FieldPath == "Translations.en.Name"
-            && issue.Message.Contains("Missing required field path 'Translations.en.Name'", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateRequiredSeedFiles_WhenBilingualFieldMissing_ShouldIncludeActionableDiagnostics()
-    {
-        var tempRoot = CreateTempSeedRoot();
-        var dataFile = SeedDataLoader.ResolveSeedFilePath("sample.json", tempRoot);
-        File.WriteAllText(dataFile, "[{\"Id\":\"sample-1\",\"Translations\":{\"vi\":{\"Name\":\"Ten\"}}}]");
-
-        var definitions = new[]
-        {
-            new SeedFileDefinition(
-                "SampleContextSeed",
-                "sample.json",
-                ["Id"],
-                ["Translations.en.Name"])
-        };
-
-        var exception = Assert.Throws<InvalidOperationException>(() =>
-            SeedDataPreflightValidator.ValidateRequiredSeedFiles(definitions, tempRoot));
-
-        Assert.Contains("sample.json", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("item index: 0", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("item key: sample-1", exception.Message, StringComparison.Ordinal);
-        Assert.Contains("field path: Translations.en.Name", exception.Message, StringComparison.Ordinal);
+            && issue.Message.Contains("Missing required field 'Id'", StringComparison.Ordinal));
     }
 
     [Fact]

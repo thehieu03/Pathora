@@ -51,19 +51,6 @@ Each `*ContextSeed` class that loads file-based data must have exactly one JSON 
 
 The canonical mapping and required field checks are defined in `SeedFileManifest`.
 
-## Mandatory EN/VI bilingual contract
-
-The following seed files must include both `Translations.vi.*` and `Translations.en.*` values for these field paths:
-
-| JSON file | Required bilingual paths |
-| --- | --- |
-| `tour.json` | `Translations.vi.TourName`, `Translations.vi.ShortDescription`, `Translations.vi.LongDescription`, `Translations.vi.SEOTitle`, `Translations.vi.SEODescription`, `Translations.en.TourName`, `Translations.en.ShortDescription`, `Translations.en.LongDescription`, `Translations.en.SEOTitle`, `Translations.en.SEODescription` |
-| `tour-classification.json` | `Translations.vi.Name`, `Translations.vi.Description`, `Translations.en.Name`, `Translations.en.Description` |
-| `tour-instance.json` | `Translations.vi.Title`, `Translations.vi.TourName`, `Translations.vi.Location`, `Translations.vi.ClassificationName`, `Translations.en.Title`, `Translations.en.TourName`, `Translations.en.Location`, `Translations.en.ClassificationName` |
-| `tour-day.json` | `Translations.vi.Title`, `Translations.vi.Description`, `Translations.en.Title`, `Translations.en.Description` |
-| `tour-day-activity.json` | `Translations.vi.Title`, `Translations.vi.Description`, `Translations.en.Title`, `Translations.en.Description` |
-| `tour-plan-location.json` | `Translations.vi.LocationName`, `Translations.vi.LocationDescription`, `Translations.en.LocationName`, `Translations.en.LocationDescription` |
-
 ## Supported JSON root shapes
 
 - Raw array: `[{ ... }]`
@@ -80,7 +67,7 @@ Before executing seed batches, `AppDbContextSeed` runs a preflight validation:
 3. Root shape is supported.
 4. Required fields per file are present (for each item).
 
-If validation fails, startup seeding aborts with diagnostics that include file name, file path, failing item index, item key (when available), and missing/invalid field path.
+If validation fails, startup seeding aborts with a detailed error listing file path and failing item index.
 
 ## Adding a new seed class
 
