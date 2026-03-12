@@ -9,7 +9,7 @@ public static class AppDbContextSeed
     {
         // Check if full seed data already exists by verifying a late-batch table.
         // This prevents partial-batch failures from being treated as "fully seeded".
-        var hasFullSeedData = await context.CustomerPayments.AsNoTracking().AnyAsync(cancellationToken);
+        //var hasFullSeedData = await context.CustomerPayments.AsNoTracking().AnyAsync(cancellationToken);
 
         var hasBackfilledTourDayTranslations = TourDayContextSeed.BackfillTranslations(context);
         var hasBackfilledTourInstanceTranslations = TourInstanceContextSeed.BackfillTranslations(context);
@@ -19,10 +19,10 @@ public static class AppDbContextSeed
             await SaveChangesUtcAsync(context, cancellationToken);
         }
 
-        if (hasFullSeedData)
-        {
-            return hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations;
-        }
+        //if (hasFullSeedData)
+        //{
+        //    return hasBackfilledTourDayTranslations || hasBackfilledTourInstanceTranslations;
+        //}
 
         // ── Batch 1: Core entities (no FK dependencies) ──
         RoleContextSeed.SeedData(context.Roles);
@@ -66,8 +66,7 @@ public static class AppDbContextSeed
         await SaveChangesUtcAsync(context, cancellationToken);
 
         // ── Batch 6: Entities depending on Bookings ──
-        CustomerDepositContextSeed.SeedData(context.CustomerDeposits);
-        CustomerPaymentContextSeed.SeedData(context.CustomerPayments);
+
         await SaveChangesUtcAsync(context, cancellationToken);
 
         return true;

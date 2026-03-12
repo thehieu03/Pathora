@@ -30,8 +30,6 @@ public static class BookingContextSeed
         SeedTourClassifications(context);
         SeedTourInstances(context);
         SeedBookings(context);
-        SeedCustomerDeposits(context);
-        SeedCustomerPayments(context);
         SeedReviews(context);
     }
 
@@ -132,31 +130,6 @@ public static class BookingContextSeed
             context.SaveChanges();
         }
     }
-
-    private static void SeedCustomerDeposits(AppDbContext context)
-    {
-        if (context.CustomerDeposits.Any()) return;
-
-        var data = SeedDataLoader.LoadData<CustomerDepositEntity>("customer-deposit.json");
-        if (data is { Count: > 0 })
-        {
-            context.CustomerDeposits.AddRange(data);
-            context.SaveChanges();
-        }
-    }
-
-    private static void SeedCustomerPayments(AppDbContext context)
-    {
-        if (context.CustomerPayments.Any()) return;
-
-        var data = SeedDataLoader.LoadData<CustomerPaymentEntity>("customer-payment.json");
-        if (data is { Count: > 0 })
-        {
-            context.CustomerPayments.AddRange(data);
-            context.SaveChanges();
-        }
-    }
-
     private static void SeedReviews(AppDbContext context)
     {
         if (context.Reviews.Any()) return;
