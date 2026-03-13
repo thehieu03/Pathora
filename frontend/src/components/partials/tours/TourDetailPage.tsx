@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useParams } from "next/navigation";
 import { tourService } from "@/services/tourService";
 import { homeService } from "@/services/homeService";
+import { normalizeLanguageForApi } from "@/api/languageHeader";
 import { TopReview } from "@/types/home";
 import { formatCurrency } from "@/utils/format";
 import {
@@ -22,7 +23,7 @@ import {
   RoomTypeMap,
   MealTypeMap,
   InsuranceTypeMap,
-  TourInstanceVm,
+  NormalizedTourInstanceVm,
   TourInstanceStatusMap,
 } from "@/types/tour";
 
@@ -418,23 +419,30 @@ function ReviewsSection() {
 }
 
 /* ── Scheduled Departures Section ─────────────────────────── */
-function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
+function ScheduledDeparturesSection({
+  tourId,
+  apiLanguage,
+}: {
+  tourId: string;
+  apiLanguage: string;
+}) {
   const { t } = useTranslation();
-  const [instances, setInstances] = useState<TourInstanceVm[]>([]);
+  const [instances, setInstances] = useState<NormalizedTourInstanceVm[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     homeService
-      .getAvailablePublicInstances(undefined, 1, 50)
+      .getAvailablePublicInstances(undefined, 1, 50, apiLanguage)
       .then((data) => {
         const filtered = (data?.data ?? []).filter(
-          (inst: TourInstanceVm) => inst.tourId === tourId,
+          (inst: NormalizedTourInstanceVm) => inst.tourId === tourId,
         );
         setInstances(filtered);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [tourId]);
+  }, [tourId, apiLanguage]);
 
   if (loading) {
     return (
@@ -469,14 +477,19 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
         ) : (
           <div className="flex flex-col gap-3">
             {instances.map((instance) => {
-              const statusInfo = TourInstanceStatusMap[instance.status] ?? {
+              const statusKey = instance.status
+                .trim()
+                .toLowerCase()
+                .replace(/[\s_]+/g, "");
+              const statusInfo = TourInstanceStatusMap[statusKey] ?? {
                 label: instance.status,
                 bg: "bg-gray-100",
                 text: "text-gray-600",
                 dot: "bg-gray-400",
               };
               const spotsLeft =
-                instance.maxParticipants - instance.registeredParticipants;
+                (instance.maxParticipation ?? 0) -
+                (instance.currentParticipation ?? 0);
               const startDateStr = new Date(
                 instance.startDate,
               ).toLocaleDateString("vi-VN", {
@@ -507,10 +520,14 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
                         />
                       </div>
                       <div className="flex flex-col">
+                        <span className="text-xs font-bold text-[#05073c] line-clamp-1">
+                          {instance.title || instance.tourName}
+                        </span>
                         <span className="text-xs font-bold text-[#05073c]">
                           {startDateStr} — {endDateStr}
                         </span>
                         <span className="text-[10px] text-gray-400">
+                          {instance.tourInstanceCode} •{" "}
                           {instance.durationDays} {t("tourInstance.days")} &bull;{" "}
                           {instance.classificationName}
                         </span>
@@ -522,7 +539,7 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
                       <span
                         className={`size-1.5 rounded-full ${statusInfo.dot}`}
                       />
-                      {statusInfo.label}
+                      {t(`tourInstance.statusLabels.${statusKey}`, statusInfo.label)}
                     </span>
                   </div>
 
@@ -549,16 +566,13 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
                       </div>
                     </div>
 
-                    {/* Book button */}
-                    {spotsLeft > 0 &&
-                      instance.status === "available" && (
-                        <Button
-                          type="button"
-                          className="bg-orange-500 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-orange-600 transition-colors"
-                        >
-                          {t("tourInstance.bookNow")}
-                        </Button>
-                      )}
+                    <Link
+                      href={`/tours/instances/${instance.id}`}
+                      className="bg-orange-500 text-white text-xs font-bold px-4 py-2 rounded-full hover:bg-orange-600 transition-colors">
+                      {spotsLeft > 0 && statusKey === "available"
+                        ? t("tourInstance.bookNow")
+                        : t("tourInstance.viewDetails", "View details")}
+                    </Link>
                   </div>
                 </div>
               );
@@ -574,9 +588,25 @@ function ScheduledDeparturesSection({ tourId }: { tourId: string }) {
    Main Component
    ══════════════════════════════════════════════════════════════ */
 export function TourDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const tourId = params?.id as string;
+  const [apiLanguage, setApiLanguage] = useState(() =>
+    normalizeLanguageForApi(i18n.resolvedLanguage || i18n.language),
+  );
+
+  useEffect(() => {
+    const updateLanguage = (language: string) => {
+      setApiLanguage(normalizeLanguageForApi(language));
+    };
+
+    updateLanguage(i18n.resolvedLanguage || i18n.language);
+    i18n.on("languageChanged", updateLanguage);
+
+    return () => {
+      i18n.off("languageChanged", updateLanguage);
+    };
+  }, [i18n]);
 
   /* ── API State ───────────────────────────────────────────── */
   const [tour, setTour] = useState<TourDto | null>(null);
@@ -588,8 +618,11 @@ export function TourDetailPage() {
     if (!tourId) return;
     let cancelled = false;
 
+    setLoading(true);
+    setError(null);
+
     tourService
-      .getPublicTourDetail(tourId)
+      .getPublicTourDetail(tourId, apiLanguage)
       .then((data) => {
         if (!cancelled) {
           setTour(data);
@@ -608,7 +641,7 @@ export function TourDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [tourId, fetchKey]);
+  }, [tourId, fetchKey, apiLanguage]);
 
   /* ── UI State ────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState<"overview" | "itinerary">(
@@ -1054,7 +1087,12 @@ export function TourDetailPage() {
             <ReviewsSection />
 
             {/* Scheduled Departures */}
-            {tourId && <ScheduledDeparturesSection tourId={tourId} />}
+            {tourId && (
+              <ScheduledDeparturesSection
+                tourId={tourId}
+                apiLanguage={apiLanguage}
+              />
+            )}
           </div>
 
           {/* ── Right Sidebar ────────────────────────────── */}

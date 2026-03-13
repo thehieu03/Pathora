@@ -771,14 +771,14 @@ export default function EditTourPage() {
                             tourName: e.target.value,
                           }))
                         }
-                        placeholder="Enter tour name in English"
+                        placeholder={t("placeholder.enterTourNameEn", "Enter tour name in English")}
                       />
                     </div>
                   </div>
                   <div className="mt-4">
-                    <Textarea
-                      label={`${t("tourAdmin.shortDescription", "Short Description")} (EN)`}
-                      value={enTranslation.shortDescription}
+                      <Textarea
+                        label={`${t("tourAdmin.shortDescription", "Short Description")} (EN)`}
+                        value={enTranslation.shortDescription}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setEnTranslation((prev) => ({
                           ...prev,
@@ -786,13 +786,13 @@ export default function EditTourPage() {
                         }))
                       }
                       row={2}
-                      placeholder="Brief tour description in English"
-                    />
+                       placeholder={t("placeholder.briefDescEn", "Brief tour description in English")}
+                     />
                   </div>
                   <div className="mt-4">
-                    <Textarea
-                      label={`${t("tourAdmin.longDescription", "Long Description")} (EN)`}
-                      value={enTranslation.longDescription}
+                      <Textarea
+                        label={`${t("tourAdmin.longDescription", "Long Description")} (EN)`}
+                        value={enTranslation.longDescription}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setEnTranslation((prev) => ({
                           ...prev,
@@ -800,8 +800,8 @@ export default function EditTourPage() {
                         }))
                       }
                       row={5}
-                      placeholder="Detailed tour description in English"
-                    />
+                       placeholder={t("placeholder.detailedDescEn", "Detailed tour description in English")}
+                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <TextInput

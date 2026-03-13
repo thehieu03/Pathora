@@ -3,11 +3,11 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "../shared/LandingImage";
 import { Button, Icon } from "@/components/ui";
+import Spline from "@splinetool/react-spline";
 import { useTranslation } from "react-i18next";
 import { FaGlobe, FaLock, FaUsers, FaCalendarAlt, FaMapMarkerAlt, FaTag } from "react-icons/fa";
 import { homeService } from "@/services/homeService";
 import { useClickOutside } from "@/hooks/useClickOutside";
-import dynamic from "next/dynamic";
 import {
   CalendarDropdown,
   ListDropdown,
@@ -17,13 +17,6 @@ import {
   DEFAULT_CLASSIFICATIONS,
   DEFAULT_WEEKDAYS,
 } from "./HeroSearchBar";
-
-const Spline = dynamic(() => import("@splinetool/react-spline"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full bg-gradient-to-br from-cyan-900/20 to-fuchsia-900/20 animate-pulse" />
-  ),
-});
 
 const HERO_BG = "/tour-placeholder.svg";
 

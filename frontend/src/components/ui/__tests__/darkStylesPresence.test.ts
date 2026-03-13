@@ -26,17 +26,16 @@ describe("dark style presence", () => {
     });
   });
 
-  it("has dark styles in app-level layout surfaces", () => {
-    const targets = [
-      "src/app/(user)/home/page.tsx",
-      "src/components/ui/ThemeToggle.tsx",
+  it("keeps light-mode defaults in theme-controlled surfaces", () => {
+    const toggleSource = readFile("src/components/ui/ThemeToggle.tsx");
+    const tourDiscoverySource = readFile(
       "src/components/partials/tours/TourDiscoveryPage.tsx",
-    ];
+    );
 
-    targets.forEach((filePath) => {
-      const source = readFile(filePath);
-      expect(source.includes("dark:")).toBe(true);
-    });
+    expect(toggleSource.includes("return null")).toBe(true);
+    expect(tourDiscoverySource.includes("dark:")).toBe(false);
+    expect(tourDiscoverySource.includes("bg-white")).toBe(true);
+    expect(tourDiscoverySource.includes("text-[#05073c]")).toBe(true);
   });
 
   it("injects theme init script before hydration in root layout", () => {

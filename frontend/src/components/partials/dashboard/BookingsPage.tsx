@@ -16,6 +16,11 @@ const NAV_ITEMS = [
     href: "/tour-instances",
   },
   {
+    label: "Tour Requests",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/tour-requests",
+  },
+  {
     label: "Bookings",
     icon: "heroicons:ticket",
     href: "/dashboard/bookings",

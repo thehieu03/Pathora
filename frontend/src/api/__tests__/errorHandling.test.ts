@@ -87,8 +87,14 @@ describe("errorHandling", () => {
     });
   });
 
-  it("logs metadata and full error only in development", () => {
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {
+  it("logs handled API failures without triggering error-level console noise", () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {
+      return;
+    });
+    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {
+      return;
+    });
+    const consoleDebugSpy = vi.spyOn(console, "debug").mockImplementation(() => {
       return;
     });
 
@@ -105,6 +111,16 @@ describe("errorHandling", () => {
     vi.stubEnv("NODE_ENV", "development");
     logApiError(error, "2026-03-02T00:00:00.000Z");
 
-    expect(consoleSpy).toHaveBeenCalledTimes(2);
+    expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "[API_ERROR]",
+      expect.objectContaining({
+        endpoint: "/api/orders",
+        method: "POST",
+      }),
+    );
+    expect(consoleDebugSpy).toHaveBeenCalledTimes(1);
+    expect(consoleDebugSpy).toHaveBeenCalledWith("[API_ERROR_FULL]", error);
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
   });
 });

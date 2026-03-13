@@ -984,7 +984,9 @@ export default function CreateTourPage() {
               </button>
               <button
                 onClick={() => {
-                  toast.info("Draft saving not yet implemented");
+                  toast.info(
+                    t("toast.draftNotImplemented", "Draft saving not yet implemented"),
+                  );
                 }}
                 className="px-4 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
                 Save Draft
@@ -1072,7 +1074,7 @@ export default function CreateTourPage() {
                         tourName: e.target.value,
                       }))
                     }
-                    placeholder="Enter tour name"
+                    placeholder={t("placeholder.enterTourName", "Enter tour name")}
                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                   />
                   {errors.tourName && (

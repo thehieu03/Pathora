@@ -1,730 +1,979 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import * as yup from "yup";
 import { Icon } from "@/components/ui";
+import {
+  CreateTourInstancePayload,
+  tourInstanceService,
+} from "@/services/tourInstanceService";
 import { tourService } from "@/services/tourService";
-import { tourInstanceService } from "@/services/tourInstanceService";
-import { TourVm, TourDto, TourClassificationDto } from "@/types/tour";
-import { AdminLogoutButton } from "./AdminLogoutButton";
+import { DynamicPricingDto, ImageDto, TourDto, TourVm } from "@/types/tour";
 
-/* ══════════════════════════════════════════════════════════════
-   Sidebar Navigation
-   ══════════════════════════════════════════════════════════════ */
-const NAV_ITEMS = [
-  { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
-  { label: "Tours", icon: "heroicons:globe-alt", href: "/tour-management" },
-  {
-    label: "Tour Instances",
-    icon: "heroicons:calendar-days",
-    href: "/tour-instances",
-  },
-  {
-    label: "Bookings",
-    icon: "heroicons:ticket",
-    href: "/dashboard/bookings",
-  },
-  {
-    label: "Payments",
-    icon: "heroicons:credit-card",
-    href: "/dashboard/payments",
-  },
-  {
-    label: "Customers",
-    icon: "heroicons:user-group",
-    href: "/dashboard/customers",
-  },
-  {
-    label: "Insurance",
-    icon: "heroicons:shield-check",
-    href: "/dashboard/insurance",
-  },
-  {
-    label: "Visa Applications",
-    icon: "heroicons:document-check",
-    href: "/dashboard/visa",
-  },
-  {
-    label: "Policies",
-    icon: "heroicons:clipboard-document-list",
-    href: "/dashboard/policies",
-  },
-  {
-    label: "Settings",
-    icon: "heroicons:cog-6-tooth",
-    href: "/dashboard/settings",
-  },
-];
+type DynamicTierForm = {
+  minParticipants: string;
+  maxParticipants: string;
+  pricePerPerson: string;
+};
 
-function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
-  return (
-    <aside
-      className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "max-lg:-translate-x-full"
-      }`}>
-      <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-sm font-bold">
-            P
-          </div>
-          <span className="text-lg font-semibold">Pathora Admin</span>
-        </Link>
-        <button
-          onClick={onClose}
-          className="lg:hidden text-slate-400 hover:text-white">
-          <Icon icon="heroicons:x-mark" className="size-5" />
-        </button>
-      </div>
-      <nav className="flex-1 py-3 px-3 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              item.label === "Tour Instances"
-                ? "bg-orange-500 text-white"
-                : "text-slate-300 hover:bg-slate-800 hover:text-white"
-            }`}>
-            <Icon icon={item.icon} className="size-5" />
-            <span>{item.label}</span>
-          </Link>
-        ))}
-      </nav>
-      <div className="border-t border-slate-700/50 p-3">
-        <div className="flex items-center gap-3 px-3 py-3 rounded-lg">
-          <div className="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center text-xs font-bold">
-            AD
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium truncate">Administrator</p>
-            <p className="text-xs text-slate-400 truncate">Administrator</p>
-          </div>
-        </div>
-        <AdminLogoutButton />
-      </div>
-    </aside>
-  );
-}
+type FormState = {
+  tourId: string;
+  classificationId: string;
+  title: string;
+  instanceType: string;
+  startDate: string;
+  endDate: string;
+  minParticipation: string;
+  maxParticipation: string;
+  basePrice: string;
+  sellingPrice: string;
+  operatingCost: string;
+  depositPerPerson: string;
+  location: string;
+  confirmationDeadline: string;
+  includedServices: string[];
+  guideName: string;
+  guideAvatarUrl: string;
+  guideLanguages: string[];
+  guideExperience: string;
+  thumbnailUrl: string;
+  imageUrls: string[];
+  dynamicPricing: DynamicTierForm[];
+};
 
-/* ══════════════════════════════════════════════════════════════
-   Top Bar
-   ══════════════════════════════════════════════════════════════ */
-function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
-  return (
-    <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
-      <button onClick={onMenuClick} className="lg:hidden text-slate-500">
-        <Icon icon="heroicons:bars-3" className="size-6" />
-      </button>
-      <div className="relative flex-1 max-w-xl">
-        <Icon
-          icon="heroicons:magnifying-glass"
-          className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400"
-        />
-        <input
-          type="text"
-          placeholder="Search anything..."
-          className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-        />
-      </div>
-      <div className="ml-auto relative">
-        <button className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
-          <Icon icon="heroicons:bell" className="size-5" />
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
-            3
-          </span>
-        </button>
-      </div>
-    </header>
-  );
-}
+const INITIAL_FORM: FormState = {
+  tourId: "",
+  classificationId: "",
+  title: "",
+  instanceType: "2",
+  startDate: "",
+  endDate: "",
+  minParticipation: "",
+  maxParticipation: "",
+  basePrice: "",
+  sellingPrice: "",
+  operatingCost: "",
+  depositPerPerson: "",
+  location: "",
+  confirmationDeadline: "",
+  includedServices: [],
+  guideName: "",
+  guideAvatarUrl: "",
+  guideLanguages: [],
+  guideExperience: "",
+  thumbnailUrl: "",
+  imageUrls: [],
+  dynamicPricing: [],
+};
 
-/* ══════════════════════════════════════════════════════════════
-   Instance Type Card
-   ══════════════════════════════════════════════════════════════ */
-const INSTANCE_TYPES = [
-  {
-    id: "FIT",
-    label: "FIT",
-    description: "Free Independent Traveler",
-    icon: "heroicons:user",
-    color: "blue",
-  },
-  {
-    id: "MICE",
-    label: "MICE",
-    description: "Meetings, Incentives, Conferences, Exhibitions",
-    icon: "heroicons:building-office-2",
-    color: "purple",
-  },
-  {
-    id: "GROUP",
-    label: "Group Tour",
-    description: "Traditional group tour",
-    icon: "heroicons:user-group",
-    color: "green",
-  },
-];
+const toImageDto = (publicURL: string): ImageDto => ({
+  fileId: null,
+  originalFileName: null,
+  fileName: null,
+  publicURL,
+});
 
-/* ══════════════════════════════════════════════════════════════
-   CreateTourInstancePage – Main Export
-   ══════════════════════════════════════════════════════════════ */
+const createSchema = yup.object({
+  tourId: yup.string().required("Tour is required"),
+  classificationId: yup.string().required("Classification is required"),
+  title: yup.string().trim().required("Title is required"),
+  instanceType: yup
+    .number()
+    .typeError("Instance type is required")
+    .oneOf([1, 2], "Instance type must be Private or Public")
+    .required("Instance type is required"),
+  startDate: yup.string().required("Start date is required"),
+  endDate: yup
+    .string()
+    .required("End date is required")
+    .test("after-start", "End date must be after start date", function (value) {
+      const { startDate } = this.parent as { startDate: string };
+      if (!value || !startDate) return true;
+      return new Date(value).getTime() > new Date(startDate).getTime();
+    }),
+  minParticipation: yup
+    .number()
+    .typeError("Minimum participants is required")
+    .min(0, "Minimum participants cannot be negative")
+    .required("Minimum participants is required"),
+  maxParticipation: yup
+    .number()
+    .typeError("Maximum participants is required")
+    .moreThan(0, "Maximum participants must be greater than 0")
+    .test(
+      "max-gte-min",
+      "Maximum participants must be greater than or equal to minimum",
+      function (value) {
+        const { minParticipation } = this.parent as { minParticipation: number };
+        if (value == null || minParticipation == null) return true;
+        return value >= minParticipation;
+      },
+    )
+    .required("Maximum participants is required"),
+  basePrice: yup
+    .number()
+    .typeError("Base price is required")
+    .min(0, "Base price cannot be negative")
+    .required("Base price is required"),
+  sellingPrice: yup
+    .number()
+    .typeError("Selling price is required")
+    .min(0, "Selling price cannot be negative")
+    .required("Selling price is required"),
+  operatingCost: yup
+    .number()
+    .typeError("Operating cost is required")
+    .min(0, "Operating cost cannot be negative")
+    .required("Operating cost is required"),
+  depositPerPerson: yup
+    .number()
+    .typeError("Deposit per person is required")
+    .min(0, "Deposit per person cannot be negative")
+    .required("Deposit per person is required"),
+});
+
+const normalizeDynamicPricing = (
+  tiers: DynamicTierForm[],
+): { data: DynamicPricingDto[]; error?: string } => {
+  const normalized = tiers
+    .map((tier) => ({
+      minParticipants: Number(tier.minParticipants || 0),
+      maxParticipants: Number(tier.maxParticipants || 0),
+      pricePerPerson: Number(tier.pricePerPerson || 0),
+    }))
+    .filter(
+      (tier) =>
+        tier.minParticipants > 0 ||
+        tier.maxParticipants > 0 ||
+        tier.pricePerPerson > 0,
+    );
+
+  for (const tier of normalized) {
+    if (tier.minParticipants <= 0) {
+      return {
+        data: [],
+        error: "Dynamic pricing min participants must be greater than 0",
+      };
+    }
+
+    if (tier.maxParticipants < tier.minParticipants) {
+      return {
+        data: [],
+        error:
+          "Dynamic pricing max participants must be greater than or equal to min",
+      };
+    }
+
+    if (tier.pricePerPerson < 0) {
+      return {
+        data: [],
+        error: "Dynamic pricing price per person cannot be negative",
+      };
+    }
+  }
+
+  const ordered = [...normalized].sort((left, right) => {
+    if (left.minParticipants !== right.minParticipants) {
+      return left.minParticipants - right.minParticipants;
+    }
+
+    return left.maxParticipants - right.maxParticipants;
+  });
+
+  for (let index = 1; index < ordered.length; index += 1) {
+    if (ordered[index].minParticipants <= ordered[index - 1].maxParticipants) {
+      return {
+        data: [],
+        error: "Dynamic pricing ranges must not overlap",
+      };
+    }
+  }
+
+  return { data: normalized };
+};
+
 export function CreateTourInstancePage() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // Step 1 state
   const [tours, setTours] = useState<TourVm[]>([]);
-  const [selectedTourId, setSelectedTourId] = useState("");
   const [tourDetail, setTourDetail] = useState<TourDto | null>(null);
   const [loadingTour, setLoadingTour] = useState(false);
-
-  // Step 2 state
-  const [selectedClassificationId, setSelectedClassificationId] = useState("");
-
-  // Step 3 state
-  const [instanceType, setInstanceType] = useState("FIT");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [maxParticipants, setMaxParticipants] = useState("");
-
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  /* ── Fetch tours list ─────────────────────────────────────── */
+  const selectedTour = useMemo(
+    () => tours.find((tour) => tour.id === form.tourId) ?? null,
+    [form.tourId, tours],
+  );
+
+  const selectedClassification = useMemo(
+    () =>
+      tourDetail?.classifications?.find(
+        (classification) => classification.id === form.classificationId,
+      ) ?? null,
+    [form.classificationId, tourDetail],
+  );
+
   const fetchTours = useCallback(async () => {
     try {
+      setLoading(true);
       const result = await tourService.getAllTours(undefined, 1, 100);
-      if (result) setTours(result.data ?? []);
+      setTours(result?.data ?? []);
     } catch (error) {
-      console.error("Failed to fetch tours:", error);
+      console.error("Failed to fetch tours", error);
+      toast.error(t("tourInstance.fetchError", "Failed to load tour instances"));
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchTours();
   }, [fetchTours]);
 
-  /* ── Load tour detail when selected ───────────────────────── */
   useEffect(() => {
-    if (!selectedTourId) {
+    if (!form.tourId) {
       setTourDetail(null);
-      setSelectedClassificationId("");
+      setForm((current) => ({ ...current, classificationId: "" }));
       return;
     }
-    const loadDetail = async () => {
-      setLoadingTour(true);
+
+    const loadTourDetail = async () => {
       try {
-        const result = await tourService.getTourDetail(selectedTourId);
-        if (result) {
-          setTourDetail(result);
-          setSelectedClassificationId("");
-        }
+        setLoadingTour(true);
+        const detail = await tourService.getTourDetail(form.tourId);
+        setTourDetail(detail);
+        setForm((current) => ({ ...current, classificationId: "" }));
       } catch (error) {
-        console.error("Failed to load tour detail:", error);
-        toast.error("Failed to load tour details");
+        console.error("Failed to fetch tour detail", error);
+        toast.error(
+          t("toast.failedToLoadTourDetails", "Failed to load tour details"),
+        );
       } finally {
         setLoadingTour(false);
       }
     };
-    loadDetail();
-  }, [selectedTourId]);
 
-  /* ── Derived ──────────────────────────────────────────────── */
-  const classifications: TourClassificationDto[] =
-    tourDetail?.classifications ?? [];
-  const selectedClassification = classifications.find(
-    (c) => c.id === selectedClassificationId,
-  );
+    loadTourDetail();
+  }, [form.tourId, t]);
 
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+  useEffect(() => {
+    if (!selectedClassification) {
+      return;
+    }
 
-  const canSubmit =
-    selectedTourId &&
-    selectedClassificationId &&
-    instanceType &&
-    startDate &&
-    endDate &&
-    maxParticipants;
+    setForm((current) => {
+      const next = { ...current };
+      const fallbackPrice = selectedClassification.price ?? 0;
+      const adultPrice = selectedClassification.adultPrice ?? fallbackPrice;
+      const childPrice = selectedClassification.childPrice ?? adultPrice;
+      const infantPrice = selectedClassification.infantPrice ?? 0;
 
-  /* ── Submit ───────────────────────────────────────────────── */
+      if (!next.title.trim()) {
+        next.title = `${selectedTour?.tourName ?? "Tour"} - ${selectedClassification.name}`;
+      }
+
+      if (!next.basePrice) {
+        next.basePrice = adultPrice.toString();
+      }
+
+      if (!next.sellingPrice) {
+        next.sellingPrice = childPrice.toString();
+      }
+
+      if (!next.operatingCost) {
+        next.operatingCost = infantPrice.toString();
+      }
+
+      return next;
+    });
+  }, [selectedClassification, selectedTour?.tourName]);
+
+  const updateField = <K extends keyof FormState>(field: K, value: FormState[K]) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setErrors((current) => {
+      if (!current[field as string]) return current;
+      const next = { ...current };
+      delete next[field as string];
+      return next;
+    });
+  };
+
+  const updateListItem = (
+    field: "includedServices" | "guideLanguages" | "imageUrls",
+    index: number,
+    value: string,
+  ) => {
+    setForm((current) => {
+      const items = [...current[field]];
+      items[index] = value;
+      return { ...current, [field]: items };
+    });
+  };
+
+  const appendListItem = (
+    field: "includedServices" | "guideLanguages" | "imageUrls",
+  ) => {
+    setForm((current) => ({ ...current, [field]: [...current[field], ""] }));
+  };
+
+  const removeListItem = (
+    field: "includedServices" | "guideLanguages" | "imageUrls",
+    index: number,
+  ) => {
+    setForm((current) => ({
+      ...current,
+      [field]: current[field].filter((_, itemIndex) => itemIndex !== index),
+    }));
+  };
+
+  const updateTier = (index: number, field: keyof DynamicTierForm, value: string) => {
+    setForm((current) => {
+      const tiers = [...current.dynamicPricing];
+      tiers[index] = { ...tiers[index], [field]: value };
+      return { ...current, dynamicPricing: tiers };
+    });
+  };
+
+  const addTier = () => {
+    setForm((current) => ({
+      ...current,
+      dynamicPricing: [
+        ...current.dynamicPricing,
+        { minParticipants: "", maxParticipants: "", pricePerPerson: "" },
+      ],
+    }));
+  };
+
+  const removeTier = (index: number) => {
+    setForm((current) => ({
+      ...current,
+      dynamicPricing: current.dynamicPricing.filter(
+        (_, tierIndex) => tierIndex !== index,
+      ),
+    }));
+  };
+
   const handleSubmit = async () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
     try {
-      await tourInstanceService.createInstance({
-        tourId: selectedTourId,
-        classificationId: selectedClassificationId,
-        instanceType,
-        startDate,
-        endDate,
-        maxParticipants: parseInt(maxParticipants, 10),
-      });
-      toast.success(
-        t("tourInstance.created", "Tour instance created successfully!"),
-      );
+      setErrors({});
+
+      const payloadForValidation = {
+        ...form,
+        instanceType: Number(form.instanceType),
+        minParticipation: Number(form.minParticipation),
+        maxParticipation: Number(form.maxParticipation),
+        basePrice: Number(form.basePrice),
+        sellingPrice: Number(form.sellingPrice),
+        operatingCost: Number(form.operatingCost),
+        depositPerPerson: Number(form.depositPerPerson),
+      };
+
+      await createSchema.validate(payloadForValidation, { abortEarly: false });
+
+      const dynamicPricing = normalizeDynamicPricing(form.dynamicPricing);
+      if (dynamicPricing.error) {
+        setErrors((current) => ({ ...current, dynamicPricing: dynamicPricing.error as string }));
+        return;
+      }
+
+      setSubmitting(true);
+
+      const includedServices = form.includedServices
+        .map((service) => service.trim())
+        .filter(Boolean);
+      const guideLanguages = form.guideLanguages
+        .map((language) => language.trim())
+        .filter(Boolean);
+      const imageUrls = form.imageUrls.map((url) => url.trim()).filter(Boolean);
+
+      const payload: CreateTourInstancePayload = {
+        tourId: form.tourId,
+        classificationId: form.classificationId,
+        title: form.title.trim(),
+        instanceType: Number(form.instanceType),
+        startDate: form.startDate,
+        endDate: form.endDate,
+        minParticipation: Number(form.minParticipation),
+        maxParticipation: Number(form.maxParticipation),
+        basePrice: Number(form.basePrice),
+        sellingPrice: Number(form.sellingPrice),
+        operatingCost: Number(form.operatingCost),
+        depositPerPerson: Number(form.depositPerPerson),
+        location: form.location.trim() || undefined,
+        confirmationDeadline: form.confirmationDeadline || undefined,
+        includedServices: includedServices.length > 0 ? includedServices : undefined,
+        guide: form.guideName.trim()
+          ? {
+              name: form.guideName.trim(),
+              avatarUrl: form.guideAvatarUrl.trim() || null,
+              languages: guideLanguages,
+              experience: form.guideExperience.trim() || null,
+            }
+          : undefined,
+        thumbnail: form.thumbnailUrl.trim()
+          ? toImageDto(form.thumbnailUrl.trim())
+          : undefined,
+        images: imageUrls.length > 0 ? imageUrls.map((url) => toImageDto(url)) : undefined,
+        dynamicPricing:
+          dynamicPricing.data.length > 0 ? dynamicPricing.data : undefined,
+      };
+
+      await tourInstanceService.createInstance(payload);
+
+      toast.success(t("tourInstance.created", "Tour instance created successfully!"));
       router.push("/tour-instances");
     } catch (error) {
-      console.error("Failed to create tour instance:", error);
-      toast.error(
-        t("tourInstance.createError", "Failed to create tour instance"),
-      );
+      if (error instanceof yup.ValidationError) {
+        const nextErrors: Record<string, string> = {};
+        for (const issue of error.inner) {
+          if (issue.path && !nextErrors[issue.path]) {
+            nextErrors[issue.path] = issue.message;
+          }
+        }
+        setErrors(nextErrors);
+        return;
+      }
+
+      console.error("Failed to create tour instance", error);
+      toast.error(t("tourInstance.createError", "Failed to create tour instance"));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const inputClass =
-    "w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition";
+  const inputClassName =
+    "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20";
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      <div className="lg:ml-64">
-        <TopBar onMenuClick={() => setSidebarOpen(true)} />
-
-        {/* ── Sticky Header ──────────────────────────────── */}
-        <div className="bg-white border-b border-slate-200 px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/tour-instances")}
-                className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
-                <Icon
-                  icon="heroicons:arrow-left"
-                  className="size-5 text-slate-500"
-                />
-              </button>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">
-                  Create Tour Instance
-                </h1>
-                <p className="text-sm text-slate-500">
-                  Create a scheduled tour from a package template
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push("/tour-instances")}
-                className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-                Cancel
-              </button>
-              <button
-                disabled={!canSubmit || submitting}
-                onClick={handleSubmit}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl transition-colors">
-                <Icon icon="heroicons:bookmark" className="size-4" />
-                {submitting ? "Creating..." : "Create Tour Instance"}
-              </button>
-            </div>
+    <main className="min-h-screen bg-slate-50 p-6 md:p-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+        <header className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+          <div>
+            <h1 className="text-xl font-bold text-slate-900">
+              {t("tourInstance.createTitle", "Create Tour Instance")}
+            </h1>
+            <p className="text-sm text-slate-500">
+              {t(
+                "tourInstance.createSubtitle",
+                "Create a scheduled tour from a package template",
+              )}
+            </p>
           </div>
-        </div>
-
-        <main id="main-content" className="max-w-4xl mx-auto p-8 space-y-6">
-          {/* ── Info Banner ─────────────────────────────── */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
-            <Icon
-              icon="heroicons:information-circle"
-              className="size-5 text-blue-600 shrink-0 mt-0.5"
-            />
-            <div>
-              <p className="text-sm font-semibold text-blue-900">
-                Creating a Tour Instance
-              </p>
-              <p className="text-xs text-blue-700 mt-1">
-                A Tour Instance is a scheduled occurrence of a Package Tour with
-                specific dates, pricing, and participant capacity. All
-                itinerary, accommodations, and service details will be copied
-                from the selected package template.
-              </p>
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => router.push("/tour-instances")}
+              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+              {t("tourInstance.cancel", "Cancel")}
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={submitting || loading}
+              className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60">
+              <Icon icon="heroicons:check" className="size-4" />
+              {submitting
+                ? t("tourInstance.creating", "Creating...")
+                : t("tourInstance.createAction", "Create instance")}
+            </button>
           </div>
+        </header>
 
-          {/* ══════════════════════════════════════════════
-             Step 1: Select Package Tour
-             ══════════════════════════════════════════════ */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-1">
-                <Icon
-                  icon="heroicons:map-pin"
-                  className="size-5 text-slate-700"
-                />
-                <h2 className="text-lg font-bold text-slate-900">
-                  Step 1: Select Package Tour
-                </h2>
-              </div>
-              <p className="text-sm text-slate-500">
-                Choose the base package tour template
-              </p>
-            </div>
+        <section className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+          {t(
+            "tourInstance.createInfo",
+            "A Tour Instance is a scheduled occurrence with specific dates, capacity, and pricing.",
+          )}
+        </section>
 
-            <div className="space-y-3">
+        <section className="grid gap-6 lg:grid-cols-2">
+          <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-5">
+            <h2 className="text-base font-bold text-slate-900">
+              {t("tourInstance.form.basicInfo", "Basic information")}
+            </h2>
+
+            <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">
-                Package Tour <span className="text-red-500">*</span>
+                {t("tourInstance.packageTour", "Package Tour")} *
               </label>
               <select
-                value={selectedTourId}
-                onChange={(e) => setSelectedTourId(e.target.value)}
-                className={inputClass}>
-                <option value="">Select a package tour...</option>
+                className={inputClassName}
+                value={form.tourId}
+                onChange={(event) => updateField("tourId", event.target.value)}>
+                <option value="">{t("tourInstance.selectPackageTour", "Select a package tour...")}</option>
                 {tours.map((tour) => (
                   <option key={tour.id} value={tour.id}>
                     {tour.tourName}
                   </option>
                 ))}
               </select>
-
-              {/* Tour detail info */}
-              {loadingTour && (
-                <div className="bg-slate-50 rounded-xl p-4 flex items-center justify-center">
-                  <Icon
-                    icon="heroicons:arrow-path"
-                    className="size-5 animate-spin text-slate-400"
-                  />
-                </div>
-              )}
-
-              {tourDetail && !loadingTour && (
-                <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                  <p className="text-sm text-slate-600">
-                    {tourDetail.shortDescription}
-                  </p>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">
-                      {classifications.length} Packages
-                    </span>
-                    {classifications[0] && (
-                      <span className="inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
-                        {classifications[0].durationDays} Days Itinerary
-                      </span>
-                    )}
-                    {classifications[0]?.insurances?.length > 0 && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-700">
-                        <Icon
-                          icon="heroicons:shield-check"
-                          className="size-3"
-                        />
-                        {classifications[0].insurances.length} Insurance Options
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ══════════════════════════════════════════════
-             Step 2: Select Package Classification
-             ══════════════════════════════════════════════ */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-1">
-                <Icon icon="heroicons:tag" className="size-5 text-slate-700" />
-                <h2 className="text-lg font-bold text-slate-900">
-                  Step 2: Select Package Classification
-                </h2>
-              </div>
-              <p className="text-sm text-slate-500">
-                Choose which package type to instantiate
-              </p>
+              {errors.tourId && <p className="text-xs text-red-600">{errors.tourId}</p>}
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">
-                Package Classification <span className="text-red-500">*</span>
+                {t("tourInstance.packageClassification", "Package Classification")} *
               </label>
-
-              {!selectedTourId && (
-                <p className="text-sm text-slate-400 italic">
-                  Select a package tour first
-                </p>
+              <select
+                className={inputClassName}
+                value={form.classificationId}
+                disabled={!tourDetail || loadingTour}
+                onChange={(event) =>
+                  updateField("classificationId", event.target.value)
+                }>
+                <option value="">{t("tourInstance.selectClassification", "Select a classification...")}</option>
+                {(tourDetail?.classifications ?? []).map((classification) => (
+                  <option key={classification.id} value={classification.id}>
+                    {classification.name}
+                  </option>
+                ))}
+              </select>
+              {errors.classificationId && (
+                <p className="text-xs text-red-600">{errors.classificationId}</p>
               )}
+            </div>
 
-              {selectedTourId &&
-                classifications.length === 0 &&
-                !loadingTour && (
-                  <p className="text-sm text-slate-400 italic">
-                    No classifications available for this tour
-                  </p>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                {t("tourInstance.form.title", "Title")} *
+              </label>
+              <input
+                className={inputClassName}
+                value={form.title}
+                onChange={(event) => updateField("title", event.target.value)}
+                placeholder={t(
+                  "tourInstance.form.titlePlaceholder",
+                  "Ex: Ha Long 3N2D - June Departure",
                 )}
+              />
+              {errors.title && <p className="text-xs text-red-600">{errors.title}</p>}
+            </div>
 
-              <div className="space-y-3">
-                {classifications.map((cls) => {
-                  const isSelected = selectedClassificationId === cls.id;
-                  return (
-                    <label
-                      key={cls.id}
-                      className={`block border-2 rounded-xl p-4 cursor-pointer transition-colors ${
-                        isSelected
-                          ? "border-orange-500 bg-orange-50"
-                          : "border-slate-200 hover:border-slate-300 bg-white"
-                      }`}>
-                      <div className="flex items-center gap-4">
-                        <input
-                          type="radio"
-                          name="classification"
-                          value={cls.id}
-                          checked={isSelected}
-                          onChange={() => setSelectedClassificationId(cls.id)}
-                          className="sr-only"
-                        />
-                        <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                            isSelected
-                              ? "border-orange-500"
-                              : "border-slate-300"
-                          }`}>
-                          {isSelected && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-base font-bold text-slate-900">
-                                {cls.name}
-                              </h3>
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
-                                {cls.durationDays} days
-                              </span>
-                            </div>
-                            <div className="text-right">
-                              {cls.salePrice > 0 &&
-                                cls.salePrice < cls.price && (
-                                  <p className="text-xs text-slate-400 line-through">
-                                    {formatCurrency(cls.price)}
-                                  </p>
-                                )}
-                              <p className="text-lg font-bold text-orange-600">
-                                {formatCurrency(
-                                  cls.salePrice > 0 ? cls.salePrice : cls.price,
-                                )}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                per person
-                              </p>
-                            </div>
-                          </div>
-                          <p className="text-sm text-slate-500 line-clamp-2">
-                            {cls.description}
-                          </p>
-                        </div>
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                {t("tourInstance.instanceType", "Tour Instance Type")} *
+              </label>
+              <select
+                className={inputClassName}
+                value={form.instanceType}
+                onChange={(event) => updateField("instanceType", event.target.value)}>
+                <option value="1">{t("tourInstance.private", "Private")}</option>
+                <option value="2">{t("tourInstance.public", "Public")}</option>
+              </select>
+              {errors.instanceType && (
+                <p className="text-xs text-red-600">{errors.instanceType}</p>
+              )}
             </div>
           </div>
 
-          {/* ══════════════════════════════════════════════
-             Step 3: Tour Instance Details
-             ══════════════════════════════════════════════ */}
-          <div className="bg-white border border-slate-200 rounded-xl p-6">
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-1">
-                <Icon
-                  icon="heroicons:calendar-days"
-                  className="size-5 text-slate-700"
-                />
-                <h2 className="text-lg font-bold text-slate-900">
-                  Step 3: Tour Instance Details
-                </h2>
-              </div>
-              <p className="text-sm text-slate-500">
-                Configure the specific details for this tour instance
-              </p>
-            </div>
+          <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-5">
+            <h2 className="text-base font-bold text-slate-900">
+              {t("tourInstance.form.scheduleAndCapacity", "Schedule and capacity")}
+            </h2>
 
-            <div className="space-y-6">
-              {/* Tour Instance Type */}
-              <div className="space-y-3">
-                <label className="text-sm font-semibold text-slate-700">
-                  Tour Instance Type <span className="text-red-500">*</span>
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {INSTANCE_TYPES.map((type) => {
-                    const isSelected = instanceType === type.id;
-                    const colorMap: Record<
-                      string,
-                      { bg: string; border: string; icon: string }
-                    > = {
-                      blue: {
-                        bg: "bg-blue-50",
-                        border: "border-blue-500",
-                        icon: "text-blue-600",
-                      },
-                      purple: {
-                        bg: "bg-purple-50",
-                        border: "border-purple-500",
-                        icon: "text-purple-600",
-                      },
-                      green: {
-                        bg: "bg-green-50",
-                        border: "border-green-500",
-                        icon: "text-green-600",
-                      },
-                    };
-                    const colors = colorMap[type.color] ?? colorMap.blue;
-                    return (
-                      <button
-                        key={type.id}
-                        type="button"
-                        onClick={() => setInstanceType(type.id)}
-                        className={`p-4 rounded-xl border-2 text-left transition-colors ${
-                          isSelected
-                            ? `${colors.bg} ${colors.border}`
-                            : "border-slate-200 hover:border-slate-300 bg-white"
-                        }`}>
-                        <Icon
-                          icon={type.icon}
-                          className={`size-6 mb-2 ${isSelected ? colors.icon : "text-slate-400"}`}
-                        />
-                        <p
-                          className={`text-sm font-bold ${isSelected ? "text-slate-900" : "text-slate-600"}`}>
-                          {type.label}
-                        </p>
-                        <p className="text-xs text-slate-500 mt-0.5">
-                          {type.description}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* MICE Info Banner */}
-              {instanceType === "MICE" && (
-                <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex gap-3">
-                  <Icon
-                    icon="heroicons:information-circle"
-                    className="size-5 text-purple-600 shrink-0 mt-0.5"
-                  />
-                  <div>
-                    <p className="text-sm font-semibold text-purple-900">
-                      MICE Tour Instance
-                    </p>
-                    <p className="text-xs text-purple-700 mt-1">
-                      MICE tours are designed for corporate events, meetings,
-                      incentive trips, conferences, and exhibitions. These
-                      instances typically have larger group sizes and additional
-                      requirements.
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Date fields */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">
-                    Start Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">
-                    End Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-
-              {/* Max Participants */}
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">
-                  Maximum Participants <span className="text-red-500">*</span>
+                  {t("tourInstance.startDate", "Start Date")} *
+                </label>
+                <input
+                  type="date"
+                  className={inputClassName}
+                  value={form.startDate}
+                  onChange={(event) => updateField("startDate", event.target.value)}
+                />
+                {errors.startDate && (
+                  <p className="text-xs text-red-600">{errors.startDate}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.endDate", "End Date")} *
+                </label>
+                <input
+                  type="date"
+                  className={inputClassName}
+                  value={form.endDate}
+                  onChange={(event) => updateField("endDate", event.target.value)}
+                />
+                {errors.endDate && <p className="text-xs text-red-600">{errors.endDate}</p>}
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.form.minParticipation", "Minimum participants")} *
                 </label>
                 <input
                   type="number"
-                  min="1"
-                  value={maxParticipants}
-                  onChange={(e) => setMaxParticipants(e.target.value)}
-                  placeholder="e.g. 20"
-                  className={inputClass}
+                  min={0}
+                  className={inputClassName}
+                  value={form.minParticipation}
+                  onChange={(event) =>
+                    updateField("minParticipation", event.target.value)
+                  }
+                />
+                {errors.minParticipation && (
+                  <p className="text-xs text-red-600">{errors.minParticipation}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.maxParticipants", "Maximum Participants")} *
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  className={inputClassName}
+                  value={form.maxParticipation}
+                  onChange={(event) =>
+                    updateField("maxParticipation", event.target.value)
+                  }
+                />
+                {errors.maxParticipation && (
+                  <p className="text-xs text-red-600">{errors.maxParticipation}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.basePrice", "Base Price")} *
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className={inputClassName}
+                  value={form.basePrice}
+                  onChange={(event) => updateField("basePrice", event.target.value)}
+                />
+                {errors.basePrice && (
+                  <p className="text-xs text-red-600">{errors.basePrice}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.form.sellingPrice", "Selling price")} *
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className={inputClassName}
+                  value={form.sellingPrice}
+                  onChange={(event) => updateField("sellingPrice", event.target.value)}
+                />
+                {errors.sellingPrice && (
+                  <p className="text-xs text-red-600">{errors.sellingPrice}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.form.operatingCost", "Operating cost")} *
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className={inputClassName}
+                  value={form.operatingCost}
+                  onChange={(event) =>
+                    updateField("operatingCost", event.target.value)
+                  }
+                />
+                {errors.operatingCost && (
+                  <p className="text-xs text-red-600">{errors.operatingCost}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.form.depositPerPerson", "Deposit per person")} *
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  className={inputClassName}
+                  value={form.depositPerPerson}
+                  onChange={(event) =>
+                    updateField("depositPerPerson", event.target.value)
+                  }
+                />
+                {errors.depositPerPerson && (
+                  <p className="text-xs text-red-600">{errors.depositPerPerson}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.location", "Location")}
+                </label>
+                <input
+                  className={inputClassName}
+                  value={form.location}
+                  onChange={(event) => updateField("location", event.target.value)}
+                  placeholder={t("tourInstance.form.locationPlaceholder", "Ex: Ha Long")}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  {t("tourInstance.confirmationDeadline", "Confirmation Deadline")}
+                </label>
+                <input
+                  type="date"
+                  className={inputClassName}
+                  value={form.confirmationDeadline}
+                  onChange={(event) =>
+                    updateField("confirmationDeadline", event.target.value)
+                  }
                 />
               </div>
             </div>
           </div>
+        </section>
 
-          {/* ══════════════════════════════════════════════
-             Instance Summary
-             ══════════════════════════════════════════════ */}
-          {canSubmit && (
-            <div className="bg-white border border-slate-200 rounded-xl p-6">
-              <h3 className="text-base font-bold text-slate-900 mb-4">
-                Instance Summary
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-slate-500">Package Tour</p>
-                  <p className="font-medium text-slate-900">
-                    {tourDetail?.tourName}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Classification</p>
-                  <p className="font-medium text-slate-900">
-                    {selectedClassification?.name}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Instance Type</p>
-                  <p className="font-medium text-slate-900">{instanceType}</p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Duration</p>
-                  <p className="font-medium text-slate-900">
-                    {startDate && endDate ? `${startDate} → ${endDate}` : "—"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Max Participants</p>
-                  <p className="font-medium text-slate-900">
-                    {maxParticipants}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-slate-500">Base Price</p>
-                  <p className="font-medium text-orange-600">
-                    {selectedClassification
-                      ? formatCurrency(
-                          selectedClassification.salePrice > 0
-                            ? selectedClassification.salePrice
-                            : selectedClassification.price,
-                        )
-                      : "—"}
-                  </p>
-                </div>
+        <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-base font-bold text-slate-900">
+            {t("tourInstance.includedServices", "Included Services")}
+          </h2>
+          <div className="mt-4 space-y-2">
+            {form.includedServices.map((service, index) => (
+              <div key={`service-${index}`} className="flex items-center gap-2">
+                <input
+                  className={inputClassName}
+                  value={service}
+                  onChange={(event) =>
+                    updateListItem("includedServices", index, event.target.value)
+                  }
+                  placeholder={t(
+                    "tourInstance.form.includedServicesPlaceholder",
+                    "Ex: Shuttle bus",
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeListItem("includedServices", index)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  {t("common.remove", "Remove")}
+                </button>
               </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => appendListItem("includedServices")}
+              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              + {t("tourInstance.form.addService", "Add service")}
+            </button>
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-base font-bold text-slate-900">
+            {t("tourInstance.guide", "Guide")}
+          </h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <input
+              className={inputClassName}
+              value={form.guideName}
+              onChange={(event) => updateField("guideName", event.target.value)}
+              placeholder={t("tourInstance.form.guideName", "Guide name")}
+            />
+            <input
+              className={inputClassName}
+              value={form.guideAvatarUrl}
+              onChange={(event) => updateField("guideAvatarUrl", event.target.value)}
+              placeholder={t("tourInstance.form.guideAvatar", "Guide avatar URL")}
+            />
+            <input
+              className={inputClassName}
+              value={form.guideExperience}
+              onChange={(event) =>
+                updateField("guideExperience", event.target.value)
+              }
+              placeholder={t("tourInstance.form.guideExperience", "Guide experience")}
+            />
+          </div>
+
+          <div className="mt-4 space-y-2">
+            {form.guideLanguages.map((language, index) => (
+              <div key={`language-${index}`} className="flex items-center gap-2">
+                <input
+                  className={inputClassName}
+                  value={language}
+                  onChange={(event) =>
+                    updateListItem("guideLanguages", index, event.target.value)
+                  }
+                  placeholder={t("tourInstance.form.guideLanguage", "Language code")}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeListItem("guideLanguages", index)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  {t("common.remove", "Remove")}
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => appendListItem("guideLanguages")}
+              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              + {t("tourInstance.form.addLanguage", "Add language")}
+            </button>
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-base font-bold text-slate-900">
+            {t("tourInstance.form.media", "Media")}
+          </h2>
+          <div className="mt-4 space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                {t("tourInstance.form.thumbnailUpload", "Thumbnail upload")}
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                className={inputClassName}
+                onChange={(event) =>
+                  setThumbnailFile(event.target.files?.[0] ?? null)
+                }
+              />
+              {thumbnailFile && (
+                <p className="text-xs text-slate-500">{thumbnailFile.name}</p>
+              )}
             </div>
-          )}
-        </main>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                {t("tourInstance.form.imagesUpload", "Gallery upload")}
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className={inputClassName}
+                onChange={(event) =>
+                  setImageFiles(Array.from(event.target.files ?? []))
+                }
+              />
+              {imageFiles.length > 0 && (
+                <p className="text-xs text-slate-500">
+                  {t("tourInstance.form.filesSelected", "Files selected")}: {imageFiles.length}
+                </p>
+              )}
+            </div>
+
+            <input
+              className={inputClassName}
+              value={form.thumbnailUrl}
+              onChange={(event) => updateField("thumbnailUrl", event.target.value)}
+              placeholder={t("tourInstance.form.thumbnailUrl", "Thumbnail URL")}
+            />
+            {form.imageUrls.map((imageUrl, index) => (
+              <div key={`image-${index}`} className="flex items-center gap-2">
+                <input
+                  className={inputClassName}
+                  value={imageUrl}
+                  onChange={(event) =>
+                    updateListItem("imageUrls", index, event.target.value)
+                  }
+                  placeholder={t("tourInstance.form.imageUrl", "Image URL")}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeListItem("imageUrls", index)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  {t("common.remove", "Remove")}
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => appendListItem("imageUrls")}
+              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              + {t("tourInstance.form.addImage", "Add image")}
+            </button>
+          </div>
+        </section>
+
+        <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-base font-bold text-slate-900">
+            {t("tourInstance.dynamicPricing", "Dynamic Pricing")}
+          </h2>
+          <div className="mt-4 space-y-3">
+            {form.dynamicPricing.map((tier, index) => (
+              <div key={`tier-${index}`} className="grid gap-2 md:grid-cols-4">
+                <input
+                  type="number"
+                  min={1}
+                  className={inputClassName}
+                  value={tier.minParticipants}
+                  onChange={(event) =>
+                    updateTier(index, "minParticipants", event.target.value)
+                  }
+                  placeholder={t("tourInstance.form.minParticipants", "Min participants")}
+                />
+                <input
+                  type="number"
+                  min={1}
+                  className={inputClassName}
+                  value={tier.maxParticipants}
+                  onChange={(event) =>
+                    updateTier(index, "maxParticipants", event.target.value)
+                  }
+                  placeholder={t("tourInstance.form.maxParticipants", "Max participants")}
+                />
+                <input
+                  type="number"
+                  min={0}
+                  className={inputClassName}
+                  value={tier.pricePerPerson}
+                  onChange={(event) =>
+                    updateTier(index, "pricePerPerson", event.target.value)
+                  }
+                  placeholder={t("tourInstance.form.pricePerPerson", "Price per person")}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeTier(index)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  {t("common.remove", "Remove")}
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={addTier}
+              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              + {t("tourInstance.form.addPricingTier", "Add pricing tier")}
+            </button>
+            {errors.dynamicPricing && (
+              <p className="text-xs text-red-600">{errors.dynamicPricing}</p>
+            )}
+          </div>
+        </section>
+
+        {selectedClassification && (
+          <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            {t("tourInstance.form.selectedClassification", "Selected classification")}: {" "}
+            <strong>{selectedClassification.name}</strong>
+          </section>
+        )}
       </div>
-    </div>
+    </main>
   );
 }

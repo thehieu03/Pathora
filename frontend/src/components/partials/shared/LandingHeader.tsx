@@ -30,6 +30,7 @@ import {
   FiChevronDown,
   FiCheck,
   FiSliders,
+  FiClipboard,
   FiLogOut,
   FiMenu,
   FiX,
@@ -237,7 +238,11 @@ const MobileSidebar = ({
           >
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-              <Link href="/home" onClick={onClose} className="flex items-center gap-3">
+              <Link
+                href="/home"
+                onClick={onClose}
+                className="flex items-center gap-3"
+              >
                 <div className="relative h-10 w-12">
                   <Image
                     src={LOGO}
@@ -301,6 +306,24 @@ const MobileSidebar = ({
                   </Link>
                 </div>
               ))}
+
+              {isAuth && (
+                <div>
+                  <Link
+                    href="/tours/my-requests"
+                    onClick={onClose}
+                    className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all group"
+                  >
+                    <Icon
+                      icon="heroicons-outline:clipboard-document-list"
+                      className="w-5 h-5 text-gray-400 group-hover:text-[#fa8b02] transition-colors"
+                    />
+                    <span className="text-base text-gray-200 group-hover:text-white font-medium transition-colors">
+                      {t("tourRequest.page.myRequests.title")}
+                    </span>
+                  </Link>
+                </div>
+              )}
             </nav>
 
             {/* Language */}
@@ -520,11 +543,10 @@ export const LandingHeader = ({
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link
-              href="/home"
-              className="flex items-center shrink-0 group"
-            >
-              <div className={`relative transition-all duration-300 ${scrolled ? "h-10 w-24" : "h-12 w-28"}`}>
+            <Link href="/home" className="flex items-center shrink-0 group">
+              <div
+                className={`relative transition-all duration-300 ${scrolled ? "h-10 w-24" : "h-12 w-28"}`}
+              >
                 <Image
                   src={LOGO}
                   alt="Pathora logo"
@@ -571,9 +593,11 @@ export const LandingHeader = ({
                               ? "Docs"
                               : ""}
                     {/* Animated underline */}
-                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-[#fa8b02] transition-all duration-300 ${
-                      isActive ? "w-3/4" : "w-0 group-hover:w-3/4"
-                    }`} />
+                    <span
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-[#fa8b02] transition-all duration-300 ${
+                        isActive ? "w-3/4" : "w-0 group-hover:w-3/4"
+                      }`}
+                    />
                   </Link>
                 );
               })}
@@ -592,7 +616,7 @@ export const LandingHeader = ({
                 }`}
                 aria-label="Toggle live customizer"
               >
-                <FiSliders className="w-4 h-4" />
+                <FiSliders suppressHydrationWarning className="w-4 h-4" />
               </Button>
 
               {/* Language Switcher */}
@@ -610,11 +634,17 @@ export const LandingHeader = ({
                   aria-expanded={languageMenuOpen}
                   aria-controls={languageMenuId}
                 >
-                  <FiGlobe className="w-4 h-4 text-white/70" />
+                  <FiGlobe
+                    suppressHydrationWarning
+                    className="w-4 h-4 text-white/70"
+                  />
                   <span className="text-sm font-medium text-white">
                     {mounted ? normalizedLanguage.toUpperCase() : "EN"}
                   </span>
-                  <FiChevronDown className={`w-3.5 h-3.5 text-white/50 transition-transform ${languageMenuOpen ? "rotate-180" : ""}`} />
+                  <FiChevronDown
+                    suppressHydrationWarning
+                    className={`w-3.5 h-3.5 text-white/50 transition-transform ${languageMenuOpen ? "rotate-180" : ""}`}
+                  />
                 </Button>
                 {/* Language Dropdown */}
                 <div
@@ -627,7 +657,8 @@ export const LandingHeader = ({
                   }`}
                 >
                   {languages.map((lang) => {
-                    const isActive = mounted && lang.code === normalizedLanguage;
+                    const isActive =
+                      mounted && lang.code === normalizedLanguage;
                     return (
                       <Button
                         key={lang.code}
@@ -716,6 +747,15 @@ export const LandingHeader = ({
 
                     {/* Menu Items */}
                     <div className="py-2">
+                      <Link
+                        href="/tours/my-requests"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
+                      >
+                        <FiClipboard className="w-4 h-4" />
+                        <span>{t("tourRequest.page.myRequests.title")}</span>
+                      </Link>
+
                       <Button
                         type="button"
                         onClick={handleLogout}
@@ -757,9 +797,9 @@ export const LandingHeader = ({
               aria-controls="landing-mobile-menu"
             >
               {mobileMenuOpen ? (
-                <FiX className="w-6 h-6" />
+                <FiX suppressHydrationWarning className="w-6 h-6" />
               ) : (
-                <FiMenu className="w-6 h-6" />
+                <FiMenu suppressHydrationWarning className="w-6 h-6" />
               )}
             </Button>
           </div>
@@ -767,7 +807,9 @@ export const LandingHeader = ({
       </header>
 
       {/* Spacer to prevent content overlap */}
-      <div className={`${scrolled ? "h-16" : "h-20"} transition-all duration-300`} />
+      <div
+        className={`${scrolled ? "h-16" : "h-20"} transition-all duration-300`}
+      />
 
       <MobileSidebar
         open={mobileMenuOpen}

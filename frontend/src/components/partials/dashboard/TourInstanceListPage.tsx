@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourInstanceService } from "@/services/tourInstanceService";
 import {
-  TourInstanceVm,
+  NormalizedTourInstanceVm,
   TourInstanceStats,
   TourInstanceStatusMap,
 } from "@/types/tour";
@@ -24,6 +24,11 @@ const NAV_ITEMS = [
     label: "Tour Instances",
     icon: "heroicons:calendar-days",
     href: "/tour-instances",
+  },
+  {
+    label: "Tour Requests",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/tour-requests",
   },
   {
     label: "Bookings",
@@ -116,6 +121,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
    Top Bar
    ══════════════════════════════════════════════════════════════ */
 function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
       <button onClick={onMenuClick} className="lg:hidden text-slate-500">
@@ -128,7 +135,7 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         />
         <input
           type="text"
-          placeholder="Search anything..."
+          placeholder={t("placeholder.searchAnything", "Search anything...")}
           className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
         />
       </div>
@@ -174,7 +181,8 @@ function StatCard({ label, value, icon, iconBg, iconColor }: StatCardProps) {
    Status Badge
    ══════════════════════════════════════════════════════════════ */
 function StatusBadge({ status }: { status: string }) {
-  const lower = status.toLowerCase().replace(/\s+/g, "_");
+  const { t } = useTranslation();
+  const lower = status.trim().toLowerCase().replace(/[\s_]+/g, "");
   const config = TourInstanceStatusMap[lower] ?? {
     label: status,
     bg: "bg-slate-100",
@@ -186,7 +194,7 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.text}`}>
       <span className={`w-2 h-2 rounded-full ${config.dot}`} />
-      {config.label}
+      {t(`tourInstance.statusLabels.${lower}`, config.label)}
     </span>
   );
 }
@@ -231,7 +239,7 @@ export function TourInstanceListPage() {
   const router = useRouter();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [instances, setInstances] = useState<TourInstanceVm[]>([]);
+  const [instances, setInstances] = useState<NormalizedTourInstanceVm[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -389,7 +397,7 @@ export function TourInstanceListPage() {
                   type="text"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Search by title, location, or country..."
+                  placeholder={t("placeholder.searchByTitleLocationCountry", "Search by title, location, or country...")}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
                 />
               </div>
@@ -405,7 +413,8 @@ export function TourInstanceListPage() {
                   <option value="all">All Status</option>
                   <option value="available">Available</option>
                   <option value="confirmed">Confirmed</option>
-                  <option value="sold_out">Sold Out</option>
+                  <option value="soldout">Sold Out</option>
+                  <option value="inprogress">In Progress</option>
                   <option value="cancelled">Cancelled</option>
                   <option value="completed">Completed</option>
                 </select>
@@ -442,7 +451,19 @@ export function TourInstanceListPage() {
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-200">
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Tour Instance
+                        Thumbnail
+                      </th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                        Title
+                      </th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                        Tour
+                      </th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                        Code
+                      </th>
+                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
+                        Location
                       </th>
                       <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
                         Departure
@@ -469,37 +490,55 @@ export function TourInstanceListPage() {
                       <tr
                         key={inst.id}
                         className="hover:bg-slate-50 transition-colors">
-                        {/* Tour Instance */}
+                        {/* Thumbnail */}
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-14 h-16 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
-                              {inst.thumbnail?.publicURL ? (
-                                <img
-                                  src={inst.thumbnail.publicURL}
-                                  alt={inst.tourName}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <Icon
-                                  icon="heroicons:photo"
-                                  className="size-5 text-slate-400"
-                                />
-                              )}
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-slate-900 truncate max-w-[250px]">
-                                {inst.tourName}
-                              </p>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <Icon
-                                  icon="heroicons:map-pin"
-                                  className="size-3 text-slate-400"
-                                />
-                                <span className="text-xs text-slate-500">
-                                  {inst.location}
-                                </span>
-                              </div>
-                            </div>
+                          <div className="w-14 h-16 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                            {inst.thumbnail?.publicURL ? (
+                              <img
+                                src={inst.thumbnail.publicURL}
+                                alt={inst.title || inst.tourName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <Icon
+                                icon="heroicons:photo"
+                                className="size-5 text-slate-400"
+                              />
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Title */}
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-semibold text-slate-900 max-w-[220px] truncate">
+                            {inst.title || inst.tourName}
+                          </p>
+                        </td>
+
+                        {/* Tour Name */}
+                        <td className="px-6 py-4">
+                          <p className="text-sm text-slate-700 max-w-[220px] truncate">
+                            {inst.tourName}
+                          </p>
+                        </td>
+
+                        {/* Tour Instance Code */}
+                        <td className="px-6 py-4">
+                          <p className="text-sm font-medium text-slate-700">
+                            {inst.tourInstanceCode}
+                          </p>
+                        </td>
+
+                        {/* Location */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1 text-sm text-slate-600">
+                            <Icon
+                              icon="heroicons:map-pin"
+                              className="size-3.5 text-slate-400"
+                            />
+                            <span className="max-w-[160px] truncate">
+                              {inst.location || "-"}
+                            </span>
                           </div>
                         </td>
 
@@ -537,9 +576,9 @@ export function TourInstanceListPage() {
                         {/* Participants */}
                         <td className="px-6 py-4">
                           <ParticipantsCell
-                            registered={inst.registeredParticipants}
-                            max={inst.maxParticipants}
-                            min={inst.minParticipants}
+                            registered={inst.currentParticipation}
+                            max={inst.maxParticipation}
+                            min={inst.minParticipation}
                           />
                         </td>
 

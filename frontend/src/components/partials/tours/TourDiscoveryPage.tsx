@@ -12,7 +12,10 @@ import { useTranslation } from "react-i18next";
 import { homeService } from "@/services/homeService";
 import { formatCurrency } from "@/utils/format";
 import { SearchTour } from "@/types/home";
-import { TourInstanceVm, TourInstanceStatusMap } from "@/types/tour";
+import {
+  NormalizedTourInstanceVm,
+  TourInstanceStatusMap,
+} from "@/types/tour";
 import {
   areTourDiscoveryFiltersEqual,
   buildTourDiscoverySearchParams,
@@ -125,7 +128,7 @@ const SearchBar = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="bg-white border-b border-black/5 shadow-sm lg:border-0 lg:shadow-none">
+    <div className="sticky top-0 z-40 bg-white border-b border-black/5 shadow-sm lg:border-0 lg:shadow-none">
       <div className="max-w-[1152px] mx-auto px-6 py-3 flex items-center gap-3">
         <form
           className="relative flex-1"
@@ -667,7 +670,7 @@ const ResultsToolbar = ({
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-20 ">
+            <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-[60] ">
               {VIEW_MODE_OPTIONS.map((option) => (
                 <button
                   key={option.id}
@@ -813,10 +816,14 @@ const TourCardSkeleton = () => (
 );
 
 /* ── Scheduled Tour Instance Card ──────────────────────────── */
-const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
+const ScheduledTourCard = ({
+  instance,
+}: {
+  instance: NormalizedTourInstanceVm;
+}) => {
   const { t } = useTranslation();
 
-  const statusKey = instance.status.toLowerCase().replace(/\s+/g, "_");
+  const statusKey = instance.status.trim().toLowerCase().replace(/[\s_]+/g, "");
   const statusConfig = TourInstanceStatusMap[statusKey] ?? {
     label: instance.status,
     bg: "bg-slate-100",
@@ -824,7 +831,8 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
     dot: "bg-slate-400",
   };
 
-  const spotsLeft = instance.maxParticipants - instance.registeredParticipants;
+  const spotsLeft =
+    (instance.maxParticipation ?? 0) - (instance.currentParticipation ?? 0);
 
   const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-US", {
@@ -857,7 +865,7 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
         <span
           className={`absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${statusConfig.bg} ${statusConfig.text}`}>
           <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dot}`} />
-          {statusConfig.label}
+          {t(`tourInstance.statusLabels.${statusKey}`, statusConfig.label)}
         </span>
         {/* Date badge */}
         <span className="absolute bottom-3 left-3 bg-black/60 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -888,7 +896,7 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
 
         {/* Title */}
         <h3 className="text-[14px] font-semibold text-[#05073c] leading-[19px] mb-2 line-clamp-2 min-h-[38px]">
-          {instance.tourName}
+          {instance.title || instance.tourName}
         </h3>
 
         {/* Duration & Spots */}
@@ -921,7 +929,7 @@ const ScheduledTourCard = ({ instance }: { instance: TourInstanceVm }) => {
             <span> /pax</span>
           </p>
           <Link
-            href={`/tours/${instance.tourId}?instanceId=${instance.id}`}
+            href={`/tours/instances/${instance.id}`}
             className="w-[26px] h-[26px] bg-[#fff7ed] rounded-[10px] flex items-center justify-center hover:bg-[#eb662b] group/arrow transition-colors">
             <Icon
               icon="heroicons-outline:arrow-right"
@@ -988,7 +996,9 @@ export const TourDiscoveryPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   // API state — instances (departure mode)
-  const [instanceData, setInstanceData] = useState<TourInstanceVm[]>([]);
+  const [instanceData, setInstanceData] = useState<NormalizedTourInstanceVm[]>(
+    [],
+  );
   const [instanceTotal, setInstanceTotal] = useState(0);
   const [instanceLoading, setInstanceLoading] = useState(false);
   const [instanceError, setInstanceError] = useState<string | null>(null);

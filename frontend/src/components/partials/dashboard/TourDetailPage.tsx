@@ -37,6 +37,11 @@ const NAV_ITEMS = [
     href: "/tour-instances",
   },
   {
+    label: "Tour Requests",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/tour-requests",
+  },
+  {
     label: "Bookings",
     icon: "heroicons:ticket",
     href: "/dashboard/bookings",
@@ -127,6 +132,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
    Top Bar
    ══════════════════════════════════════════════════════════════ */
 function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
       <button onClick={onMenuClick} className="lg:hidden text-slate-500">
@@ -139,7 +146,7 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
         />
         <input
           type="text"
-          placeholder="Search anything..."
+          placeholder={t("placeholder.searchAnything", "Search anything...")}
           className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
         />
       </div>
@@ -350,7 +357,9 @@ export function TourDetailPage() {
     try {
       setSavingTierForClassificationId(selectedPackage.id);
       await tourService.upsertClassificationPricingTiers(selectedPackage.id, tiers);
-      toast.success("Classification pricing tiers saved.");
+      toast.success(
+        t("toast.classificationPricingSaved", "Classification pricing tiers saved."),
+      );
     } catch (error) {
       console.error("Failed to save classification pricing tiers:", error);
       const apiError = handleApiError(error);

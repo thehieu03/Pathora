@@ -157,9 +157,9 @@ export const logApiError = (
   error: AxiosError,
   timestamp = new Date().toISOString(),
 ): void => {
-  console.error("[API_ERROR]", buildErrorLogPayload(error, timestamp));
+  console.warn("[API_ERROR]", buildErrorLogPayload(error, timestamp));
 
   if (process.env.NODE_ENV === "development") {
-    console.error("[API_ERROR_FULL]", error);
+    console.debug("[API_ERROR_FULL]", error);
   }
 };

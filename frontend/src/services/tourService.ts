@@ -1,5 +1,6 @@
 import { api } from "@/api/axiosInstance";
 import { API_ENDPOINTS } from "@/api/endpoints";
+import { normalizeLanguageForApi } from "@/api/languageHeader";
 import {
   DynamicPricingDto,
   PaginatedResponse,
@@ -33,6 +34,16 @@ const normalizeTourDetail = (tour: TourDto): TourDto => {
     ...tour,
     classifications: (tour.classifications ?? []).map(normalizeClassification),
   };
+};
+
+const buildPublicTourDetailUrl = (id: string, language?: string) => {
+  const baseUrl = API_ENDPOINTS.PUBLIC_HOME.GET_TOUR_DETAIL(id);
+  if (!language) {
+    return baseUrl;
+  }
+
+  const normalizedLanguage = normalizeLanguageForApi(language);
+  return `${baseUrl}?lang=${normalizedLanguage}`;
 };
 
 export const tourService = {
@@ -107,9 +118,9 @@ export const tourService = {
     return extractResult<unknown>(response.data);
   },
 
-  getPublicTourDetail: async (id: string) => {
+  getPublicTourDetail: async (id: string, language?: string) => {
     const response = await api.get<ApiResponse<TourDto>>(
-      API_ENDPOINTS.PUBLIC_HOME.GET_TOUR_DETAIL(id),
+      buildPublicTourDetailUrl(id, language),
     );
     return extractResult<TourDto>(response.data);
   },

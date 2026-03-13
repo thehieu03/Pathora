@@ -18,6 +18,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
+    "remove": "Remove",
     "search": "Search",
     "filter": "Filter",
     "reset": "Reset",
@@ -53,8 +54,36 @@
     "deleteCouponMessage": "Are you sure you want to delete this coupon?",
     "deleteOrderMessage": "Are you sure you want to delete this order?",
     "update": "Update",
+    "saving": "Saving...",
     "updating": "Updating...",
-    "optional": "Optional"
+    "optional": "Optional",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "loadingDashboard": "Loading dashboard data from backend...",
+    "processing": "Processing..."
+  },
+  "placeholder": {
+    "searchAnything": "Search anything...",
+    "searchTransactions": "Search transactions...",
+    "searchSettings": "Search settings...",
+    "searchVisaApplications": "Search visa applications...",
+    "searchInsurance": "Search insurance...",
+    "searchByNameEmailId": "Search by name, email, or ID...",
+    "searchByTitleLocationCountry": "Search by title, location, or country...",
+    "enterTourName": "Enter tour name",
+    "enterTourNameEn": "Enter tour name in English",
+    "briefDescEn": "Brief tour description in English",
+    "detailedDescEn": "Detailed tour description in English",
+    "exampleNumber": "e.g. {{value}}"
+  },
+  "toast": {
+    "draftNotImplemented": "Draft saving is not implemented yet.",
+    "instancePricingSaved": "Instance pricing overrides saved.",
+    "instanceTiersCleared": "Instance override tiers cleared.",
+    "participantsMustBePositive": "Participants must be greater than 0.",
+    "classificationPricingSaved": "Classification pricing tiers saved.",
+    "failedToLoadTourDetails": "Failed to load tour details."
   },
   "auth": {
     "signIn": "Sign In",
@@ -976,7 +1005,236 @@
     "INVALID_DAY_RANGE": "Invalid day range",
     "VALUE_CANNOT_BE_NEGATIVE": "Value cannot be negative",
     "PRODUCTS_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Products do not exist or are not in stock",
-    "PRODUCT_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Product does not exist or is not in stock"
+    "PRODUCT_IS_NOT_EXISTS_OR_NOT_IN_STOCK": "Product does not exist or is not in stock",
+    "Classification": {
+      "NotFound": "Tour classification not found"
+    },
+    "Department": {
+      "NotFound": "Department not found"
+    },
+    "Position": {
+      "NotFound": "Position not found"
+    },
+    "RefreshToken": {
+      "NotFound": "Refresh token not found",
+      "Expired": "Refresh token has expired"
+    },
+    "Role": {
+      "NotFound": "Role not found"
+    },
+    "Tour": {
+      "NotFound": "Tour not found",
+      "DuplicateCode": "Tour code already exists"
+    },
+    "TourInstance": {
+      "NotFound": "Tour instance not found"
+    },
+    "DynamicPricing": {
+      "InvalidRange": "Invalid participant range",
+      "Overlap": "Dynamic pricing ranges overlap"
+    },
+    "TourRequest": {
+      "NotFound": "Tour request not found",
+      "Forbidden": "You do not have permission to access this tour request",
+      "AdminOnly": "Only administrators can perform this action",
+      "InvalidStatusTransition": "Cannot transition tour request status"
+    },
+    "User": {
+      "NotFound": "User not found",
+      "InvalidPassword": "Current password is incorrect",
+      "DuplicateEmail": "Email is already in use",
+      "Unauthorized": "User is not authenticated",
+      "InvalidId": "Invalid user ID",
+      "FunctionsNotFound": "No functions found for this user"
+    },
+    "Booking": {
+      "NotFound": "Booking not found",
+      "SeatCapacityExceeded": "Participant count exceeds seat capacity",
+      "RoomCapacityExceeded": "Participant count exceeds room capacity"
+    },
+    "TourGuide": {
+      "NotFound": "Tour guide not found",
+      "LicenseExists": "Tour guide license number already exists",
+      "Unavailable": "Tour guide is currently unavailable"
+    },
+    "BookingTeam": {
+      "AssignmentExists": "User is already assigned in this booking",
+      "TourGuideRequired": "Tour guide is required for this role",
+      "AssignmentNotFound": "Assignment not found in booking",
+      "TourManagerNotFound": "Tour manager not found for booking"
+    },
+    "BookingParticipant": {
+      "NotFound": "Participant not found"
+    },
+    "Passport": {
+      "NotFound": "Passport not found",
+      "Exists": "Participant already has a passport",
+      "ExpiryBeforeTourStart": "Passport expiry date must be after the tour start date"
+    },
+    "VisaApplication": {
+      "NotFound": "Visa application not found",
+      "PassportInvalid": "Passport is invalid for participant",
+      "ApprovalTooLate": "Visa must be approved before the tour start date"
+    },
+    "Visa": {
+      "Exists": "Visa for this application already exists",
+      "ApprovalTooLate": "Visa must be approved before the tour start date"
+    },
+    "BookingActivityReservation": {
+      "NotFound": "Activity reservation not found"
+    },
+    "BookingTransportDetail": {
+      "NotFound": "Transport detail not found"
+    },
+    "BookingAccommodationDetail": {
+      "NotFound": "Accommodation detail not found"
+    },
+    "Supplier": {
+      "NotFound": "Supplier not found",
+      "CodeExists": "Supplier code already exists"
+    },
+    "SupplierPayable": {
+      "NotFound": "Supplier payable not found"
+    },
+    "ActivityStatus": {
+      "NotFound": "Activity status not found",
+      "Cancelled": "Cannot assign a tour guide to a cancelled activity"
+    }
+  },
+  "tourRequest": {
+    "page": {
+      "customTour": {
+        "title": "Custom Tour Request",
+        "subtitle": "Tell us what kind of journey you want and our consultants will prepare a personalized plan."
+      },
+      "myRequests": {
+        "title": "My Tour Requests",
+        "subtitle": "Track the review progress of your submitted requests."
+      },
+      "adminRequests": {
+        "title": "Tour Requests",
+        "subtitle": "Review, filter, and process incoming custom tour requests."
+      },
+      "adminDetail": {
+        "title": "Tour Request Detail"
+      }
+    },
+    "form": {
+      "destination": "Destination",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "numberOfParticipants": "Number of Participants",
+      "budgetPerPerson": "Budget per Person (USD)",
+      "budgetHint": "Leave empty if your budget is flexible",
+      "travelInterests": "Travel Interests",
+      "preferredAccommodation": "Preferred Accommodation",
+      "transportationPreference": "Transportation Preference",
+      "specialRequests": "Special Requests",
+      "submit": "Submit Request",
+      "submitting": "Submitting...",
+      "viewMyRequests": "View My Requests"
+    },
+    "travelInterests": {
+      "adventure": "Adventure",
+      "cultureAndHistory": "Culture & History",
+      "natureAndWildlife": "Nature & Wildlife",
+      "foodAndCulinary": "Food & Culinary",
+      "relaxationAndWellness": "Relaxation & Wellness"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled"
+    },
+    "buttons": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "createRequest": "Create Request",
+      "retry": "Retry"
+    },
+    "filters": {
+      "status": "Status",
+      "search": "Search destination",
+      "fromDate": "From date",
+      "toDate": "To date",
+      "allStatuses": "All"
+    },
+    "list": {
+      "emptyTitle": "You have no tour requests yet",
+      "emptyDescription": "Create your first custom tour request to get started.",
+      "createdOn": "Created on",
+      "reviewedAt": "Reviewed at",
+      "adminNote": "Admin note",
+      "showDetails": "Show details",
+      "hideDetails": "Hide details"
+    },
+    "admin": {
+      "table": {
+        "index": "#",
+        "destination": "Destination",
+        "travelDate": "Travel Date",
+        "participants": "Participants",
+        "budget": "Budget",
+        "status": "Status",
+        "createdOn": "Created On",
+        "actions": "Actions"
+      },
+      "detail": {
+        "customerName": "Customer Name",
+        "customerPhone": "Customer Phone",
+        "customerEmail": "Customer Email",
+        "destination": "Destination",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "numberOfParticipants": "Number of Participants",
+        "budgetPerPerson": "Budget per Person",
+        "travelInterests": "Travel Interests",
+        "preferredAccommodation": "Preferred Accommodation",
+        "transportationPreference": "Transportation Preference",
+        "specialRequests": "Special Requests",
+        "status": "Status",
+        "createdOn": "Created On",
+        "reviewedAt": "Reviewed At",
+        "reviewedBy": "Reviewed By",
+        "adminNote": "Admin Note"
+      },
+      "review": {
+        "approveTitle": "Approve Tour Request",
+        "rejectTitle": "Reject Tour Request",
+        "approveDescription": "This request will be marked as approved and the customer will receive a notification email.",
+        "rejectDescription": "Please provide a reason for rejection. The customer will receive this note by email.",
+        "adminNote": "Admin Note",
+        "rejectionReasonRequired": "Please provide a reason for rejection"
+      },
+      "pendingBadge": "Pending"
+    },
+    "validation": {
+      "destinationRequired": "Destination is required",
+      "destinationMax": "Destination must not exceed 500 characters",
+      "startDateRequired": "Start date is required",
+      "endDateAfterStart": "End date must be after start date",
+      "participantsRequired": "Number of participants is required",
+      "participantsMin": "Number of participants must be at least 1",
+      "budgetMin": "Budget must be greater than 0",
+      "preferredAccommodationMax": "Preferred accommodation must not exceed 500 characters",
+      "transportationPreferenceMax": "Transportation preference must not exceed 500 characters",
+      "specialRequestsMax": "Special requests must not exceed 2000 characters",
+      "adminNoteRequired": "Admin note is required",
+      "adminNoteMax": "Admin note must not exceed 2000 characters"
+    },
+    "toast": {
+      "createSuccess": "Your custom tour request has been submitted! We will review it soon.",
+      "createError": "Unable to submit your request. Please try again.",
+      "loadMyRequestsError": "Unable to load your requests.",
+      "loadDetailError": "Unable to load request details.",
+      "loadAdminRequestsError": "Unable to load admin tour requests.",
+      "reviewApprovedSuccess": "Tour request approved successfully.",
+      "reviewRejectedSuccess": "Tour request rejected successfully.",
+      "reviewError": "Unable to update this request. Please try again."
+    }
   },
   "landing": {
     "nav": {
@@ -1178,6 +1436,13 @@
       "bookingHistory": "Booking History",
       "tourDiscovery": "Tour Discovery"
     },
+    "customTour": {
+      "backToHome": "Back to Home",
+      "title": "Custom Tour Request",
+      "subtitle": "Design your perfect journey — tell us your preferences and we'll craft a personalized tour just for you.",
+      "intro": "Share your preferences and our team will contact you with a tailored proposal.",
+      "viewMyRequests": "View My Requests"
+    },
     "tourDiscovery": {
       "title": "Available Tour Departures",
       "tours": "Tours",
@@ -1203,6 +1468,7 @@
       "heroDescription": "Discover our curated travel packages and create your perfect adventure",
       "packageTours": "Package Tours",
       "filter": "Filter",
+      "clearAll": "Clear all",
       "classification": "Classification",
       "category": "Category",
       "duration": "Duration",
@@ -1269,7 +1535,9 @@
       "hereForYou": "We're here 24/7",
       "contactUs": "Contact Us",
       "notFound": "Tour not found",
+      "notFoundDesc": "The tour you're looking for doesn't exist or has been removed.",
       "error": "Something went wrong",
+      "errorDesc": "Failed to load tour details. Please try again.",
       "retry": "Try Again",
       "package": "Package",
       "plans": "Day Plans",
@@ -1278,6 +1546,10 @@
       "included": "included",
       "none": "None",
       "fee": "Fee",
+      "coverage": "Coverage",
+      "insuranceCoverage": "Insurance Coverage",
+      "optional": "Optional",
+      "noItinerary": "No itinerary available for this package yet.",
       "reviewsTitle": "Customer Reviews",
       "averageRating": "Average Rating",
       "totalReviews": "{{count}} reviews",
@@ -1647,6 +1919,7 @@
   "tourAdmin": {
     "title": "Tour Management",
     "search": "Search tours...",
+    "searchPlaceholder": "Search by name or code...",
     "refresh": "Refresh",
     "addTour": "Add Tour",
     "noTours": "No tours found",
@@ -1673,6 +1946,8 @@
     "loadError": "Failed to load tour",
     "notFound": "Tour not found",
     "required": "Required",
+    "invalidPrice": "Invalid price",
+    "invalidDuration": "Invalid duration",
     "basicInfo": "Basic Information",
     "shortDescription": "Short Description",
     "longDescription": "Long Description",
@@ -1706,6 +1981,7 @@
     "noActivities": "No activities",
     "type": "Type",
     "actTitle": "Title",
+    "actDescription": "Description",
     "startTime": "Start",
     "endTime": "End",
     "cost": "Est. Cost ($)",
@@ -1716,6 +1992,7 @@
     "insuranceName": "Name",
     "insuranceType": "Type",
     "provider": "Provider",
+    "coverageDesc": "Coverage Description",
     "coverageAmount": "Coverage ($)",
     "coverageFee": "Fee ($)",
     "backToList": "Back to List",
@@ -1835,6 +2112,60 @@
     "services": "Services",
     "pricingTiers": "Pricing by Group Size",
     "people": "people",
-    "fromPrice": "From"
+    "fromPrice": "From",
+    "createAction": "Create instance",
+    "edit": "Edit",
+    "private": "Private",
+    "public": "Public",
+    "selectClassification": "Select a classification...",
+    "viewDetails": "View details",
+    "backToTour": "Back to tour",
+    "tourInstanceCode": "Tour Instance Code",
+    "adultPrice": "Adult price",
+    "childPrice": "Child price",
+    "infantPrice": "Infant price",
+    "userPricingBreakdown": "Pricing breakdown",
+    "userNotAssigned": "Not assigned",
+    "statusLabels": {
+      "available": "Available",
+      "confirmed": "Confirmed",
+      "soldout": "Sold Out",
+      "inprogress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "form": {
+      "basicInfo": "Basic information",
+      "scheduleAndCapacity": "Schedule and capacity",
+      "editInformation": "Edit tour instance",
+      "title": "Title",
+      "titlePlaceholder": "Ex: Ha Long 3N2D - June Departure",
+      "minParticipation": "Minimum participants",
+      "sellingPrice": "Selling price",
+      "operatingCost": "Operating cost",
+      "depositPerPerson": "Deposit per person",
+      "locationPlaceholder": "Ex: Ha Long",
+      "includedServicesPlaceholder": "Ex: Shuttle bus",
+      "addService": "Add service",
+      "guideName": "Guide name",
+      "guideAvatar": "Guide avatar URL",
+      "guideExperience": "Guide experience",
+      "guideLanguage": "Language code",
+      "addLanguage": "Add language",
+      "media": "Media",
+      "thumbnailUpload": "Thumbnail upload",
+      "imagesUpload": "Gallery upload",
+      "filesSelected": "Files selected",
+      "thumbnailUrl": "Thumbnail URL",
+      "imageUrl": "Image URL",
+      "addImage": "Add image",
+      "addPricingTier": "Add pricing tier",
+      "selectedClassification": "Selected classification",
+      "minParticipants": "Min participants",
+      "maxParticipants": "Max participants",
+      "pricePerPerson": "Price per person",
+      "currentParticipation": "Current participants",
+      "cancellationReason": "Cancellation reason"
+    }
   }
 }

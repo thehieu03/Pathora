@@ -1,5 +1,5 @@
 const SUPPORTED_LANGUAGES = new Set(["vi", "en"]);
-const DEFAULT_LANGUAGE = "vi";
+const DEFAULT_LANGUAGE = "en";
 
 export const normalizeLanguageForApi = (language?: string | null): string => {
   if (!language) {

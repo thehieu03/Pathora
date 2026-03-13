@@ -8,18 +8,17 @@ const readFile = (relativePath: string): string => {
 };
 
 describe("app theme coverage", () => {
-  it("keeps dark mode classes on tours main container", () => {
+  it("keeps explicit light mode classes on tours main container", () => {
     const source = readFile(
       "src/components/partials/tours/TourDiscoveryPage.tsx",
     );
-    expect(source.includes("dark:bg-")).toBe(true);
-    expect(source.includes("dark:text-")).toBe(true);
+    expect(source.includes("bg-white")).toBe(true);
+    expect(source.includes("text-[#05073c]")).toBe(true);
   });
 
-  it("uses header-level dark mode toggle in landing flows", () => {
+  it("does not include dark mode toggle wiring in landing header", () => {
     const source = readFile("src/components/partials/shared/LandingHeader.tsx");
-    expect(source.includes("useDarkmode")).toBe(true);
-    expect(source.includes("Switch to dark mode")).toBe(true);
-    expect(source.includes("Switch to light mode")).toBe(true);
+    expect(source.includes("useDarkmode")).toBe(false);
+    expect(source.includes("ThemeToggle")).toBe(false);
   });
 });

@@ -1,6 +1,7 @@
 import React from "react";
 import Icon from "@/components/ui/Icon";
 import Link from "next/link";
+import i18n from "@/i18n/config";
 
 type ButtonProps = {
   text?: string;
@@ -74,7 +75,7 @@ const ButtonContent = ({
     return (
       <>
         <LoadingSpinner loadingClass={loadingClass} />
-        <span>Loading…</span>
+        <span>{i18n.t("common.loading", "Loading...")}</span>
       </>
     );
   }

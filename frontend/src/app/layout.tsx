@@ -16,8 +16,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-darkreader-disable="true" data-theme="light">
       <head>
+        {/* Disable DarkReader before any content loads */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                // Set attribute immediately
+                document.documentElement.setAttribute('data-darkreader-disable', 'true');
+
+                // Also try to disable via DarkReader API if available
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('DOMContentLoaded', function() {
+                    if (window.darkreader) {
+                      window.darkreader.disable();
+                    }
+                  });
+                }
+              })();
+            `,
+          }}
+        />
         <script
           id="theme-init"
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
@@ -26,6 +46,7 @@ export default function RootLayout({
       <body
         suppressHydrationWarning
         className="light antialiased"
+        data-darkreader-disable="true"
       >
         <a
           href="#main-content"

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import type { AdminCustomer } from "@/types/admin";
@@ -25,6 +26,11 @@ const NAV_ITEMS = [
     label: "Tour Instances",
     icon: "heroicons:calendar-days",
     href: "/tour-instances",
+  },
+  {
+    label: "Tour Requests",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/tour-requests",
   },
   {
     label: "Bookings",
@@ -129,6 +135,8 @@ function TopBar({
   onSearchQueryChange: (value: string) => void;
   disableSearch: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
       <button
@@ -144,7 +152,7 @@ function TopBar({
           className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400"
         />
         <label htmlFor="customers-search" className="sr-only">
-          Search
+          {t("common.search", "Search")}
         </label>
         <input
           id="customers-search"
@@ -152,7 +160,7 @@ function TopBar({
           value={searchQuery}
           onChange={(event) => onSearchQueryChange(event.target.value)}
           disabled={disableSearch}
-          placeholder="Search by name, email, or ID..."
+          placeholder={t("placeholder.searchByNameEmailId", "Search by name, email, or ID...")}
           className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>

@@ -17,20 +17,85 @@ import {
   TopReview,
   SearchTourResponse,
 } from "@/types/home";
-import { TourInstanceVm, PaginatedResponse } from "@/types/tour";
+import {
+  NormalizedTourInstanceDto,
+  NormalizedTourInstanceVm,
+  PaginatedResponse,
+  TourInstanceDto,
+  TourInstanceVm,
+} from "@/types/tour";
 import { extractItems, extractResult } from "@/utils/apiResponse";
+import i18n from "@/i18n/config";
+
+const normalizeStatus = (status: string): string =>
+  status.trim().toLowerCase().replace(/[\s_]+/g, "");
+
+const normalizePublicInstance = (
+  item: TourInstanceVm,
+): NormalizedTourInstanceVm => {
+  const registeredParticipants = item.currentParticipation ?? 0;
+  const price = item.basePrice ?? item.sellingPrice ?? 0;
+
+  return {
+    ...item,
+    location: item.location ?? null,
+    images: item.images ?? [],
+    currentParticipation: registeredParticipants,
+    basePrice: item.basePrice ?? price,
+    sellingPrice: item.sellingPrice ?? price,
+    depositPerPerson: item.depositPerPerson ?? 0,
+    status: normalizeStatus(item.status),
+    registeredParticipants,
+    price,
+  };
+};
+
+const normalizePublicInstanceDetail = (
+  item: TourInstanceDto,
+): NormalizedTourInstanceDto => {
+  const registeredParticipants = item.currentParticipation ?? 0;
+  const basePrice = item.basePrice ?? 0;
+  const sellingPrice = item.sellingPrice ?? basePrice;
+
+  return {
+    ...item,
+    location: item.location ?? null,
+    images: item.images ?? [],
+    currentParticipation: registeredParticipants,
+    maxParticipation: item.maxParticipation ?? 0,
+    minParticipation: item.minParticipation ?? 0,
+    basePrice,
+    sellingPrice,
+    operatingCost: item.operatingCost ?? 0,
+    depositPerPerson: item.depositPerPerson ?? 0,
+    includedServices: item.includedServices ?? [],
+    dynamicPricing: item.dynamicPricing ?? [],
+    guide: item.guide
+      ? {
+          ...item.guide,
+          languages: item.guide.languages ?? [],
+          experience: item.guide.experience ?? null,
+        }
+      : null,
+    status: normalizeStatus(item.status),
+    registeredParticipants,
+    price: basePrice,
+  };
+};
 
 export const homeService = {
-  getFeaturedTours: async (limit = 8) => {
+  getFeaturedTours: async (limit = 8, language?: string) => {
+    const lang = language ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
     const response = await api.get<FeaturedTourResponse>(
-      API_ENDPOINTS.PUBLIC_HOME.GET_FEATURED_TOURS(limit)
+      `${API_ENDPOINTS.PUBLIC_HOME.GET_FEATURED_TOURS(limit)}?lang=${lang}`
     );
     return extractItems<FeaturedTour>(response.data);
   },
 
-  getLatestTours: async (limit = 6) => {
+  getLatestTours: async (limit = 6, language?: string) => {
+    const lang = language ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
     const response = await api.get<LatestTourResponse>(
-      API_ENDPOINTS.PUBLIC_HOME.GET_LATEST_TOURS(limit)
+      `${API_ENDPOINTS.PUBLIC_HOME.GET_LATEST_TOURS(limit)}?lang=${lang}`
     );
     return extractItems<LatestTour>(response.data);
   },
@@ -75,9 +140,11 @@ export const homeService = {
     maxDays?: number;
     page?: number;
     pageSize?: number;
+    language?: string;
   }) => {
+    const lang = params?.language ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
     const response = await api.get<SearchTourResponse>(
-      API_ENDPOINTS.PUBLIC_HOME.SEARCH_TOURS(params)
+      `${API_ENDPOINTS.PUBLIC_HOME.SEARCH_TOURS(params)}&lang=${lang}`
     );
     return extractResult<{ total: number; data: SearchTour[] }>(response.data);
   },
@@ -93,7 +160,9 @@ export const homeService = {
     destination?: string,
     page = 1,
     pageSize = 6,
+    language?: string,
   ) => {
+    const lang = language ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
     const params = new URLSearchParams();
     if (destination) params.append("destination", destination);
     params.append("page", page.toString());
@@ -101,14 +170,24 @@ export const homeService = {
 
     const response = await api.get<
       ApiResponse<PaginatedResponse<TourInstanceVm>>
-    >(`${API_ENDPOINTS.PUBLIC_TOUR_INSTANCE.GET_AVAILABLE}?${params.toString()}`);
-    return extractResult<PaginatedResponse<TourInstanceVm>>(response.data);
+    >(`${API_ENDPOINTS.PUBLIC_TOUR_INSTANCE.GET_AVAILABLE}?${params.toString()}&lang=${lang}`);
+    const result = extractResult<PaginatedResponse<TourInstanceVm>>(response.data);
+    if (!result) {
+      return null;
+    }
+
+    return {
+      ...result,
+      data: (result.data ?? []).map(normalizePublicInstance),
+    } as PaginatedResponse<NormalizedTourInstanceVm>;
   },
 
-  getPublicInstanceDetail: async (id: string) => {
-    const response = await api.get<ApiResponse<TourInstanceVm>>(
-      API_ENDPOINTS.PUBLIC_TOUR_INSTANCE.GET_DETAIL(id)
+  getPublicInstanceDetail: async (id: string, language?: string) => {
+    const lang = language ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
+    const response = await api.get<ApiResponse<TourInstanceDto>>(
+      `${API_ENDPOINTS.PUBLIC_TOUR_INSTANCE.GET_DETAIL(id)}?lang=${lang}`
     );
-    return extractResult<TourInstanceVm>(response.data);
+    const result = extractResult<TourInstanceDto>(response.data);
+    return result ? normalizePublicInstanceDetail(result) : null;
   },
 };

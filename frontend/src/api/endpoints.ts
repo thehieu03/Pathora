@@ -154,8 +154,9 @@ export interface TourInstanceEndpoints {
   GET_DETAIL: EndpointWithId;
   GET_PRICING_TIERS: EndpointWithId;
   CREATE: string;
-  UPDATE: EndpointWithId;
+  UPDATE: string;
   DELETE: EndpointWithId;
+  CHANGE_STATUS: EndpointWithId;
   UPSERT_PRICING_TIERS: EndpointWithId;
   CLEAR_PRICING_TIERS: EndpointWithId;
   RESOLVE_PRICING: (id: string, participants: number) => string;
@@ -174,6 +175,15 @@ export interface AdminEndpoints {
   GET_DASHBOARD: string;
 }
 
+export interface TourRequestEndpoints {
+  CREATE: string;
+  MY: string;
+  DETAIL: EndpointWithId;
+  ADMIN_LIST: string;
+  ADMIN_DETAIL: EndpointWithId;
+  REVIEW: EndpointWithId;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -189,6 +199,7 @@ export interface ApiEndpoints {
   TOUR_INSTANCE: TourInstanceEndpoints;
   PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints;
   ADMIN: AdminEndpoints;
+  TOUR_REQUESTS: TourRequestEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -342,8 +353,9 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_PRICING_TIERS: (id: string): string =>
       `/api/tour-instance/${id}/pricing-tiers`,
     CREATE: "/api/tour-instance/",
-    UPDATE: (id: string): string => `/api/tour-instance/${id}`,
+    UPDATE: "/api/tour-instance/",
     DELETE: (id: string): string => `/api/tour-instance/${id}`,
+    CHANGE_STATUS: (id: string): string => `/api/tour-instance/${id}/status`,
     UPSERT_PRICING_TIERS: (id: string): string =>
       `/api/tour-instance/${id}/pricing-tiers`,
     CLEAR_PRICING_TIERS: (id: string): string =>
@@ -364,6 +376,15 @@ export const API_ENDPOINTS: ApiEndpoints = {
   ADMIN: {
     GET_OVERVIEW: "/api/admin/overview",
     GET_DASHBOARD: "/api/admin/dashboard",
+  },
+
+  TOUR_REQUESTS: {
+    CREATE: "/api/public/tour-requests",
+    MY: "/api/public/tour-requests/my",
+    DETAIL: (id: string): string => `/api/public/tour-requests/${id}`,
+    ADMIN_LIST: "/api/tour-requests",
+    ADMIN_DETAIL: (id: string): string => `/api/tour-requests/${id}`,
+    REVIEW: (id: string): string => `/api/tour-requests/${id}/review`,
   },
 };
 

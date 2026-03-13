@@ -16,13 +16,14 @@ describe("themePreference", () => {
     expect(parseThemePreference(null)).toBeNull();
   });
 
-  it("uses stored theme if present, otherwise falls back to system preference", () => {
+  it("always resolves to light theme", () => {
     expect(getPreferredTheme("light", true)).toBe("light");
-    expect(getPreferredTheme(null, true)).toBe("dark");
+    expect(getPreferredTheme("dark", true)).toBe("light");
+    expect(getPreferredTheme(null, true)).toBe("light");
     expect(getPreferredTheme(null, false)).toBe("light");
   });
 
-  it("applies dark class to root and body element", () => {
+  it("applies light class to root and body element", () => {
     const rootClassSet = new Set<string>();
     const bodyClassSet = new Set<string>();
 
@@ -43,18 +44,18 @@ describe("themePreference", () => {
 
     applyThemeClass("dark", root as never, body as never);
 
-    expect(rootClassSet.has("dark")).toBe(true);
-    expect(rootClassSet.has("light")).toBe(false);
-    expect(bodyClassSet.has("dark")).toBe(true);
-    expect(bodyClassSet.has("light")).toBe(false);
+    expect(rootClassSet.has("dark")).toBe(false);
+    expect(rootClassSet.has("light")).toBe(true);
+    expect(bodyClassSet.has("dark")).toBe(false);
+    expect(bodyClassSet.has("light")).toBe(true);
   });
 
-  it("builds pre-hydration script with localStorage + system fallback", () => {
+  it("builds pre-hydration script with forced light theme", () => {
     const script = buildThemeInitScript();
 
     expect(script).toContain(THEME_STORAGE_KEY);
-    expect(script).toContain("localStorage.getItem");
-    expect(script).toContain("matchMedia");
+    expect(script).toContain("forcedTheme = \"light\"");
+    expect(script).toContain("localStorage.setItem");
     expect(script).toContain("document.documentElement");
   });
 });

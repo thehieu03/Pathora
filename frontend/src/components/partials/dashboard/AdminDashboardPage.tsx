@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { ApexOptions } from "apexcharts";
+import { useTranslation } from "react-i18next";
 
 import Card from "@/components/ui/Card";
 import Chart from "@/components/ui/Chart";
@@ -42,6 +43,11 @@ const NAV_ITEMS = [
   { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
   { label: "Tours", icon: "heroicons:globe-alt", href: "/tour-management" },
   { label: "Tour Instances", icon: "heroicons:calendar-days", href: "/tour-instances" },
+  {
+    label: "Tour Requests",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/tour-requests",
+  },
   {
     label: "Bookings",
     icon: "heroicons:ticket",
@@ -254,6 +260,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
       <button onClick={onMenuClick} aria-label="Open menu" className="lg:hidden text-slate-500">
@@ -265,12 +273,12 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
           className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400"
         />
         <label htmlFor="dashboard-search" className="sr-only">
-          Search
+          {t("common.search", "Search")}
         </label>
         <input
           id="dashboard-search"
           type="text"
-          placeholder="Search anything..."
+          placeholder={t("placeholder.searchAnything", "Search anything...")}
           className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
         />
       </div>
@@ -330,6 +338,7 @@ function AlertItem({ alert }: { alert: AdminDashboardAlert }) {
 }
 
 export function AdminDashboardPage() {
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -531,7 +540,7 @@ export function AdminDashboardPage() {
             <Card bodyClass="p-8">
               <div className="flex items-center gap-3 text-slate-600">
                 <Icon icon="heroicons:arrow-path" className="size-5 animate-spin" />
-                <span>Loading dashboard data from backend...</span>
+                <span>{t("common.loadingDashboard", "Loading dashboard data from backend...")}</span>
               </div>
             </Card>
           )}

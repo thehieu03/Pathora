@@ -30,6 +30,7 @@ describe("language-aware content refetch", () => {
     expect(discovery.includes("homeService.searchTours")).toBe(true);
 
     expect(detail.includes("getPublicTourDetail(")).toBe(true);
-    expect(detail.includes("}, [tourId, fetchKey]);")).toBe(true);
+    expect(detail.includes("languageChanged")).toBe(true);
+    expect(detail.includes("}, [tourId, fetchKey, apiLanguage]);")).toBe(true);
   });
 });

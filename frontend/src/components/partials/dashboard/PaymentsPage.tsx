@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import { adminService } from "@/services/adminService";
@@ -16,6 +17,11 @@ const NAV_ITEMS = [
   { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
   { label: "Tours", icon: "heroicons:globe-alt", href: "/tour-management" },
   { label: "Tour Instances", icon: "heroicons:calendar-days", href: "/tour-instances" },
+  {
+    label: "Tour Requests",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/tour-requests",
+  },
   {
     label: "Bookings",
     icon: "heroicons:ticket",
@@ -76,6 +82,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 }
 
 function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
       <button onClick={onMenuClick} aria-label="Open menu" className="lg:hidden text-slate-500">
@@ -83,8 +91,8 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
       </button>
       <div className="relative flex-1 max-w-xl">
         <Icon icon="heroicons:magnifying-glass" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-        <label htmlFor="payments-search" className="sr-only">Search</label>
-        <input id="payments-search" type="text" placeholder="Search transactions..." className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500" />
+        <label htmlFor="payments-search" className="sr-only">{t("common.search", "Search")}</label>
+        <input id="payments-search" type="text" placeholder={t("placeholder.searchTransactions", "Search transactions...")} className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500" />
       </div>
       <div className="ml-auto relative">
         <button aria-label="Notifications - 3 unread" className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
