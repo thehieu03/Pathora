@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Features.Public.Queries;
 using FluentValidation;
 
@@ -9,7 +10,7 @@ public sealed class GetTopReviewsQueryValidator : AbstractValidator<GetTopReview
     {
         RuleFor(x => x.Limit)
             .InclusiveBetween(1, 50)
-            .WithMessage("Giới hạn phải từ 1 đến 50");
+            .WithMessage(ValidationMessages.PublicQueryLimitRange1To50);
     }
 }
 
@@ -19,7 +20,7 @@ public sealed class GetFeaturedToursQueryValidator : AbstractValidator<GetFeatur
     {
         RuleFor(x => x.Limit)
             .InclusiveBetween(1, 50)
-            .WithMessage("Giới hạn phải từ 1 đến 50");
+            .WithMessage(ValidationMessages.PublicQueryLimitRange1To50);
     }
 }
 
@@ -29,7 +30,7 @@ public sealed class GetLatestToursQueryValidator : AbstractValidator<GetLatestTo
     {
         RuleFor(x => x.Limit)
             .InclusiveBetween(1, 50)
-            .WithMessage("Giới hạn phải từ 1 đến 50");
+            .WithMessage(ValidationMessages.PublicQueryLimitRange1To50);
     }
 }
 
@@ -39,7 +40,7 @@ public sealed class GetTopAttractionsQueryValidator : AbstractValidator<GetTopAt
     {
         RuleFor(x => x.Limit)
             .InclusiveBetween(1, 50)
-            .WithMessage("Giới hạn phải từ 1 đến 50");
+            .WithMessage(ValidationMessages.PublicQueryLimitRange1To50);
     }
 }
 
@@ -49,6 +50,6 @@ public sealed class GetTrendingDestinationsQueryValidator : AbstractValidator<Ge
     {
         RuleFor(x => x.Limit)
             .InclusiveBetween(1, 50)
-            .WithMessage("Giới hạn phải từ 1 đến 50");
+            .WithMessage(ValidationMessages.PublicQueryLimitRange1To50);
     }
 }

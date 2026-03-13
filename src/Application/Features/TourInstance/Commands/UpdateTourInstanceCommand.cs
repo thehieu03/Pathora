@@ -37,7 +37,7 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
             .NotEmpty().WithMessage(ValidationMessages.TourInstanceIdRequired);
 
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Tiêu đề là bắt buộc.");
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceTitleRequired);
 
         RuleFor(x => x.StartDate)
             .NotEmpty().WithMessage(ValidationMessages.TourInstanceStartDateRequired);
@@ -53,16 +53,16 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
             .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceMinParticipantsNonNegative);
 
         RuleFor(x => x.BasePrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Giá cơ bản không được âm.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceBasePriceNonNegative);
 
         RuleFor(x => x.SellingPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Giá bán không được âm.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceSellingPriceNonNegative);
 
         RuleFor(x => x.OperatingCost)
-            .GreaterThanOrEqualTo(0).WithMessage("Chi phí vận hành không được âm.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceOperatingCostNonNegative);
 
         RuleFor(x => x.DepositPerPerson)
-            .GreaterThanOrEqualTo(0).WithMessage("Tiền cọc không được âm.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceDepositPerPersonNonNegative);
 
         RuleForEach(x => x.DynamicPricing)
             .ChildRules(tier =>

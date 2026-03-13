@@ -21,6 +21,7 @@ public sealed record TourInstanceDto(
     decimal BasePrice,
     decimal SellingPrice,
     decimal OperatingCost,
+    decimal DepositPerPerson,
     string Status,
     string InstanceType,
     string? CancellationReason,

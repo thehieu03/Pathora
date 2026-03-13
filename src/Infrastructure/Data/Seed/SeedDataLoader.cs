@@ -10,7 +10,11 @@ internal static class SeedDataLoader
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
-        Converters = { new JsonStringEnumConverter() }
+        Converters =
+        {
+            new JsonStringEnumConverter(),
+            new DateTimeOffsetJsonConverter()
+        }
     };
 
     public static List<T>? LoadData<T>(string fileName)
@@ -187,4 +191,33 @@ internal sealed record SeedFileValidationResult(
     IReadOnlyList<SeedFileValidationIssue> Issues)
 {
     public bool IsValid => Issues.Count == 0;
+}
+
+internal sealed class DateTimeOffsetJsonConverter : JsonConverter<DateTimeOffset>
+{
+    public override DateTimeOffset Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var value = reader.GetString();
+            if (string.IsNullOrEmpty(value))
+                return default;
+
+            // Try parsing as ISO 8601 with timezone
+            if (DateTimeOffset.TryParse(value, out var result))
+                return result.ToUniversalTime();
+
+            // Try parsing just date (no time) - treat as UTC midnight
+            if (DateTime.TryParse(value, out var dateResult))
+                return new DateTimeOffset(dateResult.Date, TimeSpan.Zero);
+        }
+
+        return default;
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateTimeOffset value, JsonSerializerOptions options)
+    {
+        // Always write as UTC ISO 8601 string
+        writer.WriteStringValue(value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"));
+    }
 }

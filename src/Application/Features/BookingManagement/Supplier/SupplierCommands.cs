@@ -1,5 +1,7 @@
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using BuildingBlocks.CORS;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Enums;
@@ -33,15 +35,21 @@ public sealed class CreateSupplierCommandValidator : AbstractValidator<CreateSup
     }
 }
 
-public sealed class CreateSupplierCommandHandler(ISupplierRepository supplierRepository, IUnitOfWork unitOfWork)
+public sealed class CreateSupplierCommandHandler(
+    ISupplierRepository supplierRepository,
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateSupplierCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateSupplierCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var existing = await supplierRepository.GetByCodeAsync(request.SupplierCode);
         if (existing is not null)
         {
-            return Error.Conflict("Supplier.CodeExists", "Mã nhà cung cấp đã tồn tại.");
+            return Error.Conflict(
+                ErrorConstants.Supplier.CodeExistsCode,
+                ErrorConstants.Supplier.CodeExistsDescription.Resolve(lang));
         }
 
         var entity = SupplierEntity.Create(
@@ -91,21 +99,29 @@ public sealed class UpdateSupplierCommandValidator : AbstractValidator<UpdateSup
     }
 }
 
-public sealed class UpdateSupplierCommandHandler(ISupplierRepository supplierRepository, IUnitOfWork unitOfWork)
+public sealed class UpdateSupplierCommandHandler(
+    ISupplierRepository supplierRepository,
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateSupplierCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateSupplierCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (entity is null)
         {
-            return Error.NotFound("Supplier.NotFound", "Không tìm thấy nhà cung cấp.");
+            return Error.NotFound(
+                ErrorConstants.Supplier.NotFoundCode,
+                ErrorConstants.Supplier.NotFoundDescription.Resolve(lang));
         }
 
         var existing = await supplierRepository.GetByCodeAsync(request.SupplierCode);
         if (existing is not null && existing.Id != request.SupplierId)
         {
-            return Error.Conflict("Supplier.CodeExists", "Mã nhà cung cấp đã tồn tại.");
+            return Error.Conflict(
+                ErrorConstants.Supplier.CodeExistsCode,
+                ErrorConstants.Supplier.CodeExistsDescription.Resolve(lang));
         }
 
         entity.Update(
@@ -129,15 +145,21 @@ public sealed class UpdateSupplierCommandHandler(ISupplierRepository supplierRep
 
 public sealed record DeleteSupplierCommand(Guid SupplierId) : ICommand<ErrorOr<Success>>;
 
-public sealed class DeleteSupplierCommandHandler(ISupplierRepository supplierRepository, IUnitOfWork unitOfWork)
+public sealed class DeleteSupplierCommandHandler(
+    ISupplierRepository supplierRepository,
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<DeleteSupplierCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (entity is null)
         {
-            return Error.NotFound("Supplier.NotFound", "Không tìm thấy nhà cung cấp.");
+            return Error.NotFound(
+                ErrorConstants.Supplier.NotFoundCode,
+                ErrorConstants.Supplier.NotFoundDescription.Resolve(lang));
         }
 
         entity.SoftDelete("system");

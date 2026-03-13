@@ -5,6 +5,8 @@ using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.UnitOfWork;
+using ErrorOr;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 
 namespace Domain.Specs.Application.Handlers;
@@ -16,6 +18,14 @@ public sealed class TourRequestHandlerTests
     private readonly IRoleRepository _roleRepository = Substitute.For<IRoleRepository>();
     private readonly ITourRequestRepository _tourRequestRepository = Substitute.For<ITourRequestRepository>();
     private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
+
+    public TourRequestHandlerTests()
+    {
+        _mailRepository
+            .Add(Arg.Any<global::Domain.Mails.MailEntity>())
+            .Returns(Task.FromResult<ErrorOr<Success>>(Result.Success));
+    }
 
     [Fact]
     public async Task CreateTourRequestHandler_WhenValid_ShouldCreatePendingRequest()
@@ -35,7 +45,9 @@ public sealed class TourRequestHandlerTests
             _user,
             _userRepository,
             _tourRequestRepository,
-            _unitOfWork);
+            _unitOfWork,
+            _mailRepository,
+            NullLogger<CreateTourRequestCommandHandler>.Instance);
 
         var command = new CreateTourRequestCommand(
             Destination: "Ha Long",
@@ -64,7 +76,13 @@ public sealed class TourRequestHandlerTests
     public async Task CreateTourRequestHandler_WhenUserUnauthorized_ShouldReturnUnauthorized()
     {
         _user.Id.Returns((string?)null);
-        var handler = new CreateTourRequestCommandHandler(_user, _userRepository, _tourRequestRepository, _unitOfWork);
+        var handler = new CreateTourRequestCommandHandler(
+            _user,
+            _userRepository,
+            _tourRequestRepository,
+            _unitOfWork,
+            _mailRepository,
+            NullLogger<CreateTourRequestCommandHandler>.Instance);
 
         var command = new CreateTourRequestCommand(
             "Ha Long",
@@ -184,7 +202,14 @@ public sealed class TourRequestHandlerTests
         var entity = CreateTourRequestEntity(requestId, Guid.CreateVersion7());
         _tourRequestRepository.GetByIdAsync(requestId, false).Returns(entity);
 
-        var handler = new ReviewTourRequestCommandHandler(_user, _roleRepository, _tourRequestRepository, _unitOfWork);
+        var handler = new ReviewTourRequestCommandHandler(
+            _user,
+            _roleRepository,
+            _userRepository,
+            _tourRequestRepository,
+            _unitOfWork,
+            _mailRepository,
+            NullLogger<ReviewTourRequestCommandHandler>.Instance);
         var result = await handler.Handle(
             new ReviewTourRequestCommand(requestId, TourRequestStatus.Approved, "Approved by admin"),
             CancellationToken.None);
@@ -211,7 +236,14 @@ public sealed class TourRequestHandlerTests
         entity.Approve(currentUserId, currentUserId.ToString(), adminNote: "already approved");
         _tourRequestRepository.GetByIdAsync(requestId, false).Returns(entity);
 
-        var handler = new ReviewTourRequestCommandHandler(_user, _roleRepository, _tourRequestRepository, _unitOfWork);
+        var handler = new ReviewTourRequestCommandHandler(
+            _user,
+            _roleRepository,
+            _userRepository,
+            _tourRequestRepository,
+            _unitOfWork,
+            _mailRepository,
+            NullLogger<ReviewTourRequestCommandHandler>.Instance);
         var result = await handler.Handle(
             new ReviewTourRequestCommand(requestId, TourRequestStatus.Rejected, "reject after approve"),
             CancellationToken.None);

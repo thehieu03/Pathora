@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
@@ -41,15 +42,21 @@ public sealed class CreateTourGuideCommandValidator : AbstractValidator<CreateTo
     }
 }
 
-public sealed class CreateTourGuideCommandHandler(ITourGuideRepository tourGuideRepository, IUnitOfWork unitOfWork)
+public sealed class CreateTourGuideCommandHandler(
+    ITourGuideRepository tourGuideRepository,
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateTourGuideCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateTourGuideCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var existing = await tourGuideRepository.GetByLicenseNumberAsync(request.LicenseNumber);
         if (existing is not null)
         {
-            return Error.Conflict("TourGuide.LicenseExists", "Số giấy phép hướng dẫn viên đã tồn tại.");
+            return Error.Conflict(
+                ErrorConstants.TourGuide.LicenseExistsCode,
+                ErrorConstants.TourGuide.LicenseExistsDescription.Resolve(lang));
         }
 
         var entity = TourGuideEntity.Create(
@@ -111,21 +118,29 @@ public sealed class UpdateTourGuideCommandValidator : AbstractValidator<UpdateTo
     }
 }
 
-public sealed class UpdateTourGuideCommandHandler(ITourGuideRepository tourGuideRepository, IUnitOfWork unitOfWork)
+public sealed class UpdateTourGuideCommandHandler(
+    ITourGuideRepository tourGuideRepository,
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateTourGuideCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTourGuideCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (entity is null || entity.IsDeleted)
         {
-            return Error.NotFound("TourGuide.NotFound", "Không tìm thấy hướng dẫn viên.");
+            return Error.NotFound(
+                ErrorConstants.TourGuide.NotFoundCode,
+                ErrorConstants.TourGuide.NotFoundDescription.Resolve(lang));
         }
 
         var existing = await tourGuideRepository.GetByLicenseNumberAsync(request.LicenseNumber);
         if (existing is not null && existing.Id != request.TourGuideId)
         {
-            return Error.Conflict("TourGuide.LicenseExists", "Số giấy phép hướng dẫn viên đã tồn tại.");
+            return Error.Conflict(
+                ErrorConstants.TourGuide.LicenseExistsCode,
+                ErrorConstants.TourGuide.LicenseExistsDescription.Resolve(lang));
         }
 
         entity.Update(
@@ -157,15 +172,21 @@ public sealed class UpdateTourGuideCommandHandler(ITourGuideRepository tourGuide
 
 public sealed record DeleteTourGuideCommand(Guid TourGuideId) : ICommand<ErrorOr<Success>>;
 
-public sealed class DeleteTourGuideCommandHandler(ITourGuideRepository tourGuideRepository, IUnitOfWork unitOfWork)
+public sealed class DeleteTourGuideCommandHandler(
+    ITourGuideRepository tourGuideRepository,
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<DeleteTourGuideCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(DeleteTourGuideCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (entity is null || entity.IsDeleted)
         {
-            return Error.NotFound("TourGuide.NotFound", "Không tìm thấy hướng dẫn viên.");
+            return Error.NotFound(
+                ErrorConstants.TourGuide.NotFoundCode,
+                ErrorConstants.TourGuide.NotFoundDescription.Resolve(lang));
         }
 
         entity.SoftDelete("system");
@@ -182,15 +203,20 @@ public sealed record GetTourGuideByIdQuery(Guid TourGuideId) : IQuery<ErrorOr<To
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetTourGuideByIdQueryHandler(ITourGuideRepository tourGuideRepository)
+public sealed class GetTourGuideByIdQueryHandler(
+    ITourGuideRepository tourGuideRepository,
+    ILanguageContext? languageContext = null)
     : IQueryHandler<GetTourGuideByIdQuery, ErrorOr<TourGuideDto>>
 {
     public async Task<ErrorOr<TourGuideDto>> Handle(GetTourGuideByIdQuery request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (entity is null || entity.IsDeleted)
         {
-            return Error.NotFound("TourGuide.NotFound", "Không tìm thấy hướng dẫn viên.");
+            return Error.NotFound(
+                ErrorConstants.TourGuide.NotFoundCode,
+                ErrorConstants.TourGuide.NotFoundDescription.Resolve(lang));
         }
 
         return ToDto(entity);
@@ -276,7 +302,7 @@ public sealed class AssignTourGuideToBookingCommandValidator : AbstractValidator
         RuleFor(x => x.TourGuideId)
             .NotEmpty()
             .When(x => x.AssignedRole == AssignedRole.TourGuide)
-            .WithMessage("Cần chọn hướng dẫn viên khi phân vai trò TourGuide.");
+            .WithMessage(ValidationMessages.TourGuideRequiredForRole);
     }
 }
 
@@ -285,27 +311,35 @@ public sealed class AssignTourGuideToBookingCommandHandler(
     IUserRepository userRepository,
     ITourGuideRepository tourGuideRepository,
     IBookingTourGuideRepository bookingTourGuideRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<AssignTourGuideToBookingCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(AssignTourGuideToBookingCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         var user = await userRepository.FindById(request.UserId);
         if (user is null || user.IsDeleted)
         {
-            return Error.NotFound("User.NotFound", "Không tìm thấy user được phân công.");
+            return Error.NotFound(
+                ErrorConstants.User.NotFoundCode,
+                ErrorConstants.User.AssignedUserNotFoundDescription.Resolve(lang));
         }
 
         var existingAssignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (existingAssignment is not null)
         {
-            return Error.Conflict("BookingTeam.AssignmentExists", "User đã được phân công trong booking này.");
+            return Error.Conflict(
+                ErrorConstants.BookingTeam.AssignmentExistsCode,
+                ErrorConstants.BookingTeam.AssignmentExistsDescription.Resolve(lang));
         }
 
         TourGuideEntity? tourGuide = null;
@@ -313,18 +347,24 @@ public sealed class AssignTourGuideToBookingCommandHandler(
         {
             if (!request.TourGuideId.HasValue)
             {
-                return Error.Validation("BookingTeam.TourGuideRequired", "Thiếu TourGuideId cho vai trò TourGuide.");
+                return Error.Validation(
+                    ErrorConstants.BookingTeam.TourGuideRequiredCode,
+                    ErrorConstants.BookingTeam.TourGuideRequiredDescription.Resolve(lang));
             }
 
             tourGuide = await tourGuideRepository.GetByIdAsync(request.TourGuideId.Value);
             if (tourGuide is null || tourGuide.IsDeleted || !tourGuide.IsActive)
             {
-                return Error.NotFound("TourGuide.NotFound", "Không tìm thấy hướng dẫn viên.");
+                return Error.NotFound(
+                    ErrorConstants.TourGuide.NotFoundCode,
+                    ErrorConstants.TourGuide.NotFoundDescription.Resolve(lang));
             }
 
             if (!tourGuide.IsAvailable)
             {
-                return Error.Conflict("TourGuide.Unavailable", "Hướng dẫn viên hiện không khả dụng.");
+                return Error.Conflict(
+                    ErrorConstants.TourGuide.UnavailableCode,
+                    ErrorConstants.TourGuide.UnavailableDescription.Resolve(lang));
             }
         }
 
@@ -370,15 +410,19 @@ public sealed class UpdateTourGuideAssignmentStatusCommandValidator : AbstractVa
 public sealed class UpdateTourGuideAssignmentStatusCommandHandler(
     IBookingTourGuideRepository bookingTourGuideRepository,
     ITourGuideRepository tourGuideRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateTourGuideAssignmentStatusCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTourGuideAssignmentStatusCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
-            return Error.NotFound("BookingTeam.AssignmentNotFound", "Không tìm thấy phân công trong booking.");
+            return Error.NotFound(
+                ErrorConstants.BookingTeam.AssignmentNotFoundCode,
+                ErrorConstants.BookingTeam.AssignmentNotFoundDescription.Resolve(lang));
         }
 
         assignment.Update(
@@ -444,16 +488,21 @@ public sealed record GetBookingTourManagerQuery(Guid BookingId) : IQuery<ErrorOr
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetBookingTourManagerQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
+public sealed class GetBookingTourManagerQueryHandler(
+    IBookingTourGuideRepository bookingTourGuideRepository,
+    ILanguageContext? languageContext = null)
     : IQueryHandler<GetBookingTourManagerQuery, ErrorOr<BookingTeamMemberDto>>
 {
     public async Task<ErrorOr<BookingTeamMemberDto>> Handle(GetBookingTourManagerQuery request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignments = await bookingTourGuideRepository.GetByBookingIdAsync(request.BookingId);
         var manager = assignments.FirstOrDefault(x => x.AssignedRole == AssignedRole.TourManager);
         if (manager is null)
         {
-            return Error.NotFound("BookingTeam.TourManagerNotFound", "Không tìm thấy TourManager cho booking.");
+            return Error.NotFound(
+                ErrorConstants.BookingTeam.TourManagerNotFoundCode,
+                ErrorConstants.BookingTeam.TourManagerNotFoundDescription.Resolve(lang));
         }
 
         return new BookingTeamMemberDto(
@@ -542,22 +591,26 @@ public sealed class UpdateTeamMemberAssignmentCommandValidator : AbstractValidat
         RuleFor(x => x.TourGuideId)
             .NotEmpty()
             .When(x => x.AssignedRole == AssignedRole.TourGuide)
-            .WithMessage("Cần chọn hướng dẫn viên khi phân vai trò TourGuide.");
+            .WithMessage(ValidationMessages.TourGuideRequiredForRole);
     }
 }
 
 public sealed class UpdateTeamMemberAssignmentCommandHandler(
     IBookingTourGuideRepository bookingTourGuideRepository,
     ITourGuideRepository tourGuideRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateTeamMemberAssignmentCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTeamMemberAssignmentCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
-            return Error.NotFound("BookingTeam.AssignmentNotFound", "Không tìm thấy phân công trong booking.");
+            return Error.NotFound(
+                ErrorConstants.BookingTeam.AssignmentNotFoundCode,
+                ErrorConstants.BookingTeam.AssignmentNotFoundDescription.Resolve(lang));
         }
 
         var previousTourGuideId = assignment.TourGuideId;
@@ -568,12 +621,16 @@ public sealed class UpdateTeamMemberAssignmentCommandHandler(
             var nextTourGuide = await tourGuideRepository.GetByIdAsync(nextTourGuideId.Value);
             if (nextTourGuide is null || nextTourGuide.IsDeleted || !nextTourGuide.IsActive)
             {
-                return Error.NotFound("TourGuide.NotFound", "Không tìm thấy hướng dẫn viên.");
+                return Error.NotFound(
+                    ErrorConstants.TourGuide.NotFoundCode,
+                    ErrorConstants.TourGuide.NotFoundDescription.Resolve(lang));
             }
 
             if (!nextTourGuide.IsAvailable)
             {
-                return Error.Conflict("TourGuide.Unavailable", "Hướng dẫn viên hiện không khả dụng.");
+                return Error.Conflict(
+                    ErrorConstants.TourGuide.UnavailableCode,
+                    ErrorConstants.TourGuide.UnavailableDescription.Resolve(lang));
             }
 
             nextTourGuide.SetAvailability(false, "system");
@@ -610,15 +667,19 @@ public sealed record DeleteTeamMemberAssignmentCommand(Guid BookingId, Guid User
 public sealed class DeleteTeamMemberAssignmentCommandHandler(
     IBookingTourGuideRepository bookingTourGuideRepository,
     ITourGuideRepository tourGuideRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<DeleteTeamMemberAssignmentCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(DeleteTeamMemberAssignmentCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
-            return Error.NotFound("BookingTeam.AssignmentNotFound", "Không tìm thấy phân công trong booking.");
+            return Error.NotFound(
+                ErrorConstants.BookingTeam.AssignmentNotFoundCode,
+                ErrorConstants.BookingTeam.AssignmentNotFoundDescription.Resolve(lang));
         }
 
         if (assignment.TourGuideId.HasValue)
@@ -642,15 +703,19 @@ public sealed record ConfirmTeamMemberAssignmentCommand(Guid BookingId, Guid Use
 
 public sealed class ConfirmTeamMemberAssignmentCommandHandler(
     IBookingTourGuideRepository bookingTourGuideRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<ConfirmTeamMemberAssignmentCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(ConfirmTeamMemberAssignmentCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
-            return Error.NotFound("BookingTeam.AssignmentNotFound", "Không tìm thấy phân công trong booking.");
+            return Error.NotFound(
+                ErrorConstants.BookingTeam.AssignmentNotFoundCode,
+                ErrorConstants.BookingTeam.AssignmentNotFoundDescription.Resolve(lang));
         }
 
         assignment.Update(

@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
@@ -32,21 +33,27 @@ public sealed class CreateSupplierPayableCommandHandler(
     IBookingRepository bookingRepository,
     ISupplierRepository supplierRepository,
     ISupplierPayableRepository supplierPayableRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateSupplierPayableCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateSupplierPayableCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         var supplier = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (supplier is null)
         {
-            return Error.NotFound("Supplier.NotFound", "Không tìm thấy nhà cung cấp.");
+            return Error.NotFound(
+                ErrorConstants.Supplier.NotFoundCode,
+                ErrorConstants.Supplier.NotFoundDescription.Resolve(lang));
         }
 
         var entity = SupplierPayableEntity.Create(
@@ -80,21 +87,25 @@ public sealed class SupplierPayableValidator : AbstractValidator<UpdateSupplierP
         RuleFor(x => x.PaidAmount).GreaterThanOrEqualTo(0);
         RuleFor(x => x)
             .Must(x => x.PaidAmount <= x.ExpectedAmount)
-            .WithMessage("Số tiền đã thanh toán không được lớn hơn số tiền dự kiến.");
+            .WithMessage(ValidationMessages.SupplierPayablePaidAmountMustNotExceedExpected);
     }
 }
 
 public sealed class UpdateSupplierPayableCommandHandler(
     ISupplierPayableRepository supplierPayableRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateSupplierPayableCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateSupplierPayableCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await supplierPayableRepository.GetByIdAsync(request.SupplierPayableId);
         if (entity is null)
         {
-            return Error.NotFound("SupplierPayable.NotFound", "Không tìm thấy payable.");
+            return Error.NotFound(
+                ErrorConstants.SupplierPayable.NotFoundCode,
+                ErrorConstants.SupplierPayable.NotFoundDescription.Resolve(lang));
         }
 
         entity.Update(
@@ -131,15 +142,19 @@ public sealed class RecordSupplierPaymentCommandValidator : AbstractValidator<Re
 public sealed class RecordSupplierPaymentCommandHandler(
     ISupplierPayableRepository supplierPayableRepository,
     ISupplierReceiptRepository supplierReceiptRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<RecordSupplierPaymentCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(RecordSupplierPaymentCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var payable = await supplierPayableRepository.GetByIdAsync(request.SupplierPayableId);
         if (payable is null)
         {
-            return Error.NotFound("SupplierPayable.NotFound", "Không tìm thấy payable.");
+            return Error.NotFound(
+                ErrorConstants.SupplierPayable.NotFoundCode,
+                ErrorConstants.SupplierPayable.NotFoundDescription.Resolve(lang));
         }
 
         var receipt = SupplierReceiptEntity.Create(

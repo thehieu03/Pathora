@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
 using Contracts.Interfaces;
@@ -36,15 +37,19 @@ public sealed class CreateParticipantCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
     IBookingTransportDetailRepository bookingTransportDetailRepository,
     IBookingAccommodationDetailRepository bookingAccommodationDetailRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateParticipantCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateParticipantCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         var participants = await bookingParticipantRepository.GetByBookingIdAsync(request.BookingId);
@@ -60,15 +65,21 @@ public sealed class CreateParticipantCommandHandler(
         if (seatCapacityLimit.HasValue && nextParticipantCount > seatCapacityLimit.Value)
         {
             return Error.Validation(
-                "Booking.SeatCapacityExceeded",
-                $"Số lượng participant ({nextParticipantCount}) vượt quá sức chứa ghế ({seatCapacityLimit.Value}).");
+                ErrorConstants.Booking.SeatCapacityExceededCode,
+                ErrorConstants.Booking.SeatCapacityExceededDescriptionTemplate.Format(
+                    lang,
+                    nextParticipantCount,
+                    seatCapacityLimit.Value));
         }
 
         if (roomCapacityLimit.HasValue && nextParticipantCount > roomCapacityLimit.Value)
         {
             return Error.Validation(
-                "Booking.RoomCapacityExceeded",
-                $"Số lượng participant ({nextParticipantCount}) vượt quá sức chứa phòng ({roomCapacityLimit.Value}).");
+                ErrorConstants.Booking.RoomCapacityExceededCode,
+                ErrorConstants.Booking.RoomCapacityExceededDescriptionTemplate.Format(
+                    lang,
+                    nextParticipantCount,
+                    roomCapacityLimit.Value));
         }
 
         var entity = BookingParticipantEntity.Create(
@@ -111,15 +122,19 @@ public sealed class UpdateParticipantCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
     IBookingTransportDetailRepository bookingTransportDetailRepository,
     IBookingAccommodationDetailRepository bookingAccommodationDetailRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateParticipantCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateParticipantCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await bookingParticipantRepository.GetByIdAsync(request.ParticipantId);
         if (entity is null)
         {
-            return Error.NotFound("BookingParticipant.NotFound", "Không tìm thấy participant.");
+            return Error.NotFound(
+                ErrorConstants.BookingParticipant.NotFoundCode,
+                ErrorConstants.BookingParticipant.NotFoundDescription.Resolve(lang));
         }
 
         var participants = await bookingParticipantRepository.GetByBookingIdAsync(entity.BookingId);
@@ -145,15 +160,21 @@ public sealed class UpdateParticipantCommandHandler(
         if (seatCapacityLimit.HasValue && nextParticipantCount > seatCapacityLimit.Value)
         {
             return Error.Validation(
-                "Booking.SeatCapacityExceeded",
-                $"Số lượng participant ({nextParticipantCount}) vượt quá sức chứa ghế ({seatCapacityLimit.Value}).");
+                ErrorConstants.Booking.SeatCapacityExceededCode,
+                ErrorConstants.Booking.SeatCapacityExceededDescriptionTemplate.Format(
+                    lang,
+                    nextParticipantCount,
+                    seatCapacityLimit.Value));
         }
 
         if (roomCapacityLimit.HasValue && nextParticipantCount > roomCapacityLimit.Value)
         {
             return Error.Validation(
-                "Booking.RoomCapacityExceeded",
-                $"Số lượng participant ({nextParticipantCount}) vượt quá sức chứa phòng ({roomCapacityLimit.Value}).");
+                ErrorConstants.Booking.RoomCapacityExceededCode,
+                ErrorConstants.Booking.RoomCapacityExceededDescriptionTemplate.Format(
+                    lang,
+                    nextParticipantCount,
+                    roomCapacityLimit.Value));
         }
 
         entity.Update(
@@ -196,34 +217,42 @@ public sealed class CreatePassportCommandHandler(
     IBookingParticipantRepository bookingParticipantRepository,
     IBookingRepository bookingRepository,
     IPassportRepository passportRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreatePassportCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreatePassportCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var participant = await bookingParticipantRepository.GetByIdAsync(request.BookingParticipantId);
         if (participant is null)
         {
-            return Error.NotFound("BookingParticipant.NotFound", "Không tìm thấy participant.");
+            return Error.NotFound(
+                ErrorConstants.BookingParticipant.NotFoundCode,
+                ErrorConstants.BookingParticipant.NotFoundDescription.Resolve(lang));
         }
 
         var booking = await bookingRepository.GetByIdAsync(participant.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         if (request.ExpiresAt.HasValue && request.ExpiresAt.Value <= booking.TourInstance.StartDate)
         {
             return Error.Validation(
-                "Passport.ExpiryBeforeTourStart",
-                "Ngày hết hạn passport phải sau ngày khởi hành tour.");
+                ErrorConstants.Passport.ExpiryBeforeTourStartCode,
+                ErrorConstants.Passport.ExpiryBeforeTourStartDescription.Resolve(lang));
         }
 
         var existing = await passportRepository.GetByBookingParticipantIdAsync(request.BookingParticipantId);
         if (existing is not null)
         {
-            return Error.Conflict("Passport.Exists", "Participant đã có passport.");
+            return Error.Conflict(
+                ErrorConstants.Passport.ExistsCode,
+                ErrorConstants.Passport.ExistsDescription.Resolve(lang));
         }
 
         var entity = PassportEntity.Create(
@@ -266,34 +295,42 @@ public sealed class UpdatePassportCommandHandler(
     IPassportRepository passportRepository,
     IBookingParticipantRepository bookingParticipantRepository,
     IBookingRepository bookingRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdatePassportCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdatePassportCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await passportRepository.GetByIdAsync(request.PassportId);
         if (entity is null)
         {
-            return Error.NotFound("Passport.NotFound", "Không tìm thấy passport.");
+            return Error.NotFound(
+                ErrorConstants.Passport.NotFoundCode,
+                ErrorConstants.Passport.NotFoundDescription.Resolve(lang));
         }
 
         var participant = await bookingParticipantRepository.GetByIdAsync(entity.BookingParticipantId);
         if (participant is null)
         {
-            return Error.NotFound("BookingParticipant.NotFound", "Không tìm thấy participant.");
+            return Error.NotFound(
+                ErrorConstants.BookingParticipant.NotFoundCode,
+                ErrorConstants.BookingParticipant.NotFoundDescription.Resolve(lang));
         }
 
         var booking = await bookingRepository.GetByIdAsync(participant.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         if (request.ExpiresAt.HasValue && request.ExpiresAt.Value <= booking.TourInstance.StartDate)
         {
             return Error.Validation(
-                "Passport.ExpiryBeforeTourStart",
-                "Ngày hết hạn passport phải sau ngày khởi hành tour.");
+                ErrorConstants.Passport.ExpiryBeforeTourStartCode,
+                ErrorConstants.Passport.ExpiryBeforeTourStartDescription.Resolve(lang));
         }
 
         entity.Update(
@@ -332,21 +369,27 @@ public sealed class CreateVisaApplicationCommandHandler(
     IBookingParticipantRepository bookingParticipantRepository,
     IPassportRepository passportRepository,
     IVisaApplicationRepository visaApplicationRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateVisaApplicationCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateVisaApplicationCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var participant = await bookingParticipantRepository.GetByIdAsync(request.BookingParticipantId);
         if (participant is null)
         {
-            return Error.NotFound("BookingParticipant.NotFound", "Không tìm thấy participant.");
+            return Error.NotFound(
+                ErrorConstants.BookingParticipant.NotFoundCode,
+                ErrorConstants.BookingParticipant.NotFoundDescription.Resolve(lang));
         }
 
         var passport = await passportRepository.GetByIdAsync(request.PassportId);
         if (passport is null || passport.BookingParticipantId != request.BookingParticipantId)
         {
-            return Error.Validation("VisaApplication.PassportInvalid", "Passport không hợp lệ cho participant.");
+            return Error.Validation(
+                ErrorConstants.VisaApplication.PassportInvalidCode,
+                ErrorConstants.VisaApplication.PassportInvalidDescription.Resolve(lang));
         }
 
         var entity = VisaApplicationEntity.Create(
@@ -385,15 +428,19 @@ public sealed class UpdateVisaApplicationCommandHandler(
     IVisaApplicationRepository visaApplicationRepository,
     IBookingParticipantRepository bookingParticipantRepository,
     IBookingRepository bookingRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateVisaApplicationCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateVisaApplicationCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await visaApplicationRepository.GetByIdAsync(request.VisaApplicationId);
         if (entity is null)
         {
-            return Error.NotFound("VisaApplication.NotFound", "Không tìm thấy visa application.");
+            return Error.NotFound(
+                ErrorConstants.VisaApplication.NotFoundCode,
+                ErrorConstants.VisaApplication.NotFoundDescription.Resolve(lang));
         }
 
         if (request.Status == VisaStatus.Approved)
@@ -401,20 +448,24 @@ public sealed class UpdateVisaApplicationCommandHandler(
             var participant = await bookingParticipantRepository.GetByIdAsync(entity.BookingParticipantId);
             if (participant is null)
             {
-                return Error.NotFound("BookingParticipant.NotFound", "Không tìm thấy participant.");
+                return Error.NotFound(
+                    ErrorConstants.BookingParticipant.NotFoundCode,
+                    ErrorConstants.BookingParticipant.NotFoundDescription.Resolve(lang));
             }
 
             var booking = await bookingRepository.GetByIdAsync(participant.BookingId);
             if (booking is null)
             {
-                return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+                return Error.NotFound(
+                    ErrorConstants.Booking.NotFoundCode,
+                    ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
             }
 
             if (DateTimeOffset.UtcNow >= booking.TourInstance.StartDate)
             {
                 return Error.Validation(
-                    "VisaApplication.ApprovalTooLate",
-                    "Visa phải được phê duyệt trước ngày khởi hành tour.");
+                    ErrorConstants.VisaApplication.ApprovalTooLateCode,
+                    ErrorConstants.VisaApplication.ApprovalTooLateDescription.Resolve(lang));
             }
         }
 
@@ -459,21 +510,27 @@ public sealed class CreateVisaCommandHandler(
     IBookingParticipantRepository bookingParticipantRepository,
     IBookingRepository bookingRepository,
     IVisaRepository visaRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateVisaCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateVisaCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var visaApplication = await visaApplicationRepository.GetByIdAsync(request.VisaApplicationId);
         if (visaApplication is null)
         {
-            return Error.NotFound("VisaApplication.NotFound", "Không tìm thấy visa application.");
+            return Error.NotFound(
+                ErrorConstants.VisaApplication.NotFoundCode,
+                ErrorConstants.VisaApplication.NotFoundDescription.Resolve(lang));
         }
 
         var existing = await visaRepository.GetByVisaApplicationIdAsync(request.VisaApplicationId);
         if (existing is not null)
         {
-            return Error.Conflict("Visa.Exists", "Visa cho application đã tồn tại.");
+            return Error.Conflict(
+                ErrorConstants.Visa.ExistsCode,
+                ErrorConstants.Visa.ExistsDescription.Resolve(lang));
         }
 
         if (request.Status == VisaStatus.Approved)
@@ -481,21 +538,25 @@ public sealed class CreateVisaCommandHandler(
             var participant = await bookingParticipantRepository.GetByIdAsync(visaApplication.BookingParticipantId);
             if (participant is null)
             {
-                return Error.NotFound("BookingParticipant.NotFound", "Không tìm thấy participant.");
+                return Error.NotFound(
+                    ErrorConstants.BookingParticipant.NotFoundCode,
+                    ErrorConstants.BookingParticipant.NotFoundDescription.Resolve(lang));
             }
 
             var booking = await bookingRepository.GetByIdAsync(participant.BookingId);
             if (booking is null)
             {
-                return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+                return Error.NotFound(
+                    ErrorConstants.Booking.NotFoundCode,
+                    ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
             }
 
             var approvedAt = request.IssuedAt ?? DateTimeOffset.UtcNow;
             if (approvedAt >= booking.TourInstance.StartDate)
             {
                 return Error.Validation(
-                    "Visa.ApprovalTooLate",
-                    "Visa phải được phê duyệt trước ngày khởi hành tour.");
+                    ErrorConstants.Visa.ApprovalTooLateCode,
+                    ErrorConstants.Visa.ApprovalTooLateDescription.Resolve(lang));
             }
         }
 
@@ -607,15 +668,20 @@ public sealed record GetParticipantPassportQuery(Guid ParticipantId) : IQuery<Er
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetParticipantPassportQueryHandler(IPassportRepository passportRepository)
+public sealed class GetParticipantPassportQueryHandler(
+    IPassportRepository passportRepository,
+    ILanguageContext? languageContext = null)
     : IQueryHandler<GetParticipantPassportQuery, ErrorOr<PassportDto>>
 {
     public async Task<ErrorOr<PassportDto>> Handle(GetParticipantPassportQuery request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var passport = await passportRepository.GetByBookingParticipantIdAsync(request.ParticipantId);
         if (passport is null)
         {
-            return Error.NotFound("Passport.NotFound", "Không tìm thấy passport.");
+            return Error.NotFound(
+                ErrorConstants.Passport.NotFoundCode,
+                ErrorConstants.Passport.NotFoundDescription.Resolve(lang));
         }
 
         return new PassportDto(

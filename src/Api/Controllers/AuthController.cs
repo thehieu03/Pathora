@@ -1,5 +1,6 @@
 using Api.Endpoint;
 using Api.Infrastructure;
+using Application.Common.Constant;
 using Contracts.Interfaces;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
@@ -119,12 +120,18 @@ public class AuthController : BaseApiController
             .FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted);
 
         if (user is null)
-            return NotFound(new { message = $"Không tìm thấy user với email: {request.Email}" });
+            return NotFound(new
+            {
+                message = ErrorConstants.Auth.EmailNotFoundDescriptionTemplate.Format(CurrentLanguage, request.Email),
+            });
 
         user.ChangePassword(hasher.HashPassword(request.NewPassword), "dev-reset");
         await db.SaveChangesAsync();
 
-        return Ok(new { message = $"Đã đổi mật khẩu cho {user.Email} (username: {user.Username})" });
+        return Ok(new
+        {
+            message = ErrorConstants.Auth.PasswordChangedDescriptionTemplate.Format(CurrentLanguage, user.Email, user.Username),
+        });
     }
 
     /// <summary>DEV ONLY – reset password for all active users.</summary>
@@ -140,7 +147,10 @@ public class AuthController : BaseApiController
             return NotFound();
 
         if (string.IsNullOrWhiteSpace(request.NewPassword))
-            return BadRequest(new { message = "Mật khẩu mới không được để trống" });
+            return BadRequest(new
+            {
+                message = ErrorConstants.Auth.NewPasswordRequiredDescription.Resolve(CurrentLanguage),
+            });
 
         var users = await db.Users
             .Where(u => !u.IsDeleted)
@@ -154,7 +164,10 @@ public class AuthController : BaseApiController
 
         await db.SaveChangesAsync();
 
-        return Ok(new { message = $"Đã đổi mật khẩu cho {users.Count} tài khoản" });
+        return Ok(new
+        {
+            message = ErrorConstants.Auth.PasswordChangedForAccountsDescriptionTemplate.Format(CurrentLanguage, users.Count),
+        });
     }
 
     [HttpGet(AuthEndpoint.GoogleLogin)]

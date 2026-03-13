@@ -34,6 +34,33 @@ public sealed class LanguageResolutionMiddlewareTests
     }
 
     [Fact]
+    public async Task InvokeAsync_ShouldResolveVietnameseFromHeaderWithRegionAndQuality()
+    {
+        var middleware = new LanguageResolutionMiddleware(_ => Task.CompletedTask);
+        var languageContext = new TestLanguageContext();
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Headers.Append("Accept-Language", "vi-VN,vi;q=0.9,en;q=0.8");
+
+        await middleware.InvokeAsync(httpContext, languageContext);
+
+        Assert.Equal("vi", languageContext.CurrentLanguage);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_ShouldFallbackToHeaderWhenQueryLanguageUnsupported()
+    {
+        var middleware = new LanguageResolutionMiddleware(_ => Task.CompletedTask);
+        var languageContext = new TestLanguageContext();
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.QueryString = new QueryString("?lang=fr-CA");
+        httpContext.Request.Headers.Append("Accept-Language", "vi");
+
+        await middleware.InvokeAsync(httpContext, languageContext);
+
+        Assert.Equal("vi", languageContext.CurrentLanguage);
+    }
+
+    [Fact]
     public async Task InvokeAsync_ShouldFallbackToDefaultWhenQueryAndHeaderMissing()
     {
         var middleware = new LanguageResolutionMiddleware(_ => Task.CompletedTask);

@@ -26,6 +26,9 @@ internal static class TourRequestMappings
         return new TourRequestDetailDto(
             entity.Id,
             entity.UserId,
+            entity.CustomerName,
+            entity.CustomerPhone,
+            entity.CustomerEmail,
             entity.Destination,
             entity.DepartureDate,
             entity.ReturnDate ?? entity.DepartureDate,

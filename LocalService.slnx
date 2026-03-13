@@ -10,7 +10,7 @@
     <File Path=".gitlab-ci.yml" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
-    <File Path="Dockerfile" />
+    <File Path="src/Api/Dockerfile" />
     <File Path="nuget.config" />
   </Folder>
   <Folder Name="/src/">

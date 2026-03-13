@@ -3,16 +3,13 @@ namespace Domain.Specs.Api;
 public sealed class LocalPostgresStartupBootstrapTests
 {
     [Fact]
-    public void Program_WhenBootstrappingDatabase_ShouldRunMigrationsBeforeSeed()
+    public void Program_WhenStartingApi_ShouldNotRunAutoMigrationOrSeed()
     {
         var programPath = Path.Combine(GetSolutionRoot(), "src", "Api", "Program.cs");
         var sourceCode = File.ReadAllText(programPath);
 
-        var migrateIndex = sourceCode.IndexOf("MigrateAsync", StringComparison.Ordinal);
-        var seedIndex = sourceCode.IndexOf("SeedIfNeededAsync", StringComparison.Ordinal);
-
-        Assert.True(migrateIndex >= 0, "Expected Program.cs to call Database.MigrateAsync during startup bootstrap.");
-        Assert.True(seedIndex > migrateIndex, "Expected Program.cs to run migrations before seed execution.");
+        Assert.DoesNotContain("await dbContext.Database.MigrateAsync();", sourceCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("await AppDbContextSeed.SeedIfNeededAsync(dbContext);", sourceCode, StringComparison.Ordinal);
     }
 
     private static string GetSolutionRoot()

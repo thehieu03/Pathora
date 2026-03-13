@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
@@ -15,15 +16,20 @@ public sealed record GetSupplierByIdQuery(Guid SupplierId) : IQuery<ErrorOr<Supp
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
-public sealed class GetSupplierByIdQueryHandler(ISupplierRepository supplierRepository)
+public sealed class GetSupplierByIdQueryHandler(
+    ISupplierRepository supplierRepository,
+    ILanguageContext? languageContext = null)
     : IQueryHandler<GetSupplierByIdQuery, ErrorOr<SupplierDto>>
 {
     public async Task<ErrorOr<SupplierDto>> Handle(GetSupplierByIdQuery request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (entity is null)
         {
-            return Error.NotFound("Supplier.NotFound", "Không tìm thấy nhà cung cấp.");
+            return Error.NotFound(
+                ErrorConstants.Supplier.NotFoundCode,
+                ErrorConstants.Supplier.NotFoundDescription.Resolve(lang));
         }
 
         return ToDto(entity);

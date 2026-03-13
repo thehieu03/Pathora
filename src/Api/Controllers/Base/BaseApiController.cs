@@ -1,7 +1,10 @@
+using Application.Common.Constant;
+using Contracts.Interfaces;
 using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 
 namespace Api.Controllers;
@@ -12,15 +15,18 @@ public abstract class BaseApiController : ControllerBase
     private ISender? _sender;
     protected ISender Sender => _sender ??= HttpContext.RequestServices.GetRequiredService<ISender>();
     protected string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+    protected string CurrentLanguage =>
+        HttpContext.RequestServices.GetService<ILanguageContext>()?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
 
     protected IActionResult HandleResult<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status200OK,
-        string successMessage = "Thành công")
+        LocalizedMessage? successMessage = null)
     {
         if (result.IsError)
         {
             var firstError = result.FirstError;
+            var firstMessage = ErrorConstants.ResolveByCode(firstError.Code, CurrentLanguage, firstError.Description);
             var statusCode = firstError.Type switch
             {
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
@@ -34,13 +40,15 @@ public abstract class BaseApiController : ControllerBase
             return StatusCode(statusCode, ResultSharedResponse<object>.Failure(
                 statusCode: statusCode,
                 instance: HttpContext.Request.Path,
-                errors: result.Errors.Select(e => new ErrorResult(e.Description, e.Code)).ToList(),
-                message: firstError.Description));
+                errors: result.Errors.Select(e =>
+                        new ErrorResult(ErrorConstants.ResolveByCode(e.Code, CurrentLanguage, e.Description), e.Code))
+                    .ToList(),
+                message: firstMessage));
         }
 
         return StatusCode(successStatusCode, ResultSharedResponse<T>.Success(
             result.Value,
-            successMessage,
+            (successMessage ?? SuccessMessages.General).Resolve(CurrentLanguage),
             HttpContext.Request.Path,
             successStatusCode));
     }
@@ -48,14 +56,14 @@ public abstract class BaseApiController : ControllerBase
     protected IActionResult HandleCreated<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status201Created,
-        string successMessage = "Tạo thành công")
+        LocalizedMessage? successMessage = null)
     {
         if (result.IsError)
             return HandleResult(result);
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiCreatedResponse<T>>.Success(
             new ApiCreatedResponse<T>(result.Value),
-            successMessage,
+            (successMessage ?? SuccessMessages.Created).Resolve(CurrentLanguage),
             HttpContext.Request.Path,
             successStatusCode));
     }
@@ -63,14 +71,14 @@ public abstract class BaseApiController : ControllerBase
     protected IActionResult HandleUpdated<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status200OK,
-        string successMessage = "Cập nhật thành công")
+        LocalizedMessage? successMessage = null)
     {
         if (result.IsError)
             return HandleResult(result);
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiUpdatedResponse<T>>.Success(
             new ApiUpdatedResponse<T>(result.Value),
-            successMessage,
+            (successMessage ?? SuccessMessages.Updated).Resolve(CurrentLanguage),
             HttpContext.Request.Path,
             successStatusCode));
     }
@@ -78,28 +86,28 @@ public abstract class BaseApiController : ControllerBase
     protected IActionResult HandleDeleted<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status200OK,
-        string successMessage = "Xóa thành công")
+        LocalizedMessage? successMessage = null)
     {
         if (result.IsError)
             return HandleResult(result);
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiDeletedResponse<T>>.Success(
             new ApiDeletedResponse<T>(result.Value),
-            successMessage,
+            (successMessage ?? SuccessMessages.Deleted).Resolve(CurrentLanguage),
             HttpContext.Request.Path,
             successStatusCode));
     }
     protected IActionResult HandleGet<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status200OK,
-        string successMessage = "Lấy dữ liệu thành công")
+        LocalizedMessage? successMessage = null)
     {
         if (result.IsError)
             return HandleResult(result);
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiGetResponse<T>>.Success(
             new ApiGetResponse<T>(result.Value),
-            successMessage,
+            (successMessage ?? SuccessMessages.DataRetrieved).Resolve(CurrentLanguage),
             HttpContext.Request.Path,
             successStatusCode));
     }
@@ -107,14 +115,14 @@ public abstract class BaseApiController : ControllerBase
     protected IActionResult HandlePerformed<T>(
         ErrorOr<T> result,
         int successStatusCode = StatusCodes.Status200OK,
-        string successMessage = "Thực thi thành công")
+        LocalizedMessage? successMessage = null)
     {
         if (result.IsError)
             return HandleResult(result);
 
         return StatusCode(successStatusCode, ResultSharedResponse<ApiPerformedResponse<T>>.Success(
             new ApiPerformedResponse<T>(result.Value),
-            successMessage,
+            (successMessage ?? SuccessMessages.Performed).Resolve(CurrentLanguage),
             HttpContext.Request.Path,
             successStatusCode));
     }

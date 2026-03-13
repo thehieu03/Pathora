@@ -1,7 +1,10 @@
 using Api.Exceptions;
+using Application.Common.Constant;
+using Contracts.Interfaces;
 using ErrorOr;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.Infrastructure;
 
@@ -15,18 +18,16 @@ public class CustomAuthorizationResultHandler : IAuthorizationMiddlewareResultHa
         AuthorizationPolicy policy,
         PolicyAuthorizationResult authorizeResult)
     {
+        var lang = context.RequestServices.GetService<ILanguageContext>()?.CurrentLanguage
+            ?? ILanguageContext.DefaultLanguage;
+
         if (authorizeResult.Forbidden)
         {
-            //sử lý không có quyền truy cập chức năng này
-
-            throw new NoPermissionException("Người dùng không có quyền truy cập chức năng này");
-
+            throw new NoPermissionException(ErrorConstants.Authorization.ForbiddenDescription.Resolve(lang));
         }
         else if (authorizeResult.Challenged)
         {
-            //sử lý Người dùng chưa được xác thực
-
-            throw new UnauthorizedException("Người dùng chưa được xác thực");
+            throw new UnauthorizedException(ErrorConstants.Authorization.UnauthorizedDescription.Resolve(lang));
         }
         else
         {

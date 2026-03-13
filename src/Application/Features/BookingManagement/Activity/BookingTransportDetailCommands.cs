@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
 using Contracts.Interfaces;
@@ -49,15 +50,19 @@ public sealed class CreateTransportDetailCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
     IBookingTransportDetailRepository bookingTransportDetailRepository,
     IBookingParticipantRepository bookingParticipantRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateTransportDetailCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateTransportDetailCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var activity = await bookingActivityReservationRepository.GetByIdAsync(request.BookingActivityReservationId);
         if (activity is null)
         {
-            return Error.NotFound("BookingActivityReservation.NotFound", "Không tìm thấy activity reservation.");
+            return Error.NotFound(
+                ErrorConstants.BookingActivityReservation.NotFoundCode,
+                ErrorConstants.BookingActivityReservation.NotFoundDescription.Resolve(lang));
         }
 
         if (request.SeatCapacity > 0)
@@ -68,8 +73,11 @@ public sealed class CreateTransportDetailCommandHandler(
             if (activeParticipantCount > request.SeatCapacity)
             {
                 return Error.Validation(
-                    "Booking.SeatCapacityExceeded",
-                    $"Số lượng participant ({activeParticipantCount}) vượt quá sức chứa ghế ({request.SeatCapacity}).");
+                    ErrorConstants.Booking.SeatCapacityExceededCode,
+                    ErrorConstants.Booking.SeatCapacityExceededDescriptionTemplate.Format(
+                        lang,
+                        activeParticipantCount,
+                        request.SeatCapacity));
             }
         }
 
@@ -138,21 +146,27 @@ public sealed class UpdateTransportDetailCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
     IBookingParticipantRepository bookingParticipantRepository,
     IBookingTransportDetailRepository bookingTransportDetailRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateTransportDetailCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTransportDetailCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await bookingTransportDetailRepository.GetByIdAsync(request.BookingTransportDetailId);
         if (entity is null)
         {
-            return Error.NotFound("BookingTransportDetail.NotFound", "Không tìm thấy transport detail.");
+            return Error.NotFound(
+                ErrorConstants.BookingTransportDetail.NotFoundCode,
+                ErrorConstants.BookingTransportDetail.NotFoundDescription.Resolve(lang));
         }
 
         var activity = await bookingActivityReservationRepository.GetByIdAsync(entity.BookingActivityReservationId);
         if (activity is null)
         {
-            return Error.NotFound("BookingActivityReservation.NotFound", "Không tìm thấy activity reservation.");
+            return Error.NotFound(
+                ErrorConstants.BookingActivityReservation.NotFoundCode,
+                ErrorConstants.BookingActivityReservation.NotFoundDescription.Resolve(lang));
         }
 
         var effectiveSeatCapacity = request.SeatCapacity ?? entity.SeatCapacity;
@@ -164,8 +178,11 @@ public sealed class UpdateTransportDetailCommandHandler(
             if (activeParticipantCount > effectiveSeatCapacity)
             {
                 return Error.Validation(
-                    "Booking.SeatCapacityExceeded",
-                    $"Số lượng participant ({activeParticipantCount}) vượt quá sức chứa ghế ({effectiveSeatCapacity}).");
+                    ErrorConstants.Booking.SeatCapacityExceededCode,
+                    ErrorConstants.Booking.SeatCapacityExceededDescriptionTemplate.Format(
+                        lang,
+                        activeParticipantCount,
+                        effectiveSeatCapacity));
             }
         }
 

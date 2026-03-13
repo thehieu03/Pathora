@@ -1,24 +1,31 @@
+using System.Globalization;
+using Microsoft.Extensions.Logging;
+using ErrorOr;
+using FluentValidation;
+using Application.Common;
 using Application.Common.Constant;
 using BuildingBlocks.CORS;
 using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Mails;
 using Domain.UnitOfWork;
-using ErrorOr;
-using FluentValidation;
 
 namespace Application.Features.TourRequest.Commands;
 
 public sealed record CreateTourRequestCommand(
     string Destination,
     DateTimeOffset StartDate,
-    DateTimeOffset EndDate,
+    DateTimeOffset? EndDate,
     int NumberOfParticipants,
-    decimal BudgetPerPersonUsd,
-    List<string> TravelInterests,
+    decimal? BudgetPerPersonUsd,
+    List<string>? TravelInterests,
     string? PreferredAccommodation = null,
     string? TransportationPreference = null,
-    string? SpecialRequests = null) : ICommand<ErrorOr<Guid>>;
+    string? SpecialRequests = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.TourRequest];
+}
 
 public sealed class CreateTourRequestCommandValidator : AbstractValidator<CreateTourRequestCommand>
 {
@@ -41,22 +48,20 @@ public sealed class CreateTourRequestCommandValidator : AbstractValidator<Create
             .NotEmpty().WithMessage(ValidationMessages.TourRequestStartDateRequired);
 
         RuleFor(x => x.EndDate)
-            .NotEmpty().WithMessage(ValidationMessages.TourRequestEndDateRequired)
-            .GreaterThanOrEqualTo(x => x.StartDate).WithMessage(ValidationMessages.TourRequestEndDateAfterOrEqualStartDate);
+            .GreaterThanOrEqualTo(x => x.StartDate).WithMessage(ValidationMessages.TourRequestEndDateAfterOrEqualStartDate)
+            .When(x => x.EndDate.HasValue);
 
         RuleFor(x => x.NumberOfParticipants)
             .GreaterThan(0).WithMessage(ValidationMessages.TourRequestParticipantsGreaterThanZero);
 
         RuleFor(x => x.BudgetPerPersonUsd)
-            .GreaterThan(0).WithMessage(ValidationMessages.TourRequestBudgetGreaterThanZero);
-
-        RuleFor(x => x.TravelInterests)
-            .NotNull().WithMessage(ValidationMessages.TourRequestTravelInterestsRequired)
-            .Must(interests => interests.Count > 0).WithMessage(ValidationMessages.TourRequestTravelInterestsRequired);
+            .GreaterThan(0).WithMessage(ValidationMessages.TourRequestBudgetGreaterThanZero)
+            .When(x => x.BudgetPerPersonUsd.HasValue);
 
         RuleForEach(x => x.TravelInterests)
             .Must(BeValidTravelInterest)
-            .WithMessage(ValidationMessages.TourRequestTravelInterestInvalid);
+            .WithMessage(ValidationMessages.TourRequestTravelInterestInvalid)
+            .When(x => x.TravelInterests is { Count: > 0 });
 
         RuleFor(x => x.PreferredAccommodation)
             .MaximumLength(500).WithMessage(ValidationMessages.TourRequestPreferredAccommodationMaxLength500)
@@ -82,7 +87,9 @@ public sealed class CreateTourRequestCommandHandler(
     IUser user,
     IUserRepository userRepository,
     ITourRequestRepository tourRequestRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IMailRepository mailRepository,
+    ILogger<CreateTourRequestCommandHandler> logger)
     : ICommandHandler<CreateTourRequestCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateTourRequestCommand request, CancellationToken cancellationToken)
@@ -109,14 +116,75 @@ public sealed class CreateTourRequestCommandHandler(
             customerEmail: userEntity.Email,
             returnDate: request.EndDate,
             budget: request.BudgetPerPersonUsd,
-            travelInterests: request.TravelInterests,
+            travelInterests: request.TravelInterests ?? [],
             preferredAccommodation: request.PreferredAccommodation,
             transportationPreference: request.TransportationPreference,
             specialRequirements: request.SpecialRequests);
 
         await tourRequestRepository.AddAsync(requestEntity);
         await unitOfWork.SaveChangeAsync(cancellationToken);
+        await TryQueueAdminNotificationAsync(requestEntity);
 
         return requestEntity.Id;
+    }
+
+    private async Task TryQueueAdminNotificationAsync(TourRequestEntity requestEntity)
+    {
+        var adminEmail = ResolveAdminNotificationEmail();
+        if (string.IsNullOrWhiteSpace(adminEmail))
+        {
+            logger.LogWarning("Skipping tour request admin notification because ADMIN_NOTIFICATION_EMAIL is not configured.");
+            return;
+        }
+
+        try
+        {
+            var mailModel = new TourRequestSubmittedMail(
+                CustomerName: requestEntity.CustomerName,
+                Destination: requestEntity.Destination,
+                StartDate: requestEntity.DepartureDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                EndDate: requestEntity.ReturnDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "Flexible",
+                NumberOfParticipants: requestEntity.NumberAdult,
+                BudgetPerPersonUsd: requestEntity.Budget?.ToString("0.##", CultureInfo.InvariantCulture) ?? "Not specified",
+                DashboardLink: ResolveDashboardLink());
+
+            var mail = mailModel.ToMail(adminEmail);
+            mail.Subject = $"New Tour Request: {requestEntity.Destination}";
+
+            var addResult = await mailRepository.Add(mail);
+            if (addResult.IsError)
+            {
+                logger.LogWarning(
+                    "Failed to queue admin tour request notification for request {RequestId}: {ErrorDescription}",
+                    requestEntity.Id,
+                    addResult.FirstError.Description);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(
+                ex,
+                "Failed to queue admin tour request notification for request {RequestId}",
+                requestEntity.Id);
+        }
+    }
+
+    private string? ResolveAdminNotificationEmail()
+    {
+        var configuredEmail = Environment.GetEnvironmentVariable("ADMIN_NOTIFICATION_EMAIL")
+            ?? Environment.GetEnvironmentVariable("MAIL_ADMIN_NOTIFICATION_EMAIL");
+
+        return string.IsNullOrWhiteSpace(configuredEmail)
+            ? null
+            : configuredEmail.Trim();
+    }
+
+    private string ResolveDashboardLink()
+    {
+        var frontendBaseUrl = Environment.GetEnvironmentVariable("FRONTEND_BASE_URL");
+
+        return string.IsNullOrWhiteSpace(frontendBaseUrl)
+            ? "/dashboard/tour-requests"
+            : $"{frontendBaseUrl.TrimEnd('/')}/dashboard/tour-requests";
     }
 }

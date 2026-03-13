@@ -16,6 +16,9 @@ public sealed record TourRequestVm(
 public sealed record TourRequestDetailDto(
     Guid Id,
     Guid? UserId,
+    string CustomerName,
+    string CustomerPhone,
+    string? CustomerEmail,
     string Destination,
     DateTimeOffset StartDate,
     DateTimeOffset EndDate,

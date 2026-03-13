@@ -8,15 +8,15 @@ public sealed class CreateTourRequestCommandValidatorTests
     private readonly CreateTourRequestCommandValidator _validator = new();
 
     [Fact]
-    public void Validate_WhenValid_ShouldHaveNoErrors()
+    public void Validate_WhenOnlyRequiredFields_ShouldHaveNoErrors()
     {
         var command = new CreateTourRequestCommand(
             Destination: "Da Nang",
             StartDate: new DateTimeOffset(2026, 5, 1, 0, 0, 0, TimeSpan.Zero),
-            EndDate: new DateTimeOffset(2026, 5, 5, 0, 0, 0, TimeSpan.Zero),
+            EndDate: null,
             NumberOfParticipants: 4,
-            BudgetPerPersonUsd: 500,
-            TravelInterests: ["Adventure", "FoodAndCulinary"],
+            BudgetPerPersonUsd: null,
+            TravelInterests: null,
             PreferredAccommodation: "4-star hotel",
             TransportationPreference: "Flight",
             SpecialRequests: "Need vegetarian options");
@@ -56,6 +56,22 @@ public sealed class CreateTourRequestCommandValidatorTests
         var result = _validator.TestValidate(command);
 
         result.ShouldHaveValidationErrorFor(x => x.NumberOfParticipants);
+    }
+
+    [Fact]
+    public void Validate_WhenBudgetProvidedButNotPositive_ShouldHaveError()
+    {
+        var command = new CreateTourRequestCommand(
+            "Da Nang",
+            new DateTimeOffset(2026, 5, 1, 0, 0, 0, TimeSpan.Zero),
+            null,
+            2,
+            0,
+            null);
+
+        var result = _validator.TestValidate(command);
+
+        result.ShouldHaveValidationErrorFor(x => x.BudgetPerPersonUsd);
     }
 
     [Fact]

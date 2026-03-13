@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
@@ -24,15 +25,19 @@ public sealed class InitializeActivityStatusCommandValidator : AbstractValidator
 public sealed class InitializeActivityStatusCommandHandler(
     IBookingRepository bookingRepository,
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<InitializeActivityStatusCommand, ErrorOr<int>>
 {
     public async Task<ErrorOr<int>> Handle(InitializeActivityStatusCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         var tourDays = await unitOfWork
@@ -83,15 +88,19 @@ public sealed class StartActivityCommandValidator : AbstractValidator<StartActiv
 
 public sealed class StartActivityCommandHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<StartActivityCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(StartActivityCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
-            return Error.NotFound("ActivityStatus.NotFound", "Không tìm thấy trạng thái hoạt động.");
+            return Error.NotFound(
+                ErrorConstants.ActivityStatus.NotFoundCode,
+                ErrorConstants.ActivityStatus.NotFoundDescription.Resolve(lang));
         }
 
         try
@@ -124,15 +133,19 @@ public sealed class CompleteActivityCommandValidator : AbstractValidator<Complet
 
 public sealed class CompleteActivityCommandHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CompleteActivityCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(CompleteActivityCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
-            return Error.NotFound("ActivityStatus.NotFound", "Không tìm thấy trạng thái hoạt động.");
+            return Error.NotFound(
+                ErrorConstants.ActivityStatus.NotFoundCode,
+                ErrorConstants.ActivityStatus.NotFoundDescription.Resolve(lang));
         }
 
         try
@@ -166,15 +179,19 @@ public sealed class CancelActivityCommandValidator : AbstractValidator<CancelAct
 
 public sealed class CancelActivityCommandHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CancelActivityCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(CancelActivityCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
-            return Error.NotFound("ActivityStatus.NotFound", "Không tìm thấy trạng thái hoạt động.");
+            return Error.NotFound(
+                ErrorConstants.ActivityStatus.NotFoundCode,
+                ErrorConstants.ActivityStatus.NotFoundDescription.Resolve(lang));
         }
 
         try
@@ -245,15 +262,19 @@ public sealed record GetActivityStatusByTourDayQuery(Guid BookingId, Guid TourDa
 
 public sealed class GetActivityStatusByTourDayQueryHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
-    ITourDayActivityGuideRepository tourDayActivityGuideRepository)
+    ITourDayActivityGuideRepository tourDayActivityGuideRepository,
+    ILanguageContext? languageContext = null)
     : IQueryHandler<GetActivityStatusByTourDayQuery, ErrorOr<TourDayActivityStatusDto>>
 {
     public async Task<ErrorOr<TourDayActivityStatusDto>> Handle(GetActivityStatusByTourDayQuery request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
-            return Error.NotFound("ActivityStatus.NotFound", "Không tìm thấy trạng thái hoạt động.");
+            return Error.NotFound(
+                ErrorConstants.ActivityStatus.NotFoundCode,
+                ErrorConstants.ActivityStatus.NotFoundDescription.Resolve(lang));
         }
 
         var guides = await tourDayActivityGuideRepository.GetByActivityStatusIdAsync(status.Id);
@@ -305,26 +326,34 @@ public sealed class AssignGuideToActivityCommandHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
     ITourGuideRepository tourGuideRepository,
     ITourDayActivityGuideRepository tourDayActivityGuideRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<AssignGuideToActivityCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(AssignGuideToActivityCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
-            return Error.NotFound("ActivityStatus.NotFound", "Không tìm thấy trạng thái hoạt động.");
+            return Error.NotFound(
+                ErrorConstants.ActivityStatus.NotFoundCode,
+                ErrorConstants.ActivityStatus.NotFoundDescription.Resolve(lang));
         }
 
         if (status.ActivityStatus == Domain.Enums.ActivityStatus.Cancelled)
         {
-            return Error.Validation("ActivityStatus.Cancelled", "Không thể gán hướng dẫn viên cho hoạt động đã hủy.");
+            return Error.Validation(
+                ErrorConstants.ActivityStatus.CancelledCode,
+                ErrorConstants.ActivityStatus.CancelledDescription.Resolve(lang));
         }
 
         var tourGuide = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (tourGuide is null || tourGuide.IsDeleted || !tourGuide.IsActive)
         {
-            return Error.NotFound("TourGuide.NotFound", "Không tìm thấy hướng dẫn viên.");
+            return Error.NotFound(
+                ErrorConstants.TourGuide.NotFoundCode,
+                ErrorConstants.TourGuide.NotFoundDescription.Resolve(lang));
         }
 
         var entity = TourDayActivityGuideEntity.Create(

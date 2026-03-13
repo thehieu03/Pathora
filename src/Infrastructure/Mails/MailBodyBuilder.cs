@@ -28,7 +28,7 @@ public class MailBodyBuilder : IMailBodyBuilder
             .Where(t =>
                 t is { IsClass: true, IsAbstract: false } &&
                 t.GetCustomAttribute<MailAttribute>() != null)
-            .ToDictionary(t => t.Name, CreateGenericBuilder);
+            .ToDictionary(GetTemplateKey, CreateGenericBuilder, StringComparer.OrdinalIgnoreCase);
     }
 
     public MimeEntity BuildBody(string template, string jsonData)
@@ -50,13 +50,21 @@ public class MailBodyBuilder : IMailBodyBuilder
         };
     }
 
+    private static string GetTemplateKey(Type modelType)
+    {
+        var templateAttr = modelType.GetCustomAttribute<MailAttribute>(inherit: true)
+            ?? throw new InvalidOperationException($"Missing MailTemplateAttribute on {modelType.Name}");
+
+        return templateAttr.TemplateName ?? modelType.Name;
+    }
+
     private static void ConstructGenericMail(BodyBuilder builder, Type modelType, object model)
     {
         var templateAttr = modelType.GetCustomAttribute<MailAttribute>(inherit: true);
         if (templateAttr == null)
             throw new InvalidOperationException($"Missing MailTemplateAttribute on {modelType.Name}");
 
-        builder.HtmlBody = MailTemplateService.RenderTemplate(modelType.Name, model);
+        builder.HtmlBody = MailTemplateService.RenderTemplate(templateAttr.TemplateName ?? modelType.Name, model);
     }
 }
 

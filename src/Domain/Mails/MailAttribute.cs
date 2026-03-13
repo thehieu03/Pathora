@@ -4,10 +4,12 @@ namespace Domain.Mails;
 public class MailAttribute : Attribute
 {
     public string Subject { get; set; }
+    public string? TemplateName { get; set; }
 
-    public MailAttribute(string subject)
+    public MailAttribute(string subject, string? templateName = null)
     {
         Subject = subject;
+        TemplateName = templateName;
     }
 }
 

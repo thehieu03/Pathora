@@ -25,7 +25,7 @@ public static class MailExtensions
             To = to,
             Subject = attr.Subject,
             Body = JsonSerializer.Serialize(model, JsonSerializerOptions),
-            Template = type.Name
+            Template = attr.TemplateName ?? type.Name
         };
     }
 }

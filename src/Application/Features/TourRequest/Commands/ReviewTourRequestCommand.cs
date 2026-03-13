@@ -1,18 +1,26 @@
+using System.Globalization;
+using Microsoft.Extensions.Logging;
+using ErrorOr;
+using FluentValidation;
+using Application.Common;
 using Application.Common.Constant;
 using BuildingBlocks.CORS;
 using Contracts.Interfaces;
 using Domain.Common.Repositories;
+using Domain.Entities;
 using Domain.Enums;
+using Domain.Mails;
 using Domain.UnitOfWork;
-using ErrorOr;
-using FluentValidation;
 
 namespace Application.Features.TourRequest.Commands;
 
 public sealed record ReviewTourRequestCommand(
     Guid Id,
     TourRequestStatus Status,
-    string? AdminNote = null) : ICommand<ErrorOr<Success>>;
+    string? AdminNote = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.TourRequest];
+}
 
 public sealed class ReviewTourRequestCommandValidator : AbstractValidator<ReviewTourRequestCommand>
 {
@@ -35,8 +43,11 @@ public sealed class ReviewTourRequestCommandValidator : AbstractValidator<Review
 public sealed class ReviewTourRequestCommandHandler(
     IUser user,
     IRoleRepository roleRepository,
+    IUserRepository userRepository,
     ITourRequestRepository tourRequestRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IMailRepository mailRepository,
+    ILogger<ReviewTourRequestCommandHandler> logger)
     : ICommandHandler<ReviewTourRequestCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(ReviewTourRequestCommand request, CancellationToken cancellationToken)
@@ -78,8 +89,89 @@ public sealed class ReviewTourRequestCommandHandler(
 
         await tourRequestRepository.UpdateAsync(requestEntity);
         await unitOfWork.SaveChangeAsync(cancellationToken);
+        await TryQueueReviewNotificationAsync(requestEntity, request.Status, request.AdminNote);
 
         return Result.Success;
+    }
+
+    private async Task TryQueueReviewNotificationAsync(
+        TourRequestEntity requestEntity,
+        TourRequestStatus reviewStatus,
+        string? adminNote)
+    {
+        var recipientEmail = await ResolveRecipientEmailAsync(requestEntity);
+        if (string.IsNullOrWhiteSpace(recipientEmail))
+        {
+            logger.LogWarning(
+                "Skipping tour request review notification for request {RequestId} because recipient email is missing.",
+                requestEntity.Id);
+            return;
+        }
+
+        var resolvedAdminNote = string.IsNullOrWhiteSpace(adminNote)
+            ? "No additional note provided."
+            : adminNote.Trim();
+
+        try
+        {
+            MailEntity mail;
+            if (reviewStatus == TourRequestStatus.Approved)
+            {
+                var approvedMail = new TourRequestApprovedMail(
+                    CustomerName: requestEntity.CustomerName,
+                    Destination: requestEntity.Destination,
+                    StartDate: requestEntity.DepartureDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    EndDate: requestEntity.ReturnDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "Flexible",
+                    AdminNote: resolvedAdminNote,
+                    MyRequestsLink: "/tours/my-requests");
+
+                mail = approvedMail.ToMail(recipientEmail);
+                mail.Subject = "Your Tour Request Has Been Approved!";
+            }
+            else
+            {
+                var rejectedMail = new TourRequestRejectedMail(
+                    CustomerName: requestEntity.CustomerName,
+                    Destination: requestEntity.Destination,
+                    AdminNote: resolvedAdminNote,
+                    ResubmitLink: "/tours/custom");
+
+                mail = rejectedMail.ToMail(recipientEmail);
+                mail.Subject = "Tour Request Update";
+            }
+
+            var addResult = await mailRepository.Add(mail);
+            if (addResult.IsError)
+            {
+                logger.LogWarning(
+                    "Failed to queue tour request review notification for request {RequestId}: {ErrorDescription}",
+                    requestEntity.Id,
+                    addResult.FirstError.Description);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(
+                ex,
+                "Failed to queue tour request review notification for request {RequestId}",
+                requestEntity.Id);
+        }
+    }
+
+    private async Task<string?> ResolveRecipientEmailAsync(TourRequestEntity requestEntity)
+    {
+        if (!string.IsNullOrWhiteSpace(requestEntity.CustomerEmail))
+        {
+            return requestEntity.CustomerEmail;
+        }
+
+        if (!requestEntity.UserId.HasValue)
+        {
+            return null;
+        }
+
+        var requestOwner = await userRepository.FindById(requestEntity.UserId.Value);
+        return requestOwner?.Email;
     }
 
     private async Task<ErrorOr<Success>> EnsureAdminAsync(Guid currentUserId)

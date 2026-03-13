@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
 using Contracts.Interfaces;
@@ -50,15 +51,19 @@ public sealed class CreateAccommodationDetailCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
     IBookingAccommodationDetailRepository bookingAccommodationDetailRepository,
     IBookingParticipantRepository bookingParticipantRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateAccommodationDetailCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateAccommodationDetailCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var activity = await bookingActivityReservationRepository.GetByIdAsync(request.BookingActivityReservationId);
         if (activity is null)
         {
-            return Error.NotFound("BookingActivityReservation.NotFound", "Không tìm thấy activity reservation.");
+            return Error.NotFound(
+                ErrorConstants.BookingActivityReservation.NotFoundCode,
+                ErrorConstants.BookingActivityReservation.NotFoundDescription.Resolve(lang));
         }
 
         var participants = await bookingParticipantRepository.GetByBookingIdAsync(activity.BookingId);
@@ -68,8 +73,11 @@ public sealed class CreateAccommodationDetailCommandHandler(
         if (activeParticipantCount > roomCapacity)
         {
             return Error.Validation(
-                "Booking.RoomCapacityExceeded",
-                $"Số lượng participant ({activeParticipantCount}) vượt quá sức chứa phòng ({roomCapacity}).");
+                ErrorConstants.Booking.RoomCapacityExceededCode,
+                ErrorConstants.Booking.RoomCapacityExceededDescriptionTemplate.Format(
+                    lang,
+                    activeParticipantCount,
+                    roomCapacity));
         }
 
         var entity = BookingAccommodationDetailEntity.Create(
@@ -138,21 +146,27 @@ public sealed class UpdateAccommodationDetailCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
     IBookingParticipantRepository bookingParticipantRepository,
     IBookingAccommodationDetailRepository bookingAccommodationDetailRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateAccommodationDetailCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateAccommodationDetailCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await bookingAccommodationDetailRepository.GetByIdAsync(request.BookingAccommodationDetailId);
         if (entity is null)
         {
-            return Error.NotFound("BookingAccommodationDetail.NotFound", "Không tìm thấy accommodation detail.");
+            return Error.NotFound(
+                ErrorConstants.BookingAccommodationDetail.NotFoundCode,
+                ErrorConstants.BookingAccommodationDetail.NotFoundDescription.Resolve(lang));
         }
 
         var activity = await bookingActivityReservationRepository.GetByIdAsync(entity.BookingActivityReservationId);
         if (activity is null)
         {
-            return Error.NotFound("BookingActivityReservation.NotFound", "Không tìm thấy activity reservation.");
+            return Error.NotFound(
+                ErrorConstants.BookingActivityReservation.NotFoundCode,
+                ErrorConstants.BookingActivityReservation.NotFoundDescription.Resolve(lang));
         }
 
         var participants = await bookingParticipantRepository.GetByBookingIdAsync(activity.BookingId);
@@ -163,8 +177,11 @@ public sealed class UpdateAccommodationDetailCommandHandler(
         if (activeParticipantCount > roomCapacity)
         {
             return Error.Validation(
-                "Booking.RoomCapacityExceeded",
-                $"Số lượng participant ({activeParticipantCount}) vượt quá sức chứa phòng ({roomCapacity}).");
+                ErrorConstants.Booking.RoomCapacityExceededCode,
+                ErrorConstants.Booking.RoomCapacityExceededDescriptionTemplate.Format(
+                    lang,
+                    activeParticipantCount,
+                    roomCapacity));
         }
 
         entity.Update(

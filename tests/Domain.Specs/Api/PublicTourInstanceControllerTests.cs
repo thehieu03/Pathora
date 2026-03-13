@@ -31,6 +31,7 @@ public sealed class PublicTourInstanceControllerTests
             MinParticipation: 5,
             BasePrice: 1000m,
             SellingPrice: 900m,
+            DepositPerPerson: 200m,
             Status: "Available",
             InstanceType: "Public");
 
@@ -76,6 +77,7 @@ public sealed class PublicTourInstanceControllerTests
             BasePrice: 1000m,
             SellingPrice: 900m,
             OperatingCost: 700m,
+            DepositPerPerson: 200m,
             Status: "Available",
             InstanceType: "Public",
             CancellationReason: null,

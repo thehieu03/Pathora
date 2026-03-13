@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
@@ -43,15 +44,19 @@ public sealed class CreateBookingActivityReservationCommandValidator : AbstractV
 public sealed class CreateBookingActivityReservationCommandHandler(
     IBookingRepository bookingRepository,
     IBookingActivityReservationRepository bookingActivityReservationRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<CreateBookingActivityReservationCommand, ErrorOr<Guid>>
 {
     public async Task<ErrorOr<Guid>> Handle(CreateBookingActivityReservationCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
-            return Error.NotFound("Booking.NotFound", "Không tìm thấy booking.");
+            return Error.NotFound(
+                ErrorConstants.Booking.NotFoundCode,
+                ErrorConstants.Booking.NotFoundDescription.Resolve(lang));
         }
 
         var entity = BookingActivityReservationEntity.Create(
@@ -107,15 +112,19 @@ public sealed class UpdateBookingActivityReservationCommandValidator : AbstractV
 
 public sealed class UpdateBookingActivityReservationCommandHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    ILanguageContext? languageContext = null)
     : ICommandHandler<UpdateBookingActivityReservationCommand, ErrorOr<Success>>
 {
     public async Task<ErrorOr<Success>> Handle(UpdateBookingActivityReservationCommand request, CancellationToken cancellationToken)
     {
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await bookingActivityReservationRepository.GetByIdAsync(request.BookingActivityReservationId);
         if (entity is null)
         {
-            return Error.NotFound("BookingActivityReservation.NotFound", "Không tìm thấy activity reservation.");
+            return Error.NotFound(
+                ErrorConstants.BookingActivityReservation.NotFoundCode,
+                ErrorConstants.BookingActivityReservation.NotFoundDescription.Resolve(lang));
         }
 
         entity.Update(

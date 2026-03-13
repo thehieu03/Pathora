@@ -28,9 +28,9 @@ public static class ValidationMessages
     public const string UsernameRequired = "Username is required.";
     public const string UserIdRequired = "User ID is required.";
     public const string AvatarTooLong = "Avatar URL is too long.";
-    public const string ProviderKeyRequired = "ProviderKey không được để trống";
-    public const string ProviderEmailRequired = "Email không được để trống";
-    public const string ProviderEmailInvalid = "Email không hợp lệ";
+    public const string ProviderKeyRequired = "ProviderKey is required.";
+    public const string ProviderEmailRequired = "Email is required.";
+    public const string ProviderEmailInvalid = "Invalid email address.";
 
     // ── Role ────────────────────────────────────────────────────────────
     public const string RoleNameRequired = "Role name is required.";
@@ -61,10 +61,33 @@ public static class ValidationMessages
     public const string TourInstanceMinParticipantsNonNegative = "Min participants must not be negative.";
     public const string TourInstanceStatusRequired = "Status is required.";
     public const string TourInstanceIdRequired = "Tour instance ID is required.";
+    public const string TourInstanceTitleRequired = "Title is required.";
+    public const string TourInstanceBasePriceNonNegative = "Base price must not be negative.";
+    public const string TourInstanceSellingPriceNonNegative = "Selling price must not be negative.";
+    public const string TourInstanceOperatingCostNonNegative = "Operating cost must not be negative.";
+    public const string TourInstanceDepositPerPersonNonNegative = "Deposit per person must not be negative.";
     public const string DynamicPricingMinParticipantsGreaterThanZero = "Min participants must be greater than 0.";
     public const string DynamicPricingMaxParticipantsGreaterThanOrEqualMin = "Max participants must be greater than or equal to min participants.";
     public const string DynamicPricingPricePerPersonNonNegative = "Price per person must not be negative.";
     public const string DynamicPricingRangeMustNotOverlap = "Dynamic pricing ranges must not overlap.";
+
+    // ── Public Search ──────────────────────────────────────────
+    public const string SearchToursPageMinimum1 = "Page must be greater than or equal to 1.";
+    public const string SearchToursPageSizeRange = "Page size must be between 1 and 50.";
+    public const string SearchToursPeopleRange = "People must be between 1 and 50.";
+    public const string SearchToursMinPriceMinimum0 = "Min price must be greater than or equal to 0.";
+    public const string SearchToursMaxPriceMinimum0 = "Max price must be greater than or equal to 0.";
+    public const string SearchToursMaxPriceGreaterThanOrEqualMinPrice = "Max price must be greater than or equal to min price.";
+    public const string SearchToursMinDaysMinimum1 = "Min days must be greater than or equal to 1.";
+    public const string SearchToursMaxDaysMinimum1 = "Max days must be greater than or equal to 1.";
+    public const string SearchToursMaxDaysGreaterThanOrEqualMinDays = "Max days must be greater than or equal to min days.";
+
+    // ── Public Query ───────────────────────────────────────────
+    public const string PublicQueryLimitRange1To50 = "Limit must be between 1 and 50.";
+
+    // ── Booking Management ─────────────────────────────────────
+    public const string TourGuideRequiredForRole = "Tour guide is required when assigning TourGuide role.";
+    public const string SupplierPayablePaidAmountMustNotExceedExpected = "Paid amount must not exceed expected amount.";
 
     // ── TourRequest ─────────────────────────────────────────────
     public const string TourRequestIdRequired = "Tour request ID is required.";

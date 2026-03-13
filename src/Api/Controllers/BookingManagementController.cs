@@ -1,5 +1,6 @@
 using Api.Endpoint;
 using Application.Contracts.Booking;
+using Application.Common.Constant;
 using Application.Features.BookingManagement.Activity;
 using Application.Features.BookingManagement.ActivityStatus;
 using Application.Features.BookingManagement.Participant;
@@ -154,7 +155,9 @@ public class BookingManagementController : BaseApiController
     [HttpPost(BookingManagementEndpoint.ActivityStatusCancel)]
     public async Task<IActionResult> CancelActivity(Guid id, Guid tourDayId, [FromBody] UpdateActivityStatusDto request)
     {
-        var reason = string.IsNullOrWhiteSpace(request.Reason) ? "Hủy hoạt động" : request.Reason;
+        var reason = string.IsNullOrWhiteSpace(request.Reason)
+            ? ErrorConstants.ActivityStatus.DefaultCancelReason.Resolve(CurrentLanguage)
+            : request.Reason;
         var result = await Sender.Send(new CancelActivityCommand(id, tourDayId, reason));
         return HandleUpdated(result);
     }
