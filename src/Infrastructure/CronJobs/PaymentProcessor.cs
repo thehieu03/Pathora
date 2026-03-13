@@ -10,6 +10,11 @@ namespace Infrastructure.CronJobs;
 internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
 {
     private readonly HttpClient _httpClient = new();
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _httpClient.DefaultRequestHeaders.Clear();
@@ -23,8 +28,7 @@ internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundS
                 response.EnsureSuccessStatusCode();
                 string json = await response.Content.ReadAsStringAsync(stoppingToken);
 
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var transactions = JsonSerializer.Deserialize<SepayApiResponse>(json, options);
+                var transactions = JsonSerializer.Deserialize<SepayApiResponse>(json, JsonOptions);
                 using var scope = scopeFactory.CreateScope();
                 var sender = scope.ServiceProvider.GetRequiredService<ISender>();
                 _ = await sender.Send(new ProcessPaymentCommand(transactions), stoppingToken);
@@ -37,4 +41,3 @@ internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundS
         }
     }
 }
-

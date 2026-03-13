@@ -1,5 +1,7 @@
+using Application.Common;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -194,7 +196,11 @@ public sealed class UpdateTransportDetailCommandHandler(
     }
 }
 
-public sealed record GetBookingTransportDetailsQuery(Guid BookingId) : IQuery<ErrorOr<List<TransportDetailDto>>>;
+public sealed record GetBookingTransportDetailsQuery(Guid BookingId) : IQuery<ErrorOr<List<TransportDetailDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:transport-details:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingTransportDetailsQueryHandler(
     IBookingActivityReservationRepository bookingActivityReservationRepository,

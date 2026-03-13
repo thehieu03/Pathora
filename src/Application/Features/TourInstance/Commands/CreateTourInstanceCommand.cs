@@ -22,6 +22,7 @@ public sealed record CreateTourInstanceCommand(
     decimal BasePrice,
     decimal SellingPrice,
     decimal OperatingCost,
+    decimal DepositPerPerson,
     string? Location = null,
     DateTimeOffset? ConfirmationDeadline = null,
     List<string>? IncludedServices = null,
@@ -65,6 +66,9 @@ public sealed class CreateTourInstanceCommandValidator : AbstractValidator<Creat
 
         RuleFor(x => x.OperatingCost)
             .GreaterThanOrEqualTo(0).WithMessage("Chi phí vận hành không được âm.");
+
+        RuleFor(x => x.DepositPerPerson)
+            .GreaterThanOrEqualTo(0).WithMessage("Tiền cọc không được âm.");
 
         RuleForEach(x => x.DynamicPricing)
             .ChildRules(tier =>

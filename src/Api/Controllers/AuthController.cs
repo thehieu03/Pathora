@@ -84,7 +84,7 @@ public class AuthController : BaseApiController
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()
     {
-        var result = await Sender.Send(new GetUserInfoQuery());
+        var result = await Sender.Send(new GetUserInfoQuery(CurrentUserId));
 
         if (!result.IsError)
         {
@@ -99,7 +99,7 @@ public class AuthController : BaseApiController
     [HttpGet(AuthEndpoint.Tabs)]
     public async Task<IActionResult> GetTabs()
     {
-        var result = await Sender.Send(new GetTabsQuery());
+        var result = await Sender.Send(new GetTabsQuery(CurrentUserId));
         return HandleResult(result);
     }
 

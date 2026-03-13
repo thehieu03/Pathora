@@ -22,6 +22,8 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
             .Include(b => b.TourInstance)
             .Include(b => b.User)
             .Include(b => b.TourRequest)
+            .Include(b => b.Deposits)
+            .Include(b => b.Payments)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 

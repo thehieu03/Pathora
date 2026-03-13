@@ -8,6 +8,9 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 var disableAuthorization = builder.Configuration.IsAuthorizationDisabled();
@@ -22,12 +25,12 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 // NOTE: Auto migration/seed disabled for existing database environments.
-//await using (var scope = app.Services.CreateAsyncScope())
-//{
-//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    await dbContext.Database.MigrateAsync();
-//    await AppDbContextSeed.SeedIfNeededAsync(dbContext);
-//}
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await dbContext.Database.MigrateAsync();
+    await AppDbContextSeed.SeedIfNeededAsync(dbContext);
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -40,7 +43,7 @@ app.UseExceptionHandler(_ => { });
 app.UseResponseCompression();
 
 app.UseMiddleware<SecurityHeadersMiddleware>();
-//app.UseMiddleware<DatabaseAutoSeedMiddleware>();
+app.UseMiddleware<DatabaseAutoSeedMiddleware>();
 
 app.UseCors();
 app.UseMiddleware<LanguageResolutionMiddleware>();

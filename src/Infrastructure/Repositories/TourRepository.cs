@@ -245,7 +245,29 @@ public class TourRepository(AppDbContext context) : ITourRepository
 
         if (!string.IsNullOrWhiteSpace(classification))
         {
-            query = query.Where(t => t.Classifications.Any(c => c.Name.ToLower() == classification.ToLower()));
+            // Support both English and Vietnamese classification names
+            var classificationLower = classification.ToLower();
+            var classificationMap = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "standard tour", new[] { "standard", "tiêu chuẩn" } },
+                { "premium tour", new[] { "premium", "cao cấp" } },
+                { "vip / luxury tour", new[] { "vip", "luxury", "cao cấp" } },
+                { "budget tour", new[] { "budget", "tiết kiệm" } },
+                { "private tour", new[] { "private", "riêng" } },
+                { "group tour", new[] { "group", "đoàn" } },
+            };
+
+            if (classificationMap.TryGetValue(classificationLower, out var variants))
+            {
+                query = query.Where(t => t.Classifications.Any(c =>
+                    variants.Any(v => c.Name.ToLower().Contains(v))));
+            }
+            else
+            {
+                // Fallback: direct match
+                query = query.Where(t => t.Classifications.Any(c =>
+                    c.Name.ToLower().Contains(classificationLower)));
+            }
         }
 
         if (date.HasValue)

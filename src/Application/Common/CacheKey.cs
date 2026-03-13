@@ -2,6 +2,7 @@ namespace Application.Common;
 
 public static class CacheKey
 {
+    public const string Admin = nameof(Admin);
     public const string User = nameof(User);
     public const string AccessToken = nameof(AccessToken);
     public const string SystemKey = nameof(SystemKey);
@@ -12,5 +13,7 @@ public static class CacheKey
     public const string Department = nameof(Department);
     public const string Tour = nameof(Tour);
     public const string TourInstance = nameof(TourInstance);
+    public const string TourRequest = nameof(TourRequest);
+    public const string Supplier = nameof(Supplier);
+    public const string Booking = nameof(Booking);
 }
-

@@ -27,7 +27,7 @@ public sealed class IdentityQueryHandlerTests
         identityService.GetUserInfo().Returns(expected);
 
         var handler = new GetUserInfoQueryHandler(identityService);
-        var result = await handler.Handle(new GetUserInfoQuery(), CancellationToken.None);
+        var result = await handler.Handle(new GetUserInfoQuery("test-user"), CancellationToken.None);
 
         Assert.False(result.IsError);
         Assert.Equal(expected, result.Value);
@@ -42,7 +42,7 @@ public sealed class IdentityQueryHandlerTests
             .Returns(Error.NotFound("Identity.UserNotFound", "User not found"));
 
         var handler = new GetUserInfoQueryHandler(identityService);
-        var result = await handler.Handle(new GetUserInfoQuery(), CancellationToken.None);
+        var result = await handler.Handle(new GetUserInfoQuery("test-user"), CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal("Identity.UserNotFound", result.FirstError.Code);
@@ -58,7 +58,7 @@ public sealed class IdentityQueryHandlerTests
         identityService.GetTabs().Returns(expected);
 
         var handler = new GetTabsQueryHandler(identityService);
-        var result = await handler.Handle(new GetTabsQuery(), CancellationToken.None);
+        var result = await handler.Handle(new GetTabsQuery("test-user"), CancellationToken.None);
 
         Assert.False(result.IsError);
         Assert.Equal(2, result.Value.Count);
@@ -73,7 +73,7 @@ public sealed class IdentityQueryHandlerTests
             .Returns(Error.Forbidden("Identity.Forbidden", "No access"));
 
         var handler = new GetTabsQueryHandler(identityService);
-        var result = await handler.Handle(new GetTabsQuery(), CancellationToken.None);
+        var result = await handler.Handle(new GetTabsQuery("test-user"), CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal("Identity.Forbidden", result.FirstError.Code);

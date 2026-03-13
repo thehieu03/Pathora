@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Contracts.Booking;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -191,7 +193,11 @@ public sealed class CancelActivityCommandHandler(
     }
 }
 
-public sealed record GetActivityStatusesQuery(Guid BookingId) : IQuery<ErrorOr<List<TourDayActivityStatusDto>>>;
+public sealed record GetActivityStatusesQuery(Guid BookingId) : IQuery<ErrorOr<List<TourDayActivityStatusDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:activity-statuses:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetActivityStatusesQueryHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
@@ -231,7 +237,11 @@ public sealed class GetActivityStatusesQueryHandler(
     }
 }
 
-public sealed record GetActivityStatusByTourDayQuery(Guid BookingId, Guid TourDayId) : IQuery<ErrorOr<TourDayActivityStatusDto>>;
+public sealed record GetActivityStatusByTourDayQuery(Guid BookingId, Guid TourDayId) : IQuery<ErrorOr<TourDayActivityStatusDto>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:activity-status:{BookingId}:{TourDayId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetActivityStatusByTourDayQueryHandler(
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,

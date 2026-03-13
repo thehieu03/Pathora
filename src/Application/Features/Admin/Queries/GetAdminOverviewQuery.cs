@@ -1,11 +1,17 @@
+using Application.Common;
 using BuildingBlocks.CORS;
+using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Reports;
 using ErrorOr;
 
 namespace Application.Features.Admin.Queries;
 
-public sealed record GetAdminOverviewQuery : IQuery<ErrorOr<AdminOverviewReport>>;
+public sealed record GetAdminOverviewQuery : IQuery<ErrorOr<AdminOverviewReport>>, ICacheable
+{
+    public string CacheKey => $"{Common.CacheKey.Admin}:overview";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetAdminOverviewQueryHandler(IAdminOverviewRepository adminOverviewRepository)
     : IQueryHandler<GetAdminOverviewQuery, ErrorOr<AdminOverviewReport>>

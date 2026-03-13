@@ -1,5 +1,7 @@
-using Contracts;
+using Application.Common;
 using Application.Contracts.Public;
+using Contracts;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using ErrorOr;
 using Domain.Common.Repositories;
@@ -18,7 +20,12 @@ public sealed record SearchToursQuery(
     int? MinDays,
     int? MaxDays,
     int Page = 1,
-    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<SearchTourVm>>>;
+    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<SearchTourVm>>>, ICacheable
+{
+    public string CacheKey =>
+        $"{Common.CacheKey.Tour}:search:{Q}:{Destination}:{Classification}:{Date}:{People}:{MinPrice}:{MaxPrice}:{MinDays}:{MaxDays}:{Page}:{PageSize}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
     : IQueryHandler<SearchToursQuery, ErrorOr<PaginatedList<SearchTourVm>>>
@@ -90,4 +97,3 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
             : null;
     }
 }
-

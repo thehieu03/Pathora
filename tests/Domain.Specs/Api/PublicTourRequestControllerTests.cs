@@ -76,6 +76,6 @@ public sealed class PublicTourRequestControllerTests
             expectedCode: "TourRequest.NotFound",
             expectedMessage: "Yêu cầu tour không tồn tại",
             expectedInstance: $"/api/public/tour-requests/{id}");
-        Assert.Equal(new GetTourRequestDetailQuery(id), probe.CapturedRequest);
+        Assert.Equal(new GetTourRequestDetailQuery(id, string.Empty), probe.CapturedRequest);
     }
 }

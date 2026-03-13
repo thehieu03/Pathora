@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Contracts.Booking;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -137,7 +139,11 @@ public sealed class UpdateBookingActivityReservationCommandHandler(
     }
 }
 
-public sealed record GetBookingActivityReservationsQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingActivityReservationDto>>>;
+public sealed record GetBookingActivityReservationsQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingActivityReservationDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:activity-reservations:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingActivityReservationsQueryHandler(IBookingActivityReservationRepository bookingActivityReservationRepository)
     : IQueryHandler<GetBookingActivityReservationsQuery, ErrorOr<List<BookingActivityReservationDto>>>

@@ -1,5 +1,7 @@
+using Application.Common;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -515,7 +517,11 @@ public sealed class CreateVisaCommandHandler(
     }
 }
 
-public sealed record GetBookingParticipantsQuery(Guid BookingId) : IQuery<ErrorOr<List<ParticipantDto>>>;
+public sealed record GetBookingParticipantsQuery(Guid BookingId) : IQuery<ErrorOr<List<ParticipantDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:participants:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingParticipantsQueryHandler(
     IBookingParticipantRepository bookingParticipantRepository,
@@ -595,7 +601,11 @@ public sealed class GetBookingParticipantsQueryHandler(
     }
 }
 
-public sealed record GetParticipantPassportQuery(Guid ParticipantId) : IQuery<ErrorOr<PassportDto>>;
+public sealed record GetParticipantPassportQuery(Guid ParticipantId) : IQuery<ErrorOr<PassportDto>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:participant-passport:{ParticipantId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetParticipantPassportQueryHandler(IPassportRepository passportRepository)
     : IQueryHandler<GetParticipantPassportQuery, ErrorOr<PassportDto>>
@@ -619,7 +629,11 @@ public sealed class GetParticipantPassportQueryHandler(IPassportRepository passp
     }
 }
 
-public sealed record GetParticipantVisasQuery(Guid ParticipantId) : IQuery<ErrorOr<List<VisaApplicationDto>>>;
+public sealed record GetParticipantVisasQuery(Guid ParticipantId) : IQuery<ErrorOr<List<VisaApplicationDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:participant-visas:{ParticipantId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetParticipantVisasQueryHandler(
     IVisaApplicationRepository visaApplicationRepository,

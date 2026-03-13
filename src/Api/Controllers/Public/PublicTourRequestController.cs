@@ -22,14 +22,14 @@ public class PublicTourRequestController : BaseApiController
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        var result = await Sender.Send(new GetMyTourRequestsQuery(pageNumber, pageSize));
+        var result = await Sender.Send(new GetMyTourRequestsQuery(CurrentUserId, pageNumber, pageSize));
         return HandleResult(result);
     }
 
     [HttpGet(PublicEndpoint.Detail)]
     public async Task<IActionResult> GetDetail(Guid id)
     {
-        var result = await Sender.Send(new GetTourRequestDetailQuery(id));
+        var result = await Sender.Send(new GetTourRequestDetailQuery(id, CurrentUserId));
         return HandleResult(result);
     }
 }
