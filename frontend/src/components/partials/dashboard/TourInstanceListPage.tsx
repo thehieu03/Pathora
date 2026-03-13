@@ -66,7 +66,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full"
+        open ? "translate-x-0" : "max-lg:-translate-x-full"
       }`}>
       <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
         <Link href="/dashboard" className="flex items-center gap-2">

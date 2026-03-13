@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
+import { AdminLogoutButton } from "./AdminLogoutButton";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
@@ -108,7 +109,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full"
+        open ? "translate-x-0" : "max-lg:-translate-x-full"
       }`}>
       <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
         <Link href="/dashboard" className="flex items-center gap-2">
@@ -140,6 +141,19 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           </Link>
         ))}
       </nav>
+
+      <div className="border-t border-slate-700/50 p-3">
+        <div className="flex items-center gap-3 px-3 py-3 rounded-lg">
+          <div className="w-9 h-9 bg-indigo-500 rounded-full flex items-center justify-center text-xs font-bold">
+            AD
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium truncate">Administrator</p>
+            <p className="text-xs text-slate-400 truncate">Administrator</p>
+          </div>
+        </div>
+        <AdminLogoutButton />
+      </div>
     </aside>
   );
 }

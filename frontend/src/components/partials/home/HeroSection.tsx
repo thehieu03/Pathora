@@ -25,8 +25,7 @@ const Spline = dynamic(() => import("@splinetool/react-spline"), {
   ),
 });
 
-const HERO_BG =
-  "https://www.figma.com/api/mcp/asset/e4c27cca-3e11-49a0-bb16-22b1bdf0f4cc";
+const HERO_BG = "/tour-placeholder.svg";
 
 type TourType = "public" | "private";
 type FieldName = "people" | "date" | "destination" | "classification";

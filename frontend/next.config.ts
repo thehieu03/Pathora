@@ -51,6 +51,14 @@ const envRemotePatterns = parseRemoteImagePatterns(
   process.env.NEXT_PUBLIC_REMOTE_IMAGE_HOSTS,
 );
 
+const defaultRemotePatterns: RemotePattern[] = [
+  {
+    protocol: "https",
+    hostname: "cdn3.ivivu.com",
+    pathname: "/**",
+  },
+];
+
 const allowUnoptimized = process.env.NEXT_PUBLIC_IMAGES_UNOPTIMIZED === "true";
 
 const nextConfig: NextConfig = {
@@ -100,6 +108,7 @@ const nextConfig: NextConfig = {
         port: "9000",
         pathname: "/**",
       },
+      ...defaultRemotePatterns,
       ...envRemotePatterns,
     ],
   },

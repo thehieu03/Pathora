@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import { adminService } from "@/services/adminService";
 import type { AdminOverview } from "@/types/admin";
 import { AdminLogoutButton } from "./AdminLogoutButton";
+import { buildVisaRowKeys } from "./visaPageLogic";
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -32,7 +33,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full"
+        open ? "translate-x-0" : "max-lg:-translate-x-full"
       }`}>
       <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
         <Link href="/dashboard" className="flex items-center gap-2">
@@ -189,6 +190,9 @@ export function VisaApplicationsPage() {
     statusFilter === "all"
       ? visaApplications
       : visaApplications.filter((v) => v.status === statusFilter);
+  const visaRowKeys = useMemo(() => {
+    return buildVisaRowKeys(filteredVisas);
+  }, [filteredVisas]);
   const approvedCount = visaApplications.filter((v) => v.status === "approved").length;
   const pendingCount = visaApplications.filter((v) => v.status === "pending" || v.status === "under_review").length;
   const decidedCount = visaApplications.filter(
@@ -243,8 +247,8 @@ export function VisaApplicationsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredVisas.map((visa) => (
-                    <tr key={visa.id} className="hover:bg-slate-50 transition-colors">
+                  {filteredVisas.map((visa, index) => (
+                    <tr key={visaRowKeys[index]} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4"><span className="font-mono text-sm text-slate-600">{visa.id}</span></td>
                       <td className="px-6 py-4">
                         <div>

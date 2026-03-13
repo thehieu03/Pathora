@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import { adminService } from "@/services/adminService";
 import type { AdminOverview } from "@/types/admin";
 import { AdminLogoutButton } from "./AdminLogoutButton";
+import { buildPaymentRowKeys } from "./paymentsPageLogic";
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -32,7 +33,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full"
+        open ? "translate-x-0" : "max-lg:-translate-x-full"
       }`}>
       <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
         <Link href="/dashboard" className="flex items-center gap-2">
@@ -187,7 +188,10 @@ export function PaymentsPage() {
   const filteredPayments =
     statusFilter === "all"
       ? payments
-      : payments.filter((p) => p.status === statusFilter);
+      : payments.filter((payment) => payment.status === statusFilter);
+  const paymentRowKeys = useMemo(() => {
+    return buildPaymentRowKeys(filteredPayments);
+  }, [filteredPayments]);
 
   const totalRevenue = payments
     .filter((p) => p.status === "completed")
@@ -242,8 +246,8 @@ export function PaymentsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredPayments.map((payment) => (
-                    <tr key={payment.id} className="hover:bg-slate-50 transition-colors">
+                  {filteredPayments.map((payment, index) => (
+                    <tr key={paymentRowKeys[index]} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4"><span className="font-mono text-sm text-slate-600">{payment.id}</span></td>
                       <td className="px-6 py-4"><span className="text-sm text-slate-900">{payment.booking}</span></td>
                       <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.customer}</span></td>

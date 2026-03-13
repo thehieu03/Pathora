@@ -5,8 +5,7 @@ import Image from "./LandingImage";
 import { Button, Icon, TextInput } from "@/components/ui";
 import { useTranslation } from "react-i18next";
 
-const FOOTER_BG =
-  "https://www.figma.com/api/mcp/asset/b457b48b-2c4f-49e0-a589-ec3d2233e4c1";
+const FOOTER_BG = "/tour-placeholder.svg";
 
 const companyLinks = [
   { labelKey: "landing.footer.links.company.aboutUs", href: "/#about-us" },

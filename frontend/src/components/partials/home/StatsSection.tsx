@@ -7,12 +7,9 @@ import { useTranslation } from "react-i18next";
 import { homeService } from "@/services/homeService";
 import { HomeStats } from "@/types/home";
 
-const PEOPLE_ICON =
-  "https://www.figma.com/api/mcp/asset/e4a75e02-46bb-4c17-94d3-685688ecf5a2";
-const EXPLORE_IMG =
-  "https://www.figma.com/api/mcp/asset/30dcc58d-b255-4542-b355-c189d426f5ae";
-const BG_IMG =
-  "https://www.figma.com/api/mcp/asset/df0842ed-1963-4245-9b95-9027ab4bf23b";
+const PEOPLE_ICON = "/globe.svg";
+const EXPLORE_IMG = "/tour-placeholder.svg";
+const BG_IMG = "/tour-placeholder.svg";
 
 const FALLBACK_STATS = {
   totalTravelers: 240,

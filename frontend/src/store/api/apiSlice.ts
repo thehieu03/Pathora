@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getCurrentApiLanguage } from "../../api/languageHeader";
 import { getCookie } from "../../utils/cookie";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
+const baseUrl = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:8080";
 
 export const prepareApiHeaders = (
   headers: Headers,

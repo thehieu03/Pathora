@@ -23,22 +23,21 @@ import useMobileMenu from "@/hooks/useMobileMenu";
 import useWidth from "@/hooks/useWidth";
 import type { RootState } from "@/store";
 import { useSelector, useDispatch } from "react-redux";
-import useDarkmode from "@/hooks/useDarkMode";
 import { handleCustomizer } from "@/store/layout";
 import { useLogoutMutation } from "@/store/api/auth/authApiSlice";
 import {
   FiGlobe,
   FiChevronDown,
   FiCheck,
-  FiSun,
-  FiMoon,
   FiSliders,
   FiLogOut,
+  FiMenu,
+  FiX,
 } from "react-icons/fi";
 
 const languages = [
-  { code: "en", label: "English" },
-  { code: "vi", label: "Tiếng Việt" },
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "vi", label: "Tiếng Việt", flag: "🇻🇳" },
 ];
 
 const LOGO = LandingLogo;
@@ -205,7 +204,7 @@ const MobileSidebar = ({
 
   return (
     <Transition show={open} as={Fragment}>
-      <div className="fixed inset-0 z-100 md:hidden">
+      <div className="fixed inset-0 z-50 md:hidden">
         <TransitionChild
           as={Fragment}
           enter="transition-opacity duration-300 ease-out"
@@ -213,78 +212,90 @@ const MobileSidebar = ({
           enterTo="opacity-100"
           leave="transition-opacity duration-200 ease-in"
           leaveFrom="opacity-100"
-          leaveTo="opacity-0">
-          <Button
-            type="button"
-            className="absolute inset-0 bg-black/40"
-            onClick={onClose}
-            aria-label={t("landing.a11y.closeNavigationMenu")}
-          />
+          leaveTo="opacity-0"
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
         </TransitionChild>
 
         <TransitionChild
           as={Fragment}
           enter="transform transition duration-300 ease-out"
-          enterFrom="-translate-x-full"
+          enterFrom="translate-x-full"
           enterTo="translate-x-0"
           leave="transform transition duration-200 ease-in"
           leaveFrom="translate-x-0"
-          leaveTo="-translate-x-full">
+          leaveTo="translate-x-full"
+        >
           <div
             ref={panelRef}
             id={dialogId}
-            className="absolute top-0 left-0 bottom-0 w-75 max-w-[85vw] bg-white flex flex-col shadow-2xl"
+            className="absolute top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-[#1a1a1a] flex flex-col shadow-2xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby={menuTitleId}
-            tabIndex={-1}>
+            tabIndex={-1}
+          >
             {/* Header */}
-            <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
+              <Link href="/home" onClick={onClose} className="flex items-center gap-3">
+                <div className="relative h-10 w-12">
+                  <Image
+                    src={LOGO}
+                    alt="Pathora logo"
+                    fill
+                    className="h-full w-full object-contain"
+                  />
+                </div>
+                <span className="text-xl font-bold text-white">Pathora</span>
+              </Link>
               <Button
                 onClick={onClose}
-                className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors bg-transparent"
-                icon="heroicons-outline:chevron-left"
-                iconClass="text-[20px] text-gray-700"
+                className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors bg-transparent"
+                icon="heroicons-outline:x"
+                iconClass="text-xl text-white"
                 ariaLabel={t("landing.a11y.closeMenu")}
               />
-              <h2
-                id={menuTitleId}
-                className="text-xl font-medium text-gray-900">
-                {t("landing.sidebar.dashboard")}
-              </h2>
             </div>
 
             {/* User info */}
             {isAuth && (
-              <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-                <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0">
-                  <Icon
-                    icon="heroicons-solid:user-circle"
-                    className="w-full h-full text-gray-400"
-                  />
+              <div className="flex items-center gap-3 px-6 py-4 border-b border-white/10">
+                <div className="w-10 h-10 rounded-full bg-[#fa8b02] flex items-center justify-center shrink-0 overflow-hidden">
+                  {user?.avatar ? (
+                    <AvatarImage
+                      src={user.avatar}
+                      alt={user?.fullName ?? "User"}
+                      size={40}
+                    />
+                  ) : (
+                    <span className="text-sm font-bold text-white">
+                      {(user?.fullName || "U")[0].toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div>
-                  <p className="text-sm font-normal text-gray-900">
-                    {t("landing.sidebar.user")}
+                  <p className="text-sm font-medium text-white">
+                    {user?.fullName || user?.username}
                   </p>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
+                  <p className="text-xs text-gray-400">{user?.email}</p>
                 </div>
               </div>
             )}
 
             {/* Nav links */}
-            <nav className="flex-1 overflow-y-auto py-2" aria-label="Sidebar">
+            <nav className="flex-1 overflow-y-auto py-4" aria-label="Sidebar">
               {sidebarLinks.map((item) => (
                 <div key={item.labelKey}>
                   <Link
                     href={item.href}
                     onClick={onClose}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
+                    className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all group"
+                  >
                     <Icon
                       icon={item.icon}
-                      className="w-6 h-6 text-gray-600 shrink-0"
+                      className="w-5 h-5 text-gray-400 group-hover:text-[#fa8b02] transition-colors"
                     />
-                    <span className="text-base text-gray-900">
+                    <span className="text-base text-gray-200 group-hover:text-white font-medium transition-colors">
                       {t(item.labelKey)}
                     </span>
                   </Link>
@@ -292,52 +303,44 @@ const MobileSidebar = ({
               ))}
             </nav>
 
-            <div className="px-4 py-3 border-t border-gray-100">
+            {/* Language */}
+            <div className="px-6 py-4 border-t border-white/10">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-400">
                   {t("landing.language.title")}
                 </span>
-                <div className="flex rounded-full border border-gray-300 p-0.5">
-                  <Button
-                    type="button"
-                    className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-                      normalizedLanguage === "en"
-                        ? "bg-landing-accent text-white"
-                        : "text-gray-700"
-                    } min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent`}
-                    onClick={() => i18n.changeLanguage("en")}
-                    aria-pressed={normalizedLanguage === "en"}
-                    aria-label="Change language to English">
-                    EN
-                  </Button>
-                  <Button
-                    type="button"
-                    className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-                      normalizedLanguage === "vi"
-                        ? "bg-landing-accent text-white"
-                        : "text-gray-700"
-                    } min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent`}
-                    onClick={() => i18n.changeLanguage("vi")}
-                    aria-pressed={normalizedLanguage === "vi"}
-                    aria-label="Change language to Vietnamese">
-                    VI
-                  </Button>
+                <div className="flex rounded-full bg-white/10 p-0.5">
+                  {languages.map((lang) => (
+                    <Button
+                      key={lang.code}
+                      type="button"
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                        normalizedLanguage === lang.code
+                          ? "bg-[#fa8b02] text-white"
+                          : "text-gray-300 hover:text-white"
+                      } min-h-9 min-w-14`}
+                      onClick={() => i18n.changeLanguage(lang.code)}
+                      aria-pressed={normalizedLanguage === lang.code}
+                    >
+                      {lang.code.toUpperCase()}
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>
 
             {/* Actions */}
             {!isAuth && (
-              <div className="flex gap-3 p-4 border-t border-gray-100">
+              <div className="flex gap-3 p-6 border-t border-white/10">
                 <Button
                   onClick={() => onOpenAuth("login")}
                   text={t("common.signIn")}
-                  className="flex-1 min-h-11 px-4 py-2.5 text-center text-gray-900 border border-gray-300 rounded-full font-medium bg-white hover:bg-gray-50 transition-colors text-sm"
+                  className="flex-1 py-3 text-center text-white border border-white/20 rounded-full font-medium hover:bg-white/10 transition-all text-sm"
                 />
                 <Button
                   onClick={() => onOpenAuth("signup")}
                   text={t("common.signUp")}
-                  className="flex-1 min-h-11 px-4 py-2.5 text-center bg-landing-accent text-white rounded-full font-medium hover:bg-landing-accent-hover transition-colors text-sm"
+                  className="flex-1 py-3 text-center bg-gradient-to-r from-[#fa8b02] to-[#ff9f2d] text-white rounded-full font-medium hover:shadow-lg hover:shadow-[#fa8b02]/30 transition-all text-sm"
                 />
               </div>
             )}
@@ -361,9 +364,19 @@ export const LandingHeader = ({
     (state: RootState) => state.layout.customizer,
   );
   const dispatch = useDispatch();
-  const [isDark, setDarkMode] = useDarkmode();
   const [logout] = useLogoutMutation();
   const router = useRouter();
+
+  // Scroll state for header shrink effect
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // useSyncExternalStore is the React-recommended way to detect client mount
   // without hydration mismatch — returns false on server, true on client
@@ -491,272 +504,270 @@ export const LandingHeader = ({
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-landing-heading focus:shadow-lg">
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-[#fa8b02] focus:px-4 focus:py-2 focus:text-white focus:shadow-lg"
+      >
         Skip to main content
       </a>
       <header
-        className={`${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isSolid
-            ? "relative bg-white shadow-sm border-b border-landing-border"
-            : "absolute top-0 left-0 right-0 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm"
-        } z-50 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 lg:px-12 py-4 md:py-5 min-h-17.5 md:h-32`}>
-        <Link
-          href="/home"
-          className="flex items-center shrink-0 justify-self-start">
-          <div className="relative h-12 md:h-25 w-28 md:w-34">
-            <Image
-              src={LOGO}
-              alt="Pathora logo"
-              fill
-              sizes="(max-width: 768px) 112px, 136px"
-              className="h-full w-full object-contain"
-            />
-          </div>
-        </Link>
-
-        {/* Desktop nav — visible from md (>=768px) */}
-        <nav
-          className="hidden md:flex items-center gap-2 xl:gap-3 justify-self-center"
-          aria-label="Main navigation">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname?.startsWith(link.href);
-
-            return (
-              <Link
-                key={link.labelKey}
-                href={link.href}
-                onMouseEnter={() => router.prefetch(link.href)}
-                onFocus={() => router.prefetch(link.href)}
-                className={`inline-flex w-28 xl:w-36 justify-center overflow-hidden whitespace-nowrap text-ellipsis ${isSolid ? "text-landing-heading" : "text-white"} font-semibold text-sm xl:text-[20px] transition-colors hover:text-landing-accent focus:outline-none focus-visible:ring-2 ${isSolid ? "focus-visible:ring-landing-heading" : "focus-visible:ring-white"} rounded ${
-                  isActive ? "border-b-2 border-landing-accent" : ""
-                }`}
-                aria-current={isActive ? "page" : undefined}>
-                {mounted
-                  ? t(link.labelKey)
-                  : link.labelKey === "landing.nav.home"
-                    ? "Home"
-                    : link.labelKey === "landing.nav.aboutUs"
-                      ? "About Us"
-                      : link.labelKey === "landing.nav.tourPackages"
-                        ? "Tours"
-                        : link.labelKey === "landing.nav.ourPolicies"
-                          ? "Docs"
-                          : ""}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="hidden md:flex items-center gap-2 xl:gap-3 justify-self-end">
-          {/* Dark mode toggle — render icon only after mount to prevent
-              browser extensions (e.g. Dark Reader) from mutating the SSR HTML */}
-          <Button
-            type="button"
-            onClick={() => setDarkMode(!isDark)}
-            className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
-            aria-label={
-              mounted && isDark ? "Switch to light mode" : "Switch to dark mode"
-            }>
-            {mounted ? (
-              isDark ? (
-                <FiSun className="w-4 h-4 xl:w-5 xl:h-5" />
-              ) : (
-                <FiMoon className="w-4 h-4 xl:w-5 xl:h-5" />
-              )
-            ) : (
-              <span className="w-4 h-4 xl:w-5 xl:h-5" />
-            )}
-          </Button>
-
-          {/* Live mode (customizer) toggle */}
-          <Button
-            type="button"
-            onClick={() => dispatch(handleCustomizer(!customizerOpen))}
-            className={`w-11 h-11 flex items-center justify-center rounded-full border transition-all focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${
-              customizerOpen
-                ? "border-landing-accent text-landing-accent bg-landing-accent/10"
-                : isSolid
-                  ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 bg-transparent focus-visible:ring-landing-heading"
-                  : "border-white/20 text-white/70 hover:text-white hover:border-white/40 bg-transparent focus-visible:ring-white"
-            }`}
-            aria-label="Toggle live customizer">
-            {mounted ? (
-              <FiSliders className="w-4 h-4 xl:w-5 xl:h-5" />
-            ) : (
-              <span className="w-4 h-4 xl:w-5 xl:h-5" />
-            )}
-          </Button>
-
-          {/* Language switcher */}
-          <div className="relative" ref={languageMenuRef}>
-            <Button
-              type="button"
-              suppressHydrationWarning
-              className={`min-h-11 flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all bg-transparent focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-200 text-gray-600 hover:text-landing-heading hover:border-gray-400 focus-visible:ring-landing-heading" : "border-white/20 text-white/70 hover:text-white hover:border-white/40 focus-visible:ring-white"}`}
-              onClick={() => {
-                setLanguageMenuOpen((prev) => !prev);
-                setUserMenuOpen(false);
-              }}
-              aria-label={`${t("landing.a11y.changeLanguage")} (${mounted ? normalizedLanguage.toUpperCase() : "EN"})`}
-              aria-haspopup="menu"
-              aria-expanded={languageMenuOpen}
-              aria-controls={languageMenuId}>
-              {mounted ? (
-                <FiGlobe className="w-4 h-4 xl:w-5 xl:h-5" />
-              ) : (
-                <span className="w-4 h-4 xl:w-5 xl:h-5" />
-              )}
-              <span className="text-sm xl:text-base font-semibold">
-                {mounted ? normalizedLanguage.toUpperCase() : "EN"}
-              </span>
-              {mounted ? (
-                <FiChevronDown
-                  className={`w-3.5 h-3.5 transition-transform ${
-                    languageMenuOpen ? "rotate-180" : ""
-                  }`}
+            ? "bg-[#1a1a1a] shadow-lg shadow-black/20"
+            : scrolled
+              ? "bg-[rgba(26,26,26,0.95)] backdrop-blur-xl shadow-lg shadow-black/20"
+              : "bg-[rgba(26,26,26,0.7)] backdrop-blur-md"
+        } ${scrolled ? "py-3" : "py-5"}`}
+      >
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link
+              href="/home"
+              className="flex items-center shrink-0 group"
+            >
+              <div className={`relative transition-all duration-300 ${scrolled ? "h-10 w-24" : "h-12 w-28"}`}>
+                <Image
+                  src={LOGO}
+                  alt="Pathora logo"
+                  fill
+                  sizes="(max-width: 768px) 96px, 112px"
+                  className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
-              ) : (
-                <span className="w-3.5 h-3.5" />
-              )}
-            </Button>
-            <div
-              id={languageMenuId}
-              role="menu"
-              className={`absolute right-0 top-full mt-2 min-w-40 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 py-1.5 overflow-hidden z-50 transition-all duration-200 ${
-                languageMenuOpen
-                  ? "visible opacity-100 pointer-events-auto"
-                  : "invisible opacity-0 pointer-events-none"
-              }`}>
-              {languages.map((lang) => {
-                const isActive = mounted && lang.code === normalizedLanguage;
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav
+              className="hidden lg:flex items-center gap-1"
+              aria-label="Main navigation"
+            >
+              {navLinks.map((link) => {
+                const isActive =
+                  link.href === "/"
+                    ? pathname === "/"
+                    : pathname?.startsWith(link.href);
+
                 return (
-                  <Button
-                    key={lang.code}
-                    type="button"
-                    onClick={() => {
-                      i18n.changeLanguage(lang.code);
-                      setLanguageMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent cursor-pointer ${
+                  <Link
+                    key={link.labelKey}
+                    href={link.href}
+                    onMouseEnter={() => router.prefetch(link.href)}
+                    onFocus={() => router.prefetch(link.href)}
+                    className={`relative px-4 py-2 text-sm font-semibold transition-all duration-200 group ${
                       isActive
-                        ? "bg-landing-accent/10 text-landing-accent font-semibold"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                    }`}>
-                    <span>{lang.label}</span>
-                    {isActive && (
-                      <FiCheck className="w-4 h-4" />
-                    )}
-                  </Button>
+                        ? "text-[#fa8b02]"
+                        : "text-white hover:text-[#fa8b02]"
+                    }`}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {mounted
+                      ? t(link.labelKey)
+                      : link.labelKey === "landing.nav.home"
+                        ? "Home"
+                        : link.labelKey === "landing.nav.aboutUs"
+                          ? "About Us"
+                          : link.labelKey === "landing.nav.tourPackages"
+                            ? "Tours"
+                            : link.labelKey === "landing.nav.ourPolicies"
+                              ? "Docs"
+                              : ""}
+                    {/* Animated underline */}
+                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-[#fa8b02] transition-all duration-300 ${
+                      isActive ? "w-3/4" : "w-0 group-hover:w-3/4"
+                    }`} />
+                  </Link>
                 );
               })}
-            </div>
-          </div>
+            </nav>
 
-          {/* Avatar dropdown — shown when logged in */}
-          {clientIsAuth && (
-            <div className="relative" ref={userMenuRef}>
+            {/* Right Side Actions */}
+            <div className="hidden lg:flex items-center gap-3">
+              {/* Live mode (customizer) toggle */}
               <Button
                 type="button"
-                onClick={() => {
-                  setUserMenuOpen((prev) => !prev);
-                  setLanguageMenuOpen(false);
-                }}
-                className={`w-11 h-11 rounded-full border-2 hover:border-landing-accent overflow-hidden transition-all bg-gray-300 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "border-gray-300 focus-visible:ring-landing-heading" : "border-white/40 focus-visible:ring-white"}`}
-                aria-label="User menu"
-                aria-haspopup="menu"
-                aria-expanded={userMenuOpen}
-                aria-controls={userMenuId}>
-                {user?.avatar ? (
-                  <AvatarImage
-                    src={user.avatar}
-                    alt={userAvatarAlt}
-                    size={44}
-                  />
-                ) : (
-                  <span className="text-sm font-bold text-white select-none">
-                    {userInitial}
-                  </span>
-                )}
+                onClick={() => dispatch(handleCustomizer(!customizerOpen))}
+                className={`w-10 h-10 flex items-center justify-center rounded-full transition-all focus-visible:outline-none cursor-pointer ${
+                  customizerOpen
+                    ? "bg-[#fa8b02]/20 text-[#fa8b02] border border-[#fa8b02]"
+                    : "text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20"
+                }`}
+                aria-label="Toggle live customizer"
+              >
+                <FiSliders className="w-4 h-4" />
               </Button>
 
-              {/* Dropdown */}
-              <div
-                id={userMenuId}
-                role="menu"
-                className={`absolute right-0 top-full mt-2 w-60 rounded-xl bg-white/95 backdrop-blur-md shadow-xl border border-gray-100 overflow-hidden z-50 transition-all duration-200 ${
-                  userMenuOpen
-                    ? "visible opacity-100 pointer-events-auto"
-                    : "invisible opacity-0 pointer-events-none"
-                }`}>
-                {/* User info header */}
-                <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
-                  <div className="w-9 h-9 rounded-full bg-landing-accent flex items-center justify-center shrink-0 overflow-hidden">
+              {/* Language Switcher */}
+              <div className="relative" ref={languageMenuRef}>
+                <Button
+                  type="button"
+                  suppressHydrationWarning
+                  className="flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all"
+                  onClick={() => {
+                    setLanguageMenuOpen((prev) => !prev);
+                    setUserMenuOpen(false);
+                  }}
+                  aria-label={`${t("landing.a11y.changeLanguage")} (${mounted ? normalizedLanguage.toUpperCase() : "EN"})`}
+                  aria-haspopup="menu"
+                  aria-expanded={languageMenuOpen}
+                  aria-controls={languageMenuId}
+                >
+                  <FiGlobe className="w-4 h-4 text-white/70" />
+                  <span className="text-sm font-medium text-white">
+                    {mounted ? normalizedLanguage.toUpperCase() : "EN"}
+                  </span>
+                  <FiChevronDown className={`w-3.5 h-3.5 text-white/50 transition-transform ${languageMenuOpen ? "rotate-180" : ""}`} />
+                </Button>
+                {/* Language Dropdown */}
+                <div
+                  id={languageMenuId}
+                  role="menu"
+                  className={`absolute right-0 top-full mt-2 w-44 rounded-2xl bg-[#2a2a2a]/95 backdrop-blur-xl shadow-2xl border border-white/10 overflow-hidden transition-all duration-200 ${
+                    languageMenuOpen
+                      ? "visible opacity-100 translate-y-0"
+                      : "invisible opacity-0 translate-y-2 pointer-events-none"
+                  }`}
+                >
+                  {languages.map((lang) => {
+                    const isActive = mounted && lang.code === normalizedLanguage;
+                    return (
+                      <Button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => {
+                          i18n.changeLanguage(lang.code);
+                          setLanguageMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-all hover:bg-white/5 ${
+                          isActive
+                            ? "text-[#fa8b02] bg-[#fa8b02]/10"
+                            : "text-white"
+                        }`}
+                      >
+                        <span className="text-lg">{lang.flag}</span>
+                        <span className="font-medium">{lang.label}</span>
+                        {isActive && <FiCheck className="w-4 h-4 ml-auto" />}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* User Menu - When Logged In */}
+              {clientIsAuth && (
+                <div className="relative" ref={userMenuRef}>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setUserMenuOpen((prev) => !prev);
+                      setLanguageMenuOpen(false);
+                    }}
+                    className="w-10 h-10 rounded-full border-2 border-white/20 hover:border-[#fa8b02] overflow-hidden transition-all bg-[#333] flex items-center justify-center shrink-0 focus-visible:outline-none"
+                    aria-label="User menu"
+                    aria-haspopup="menu"
+                    aria-expanded={userMenuOpen}
+                    aria-controls={userMenuId}
+                  >
                     {user?.avatar ? (
                       <AvatarImage
                         src={user.avatar}
                         alt={userAvatarAlt}
-                        size={36}
+                        size={40}
                       />
                     ) : (
                       <span className="text-sm font-bold text-white">
                         {userInitial}
                       </span>
                     )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
-                      {user?.fullName ?? user?.username ?? ""}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {user?.email}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Menu items */}
-                <div className="border-t border-gray-100 py-1">
-                  <Button
-                    type="button"
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer">
-                    <FiLogOut className="w-4 h-4 shrink-0" />
-                    <span>{t("common.signOut") || "Đăng xuất"}</span>
                   </Button>
-                </div>
-              </div>
-            </div>
-          )}
-          {!clientIsAuth && (
-            <>
-              <Button
-                onClick={() => openAuth("login")}
-                text={mounted ? t("common.signIn") : "Sign In"}
-                className={`w-30 xl:w-36 px-4 xl:px-5 py-2 xl:py-2.5 font-semibold text-sm xl:text-[20px] rounded-full transition-colors ${isSolid ? "text-landing-heading hover:bg-gray-100 bg-transparent" : "text-white hover:bg-white/10 bg-transparent"}`}
-              />
-              <Button
-                onClick={() => openAuth("signup")}
-                text={mounted ? t("common.signUp") : "Sign Up"}
-                className="w-30 xl:w-36 px-5 xl:px-6 py-2 xl:py-2.5 bg-landing-accent text-white font-semibold text-sm xl:text-[20px] rounded-full hover:bg-landing-accent-hover transition-colors"
-              />
-            </>
-          )}
-        </div>
 
-        {/* Hamburger — mobile (< 768px) */}
-        <Button
-          ref={menuButtonRef}
-          type="button"
-          className={`md:hidden justify-self-end w-11 h-11 flex items-center justify-center bg-transparent rounded focus-visible:outline-none focus-visible:ring-2 cursor-pointer ${isSolid ? "text-landing-heading focus-visible:ring-landing-heading" : "text-white focus-visible:ring-white"}`}
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label={t("landing.a11y.openMenu")}
-          aria-expanded={mobileMenuOpen}
-          aria-controls="landing-mobile-menu">
-          <Icon icon="heroicons-outline:menu" className="w-7 h-7" />
-        </Button>
+                  {/* User Dropdown */}
+                  <div
+                    id={userMenuId}
+                    role="menu"
+                    className={`absolute right-0 top-full mt-2 w-64 rounded-2xl bg-[#2a2a2a]/95 backdrop-blur-xl shadow-2xl border border-white/10 overflow-hidden transition-all duration-200 ${
+                      userMenuOpen
+                        ? "visible opacity-100 translate-y-0"
+                        : "invisible opacity-0 translate-y-2 pointer-events-none"
+                    }`}
+                  >
+                    {/* User Info Header */}
+                    <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#fa8b02] to-[#ff9f2d] flex items-center justify-center shrink-0 overflow-hidden">
+                        {user?.avatar ? (
+                          <AvatarImage
+                            src={user.avatar}
+                            alt={userAvatarAlt}
+                            size={40}
+                          />
+                        ) : (
+                          <span className="text-sm font-bold text-white">
+                            {userInitial}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">
+                          {user?.fullName ?? user?.username ?? ""}
+                        </p>
+                        <p className="text-xs text-gray-400 truncate">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Menu Items */}
+                    <div className="py-2">
+                      <Button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <FiLogOut className="w-4 h-4" />
+                        <span>{t("common.signOut") || "Đăng xuất"}</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Auth Buttons - When Not Logged In */}
+              {!clientIsAuth && (
+                <>
+                  <Button
+                    onClick={() => openAuth("login")}
+                    text={mounted ? t("common.signIn") : "Sign In"}
+                    className="px-5 py-2.5 font-semibold text-sm text-white border border-white/20 rounded-full hover:bg-white/10 hover:border-white/40 transition-all duration-200"
+                  />
+                  <Button
+                    onClick={() => openAuth("signup")}
+                    text={mounted ? t("common.signUp") : "Sign Up"}
+                    className="px-6 py-2.5 bg-gradient-to-r from-[#fa8b02] to-[#ff9f2d] text-white font-semibold text-sm rounded-full hover:shadow-lg hover:shadow-[#fa8b02]/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                  />
+                </>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <Button
+              ref={menuButtonRef}
+              type="button"
+              className="lg:hidden w-10 h-10 flex items-center justify-center text-white hover:bg-white/10 rounded-full transition-colors"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label={t("landing.a11y.openMenu")}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="landing-mobile-menu"
+            >
+              {mobileMenuOpen ? (
+                <FiX className="w-6 h-6" />
+              ) : (
+                <FiMenu className="w-6 h-6" />
+              )}
+            </Button>
+          </div>
+        </div>
       </header>
+
+      {/* Spacer to prevent content overlap */}
+      <div className={`${scrolled ? "h-16" : "h-20"} transition-all duration-300`} />
 
       <MobileSidebar
         open={mobileMenuOpen}
@@ -773,4 +784,3 @@ export const LandingHeader = ({
     </>
   );
 };
-

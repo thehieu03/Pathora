@@ -21,26 +21,56 @@ import {
 const NAV_ITEMS = [
   { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
   { label: "Tours", icon: "heroicons:globe-alt", href: "/tour-management" },
-  { label: "Tour Instances", icon: "heroicons:calendar-days", href: "/tour-instances" },
+  {
+    label: "Tour Instances",
+    icon: "heroicons:calendar-days",
+    href: "/tour-instances",
+  },
   {
     label: "Bookings",
     icon: "heroicons:ticket",
     href: "/dashboard/bookings",
   },
-  { label: "Payments", icon: "heroicons:credit-card", href: "/dashboard/payments" },
-  { label: "Customers", icon: "heroicons:user-group", href: "/dashboard/customers", active: true },
-  { label: "Insurance", icon: "heroicons:shield-check", href: "/dashboard/insurance" },
-  { label: "Visa Applications", icon: "heroicons:document-check", href: "/dashboard/visa" },
-  { label: "Policies", icon: "heroicons:clipboard-document-list", href: "/dashboard/policies" },
-  { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },
+  {
+    label: "Payments",
+    icon: "heroicons:credit-card",
+    href: "/dashboard/payments",
+  },
+  {
+    label: "Customers",
+    icon: "heroicons:user-group",
+    href: "/dashboard/customers",
+    active: true,
+  },
+  {
+    label: "Insurance",
+    icon: "heroicons:shield-check",
+    href: "/dashboard/insurance",
+  },
+  {
+    label: "Visa Applications",
+    icon: "heroicons:document-check",
+    href: "/dashboard/visa",
+  },
+  {
+    label: "Policies",
+    icon: "heroicons:clipboard-document-list",
+    href: "/dashboard/policies",
+  },
+  {
+    label: "Settings",
+    icon: "heroicons:cog-6-tooth",
+    href: "/dashboard/settings",
+  },
 ];
 
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full"
-      }`}>
+        open ? "translate-x-0" : "max-lg:-translate-x-full"
+      }`}
+    >
       <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-sm font-bold">
@@ -48,7 +78,11 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           </div>
           <span className="text-lg font-semibold">Pathora Admin</span>
         </Link>
-        <button onClick={onClose} aria-label="Close sidebar" className="lg:hidden text-slate-400 hover:text-white">
+        <button
+          onClick={onClose}
+          aria-label="Close sidebar"
+          className="lg:hidden text-slate-400 hover:text-white"
+        >
           <Icon icon="heroicons:x-mark" className="size-5" />
         </button>
       </div>
@@ -58,8 +92,11 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             key={item.label}
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              item.active ? "bg-orange-500 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
-            }`}>
+              item.active
+                ? "bg-orange-500 text-white"
+                : "text-slate-300 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
             <Icon icon={item.icon} className="size-5" />
             <span>{item.label}</span>
           </Link>
@@ -94,12 +131,21 @@ function TopBar({
 }) {
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
-      <button onClick={onMenuClick} aria-label="Open menu" className="lg:hidden text-slate-500">
+      <button
+        onClick={onMenuClick}
+        aria-label="Open menu"
+        className="lg:hidden text-slate-500"
+      >
         <Icon icon="heroicons:bars-3" className="size-6" />
       </button>
       <div className="relative flex-1 max-w-xl">
-        <Icon icon="heroicons:magnifying-glass" className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
-        <label htmlFor="customers-search" className="sr-only">Search</label>
+        <Icon
+          icon="heroicons:magnifying-glass"
+          className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400"
+        />
+        <label htmlFor="customers-search" className="sr-only">
+          Search
+        </label>
         <input
           id="customers-search"
           type="text"
@@ -111,9 +157,14 @@ function TopBar({
         />
       </div>
       <div className="ml-auto relative">
-        <button aria-label="Notifications - 3 unread" className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
+        <button
+          aria-label="Notifications - 3 unread"
+          className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
+        >
           <Icon icon="heroicons:bell" className="size-5" />
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">3</span>
+          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
+            3
+          </span>
         </button>
       </div>
     </header>
@@ -130,18 +181,30 @@ interface StatCardProps {
   iconColor: string;
 }
 
-function StatCard({ label, value, change, changeType, icon, iconBg, iconColor }: StatCardProps) {
+function StatCard({
+  label,
+  value,
+  change,
+  changeType,
+  icon,
+  iconBg,
+  iconColor,
+}: StatCardProps) {
   return (
     <Card className="!p-0" bodyClass="p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-sm text-slate-500">{label}</p>
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBg}`}>
+        <div
+          className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBg}`}
+        >
           <Icon icon={icon} className={`size-5 ${iconColor}`} />
         </div>
       </div>
       <p className="text-2xl font-bold text-slate-900">{value}</p>
       {change && (
-        <p className={`text-xs mt-1 ${changeType === "positive" ? "text-green-600" : changeType === "negative" ? "text-red-600" : "text-slate-400"}`}>
+        <p
+          className={`text-xs mt-1 ${changeType === "positive" ? "text-green-600" : changeType === "negative" ? "text-red-600" : "text-slate-400"}`}
+        >
           {change}
         </p>
       )}
@@ -159,7 +222,9 @@ const STATUS_FILTERS: CustomerStatusFilter[] = ["all", "active", "inactive"];
 function StatusBadge({ status }: { status: string }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.inactive;
   return (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}>
+    <span
+      className={`px-2.5 py-1 rounded-full text-xs font-semibold ${cfg.bg} ${cfg.text}`}
+    >
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
   );
@@ -173,6 +238,29 @@ const NATIONALITY_FLAGS: Record<string, string> = {
   Spain: "🇪🇸",
   "United Kingdom": "🇬🇧",
   Australia: "🇦🇺",
+};
+
+interface CustomerTableRow {
+  customer: AdminCustomer;
+  rowKey: string;
+}
+
+const buildCustomerTableRows = (
+  customers: AdminCustomer[],
+): CustomerTableRow[] => {
+  const idOccurrences = new Map<string, number>();
+
+  return customers.map((customer, index) => {
+    const normalizedId = customer.id || `UNKNOWN-${index + 1}`;
+    const occurrence = (idOccurrences.get(normalizedId) ?? 0) + 1;
+    idOccurrences.set(normalizedId, occurrence);
+
+    return {
+      customer,
+      rowKey:
+        occurrence === 1 ? normalizedId : `${normalizedId}__${occurrence}`,
+    };
+  });
 };
 
 export function CustomersPage() {
@@ -213,6 +301,10 @@ export function CustomersPage() {
     return filterCustomers(customers, statusFilter, searchQuery);
   }, [customers, statusFilter, searchQuery]);
 
+  const customerRows = useMemo(() => {
+    return buildCustomerTableRows(filteredCustomers);
+  }, [filteredCustomers]);
+
   const metrics = useMemo(() => {
     return calculateCustomerMetrics(customers);
   }, [customers]);
@@ -230,7 +322,11 @@ export function CustomersPage() {
     <div className="min-h-screen bg-slate-50">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && (
-        <button aria-label="Close sidebar" className="fixed inset-0 bg-black/30 z-40 lg:hidden cursor-default" onClick={() => setSidebarOpen(false)} />
+        <button
+          aria-label="Close sidebar"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden cursor-default"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
       <div className="lg:pl-64">
         <TopBar
@@ -243,15 +339,22 @@ export function CustomersPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-slate-900">Customers</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Manage customer profiles and engagement</p>
+              <p className="text-sm text-slate-500 mt-0.5">
+                Manage customer profiles and engagement
+              </p>
             </div>
           </div>
 
           {isLoading ? (
             <div className="bg-white border border-slate-200 rounded-xl p-8">
               <div className="flex items-center gap-3 text-slate-600">
-                <Icon icon="heroicons:arrow-path" className="size-5 animate-spin" />
-                <p className="text-sm font-medium">Loading customers from API...</p>
+                <Icon
+                  icon="heroicons:arrow-path"
+                  className="size-5 animate-spin"
+                />
+                <p className="text-sm font-medium">
+                  Loading customers from API...
+                </p>
               </div>
             </div>
           ) : null}
@@ -260,9 +363,12 @@ export function CustomersPage() {
             <div className="bg-red-50 border border-red-200 rounded-xl p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-sm font-semibold text-red-800">Could not load customers</h2>
+                  <h2 className="text-sm font-semibold text-red-800">
+                    Could not load customers
+                  </h2>
                   <p className="text-sm text-red-700 mt-1">
-                    {errorMessage ?? "Unable to load customer data. Please try again."}
+                    {errorMessage ??
+                      "Unable to load customer data. Please try again."}
                   </p>
                 </div>
                 <button
@@ -332,8 +438,13 @@ export function CustomersPage() {
 
               {isEmpty ? (
                 <div className="bg-white border border-slate-200 rounded-xl p-10 text-center">
-                  <Icon icon="heroicons:user-group" className="size-8 text-slate-300 mx-auto" />
-                  <h2 className="text-lg font-semibold text-slate-800 mt-3">No customers yet</h2>
+                  <Icon
+                    icon="heroicons:user-group"
+                    className="size-8 text-slate-300 mx-auto"
+                  />
+                  <h2 className="text-lg font-semibold text-slate-800 mt-3">
+                    No customers yet
+                  </h2>
                   <p className="text-sm text-slate-500 mt-1">
                     The API returned no customer records for this workspace.
                   </p>
@@ -344,18 +455,32 @@ export function CustomersPage() {
                     <table className="w-full">
                       <thead>
                         <tr className="bg-slate-50 border-b border-slate-200">
-                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Customer</th>
-                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Contact</th>
-                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Nationality</th>
-                          <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase">Bookings</th>
-                          <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase">Total Spent</th>
-                          <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
-                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Last Booking</th>
+                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Customer
+                          </th>
+                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Contact
+                          </th>
+                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Nationality
+                          </th>
+                          <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Bookings
+                          </th>
+                          <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Total Spent
+                          </th>
+                          <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Status
+                          </th>
+                          <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">
+                            Last Booking
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
-                        {filteredCustomers.length > 0 ? (
-                          filteredCustomers.map((customer) => {
+                        {customerRows.length > 0 ? (
+                          customerRows.map(({ customer, rowKey }) => {
                             const initials = customer.name
                               .split(" ")
                               .map((word) => word[0])
@@ -364,21 +489,32 @@ export function CustomersPage() {
                               NATIONALITY_FLAGS[customer.nationality] ?? "🌍";
 
                             return (
-                              <tr key={customer.id} className="hover:bg-slate-50 transition-colors">
+                              <tr
+                                key={rowKey}
+                                className="hover:bg-slate-50 transition-colors"
+                              >
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-3">
                                     <div className="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center text-sm font-bold text-indigo-600">
                                       {initials}
                                     </div>
                                     <div>
-                                      <p className="text-sm font-medium text-slate-900">{customer.name}</p>
-                                      <p className="text-xs text-slate-400">{customer.id}</p>
+                                      <p className="text-sm font-medium text-slate-900">
+                                        {customer.name}
+                                      </p>
+                                      <p className="text-xs text-slate-400">
+                                        {customer.id}
+                                      </p>
                                     </div>
                                   </div>
                                 </td>
                                 <td className="px-6 py-4">
-                                  <p className="text-sm text-slate-600">{customer.email}</p>
-                                  <p className="text-xs text-slate-400">{customer.phone}</p>
+                                  <p className="text-sm text-slate-600">
+                                    {customer.email}
+                                  </p>
+                                  <p className="text-xs text-slate-400">
+                                    {customer.phone}
+                                  </p>
                                 </td>
                                 <td className="px-6 py-4">
                                   <span className="text-sm">
@@ -399,14 +535,19 @@ export function CustomersPage() {
                                   <StatusBadge status={customer.status} />
                                 </td>
                                 <td className="px-6 py-4">
-                                  <span className="text-sm text-slate-500">{customer.lastBooking}</span>
+                                  <span className="text-sm text-slate-500">
+                                    {customer.lastBooking}
+                                  </span>
                                 </td>
                               </tr>
                             );
                           })
                         ) : (
                           <tr>
-                            <td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">
+                            <td
+                              colSpan={7}
+                              className="px-6 py-10 text-center text-sm text-slate-500"
+                            >
                               No customers match your current filters.
                             </td>
                           </tr>

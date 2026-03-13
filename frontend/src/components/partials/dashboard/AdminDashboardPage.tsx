@@ -15,6 +15,7 @@ import type {
   AdminDashboardMetricPoint,
   AdminDashboardVisaStatus,
 } from "@/types/admin";
+import { AdminLogoutButton } from "./AdminLogoutButton";
 
 const COLORS = {
   primary: "#f97316",
@@ -203,7 +204,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
-        open ? "translate-x-0" : "-translate-x-full"
+        open ? "translate-x-0" : "max-lg:-translate-x-full"
       }`}>
       <div className="flex items-center justify-between px-5 h-16 border-b border-slate-700/50">
         <Link href="/dashboard" className="flex items-center gap-2">
@@ -246,6 +247,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             <p className="text-xs text-slate-400 truncate">Administrator</p>
           </div>
         </div>
+        <AdminLogoutButton />
       </div>
     </aside>
   );
@@ -280,7 +282,7 @@ function MetricLegend({ items }: { items: AdminDashboardCategoryMetric[] }) {
   return (
     <div className="space-y-2">
       {items.map((item, index) => (
-        <div key={item.label} className="flex items-center justify-between text-sm">
+        <div key={`${item.label}-${index}`} className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <span
               className="w-3 h-3 rounded-full shrink-0"
@@ -665,8 +667,8 @@ export function AdminDashboardPage() {
                             </td>
                           </tr>
                         ) : (
-                          dashboard.topTours.map((tour) => (
-                            <tr key={tour.name} className="border-b border-slate-100 last:border-0">
+                          dashboard.topTours.map((tour, index) => (
+                            <tr key={`${tour.name}-${index}`} className="border-b border-slate-100 last:border-0">
                               <td className="py-3 text-slate-700">{tour.name}</td>
                               <td className="py-3 text-right text-slate-600">{tour.bookings.toLocaleString()}</td>
                               <td className="py-3 text-right font-medium text-green-600">
@@ -700,8 +702,8 @@ export function AdminDashboardPage() {
                   <h3 className="text-lg font-semibold text-slate-900">Visa Processing Status</h3>
                   <p className="text-sm text-slate-500 mb-6">Current visa application pipeline</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                    {dashboard.visaStatuses.map((status) => (
-                      <VisaStatusBadge key={status.label} status={status} />
+                    {dashboard.visaStatuses.map((status, index) => (
+                      <VisaStatusBadge key={`${status.label}-${index}`} status={status} />
                     ))}
                   </div>
 

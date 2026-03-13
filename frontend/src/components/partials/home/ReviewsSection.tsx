@@ -7,10 +7,11 @@ import { useTranslation } from "react-i18next";
 import { homeService } from "@/services/homeService";
 import { TopReview } from "@/types/home";
 
+const AVATAR_FALLBACK = "/avatar-placeholder.svg";
+
 const FALLBACK_REVIEWS = [
   {
-    avatar:
-      "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
+    avatar: AVATAR_FALLBACK,
     name: "Jonathan Samuel",
     tourName: "Amazing Tour",
     comment:
@@ -18,8 +19,7 @@ const FALLBACK_REVIEWS = [
     stars: 5,
   },
   {
-    avatar:
-      "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
+    avatar: AVATAR_FALLBACK,
     name: "Joe Wild",
     tourName: "Great Adventure",
     comment:
@@ -27,8 +27,7 @@ const FALLBACK_REVIEWS = [
     stars: 5,
   },
   {
-    avatar:
-      "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
+    avatar: AVATAR_FALLBACK,
     name: "Maria Chen",
     tourName: "Unforgettable Trip",
     comment:
@@ -72,9 +71,7 @@ export const ReviewsSection = () => {
         const data = await homeService.getTopReviews(6);
         if (data && data.length > 0) {
           const mapped = data.map((review: TopReview) => ({
-            avatar:
-              review.userAvatar ||
-              "https://www.figma.com/api/mcp/asset/a96a537a-ec5f-414c-b344-d9f900f845f7",
+            avatar: review.userAvatar || AVATAR_FALLBACK,
             name: review.userName,
             tourName: review.tourName,
             comment: review.comment || "Great experience!",

@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import StoreProvider from "./StoreProvider";
-import DarkModeSync from "./DarkModeSync";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,10 +13,8 @@ export default function AppProviders({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <StoreProvider>
-      <DarkModeSync />
       {/*<AuthProvider>*/}
       {children}
       <ToastContainer />

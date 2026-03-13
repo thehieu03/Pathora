@@ -66,13 +66,13 @@ const PRICE_QUICK_FILTERS = ["< 2tr", "2tr–5tr", "5tr–15tr", "15tr+"];
 const HeroBanner = () => {
   const { t } = useTranslation();
   return (
-    <section className="relative h-[500px] w-full overflow-hidden">
+    <section className="relative h-[400px] w-full overflow-hidden">
       {/* Gradient background instead of external image */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#05073c] via-[#1a1c5e] to-[#2d1b69]" />
       {/* Decorative elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-[#fa8b02] rounded-full blur-[120px]" />
-        <div className="absolute bottom-10 right-20 w-96 h-96 bg-[#eb662b] rounded-full blur-[150px]" />
+      <div className="absolute inset-0 opacity-15">
+        <div className="absolute top-20 left-10 w-56 h-56 bg-[#fa8b02] rounded-full blur-[80px]" />
+        <div className="absolute bottom-10 right-20 w-72 h-72 bg-[#eb662b] rounded-full blur-[100px]" />
       </div>
       {/* Dark overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-[rgba(5,7,60,0.3)] via-transparent to-[rgba(5,7,60,0.5)]" />
@@ -242,6 +242,7 @@ const TourSidebar = ({
   onClassificationChange,
   onDurationChange,
   onPriceRangeChange,
+  onClearFilters,
 }: {
   isMobileOpen?: boolean;
   onClose?: () => void;
@@ -251,6 +252,7 @@ const TourSidebar = ({
   onClassificationChange?: (value: string) => void;
   onDurationChange?: (value: string) => void;
   onPriceRangeChange?: (range: [number, number]) => void;
+  onClearFilters?: () => void;
 }) => {
   const { t } = useTranslation();
 
@@ -262,6 +264,11 @@ const TourSidebar = ({
       const [min, max] = PRICE_QUICK_RANGES[label];
       return min === selectedPriceRange[0] && max === selectedPriceRange[1];
     }) ?? null;
+
+  const hasActiveFilters = selectedClassifications.length > 0 ||
+    selectedDurations.length > 0 ||
+    selectedPriceRange[0] > PRICE_DEFAULT_RANGE[0] ||
+    selectedPriceRange[1] < PRICE_DEFAULT_RANGE[1];
 
   const handleClassToggle = (option: string) => {
     const newValue = classificationFilter === option ? "" : option;
@@ -288,17 +295,62 @@ const TourSidebar = ({
     <>
       {/* Orange top bar */}
       <div className="h-1 bg-[#eb662b] rounded-t-lg" />
-      <div className="border border-t-0 border-[#f3f4f6] rounded-b-lg px-5 pb-5">
+      <div className="border border-[#f3f4f6] rounded-lg px-5 pb-5">
         {/* Filter Header */}
-        <div className="flex items-center gap-2 py-5 border-b border-[#f3f4f6]">
-          <Icon
-            icon="heroicons-outline:adjustments-horizontal"
-            className="w-4 h-4 text-[#05073c]"
-          />
-          <span className="text-sm font-semibold text-[#05073c]">
-            {t("landing.tourDiscovery.filter")}
-          </span>
+        <div className="flex items-center justify-between gap-2 py-5 border-b border-[#f3f4f6]">
+          <div className="flex items-center gap-2">
+            <Icon
+              icon="heroicons-outline:adjustments-horizontal"
+              className="w-4 h-4 text-[#05073c]"
+            />
+            <span className="text-sm font-semibold text-[#05073c]">
+              {t("landing.tourDiscovery.filter")}
+            </span>
+          </div>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={onClearFilters}
+              className="text-xs text-[#eb662b] hover:text-[#d5541e] font-medium transition-colors">
+              {t("landing.tourDiscovery.clearAll", "Clear all")}
+            </button>
+          )}
         </div>
+
+        {/* Active Filter Tags */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap gap-1.5 py-3">
+            {selectedClassifications.map((cls) => (
+              <button
+                key={cls}
+                type="button"
+                onClick={() => onClassificationChange?.("")}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-[#fff7ed] text-[#eb662b] text-xs rounded-full hover:bg-[#fed7aa] transition-colors">
+                {cls}
+                <Icon icon="heroicons-outline:x-mark" className="w-3 h-3" />
+              </button>
+            ))}
+            {selectedDurations.map((dur) => (
+              <button
+                key={dur}
+                type="button"
+                onClick={() => onDurationChange?.("")}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-[#fff7ed] text-[#eb662b] text-xs rounded-full hover:bg-[#fed7aa] transition-colors">
+                {dur}
+                <Icon icon="heroicons-outline:x-mark" className="w-3 h-3" />
+              </button>
+            ))}
+            {activePriceQuick && (
+              <button
+                type="button"
+                onClick={() => onPriceRangeChange?.(PRICE_DEFAULT_RANGE)}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-[#fff7ed] text-[#eb662b] text-xs rounded-full hover:bg-[#fed7aa] transition-colors">
+                {activePriceQuick}
+                <Icon icon="heroicons-outline:x-mark" className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Classification */}
         <FilterSection title={t("landing.tourDiscovery.classification")}>
@@ -321,49 +373,8 @@ const TourSidebar = ({
         {/* Price Range */}
         <FilterSection title={t("landing.tourDiscovery.priceRange")}>
           <div className="flex flex-col gap-3">
-            {/* Min/Max labels */}
-            <div className="flex items-center justify-between text-[12px] text-[#99a1af]">
-              <span>{formatCurrency(selectedPriceRange[0])}</span>
-              <span>{formatCurrency(selectedPriceRange[1])}</span>
-            </div>
-
-            {/* Slider */}
-            <div className="relative h-[3px] bg-[#f3f4f6] rounded-full">
-              <div
-                className="absolute h-full bg-[#eb662b] rounded-full"
-                style={{
-                  left: `${(selectedPriceRange[0] / PRICE_DEFAULT_RANGE[1]) * 100}%`,
-                  right: `${100 - (selectedPriceRange[1] / PRICE_DEFAULT_RANGE[1]) * 100}%`,
-                }}
-              />
-              <input
-                type="range"
-                min={PRICE_DEFAULT_RANGE[0]}
-                max={PRICE_DEFAULT_RANGE[1]}
-                step={500000}
-                value={selectedPriceRange[0]}
-                onChange={(e) => {
-                  const nextMin = Number(e.target.value);
-                  handlePriceRangeChange([nextMin, selectedPriceRange[1]]);
-                }}
-                className="absolute w-full h-full opacity-0 cursor-pointer"
-              />
-              <input
-                type="range"
-                min={PRICE_DEFAULT_RANGE[0]}
-                max={PRICE_DEFAULT_RANGE[1]}
-                step={500000}
-                value={selectedPriceRange[1]}
-                onChange={(e) => {
-                  const nextMax = Number(e.target.value);
-                  handlePriceRangeChange([selectedPriceRange[0], nextMax]);
-                }}
-                className="absolute w-full h-full opacity-0 cursor-pointer"
-              />
-            </div>
-
             {/* From / To display */}
-            <div className="flex items-center justify-center gap-3 bg-[#f9fafb] rounded-lg py-2 px-3 mt-1">
+            <div className="flex items-center justify-center gap-3 bg-[#f9fafb] rounded-lg py-2 px-3">
               <div className="text-center">
                 <p className="text-[10px] text-[#99a1af] uppercase tracking-wider">
                   {t("landing.tourDiscovery.from")}
@@ -602,13 +613,16 @@ const ResultsToolbar = ({
   count,
   viewMode,
   onViewModeChange,
+  layoutMode,
+  onLayoutModeChange,
 }: {
   count: number;
   viewMode: "tours" | "instances";
   onViewModeChange: (mode: "tours" | "instances") => void;
+  layoutMode: "grid" | "list";
+  onLayoutModeChange: (mode: "grid" | "list") => void;
 }) => {
   const { t } = useTranslation();
-  const [gridView, setGridView] = useState<"grid" | "list">("grid");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -628,21 +642,21 @@ const ResultsToolbar = ({
   }, [isDropdownOpen]);
 
   return (
-    <div className="flex items-center justify-between py-2 mb-4">
-      <p className="text-sm text-[#6a7282] lg:text-[#05073c]">
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3 py-2">
+      <p className="text-sm text-slate-500">
         {t("landing.tourDiscovery.showing")}{" "}
-        <span className="font-semibold text-[#05073c]">{count}</span>{" "}
+        <span className="font-semibold text-slate-900">{count}</span>{" "}
         {viewMode === "tours"
           ? t("landing.tourDiscovery.toursLower")
           : t("landing.tourDiscovery.departuresLower")}
       </p>
-      <div className="flex items-center gap-2 lg:gap-2">
+      <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-white/95 px-2 py-1 shadow-sm backdrop-blur">
         {/* View Mode Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <Button
             type="button"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="inline-flex items-center gap-1.5 bg-gradient-to-b from-[#fa8b02] to-[#eb662b] text-white text-[12px] font-semibold px-3 py-1.5 rounded-xl shadow-sm hover:opacity-90 transition-opacity">
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-[13px] font-semibold text-slate-700 transition-colors hover:border-[#eb662b]/50 hover:text-[#eb662b]">
             <Icon icon={activeOption.icon} className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t(activeOption.labelKey)}</span>
             <Icon
@@ -653,7 +667,7 @@ const ResultsToolbar = ({
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-52 bg-white border border-[#e5e7eb] rounded-xl shadow-lg z-20 overflow-hidden">
+            <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl z-20 ">
               {VIEW_MODE_OPTIONS.map((option) => (
                 <button
                   key={option.id}
@@ -665,7 +679,7 @@ const ResultsToolbar = ({
                   className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-[13px] transition-colors ${
                     viewMode === option.id
                       ? "bg-[#fff7ed] text-[#eb662b] font-semibold"
-                      : "text-[#4a5565] hover:bg-[#f9fafb]"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}>
                   <Icon icon={option.icon} className="w-4 h-4 shrink-0" />
                   <span>{t(option.labelKey)}</span>
@@ -678,39 +692,25 @@ const ResultsToolbar = ({
           )}
         </div>
 
-        {/* Recommended Dropdown - compact on mobile */}
-        <Button
-          type="button"
-          className="inline-flex items-center gap-1.5 lg:gap-2 bg-white border border-[#e5e7eb] lg:border-[#f3f4f6] text-[#05073c] text-xs font-medium px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl lg:rounded-lg hover:bg-gray-50 transition-colors">
-          <Icon
-            icon="heroicons-outline:sparkles"
-            className="w-3.5 h-3.5 text-[#eb662b]"
-          />
-          <span className="hidden lg:inline">
-            {t("landing.tourDiscovery.recommended")}
-          </span>
-          <Icon icon="heroicons-outline:chevron-down" className="w-3.5 h-3.5" />
-        </Button>
-
         {/* View Mode Toggle - hidden on mobile */}
-        <div className="hidden lg:flex items-center border border-[#f3f4f6] rounded-lg overflow-hidden">
+        <div className="hidden lg:flex items-center rounded-xl border border-slate-200 bg-white p-1 ">
           <Button
             type="button"
-            onClick={() => setGridView("grid")}
-            className={`w-9 h-9 flex items-center justify-center transition-colors ${
-              gridView === "grid"
+            onClick={() => onLayoutModeChange("grid")}
+            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+              layoutMode === "grid"
                 ? "bg-[#eb662b] text-white"
-                : "bg-white text-[#6a7282] hover:bg-gray-50"
+                : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             }`}>
             <Icon icon="heroicons-outline:squares-2x2" className="w-4 h-4" />
           </Button>
           <Button
             type="button"
-            onClick={() => setGridView("list")}
-            className={`w-9 h-9 flex items-center justify-center transition-colors ${
-              gridView === "list"
+            onClick={() => onLayoutModeChange("list")}
+            className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+              layoutMode === "list"
                 ? "bg-[#eb662b] text-white"
-                : "bg-white text-[#6a7282] hover:bg-gray-50"
+                : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
             }`}>
             <Icon icon="heroicons-outline:bars-3" className="w-4 h-4" />
           </Button>
@@ -794,27 +794,6 @@ const Pagination = ({
     </nav>
   );
 };
-
-/* ── Floating Social Buttons ───────────────────────────────── */
-const FloatingButtons = () => (
-  <div className="fixed right-4 top-[502px] z-50 flex flex-col gap-3">
-    <a
-      href="#"
-      aria-label="Facebook"
-      className="w-11 h-11 bg-[#1877f2] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
-      <Icon icon="ri:facebook-fill" className="w-5 h-5" />
-    </a>
-    <Button
-      type="button"
-      aria-label="Chat"
-      className="w-11 h-11 bg-[#eb662b] rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform">
-      <Icon
-        icon="heroicons-outline:chat-bubble-oval-left"
-        className="w-5 h-5"
-      />
-    </Button>
-  </div>
-);
 
 /* ── Loading Skeleton ───────────────────────────────────────── */
 const TourCardSkeleton = () => (
@@ -995,6 +974,7 @@ export const TourDiscoveryPage = () => {
 
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [isHydratedFromUrl, setIsHydratedFromUrl] = useState(false);
+  const [layoutMode, setLayoutMode] = useState<"grid" | "list">("grid");
 
   const [filters, setFilters] = useState<TourDiscoveryFilters>(
     DEFAULT_TOUR_DISCOVERY_FILTERS,
@@ -1024,6 +1004,12 @@ export const TourDiscoveryPage = () => {
     filters.maxPrice ?? PRICE_DEFAULT_RANGE[1],
   ];
   const viewMode = filters.view;
+  const tourLayoutClass =
+    layoutMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-5" : "flex flex-col gap-5";
+  const instanceLayoutClass =
+    layoutMode === "grid"
+      ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      : "flex flex-col gap-4";
 
   const fetchTours = useCallback(
     async (activeFilters: TourDiscoveryFilters) => {
@@ -1176,11 +1162,16 @@ export const TourDiscoveryPage = () => {
     }));
   };
 
+  const handleClearFilters = () => {
+    setFilters(DEFAULT_TOUR_DISCOVERY_FILTERS);
+    setSearchText("");
+  };
+
   return (
     <main
       id="main-content"
       tabIndex={-1}
-      className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+      className="bg-white text-slate-900 min-h-screen overflow-x-hidden">
       {/* Header */}
       <LandingHeader variant="solid" />
 
@@ -1210,6 +1201,7 @@ export const TourDiscoveryPage = () => {
               onClassificationChange={handleClassificationChange}
               onDurationChange={handleDurationChange}
               onPriceRangeChange={handlePriceRangeChange}
+              onClearFilters={handleClearFilters}
             />
 
             {/* Main Content */}
@@ -1224,6 +1216,8 @@ export const TourDiscoveryPage = () => {
                 count={viewMode === "tours" ? totalTours : instanceTotal}
                 viewMode={viewMode}
                 onViewModeChange={handleViewModeChange}
+                layoutMode={layoutMode}
+                onLayoutModeChange={setLayoutMode}
               />
 
               {/* ══════════ Tour Mode Content ══════════ */}
@@ -1252,7 +1246,7 @@ export const TourDiscoveryPage = () => {
 
                   {/* Loading State */}
                   {loading && !error && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className={tourLayoutClass}>
                       {Array.from({ length: 6 }).map((_, i) => (
                         <TourCardSkeleton key={i} />
                       ))}
@@ -1278,7 +1272,7 @@ export const TourDiscoveryPage = () => {
                   {/* Tour Grid */}
                   {!loading && !error && tours.length > 0 && (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className={tourLayoutClass}>
                         {tours.map((tour) => (
                           <TourCard key={tour.id} tour={tour} />
                         ))}
@@ -1321,7 +1315,7 @@ export const TourDiscoveryPage = () => {
 
                   {/* Loading State */}
                   {instanceLoading && !instanceError && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className={instanceLayoutClass}>
                       {Array.from({ length: 6 }).map((_, i) => (
                         <TourCardSkeleton key={i} />
                       ))}
@@ -1347,7 +1341,7 @@ export const TourDiscoveryPage = () => {
                   {/* Instance Grid */}
                   {!instanceLoading && !instanceError && instanceData.length > 0 && (
                     <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className={instanceLayoutClass}>
                         {instanceData.map((instance) => (
                           <ScheduledTourCard key={instance.id} instance={instance} />
                         ))}
@@ -1367,9 +1361,6 @@ export const TourDiscoveryPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Floating Social Buttons */}
-      <FloatingButtons />
 
       {/* Footer */}
       <LandingFooter />

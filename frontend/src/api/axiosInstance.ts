@@ -12,7 +12,7 @@ import { getCurrentApiLanguage } from "./languageHeader";
 import { getCookie } from "@/utils/cookie";
 
 const API_BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
+  process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:8080";
 
 interface ToastConfig {
   position: ToastPosition;
