@@ -4,11 +4,11 @@ using Api.Configuration;
 using Api.Swagger.Extensions;
 using Application;
 using Infrastructure;
-using Infrastructure.Data;
-using Infrastructure.Data.Seed;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure.Data.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 var disableAuthorization = builder.Configuration.IsAuthorizationDisabled();

@@ -91,7 +91,7 @@ public sealed class TourRequestHandlerTests
         _tourRequestRepository.CountByUserIdAsync(userId).Returns(1);
 
         var handler = new GetMyTourRequestsQueryHandler(_user, _tourRequestRepository);
-        var result = await handler.Handle(new GetMyTourRequestsQuery(), CancellationToken.None);
+        var result = await handler.Handle(new GetMyTourRequestsQuery(userId.ToString()), CancellationToken.None);
 
         Assert.False(result.IsError);
         Assert.Single(result.Value.Data);
@@ -112,7 +112,7 @@ public sealed class TourRequestHandlerTests
         _tourRequestRepository.GetByIdAsync(requestId, true).Returns(CreateTourRequestEntity(requestId, userId));
 
         var handler = new GetTourRequestDetailQueryHandler(_user, _roleRepository, _tourRequestRepository);
-        var result = await handler.Handle(new GetTourRequestDetailQuery(requestId), CancellationToken.None);
+        var result = await handler.Handle(new GetTourRequestDetailQuery(requestId, userId.ToString()), CancellationToken.None);
 
         Assert.False(result.IsError);
         Assert.Equal(requestId, result.Value.Id);
@@ -132,7 +132,7 @@ public sealed class TourRequestHandlerTests
         _tourRequestRepository.GetByIdAsync(requestId, true).Returns(CreateTourRequestEntity(requestId, ownerId));
 
         var handler = new GetTourRequestDetailQueryHandler(_user, _roleRepository, _tourRequestRepository);
-        var result = await handler.Handle(new GetTourRequestDetailQuery(requestId), CancellationToken.None);
+        var result = await handler.Handle(new GetTourRequestDetailQuery(requestId, currentUserId.ToString()), CancellationToken.None);
 
         Assert.True(result.IsError);
         Assert.Equal(ErrorOr.ErrorType.Forbidden, result.FirstError.Type);
@@ -164,7 +164,7 @@ public sealed class TourRequestHandlerTests
             Arg.Any<string?>()).Returns(1);
 
         var handler = new GetAllTourRequestsQueryHandler(_user, _roleRepository, _tourRequestRepository);
-        var result = await handler.Handle(new GetAllTourRequestsQuery(), CancellationToken.None);
+        var result = await handler.Handle(new GetAllTourRequestsQuery(currentUserId.ToString()), CancellationToken.None);
 
         Assert.False(result.IsError);
         Assert.Single(result.Value.Data);

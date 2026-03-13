@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 using Infrastructure.Data.Seed;
@@ -75,6 +76,55 @@ public sealed class SeedDataPreflightValidatorTests
         Assert.Null(exception);
     }
 
+    [Fact]
+    public void TourInstanceSeedFile_ShouldIncludeExplicitViAndEnTranslationsForEveryItem()
+    {
+        var repoRoot = ResolveRepositoryRoot();
+        var seedFilePath = Path.Combine(
+            repoRoot,
+            "src",
+            "Infrastructure",
+            "Data",
+            "Seed",
+            "Seeddata",
+            "tour-instance.json");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(seedFilePath));
+        Assert.Equal(JsonValueKind.Array, document.RootElement.ValueKind);
+
+        var index = 0;
+        foreach (var item in document.RootElement.EnumerateArray())
+        {
+            Assert.True(
+                item.TryGetProperty("Translations", out var translations),
+                $"tour-instance.json item index {index} is missing 'Translations'.");
+            Assert.Equal(JsonValueKind.Object, translations.ValueKind);
+
+            Assert.True(
+                translations.TryGetProperty("vi", out var viTranslation),
+                $"tour-instance.json item index {index} is missing 'Translations.vi'.");
+            Assert.True(
+                translations.TryGetProperty("en", out var enTranslation),
+                $"tour-instance.json item index {index} is missing 'Translations.en'.");
+
+            Assert.Equal(JsonValueKind.Object, viTranslation.ValueKind);
+            Assert.Equal(JsonValueKind.Object, enTranslation.ValueKind);
+
+            AssertHasNonEmptyString(viTranslation, "Title", index, "vi");
+            AssertHasNonEmptyString(enTranslation, "Title", index, "en");
+
+            AssertHasNonEmptyString(viTranslation, "Location", index, "vi");
+            AssertHasNonEmptyString(enTranslation, "Location", index, "en");
+
+            AssertHasNonEmptyArray(viTranslation, "IncludedServices", index, "vi");
+            AssertHasNonEmptyArray(enTranslation, "IncludedServices", index, "en");
+
+            index++;
+        }
+
+        Assert.True(index > 0, "tour-instance.json should contain at least one item.");
+    }
+
     private static string CreateTempSeedRoot()
     {
         var root = Path.Combine(Path.GetTempPath(), $"seed-preflight-{Guid.NewGuid():N}");
@@ -99,5 +149,23 @@ public sealed class SeedDataPreflightValidatorTests
         }
 
         throw new InvalidOperationException("Could not resolve repository root for seed manifest coverage test.");
+    }
+
+    private static void AssertHasNonEmptyString(JsonElement parent, string propertyName, int index, string language)
+    {
+        Assert.True(
+            parent.TryGetProperty(propertyName, out var value),
+            $"tour-instance.json item index {index} is missing 'Translations.{language}.{propertyName}'.");
+        Assert.Equal(JsonValueKind.String, value.ValueKind);
+        Assert.False(string.IsNullOrWhiteSpace(value.GetString()));
+    }
+
+    private static void AssertHasNonEmptyArray(JsonElement parent, string propertyName, int index, string language)
+    {
+        Assert.True(
+            parent.TryGetProperty(propertyName, out var value),
+            $"tour-instance.json item index {index} is missing 'Translations.{language}.{propertyName}'.");
+        Assert.Equal(JsonValueKind.Array, value.ValueKind);
+        Assert.True(value.GetArrayLength() > 0, $"tour-instance.json item index {index} has empty 'Translations.{language}.{propertyName}'.");
     }
 }

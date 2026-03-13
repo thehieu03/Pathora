@@ -2,6 +2,7 @@ using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers;
 
@@ -10,6 +11,7 @@ public abstract class BaseApiController : ControllerBase
 {
     private ISender? _sender;
     protected ISender Sender => _sender ??= HttpContext.RequestServices.GetRequiredService<ISender>();
+    protected string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
 
     protected IActionResult HandleResult<T>(
         ErrorOr<T> result,

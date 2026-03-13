@@ -312,3 +312,5 @@ volume/minio/*
 !volume/minio/.gitkeep
 volume/redis/*
 !volume/redis/.gitkeep
+volume/postgres/*
+!volume/postgres/.gitkeep

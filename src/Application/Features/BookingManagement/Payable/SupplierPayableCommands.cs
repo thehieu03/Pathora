@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Contracts.Booking;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -159,7 +161,11 @@ public sealed class RecordSupplierPaymentCommandHandler(
     }
 }
 
-public sealed record GetSupplierPayablesQuery(Guid BookingId) : IQuery<ErrorOr<List<SupplierPayableDto>>>;
+public sealed record GetSupplierPayablesQuery(Guid BookingId) : IQuery<ErrorOr<List<SupplierPayableDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:supplier-payables:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetSupplierPayablesQueryHandler(
     ISupplierPayableRepository supplierPayableRepository,

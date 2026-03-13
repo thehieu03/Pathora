@@ -16,6 +16,11 @@ namespace Api.Controllers;
 [Route(TourEndpoint.Base)]
 public class TourController(IFileService fileService) : BaseApiController
 {
+    private static readonly JsonSerializerOptions TranslationJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromQuery] string? searchText,
@@ -139,10 +144,7 @@ public class TourController(IFileService fileService) : BaseApiController
         {
             return JsonSerializer.Deserialize<Dictionary<string, TourTranslationData>>(
                 translations,
-                new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
+                TranslationJsonOptions);
         }
         catch (JsonException)
         {

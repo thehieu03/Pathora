@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Contracts.Booking;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -7,7 +9,11 @@ using ErrorOr;
 
 namespace Application.Features.BookingManagement.Supplier;
 
-public sealed record GetSupplierByIdQuery(Guid SupplierId) : IQuery<ErrorOr<SupplierDto>>;
+public sealed record GetSupplierByIdQuery(Guid SupplierId) : IQuery<ErrorOr<SupplierDto>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Supplier}:detail:{SupplierId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetSupplierByIdQueryHandler(ISupplierRepository supplierRepository)
     : IQueryHandler<GetSupplierByIdQuery, ErrorOr<SupplierDto>>
@@ -39,7 +45,11 @@ public sealed class GetSupplierByIdQueryHandler(ISupplierRepository supplierRepo
     }
 }
 
-public sealed record GetSuppliersQuery(SupplierType? SupplierType = null) : IQuery<ErrorOr<List<SupplierDto>>>;
+public sealed record GetSuppliersQuery(SupplierType? SupplierType = null) : IQuery<ErrorOr<List<SupplierDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Supplier}:list:{SupplierType}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetSuppliersQueryHandler(ISupplierRepository supplierRepository)
     : IQueryHandler<GetSuppliersQuery, ErrorOr<List<SupplierDto>>>

@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Common.Constant;
 using Application.Dtos;
 using BuildingBlocks.CORS;
@@ -11,12 +12,21 @@ using FluentValidation;
 namespace Application.Features.TourRequest.Queries;
 
 public sealed record GetAllTourRequestsQuery(
+    string CurrentUserId,
     TourRequestStatus? Status = null,
     DateTimeOffset? FromDate = null,
     DateTimeOffset? ToDate = null,
     string? SearchText = null,
     int PageNumber = 1,
-    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<TourRequestVm>>>;
+    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<TourRequestVm>>>, ICacheable
+{
+    private string FromDateKey => FromDate?.ToString("O") ?? "null";
+    private string ToDateKey => ToDate?.ToString("O") ?? "null";
+
+    public string CacheKey =>
+        $"{Common.CacheKey.TourRequest}:all:{CurrentUserId}:{Status}:{FromDateKey}:{ToDateKey}:{SearchText}:{PageNumber}:{PageSize}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
+}
 
 public sealed class GetAllTourRequestsQueryValidator : AbstractValidator<GetAllTourRequestsQuery>
 {

@@ -329,17 +329,64 @@
     "LastModifiedBy": "system",
     "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
   },
-  {
+{
     "Id": "019527b0-0000-7000-8000-000000000006",
     "TourCode": "TH-BKK-PTY-4D3N",
-"TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
+    "TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
     "ShortDescription": "Khám phá thủ đô Thái Lan nhộn nhịp và bãi biển tuyệt đẹp của Pattaya.",
     "LongDescription": "Khám phá Hoàng cung Grand Palace và Wat Pho nổi tiếng, mua sắm tại chợ Chatuchak, sau đó đến Pattaya nghỉ dưởng và khám đảo san hô.",
     "Status": "Active",
     "TourScope": "International",
     "CustomerSegment": "Group",
     "SEOTitle": "Tour Bangkok Pattaya 4N3Đ - Chùa & Biển",
-    "SEODescription": "Tour Bangkok Pattaya 4 ngày 3 đêm. Grand Palace, đảo san hô, ẩm thực Thái."
+    "SEODescription": "Tour Bangkok Pattaya 4 ngày 3 đêm. Grand Palace, đảo san hô, ẩm thực Thái.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5902",
+      "OriginalFileName": "bangkok-pattaya.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5902.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5902",
+        "OriginalFileName": "bangkok-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5902.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5903",
+        "OriginalFileName": "bangkok-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5903.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5904",
+        "OriginalFileName": "bangkok-3.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5904.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5905",
+        "OriginalFileName": "bangkok-4.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5905.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Bangkok - Pattaya 4 Ngày 3 Đêm",
+        "ShortDescription": "Khám phá thủ đô Thái Lan nhộn nhịp và bãi biển tuyệt đẹp của Pattaya.",
+        "LongDescription": "Khám phá Hoàng cung Grand Palace và Wat Pho nổi tiếng, mua sắm tại chợ Chatuchak, sau đó đến Pattaya nghỉ dưởng và khám đảo san hô.",
+        "SEOTitle": "Tour Bangkok Pattaya 4N3Đ - Chùa & Biển",
+        "SEODescription": "Tour Bangkok Pattaya 4 ngày 3 đêm. Grand Palace, đảo san hô, ẩm thực Thái."
+      },
+      "en": {
+        "TourName": "Bangkok - Pattaya 4 Days 3 Nights",
+        "ShortDescription": "Explore the vibrant Thai capital and the stunning beaches of Pattaya.",
+        "LongDescription": "Discover Bangkok's magnificent Grand Palace and Wat Pho, shop at Chatuchak Weekend Market, then head to Pattaya for beach relaxation and Coral Island adventures.",
+        "SEOTitle": "Bangkok Pattaya Tour 4D3N - Temples & Beaches",
+        "SEODescription": "Bangkok Pattaya 4 days 3 nights tour. Grand Palace, Coral Island, Thai street food."
       }
     },
     "Classifications": [],
@@ -351,14 +398,61 @@
   {
     "Id": "019527b0-0000-7000-8000-000000000007",
     "TourCode": "JP-TKO-OSK-5D4N",
-"TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
+    "TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
     "ShortDescription": "Trải nghiệm mùa hoa anh đào nổi tiếng từ Tokyo đến Osaka bằng Shinkansen.",
     "LongDescription": "Tham quan đền Sensō-ji, Tokyo Skytree, đền Meiji, chuyến đi trong ngày đến núi Phú Sĩ, sau đó đi tàu cao tốc đến Osaka thăm lâu đài và đền Kyoto.",
     "Status": "Active",
     "TourScope": "International",
     "CustomerSegment": "Group",
     "SEOTitle": "Tour Tokyo Osaka Hoa Anh Đào 5N4Đ",
-    "SEODescription": "Tour Nhật Bản 5 ngày. Tokyo, núi Phú Sĩ, Shinkansen, lâu đài Osaka, đền Kyoto."
+    "SEODescription": "Tour Nhật Bản 5 ngày. Tokyo, núi Phú Sĩ, Shinkansen, lâu đài Osaka, đền Kyoto.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5906",
+      "OriginalFileName": "tokyo-osaka.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5906.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5906",
+        "OriginalFileName": "tokyo-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5906.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5907",
+        "OriginalFileName": "tokyo-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5907.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5908",
+        "OriginalFileName": "tokyo-3.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5908.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5909",
+        "OriginalFileName": "tokyo-4.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5909.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Tokyo - Osaka Hoa Anh Đào 5 Ngày 4 Đêm",
+        "ShortDescription": "Trải nghiệm mùa hoa anh đào nổi tiếng từ Tokyo đến Osaka bằng Shinkansen.",
+        "LongDescription": "Tham quan đền Sensō-ji, Tokyo Skytree, đền Meiji, chuyến đi trong ngày đến núi Phú Sĩ, sau đó đi tàu cao tốc đến Osaka thăm lâu đài và đền Kyoto.",
+        "SEOTitle": "Tour Tokyo Osaka Hoa Anh Đào 5N4Đ",
+        "SEODescription": "Tour Nhật Bản 5 ngày. Tokyo, núi Phú Sĩ, Shinkansen, lâu đài Osaka, đền Kyoto."
+      },
+      "en": {
+        "TourName": "Tokyo - Osaka Cherry Blossom 5 Days 4 Nights",
+        "ShortDescription": "Experience Japan's iconic cherry blossoms from Tokyo to Osaka via Shinkansen.",
+        "LongDescription": "Visit Sensō-ji Temple, Tokyo Skytree, Meiji Shrine, take a day trip to Mount Fuji, then ride the bullet train to Osaka for castle visits and Kyoto temples.",
+        "SEOTitle": "Tokyo Osaka Cherry Blossom Tour 5D4N",
+        "SEODescription": "Japan tour 5 days. Tokyo, Mount Fuji, Shinkansen, Osaka Castle, Kyoto temples."
       }
     },
     "Classifications": [],
@@ -370,14 +464,61 @@
   {
     "Id": "019527b0-0000-7000-8000-000000000008",
     "TourCode": "KR-SEL-JEJ-4D3N",
-"TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
+    "TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
     "ShortDescription": "Khám phá cung điện hoàng gia Seoul và cảnh quan núi lửa Jeju.",
     "LongDescription": "Khám phá cung điện Gyeongbokgung và mua sắm ở Myeongdong tại Seoul, sau đó bay đến đảo Jeju thăm vườn quốc gia Hallasan và đỉnh núi lửa Seongsan Ilchulbong.",
     "Status": "Active",
     "TourScope": "International",
     "CustomerSegment": "FIT",
     "SEOTitle": "Tour Seoul Jeju 4N3Đ - Cung điện & Đảo núi lửa",
-    "SEODescription": "Tour Hàn Quốc 4 ngày. Cung điện Seoul, Myeongdong, Jeju Hallasan, đỉnh Seongsan."
+    "SEODescription": "Tour Hàn Quốc 4 ngày. Cung điện Seoul, Myeongdong, Jeju Hallasan, đỉnh Seongsan.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5910",
+      "OriginalFileName": "seoul-jeju.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5910.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5910",
+        "OriginalFileName": "seoul-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5910.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5911",
+        "OriginalFileName": "seoul-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5911.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5912",
+        "OriginalFileName": "seoul-3.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5912.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5913",
+        "OriginalFileName": "seoul-4.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5913.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Seoul - Đảo Jeju 4 Ngày 3 Đêm",
+        "ShortDescription": "Khám phá cung điện hoàng gia Seoul và cảnh quan núi lửa Jeju.",
+        "LongDescription": "Khám phá cung điện Gyeongbokgung và mua sắm ở Myeongdong tại Seoul, sau đó bay đến đảo Jeju thăm vườn quốc gia Hallasan và đỉnh núi lửa Seongsan Ilchulbong.",
+        "SEOTitle": "Tour Seoul Jeju 4N3Đ - Cung điện & Đảo núi lửa",
+        "SEODescription": "Tour Hàn Quốc 4 ngày. Cung điện Seoul, Myeongdong, Jeju Hallasan, đỉnh Seongsan."
+      },
+      "en": {
+        "TourName": "Seoul - Jeju Island 4 Days 3 Nights",
+        "ShortDescription": "Discover Seoul's royal palaces and Jeju's volcanic landscapes.",
+        "LongDescription": "Explore Gyeongbokgung Palace and Myeongdong shopping in Seoul, then fly to Jeju Island for Hallasan National Park and Seongsan Ilchulbong sunrise peak.",
+        "SEOTitle": "Seoul Jeju Tour 4D3N - Palaces & Volcanic Island",
+        "SEODescription": "Korea tour 4 days. Seoul palaces, Myeongdong, Jeju Hallasan, Seongsan peak."
       }
     },
     "Classifications": [],
@@ -1170,6 +1311,732 @@
         "LongDescription": "Hue - Da Nang tour explores Hue Imperial City, Thien Mu Pagoda, Tu Duc Tomb, Dragon Bridge and My Khe Beach.",
         "SEOTitle": "Hue Da Nang Tour 3D2N - Ancient Capital & Beach",
         "SEODescription": "Hue - Da Nang 3 days 2 nights tour. Imperial City, Thien Mu Pagoda, Dragon Bridge."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-000000000015",
+    "TourCode": "VN-PT-MT-3N2D",
+    "TourName": "Phan Thiết - Mũi Né 3 Ngày 2 Đêm",
+    "ShortDescription": "Thủ đô resort của Việt Nam với đồi cát, hải đăng và làng chài.",
+    "LongDescription": "Tour Phan Thiết - Mũi Né khám phá đồi cát Hòn Rùa, hải đăng Khao Gốm, làng chài Mũi Né và thưởng thức hải sản tươi sống.",
+    "Status": "Active",
+    "TourScope": "Domestic",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Phan Thiết Mũi Né 3N2Đ - Resort",
+    "SEODescription": "Tour Phan Thiết - Mũi Né 3 ngày 2 đêm. Đồi cát, hải đăng, làng chài.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5962",
+      "OriginalFileName": "phan-thiet.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5962.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5962",
+        "OriginalFileName": "phanthiet-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5962.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5963",
+        "OriginalFileName": "phanthiet-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5963.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5964",
+        "OriginalFileName": "muine-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5964.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5965",
+        "OriginalFileName": "muine-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5965.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Phan Thiết - Mũi Né 3 Ngày 2 Đêm",
+        "ShortDescription": "Thủ đô resort của Việt Nam với đồi cát, hải đăng và làng chài.",
+        "LongDescription": "Tour Phan Thiết - Mũi Né khám phá đồi cát Hòn Rùa, hải đăng Khao Gốm, làng chài Mũi Né và thưởng thức hải sản tươi sống.",
+        "SEOTitle": "Tour Phan Thiết Mũi Né 3N2Đ - Resort",
+        "SEODescription": "Tour Phan Thiết - Mũi Né 3 ngày 2 đêm. Đồi cát, hải đăng, làng chài."
+      },
+      "en": {
+        "TourName": "Phan Thiet - Mui Ne 3 Days 2 Nights",
+        "ShortDescription": "Vietnam's resort capital with sand dunes, lighthouse and fishing village.",
+        "LongDescription": "Phan Thiet - Mui Ne tour explores Hon Ruoi Sand Dunes, Khao Gốm Lighthouse, Mui Ne Fishing Village and fresh seafood.",
+        "SEOTitle": "Phan Thiet Mui Ne Tour 3D2N - Resort",
+        "SEODescription": "Phan Thiet - Mui Ne 3 days 2 nights tour. Sand dunes, lighthouse, fishing village."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-000000000016",
+    "TourCode": "VN-BK-PQ-3N2D",
+    "TourName": "Bình Định - Quy Nhơn 3 Ngày 2 Đêm",
+    "ShortDescription": "Vùng đất thiên thời địa lợi với những bãi biển hoang sơ và văn hóa Champa.",
+    "LongDescription": "Tour Bình Định - Quy Nhơn khám phá Eo Gió, bãi Xép, tháp Champa Po Nagar, khu du lịch Hầm Hô và thưởng thức bánh hỏa lợi.",
+    "Status": "Active",
+    "TourScope": "Domestic",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Bình Định Quy Nhơn 3N2Đ - Hoang sơ",
+    "SEODescription": "Tour Bình Định - Quy Nhơn 3 ngày 2 đêm. Eo Gió, bãi Xép, tháp Champa.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5966",
+      "OriginalFileName": "binh-dinh.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5966.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5966",
+        "OriginalFileName": "binhdinh-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5966.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5967",
+        "OriginalFileName": "binhdinh-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5967.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5968",
+        "OriginalFileName": "quynhon-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5968.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5969",
+        "OriginalFileName": "quynhon-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5969.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Bình Định - Quy Nhơn 3 Ngày 2 Đêm",
+        "ShortDescription": "Vùng đất thiên thời địa lợi với những bãi biển hoang sơ và văn hóa Champa.",
+        "LongDescription": "Tour Bình Định - Quy Nhơn khám phá Eo Gió, bãi Xép, tháp Champa Po Nagar, khu du lịch Hầm Hô và thưởng thức bánh hỏa lợi.",
+        "SEOTitle": "Tour Bình Định Quy Nhơn 3N2Đ - Hoang sơ",
+        "SEODescription": "Tour Bình Định - Quy Nhơn 3 ngày 2 đêm. Eo Gió, bãi Xép, tháp Champa."
+      },
+      "en": {
+        "TourName": "Binh Dinh - Quy Nhon 3 Days 2 Nights",
+        "ShortDescription": "Land of scenic beauty with pristine beaches and Champa culture.",
+        "LongDescription": "Binh Dinh - Quy Nhon tour explores Eo Gio, Ba Xep, Po Nagar Champa Tower, Ham Ho tourism area and traditional rice paper.",
+        "SEOTitle": "Binh Dinh Quy Nhon Tour 3D2N - Pristine",
+        "SEODescription": "Binh Dinh - Quy Nhon 3 days 2 nights tour. Eo Gio, Ba Xep, Champa Tower."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-000000000017",
+    "TourCode": "VN-TB-LC-4N3D",
+    "TourName": "Thái Bình - Lào Cai - Sapa 4 Ngày 3 Đêm",
+    "ShortDescription": "Từ vùng đồng bằng lúa nước đến vùng núi Tây Bắc hùng vĩ.",
+    "LongDescription": "Tour kết hợp khám phá vùng đồng bằng Thái Bình với làng nghề truyền thống, sau đó lên Sapa trekking bản làng, ngắm ruộng bậc thang và chinh phục đỉnh Fansipan.",
+    "Status": "Active",
+    "TourScope": "Domestic",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Thái Bình Sapa 4N3Đ - Vùng núi",
+    "SEODescription": "Tour Thái Bình - Sapa 4 ngày 3 đêm. Làng nghề, ruộng bậc thang, Fansipan.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5970",
+      "OriginalFileName": "thai-binh-sapa.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5970.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5970",
+        "OriginalFileName": "thaibinh-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5970.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5971",
+        "OriginalFileName": "thaibinh-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5971.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5972",
+        "OriginalFileName": "sapa-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5972.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5973",
+        "OriginalFileName": "sapa-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5973.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Thái Bình - Lào Cai - Sapa 4 Ngày 3 Đêm",
+        "ShortDescription": "Từ vùng đồng bằng lúa nước đến vùng núi Tây Bắc hùng vĩ.",
+        "LongDescription": "Tour kết hợp khám phá vùng đồng bằng Thái Bình với làng nghề truyền thống, sau đó lên Sapa trekking bản làng, ngắm ruộng bậc thang và chinh phục đỉnh Fansipan.",
+        "SEOTitle": "Tour Thái Bình Sapa 4N3Đ - Vùng núi",
+        "SEODescription": "Tour Thái Bình - Sapa 4 ngày 3 đêm. Làng nghề, ruộng bậc thang, Fansipan."
+      },
+      "en": {
+        "TourName": "Thai Binh - Lao Cai - Sapa 4 Days 3 Nights",
+        "ShortDescription": "From the rice paddies to the majestic Northwest mountains.",
+        "LongDescription": "Combined tour exploring Thai Binh lowlands with traditional craft villages, then Sapa for village trekking, terraced rice fields and Fansipan peak conquest.",
+        "SEOTitle": "Thai Binh Sapa Tour 4D3N - Mountains",
+        "SEODescription": "Thai Binh - Sapa 4 days 3 nights tour. Craft villages, terraced rice fields, Fansipan."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-000000000018",
+    "TourCode": "US-LAX-VEG-7D6N",
+    "TourName": "Los Angeles - Las Vegas 7 Ngày 6 Đêm",
+    "ShortDescription": "Từ Hollywood đến thành phố ánh sáng Las Vegas giữa sa mạc.",
+    "LongDescription": "Tour Mỹ khám phá Hollywood, Universal Studios, đại lộ Danh vọng, sau đó đến Las Vegas với các sòng bạc nổi tiếng, Grand Canyon và Hoover Dam.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Los Angeles Las Vegas 7N6Đ - Mỹ",
+    "SEODescription": "Tour Mỹ 7 ngày 6 đêm. Hollywood, Las Vegas, Grand Canyon.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5974",
+      "OriginalFileName": "la-vegas.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5974.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5974",
+        "OriginalFileName": "hollywood-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5974.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5975",
+        "OriginalFileName": "hollywood-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5975.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5976",
+        "OriginalFileName": "vegas-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5976.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5977",
+        "OriginalFileName": "vegas-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5977.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Los Angeles - Las Vegas 7 Ngày 6 Đêm",
+        "ShortDescription": "Từ Hollywood đến thành phố ánh sáng Las Vegas giữa sa mạc.",
+        "LongDescription": "Tour Mỹ khám phá Hollywood, Universal Studios, đại lộ Danh vọng, sau đó đến Las Vegas với các sòng bạc nổi tiếng, Grand Canyon và Hoover Dam.",
+        "SEOTitle": "Tour Los Angeles Las Vegas 7N6Đ - Mỹ",
+        "SEODescription": "Tour Mỹ 7 ngày 6 đêm. Hollywood, Las Vegas, Grand Canyon."
+      },
+      "en": {
+        "TourName": "Los Angeles - Las Vegas 7 Days 6 Nights",
+        "ShortDescription": "From Hollywood to the entertainment capital Las Vegas in the desert.",
+        "LongDescription": "US tour explores Hollywood, Universal Studios, Walk of Fame, then Las Vegas with famous casinos, Grand Canyon and Hoover Dam.",
+        "SEOTitle": "Los Angeles Las Vegas Tour 7D6N - USA",
+        "SEODescription": "USA 7 days 6 nights tour. Hollywood, Las Vegas, Grand Canyon."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-000000000019",
+    "TourCode": "IT-ROME-FLOR-6D5N",
+    "TourName": "Rome - Florence - Venice 6 Ngày 5 Đêm",
+    "ShortDescription": "Khám phá đất nước hình chiếc ủng với các thành phố nghệ thuật nổi tiếng.",
+    "LongDescription": "Tour Italy khám phá Rome với đấu trường Colosseum, Vatican, Florence - thủ phủ nghệ thuật Phục hưng và Venice - thành phố kênh đào nổi tiếng.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Rome Florence Venice 6N5Đ - Ý",
+    "SEODescription": "Tour Ý 6 ngày 5 đêm. Colosseum, Vatican, Florence, Venice.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5978",
+      "OriginalFileName": "italy.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5978.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5978",
+        "OriginalFileName": "rome-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5978.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5979",
+        "OriginalFileName": "rome-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5979.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5980",
+        "OriginalFileName": "florence-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5980.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5981",
+        "OriginalFileName": "venice-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5981.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Rome - Florence - Venice 6 Ngày 5 Đêm",
+        "ShortDescription": "Khám phá đất nước hình chiếc ủng với các thành phố nghệ thuật nổi tiếng.",
+        "LongDescription": "Tour Italy khám phá Rome với đấu trường Colosseum, Vatican, Florence - thủ phủ nghệ thuật Phục hưng và Venice - thành phố kênh đào nổi tiếng.",
+        "SEOTitle": "Tour Rome Florence Venice 6N5Đ - Ý",
+        "SEODescription": "Tour Ý 6 ngày 5 đêm. Colosseum, Vatican, Florence, Venice."
+      },
+      "en": {
+        "TourName": "Rome - Florence - Venice 6 Days 5 Nights",
+        "ShortDescription": "Explore the boot-shaped country with famous art cities.",
+        "LongDescription": "Italy tour explores Rome with Colosseum, Vatican, Florence - Renaissance art capital and Venice - famous canal city.",
+        "SEOTitle": "Rome Florence Venice Tour 6D5N - Italy",
+        "SEODescription": "Italy 6 days 5 nights tour. Colosseum, Vatican, Florence, Venice."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-00000000001a",
+    "TourCode": "GR-ATH-SANT-6D5N",
+    "TourName": "Athens - Santorini 6 Ngày 5 Đêm",
+    "ShortDescription": "Khám phá nền văn minh Hy Lạp cổ đại và đảo Santorini xinh đẹp.",
+    "LongDescription": "Tour Hy Lạp khám phá Athens với thành Acropolis, đền Parthenon, sau đó đến Santorini - hòn đảo xinh đẹp với những ngôi nhà trắng trên vách đá nhìn ra biển Aegean.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "FIT",
+    "SEOTitle": "Tour Athens Santorini 6N5Đ - Hy Lạp",
+    "SEODescription": "Tour Hy Lạp 6 ngày 5 đêm. Acropolis, Parthenon, Santorini.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5982",
+      "OriginalFileName": "greece.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5982.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5982",
+        "OriginalFileName": "athens-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5982.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5983",
+        "OriginalFileName": "athens-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5983.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5984",
+        "OriginalFileName": "santorini-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5984.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5985",
+        "OriginalFileName": "santorini-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5985.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Athens - Santorini 6 Ngày 5 Đêm",
+        "ShortDescription": "Khám phá nền văn minh Hy Lạp cổ đại và đảo Santorini xinh đẹp.",
+        "LongDescription": "Tour Hy Lạp khám phá Athens với thành Acropolis, đền Parthenon, sau đó đến Santorini - hòn đảo xinh đẹp với những ngôi nhà trắng trên vách đá nhìn ra biển Aegean.",
+        "SEOTitle": "Tour Athens Santorini 6N5Đ - Hy Lạp",
+        "SEODescription": "Tour Hy Lạp 6 ngày 5 đêm. Acropolis, Parthenon, Santorini."
+      },
+      "en": {
+        "TourName": "Athens - Santorini 6 Days 5 Nights",
+        "ShortDescription": "Explore ancient Greek civilization and beautiful Santorini island.",
+        "LongDescription": "Greece tour explores Athens with Acropolis, Parthenon, then Santorini - beautiful island with white houses on cliffs overlooking the Aegean Sea.",
+        "SEOTitle": "Athens Santorini Tour 6D5N - Greece",
+        "SEODescription": "Greece 6 days 5 nights tour. Acropolis, Parthenon, Santorini."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-00000000001b",
+    "TourCode": "TR-IST-CAP-6D5N",
+    "TourName": "Istanbul - Cappadocia 6 Ngày 5 Đêm",
+    "ShortDescription": "Từ thành phố giao thoa hai châu lục đến vùng đất kỳ bí của Cappadocia.",
+    "LongDescription": "Tour Thổ Nhĩ Kỳ khám phá Istanbul với thánh đường Hagia Sophia, chợ Grand Bazaar, sau đó đến Cappadocia trải nghiệm ngắm bình minh trên khinh khí cầu giữa các tháp đá kỳ bí.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Istanbul Cappadocia 6N5Đ - Thổ Nhĩ Kỳ",
+    "SEODescription": "Tour Thổ Nhĩ Kỳ 6 ngày 5 đêm. Hagia Sophia, Grand Bazaar, khinh khí cầu.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5986",
+      "OriginalFileName": "turkey.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5986.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5986",
+        "OriginalFileName": "istanbul-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5986.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5987",
+        "OriginalFileName": "istanbul-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5987.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5988",
+        "OriginalFileName": "cappadocia-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5988.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5989",
+        "OriginalFileName": "cappadocia-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5989.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Istanbul - Cappadocia 6 Ngày 5 Đêm",
+        "ShortDescription": "Từ thành phố giao thoa hai châu lục đến vùng đất kỳ bí của Cappadocia.",
+        "LongDescription": "Tour Thổ Nhĩ Kỳ khám phá Istanbul với thánh đường Hagia Sophia, chợ Grand Bazaar, sau đó đến Cappadocia trải nghiệm ngắm bình minh trên khinh khí cầu giữa các tháp đá kỳ bí.",
+        "SEOTitle": "Tour Istanbul Cappadocia 6N5Đ - Thổ Nhĩ Kỳ",
+        "SEODescription": "Tour Thổ Nhĩ Kỳ 6 ngày 5 đêm. Hagia Sophia, Grand Bazaar, khinh khí cầu."
+      },
+      "en": {
+        "TourName": "Istanbul - Cappadocia 6 Days 5 Nights",
+        "ShortDescription": "From the city bridging two continents to the mystical land of Cappadocia.",
+        "LongDescription": "Turkey tour explores Istanbul with Hagia Sophia, Grand Bazaar, then Cappadocia to experience sunrise in a hot air balloon among mysterious rock formations.",
+        "SEOTitle": "Istanbul Cappadocia Tour 6D5N - Turkey",
+        "SEODescription": "Turkey 6 days 5 nights tour. Hagia Sophia, Grand Bazaar, hot air balloon."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-00000000001c",
+    "TourCode": "NZ-AKL-QUE-7D6N",
+    "TourName": "Auckland - Queenstown 7 Ngày 6 Đêm",
+    "ShortDescription": "Khám phá đất nước Hobbiton xinh đẹp với phong cảnh núi non hùng vĩ.",
+    "LongDescription": "Tour New Zealand khám phá Auckland - thành phố lớn nhất, Wellington, sau đó đến Queenstown - thủ phủ giải trí với bãi biển, núi non và trải nghiệm mạo hiểm.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Auckland Queenstown 7N6Đ - New Zealand",
+    "SEODescription": "Tour New Zealand 7 ngày 6 đêm. Auckland, Wellington, Queenstown.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5990",
+      "OriginalFileName": "newzealand.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5990.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5990",
+        "OriginalFileName": "auckland-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5990.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5991",
+        "OriginalFileName": "auckland-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5991.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5992",
+        "OriginalFileName": "queenstown-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5992.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5993",
+        "OriginalFileName": "queenstown-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5993.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Auckland - Queenstown 7 Ngày 6 Đêm",
+        "ShortDescription": "Khám phá đất nước Hobbiton xinh đẹp với phong cảnh núi non hùng vĩ.",
+        "LongDescription": "Tour New Zealand khám phá Auckland - thành phố lớn nhất, Wellington, sau đó đến Queenstown - thủ phủ giải trí với bãi biển, núi non và trải nghiệm mạo hiểm.",
+        "SEOTitle": "Tour Auckland Queenstown 7N6Đ - New Zealand",
+        "SEODescription": "Tour New Zealand 7 ngày 6 đêm. Auckland, Wellington, Queenstown."
+      },
+      "en": {
+        "TourName": "Auckland - Queenstown 7 Days 6 Nights",
+        "ShortDescription": "Explore the beautiful Hobbiton country with majestic mountain landscapes.",
+        "LongDescription": "New Zealand tour explores Auckland - the biggest city, Wellington, then Queenstown - entertainment capital with beaches, mountains and adventure experiences.",
+        "SEOTitle": "Auckland Queenstown Tour 7D6N - New Zealand",
+        "SEODescription": "New Zealand 7 days 6 nights tour. Auckland, Wellington, Queenstown."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-00000000001d",
+    "TourCode": "CN-BJ-XI-6D5N",
+    "TourName": "Bắc Kinh - Tô Châu - Thượng Hải 6 Ngày 5 Đêm",
+    "ShortDescription": "Khám phá đất nước tỷ dân với lịch sử ngàn năm và hiện đại hóa sôi động.",
+    "LongDescription": "Tour Trung Quốc khám phá Bắc Kinh với Tường Lon, Cung điện Mùa hè, sau đó đến Tô Châu - vùng đất ven sông nước với vườn cổ và Thượng Hải - thành phố hiện đại.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Bắc Kinh Tô Châu Thượng Hải 6N5Đ - Trung Quốc",
+    "SEODescription": "Tour Trung Quốc 6 ngày 5 đêm. Tường Lon, Tô Châu, Thượng Hải.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5994",
+      "OriginalFileName": "china.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5994.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5994",
+        "OriginalFileName": "beijing-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5994.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5995",
+        "OriginalFileName": "beijing-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5995.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5996",
+        "OriginalFileName": "suzhou-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5996.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5997",
+        "OriginalFileName": "shanghai-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5997.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Bắc Kinh - Tô Châu - Thượng Hải 6 Ngày 5 Đêm",
+        "ShortDescription": "Khám phá đất nước tỷ dân với lịch sử ngàn năm và hiện đại hóa sôi động.",
+        "LongDescription": "Tour Trung Quốc khám phá Bắc Kinh với Tường Lon, Cung điện Mùa hè, sau đó đến Tô Châu - vùng đất ven sông nước với vườn cổ và Thượng Hải - thành phố hiện đại.",
+        "SEOTitle": "Tour Bắc Kinh Tô Châu Thượng Hải 6N5Đ - Trung Quốc",
+        "SEODescription": "Tour Trung Quốc 6 ngày 5 đêm. Tường Lon, Tô Châu, Thượng Hải."
+      },
+      "en": {
+        "TourName": "Beijing - Suzhou - Shanghai 6 Days 5 Nights",
+        "ShortDescription": "Explore the billion-people country with thousand-year history and vibrant modernization.",
+        "LongDescription": "China tour explores Beijing with Great Wall, Summer Palace, then Suzhou - water town with ancient gardens and Shanghai - modern city.",
+        "SEOTitle": "Beijing Suzhou Shanghai Tour 6D5N - China",
+        "SEODescription": "China 6 days 5 nights tour. Great Wall, Suzhou, Shanghai."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-00000000001e",
+    "TourCode": "IN-DEL-AGRA-5D4N",
+    "TourName": "Delhi - Agra - Jaipur 5 Ngày 4 Đêm",
+    "ShortDescription": "Khám phá đất nước Ấn Độ với các công trình Mughal huyết bí.",
+    "LongDescription": "Tour Ấn Độ khám phá Delhi với Qutub Minar, Red Fort, sau đó đến Agra chiêm ngưỡng Taj Mahal - kỳ quan thế giới và Jaipur - thành phố hồng với cung điện maharaja.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Delhi Agra Jaipur 5N4Đ - Ấn Độ",
+    "SEODescription": "Tour Ấn Độ 5 ngày 4 đêm. Taj Mahal, Red Fort, Jaipur.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5998",
+      "OriginalFileName": "india.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5998.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5998",
+        "OriginalFileName": "delhi-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5998.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f5999",
+        "OriginalFileName": "delhi-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f5999.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6000",
+        "OriginalFileName": "agra-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6000.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6001",
+        "OriginalFileName": "jaipur-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6001.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Delhi - Agra - Jaipur 5 Ngày 4 Đêm",
+        "ShortDescription": "Khám phá đất nước Ấn Độ với các công trình Mughal huyết bí.",
+        "LongDescription": "Tour Ấn Độ khám phá Delhi với Qutub Minar, Red Fort, sau đó đến Agra chiêm ngưỡng Taj Mahal - kỳ quan thế giới và Jaipur - thành phố hồng với cung điện maharaja.",
+        "SEOTitle": "Tour Delhi Agra Jaipur 5N4Đ - Ấn Độ",
+        "SEODescription": "Tour Ấn Độ 5 ngày 4 đêm. Taj Mahal, Red Fort, Jaipur."
+      },
+      "en": {
+        "TourName": "Delhi - Agra - Jaipur 5 Days 4 Nights",
+        "ShortDescription": "Explore India with mysterious Mughal monuments.",
+        "LongDescription": "India tour explores Delhi with Qutub Minar, Red Fort, then Agra to admire Taj Mahal - world wonder and Jaipur - pink city with maharaja palaces.",
+        "SEOTitle": "Delhi Agra Jaipur Tour 5D4N - India",
+        "SEODescription": "India 5 days 4 nights tour. Taj Mahal, Red Fort, Jaipur."
+      }
+    },
+    "Classifications": [],
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527b0-0000-7000-8000-00000000001f",
+    "TourCode": "MY-KL-LANG-4D3N",
+    "TourName": "Kuala Lumpur - Langkawi 4 Ngày 3 Đêm",
+    "ShortDescription": "Từ thủ đô Kuala Lumpur sôi động đến đảo nhiệt đới Langkawi.",
+    "LongDescription": "Tour Malaysia khám phá Kuala Lumpur với tháp Petronas, cao nguyên Genting, sau đó đến Langkawi nghỉ dưỡng với bãi biển, cáp treo và đêm pháo hoa.",
+    "Status": "Active",
+    "TourScope": "International",
+    "CustomerSegment": "Group",
+    "SEOTitle": "Tour Kuala Lumpur Langkawi 4N3Đ - Malaysia",
+    "SEODescription": "Tour Malaysia 4 ngày 4 đêm. Petronas, Genting, Langkawi.",
+    "Thumbnail": {
+      "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6002",
+      "OriginalFileName": "malaysia-langkawi.jpg",
+      "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6002.jpg",
+      "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+    },
+    "IsDeleted": false,
+    "Images": [
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6002",
+        "OriginalFileName": "kl-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6002.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6003",
+        "OriginalFileName": "kl-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6003.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6004",
+        "OriginalFileName": "langkawi-1.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6004.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      },
+      {
+        "FileId": "9c4bbb62-fe53-4c58-b32c-1712db0f6005",
+        "OriginalFileName": "langkawi-2.jpg",
+        "FileName": "9c4bbb62-fe53-4c58-b32c-1712db0f6005.jpg",
+        "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
+      }
+    ],
+    "Translations": {
+      "vi": {
+        "TourName": "Kuala Lumpur - Langkawi 4 Ngày 3 Đêm",
+        "ShortDescription": "Từ thủ đô Kuala Lumpur sôi động đến đảo nhiệt đới Langkawi.",
+        "LongDescription": "Tour Malaysia khám phá Kuala Lumpur với tháp Petronas, cao nguyên Genting, sau đó đến Langkawi nghỉ dưỡng với bãi biển, cáp treo và đêm pháo hoa.",
+        "SEOTitle": "Tour Kuala Lumpur Langkawi 4N3Đ - Malaysia",
+        "SEODescription": "Tour Malaysia 4 ngày 4 đêm. Petronas, Genting, Langkawi."
+      },
+      "en": {
+        "TourName": "Kuala Lumpur - Langkawi 4 Days 3 Nights",
+        "ShortDescription": "From vibrant Kuala Lumpur to tropical island Langkawi.",
+        "LongDescription": "Malaysia tour explores Kuala Lumpur with Petronas Tower, Genting Highlands, then Langkawi for beach relaxation, cable car and fireworks night.",
+        "SEOTitle": "Kuala Lumpur Langkawi Tour 4D3N - Malaysia",
+        "SEODescription": "Malaysia 4 days 3 nights tour. Petronas, Genting, Langkawi."
       }
     },
     "Classifications": [],

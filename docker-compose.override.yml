@@ -16,6 +16,10 @@ services:
       Cors__AllowedOrigins__1: "https://localhost:3000"
       Cors__AllowedOrigins__2: "http://localhost:4001"
       Cors__AllowedOrigins__3: "http://frontend:3000"
+      Cors__AllowedOrigins__4: "http://localhost:3001"
+      Cors__AllowedOrigins__5: "https://localhost:3001"
+      Cors__AllowedOrigins__6: "http://127.0.0.1:3001"
+      Cors__AllowedOrigins__7: "https://127.0.0.1:3001"
 
   frontend:
     ports:

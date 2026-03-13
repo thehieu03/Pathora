@@ -52,12 +52,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "IncludedServices": [
+      "Xe khách",
+      "Khách sạn 3 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé tham quan"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Hà Nội - Hạ Long 3N2Đ - 15/04/2026",
+        "Location": "Hạ Long, Quảng Ninh",
+        "IncludedServices": [
+          "Xe khách",
+          "Khách sạn 3 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé tham quan"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Hanoi - Ha Long 3D2N - 15/04/2026",
+        "Location": "Ha Long, Quang Ninh",
+        "IncludedServices": [
+          "Tourist bus",
+          "3-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Entrance tickets"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000002",
@@ -112,12 +144,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe limousine", "Khách sạn 5 sao", "Ăn sáng + tối", "Hướng dẫn viên riêng", "Vé tham quan VIP"],
+    "IncludedServices": [
+      "Xe limousine",
+      "Khách sạn 5 sao",
+      "Ăn sáng + tối",
+      "Hướng dẫn viên riêng",
+      "Vé tham quan VIP"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Hà Nội - Hạ Long VIP 3N2Đ - 20/04/2026",
+        "Location": "Hạ Long, Quảng Ninh",
+        "IncludedServices": [
+          "Xe limousine",
+          "Khách sạn 5 sao",
+          "Ăn sáng + tối",
+          "Hướng dẫn viên riêng",
+          "Vé tham quan VIP"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Hanoi - Ha Long VIP 3D2N - 20/04/2026",
+        "Location": "Ha Long, Quang Ninh",
+        "IncludedServices": [
+          "Limousine transfer",
+          "5-star hotel",
+          "Breakfast and dinner",
+          "Private tour guide",
+          "VIP entrance tickets"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000003",
@@ -172,12 +236,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cầu Vàng"],
+    "IncludedServices": [
+      "Xe khách",
+      "Khách sạn 4 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé cầu Vàng"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Đà Nẵng - Hội An 4N3Đ - 01/05/2026",
+        "Location": "Đà Nẵng, Hội An",
+        "IncludedServices": [
+          "Xe khách",
+          "Khách sạn 4 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé cầu Vàng"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Da Nang - Hoi An 4D3N - 01/05/2026",
+        "Location": "Da Nang, Hoi An",
+        "IncludedServices": [
+          "Tourist bus",
+          "4-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Golden Bridge ticket"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000004",
@@ -232,12 +328,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé Safari"],
+    "IncludedServices": [
+      "Máy bay",
+      "Khách sạn 4 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé Safari"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Phú Quốc 5N4Đ - 10/05/2026",
+        "Location": "Phú Quốc, Kiên Giang",
+        "IncludedServices": [
+          "Máy bay",
+          "Khách sạn 4 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé Safari"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Phu Quoc 5D4N - 10/05/2026",
+        "Location": "Phu Quoc, Kien Giang",
+        "IncludedServices": [
+          "Round-trip flight",
+          "4-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Safari ticket"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000005",
@@ -292,12 +420,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cáp treo Fansipan"],
+    "IncludedServices": [
+      "Xe khách",
+      "Khách sạn 3 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé cáp treo Fansipan"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Sapa - Fansipan 3N2Đ - 01/06/2026",
+        "Location": "Sapa, Lào Cai",
+        "IncludedServices": [
+          "Xe khách",
+          "Khách sạn 3 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé cáp treo Fansipan"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Sapa - Fansipan 3D2N - 01/06/2026",
+        "Location": "Sapa, Lao Cai",
+        "IncludedServices": [
+          "Tourist bus",
+          "3-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Fansipan cable car ticket"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000006",
@@ -352,12 +512,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "IncludedServices": [
+      "Máy bay",
+      "Khách sạn 4 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé tham quan"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Bangkok - Pattaya 4N3Đ - 15/06/2026",
+        "Location": "Bangkok, Pattaya, Thái Lan",
+        "IncludedServices": [
+          "Máy bay",
+          "Khách sạn 4 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé tham quan"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Bangkok - Pattaya 4D3N - 15/06/2026",
+        "Location": "Bangkok, Pattaya, Thailand",
+        "IncludedServices": [
+          "Round-trip flight",
+          "4-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Entrance tickets"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000007",
@@ -412,12 +604,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé Shinkansen"],
+    "IncludedServices": [
+      "Máy bay",
+      "Khách sạn 4 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé Shinkansen"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Tokyo - Osaka Hoa Anh Đào 5N4Đ - 01/04/2026",
+        "Location": "Tokyo, Osaka, Nhật Bản",
+        "IncludedServices": [
+          "Máy bay",
+          "Khách sạn 4 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé Shinkansen"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Tokyo - Osaka Cherry Blossom 5D4N - 01/04/2026",
+        "Location": "Tokyo, Osaka, Japan",
+        "IncludedServices": [
+          "Round-trip flight",
+          "4-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Shinkansen ticket"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000008",
@@ -472,12 +696,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Máy bay", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "IncludedServices": [
+      "Máy bay",
+      "Khách sạn 4 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé tham quan"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Seoul - Jeju 4N3Đ - 20/05/2026",
+        "Location": "Seoul, Jeju, Hàn Quốc",
+        "IncludedServices": [
+          "Máy bay",
+          "Khách sạn 4 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé tham quan"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Seoul - Jeju 4D3N - 20/05/2026",
+        "Location": "Seoul, Jeju, South Korea",
+        "IncludedServices": [
+          "Round-trip flight",
+          "4-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Entrance tickets"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-000000000009",
@@ -532,12 +788,44 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 3 sao", "Ăn sáng", "Hướng dẫn viên", "Vé tham quan"],
+    "IncludedServices": [
+      "Xe khách",
+      "Khách sạn 3 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé tham quan"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Hà Nội - Hạ Long 3N2Đ - 01/03/2026",
+        "Location": "Hạ Long, Quảng Ninh",
+        "IncludedServices": [
+          "Xe khách",
+          "Khách sạn 3 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé tham quan"
+        ],
+        "CancellationReason": null
+      },
+      "en": {
+        "Title": "Hanoi - Ha Long 3D2N - 01/03/2026",
+        "Location": "Ha Long, Quang Ninh",
+        "IncludedServices": [
+          "Tourist bus",
+          "3-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Entrance tickets"
+        ],
+        "CancellationReason": null
+      }
+    }
   },
   {
     "Id": "019527e0-0000-7000-8000-00000000000a",
@@ -593,11 +881,43 @@
         "PublicURL": "https://cdn3.ivivu.com/2023/11/du-lich-ha-long-ivivu.jpg"
       }
     ],
-    "IncludedServices": ["Xe khách", "Khách sạn 4 sao", "Ăn sáng", "Hướng dẫn viên", "Vé cầu Vàng"],
+    "IncludedServices": [
+      "Xe khách",
+      "Khách sạn 4 sao",
+      "Ăn sáng",
+      "Hướng dẫn viên",
+      "Vé cầu Vàng"
+    ],
     "IsDeleted": false,
     "CreatedBy": "system",
     "CreatedOnUtc": "2026-03-10T00:00:00Z",
     "LastModifiedBy": "system",
-    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z",
+    "Translations": {
+      "vi": {
+        "Title": "Đà Nẵng - Hội An 4N3Đ - 20/03/2026",
+        "Location": "Đà Nẵng, Hội An",
+        "IncludedServices": [
+          "Xe khách",
+          "Khách sạn 4 sao",
+          "Ăn sáng",
+          "Hướng dẫn viên",
+          "Vé cầu Vàng"
+        ],
+        "CancellationReason": "Không đủ khách"
+      },
+      "en": {
+        "Title": "Da Nang - Hoi An 4D3N - 20/03/2026",
+        "Location": "Da Nang, Hoi An",
+        "IncludedServices": [
+          "Tourist bus",
+          "4-star hotel",
+          "Breakfast",
+          "Tour guide",
+          "Golden Bridge ticket"
+        ],
+        "CancellationReason": "Không đủ khách"
+      }
+    }
   }
 ]

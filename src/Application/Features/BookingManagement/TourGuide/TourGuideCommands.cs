@@ -1,4 +1,6 @@
+using Application.Common;
 using Application.Contracts.Booking;
+using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -174,7 +176,11 @@ public sealed class DeleteTourGuideCommandHandler(ITourGuideRepository tourGuide
     }
 }
 
-public sealed record GetTourGuideByIdQuery(Guid TourGuideId) : IQuery<ErrorOr<TourGuideDto>>;
+public sealed record GetTourGuideByIdQuery(Guid TourGuideId) : IQuery<ErrorOr<TourGuideDto>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:tour-guide:{TourGuideId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetTourGuideByIdQueryHandler(ITourGuideRepository tourGuideRepository)
     : IQueryHandler<GetTourGuideByIdQuery, ErrorOr<TourGuideDto>>
@@ -215,7 +221,11 @@ public sealed class GetTourGuideByIdQueryHandler(ITourGuideRepository tourGuideR
 }
 
 public sealed record GetTourGuidesQuery(bool? IsAvailable = null, string? Language = null, string? Specialization = null)
-    : IQuery<ErrorOr<List<TourGuideDto>>>;
+    : IQuery<ErrorOr<List<TourGuideDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:tour-guides:{IsAvailable}:{Language}:{Specialization}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetTourGuidesQueryHandler(ITourGuideRepository tourGuideRepository)
     : IQueryHandler<GetTourGuidesQuery, ErrorOr<List<TourGuideDto>>>
@@ -398,7 +408,11 @@ public sealed class UpdateTourGuideAssignmentStatusCommandHandler(
     }
 }
 
-public sealed record GetBookingTeamQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingTeamMemberDto>>>;
+public sealed record GetBookingTeamQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingTeamMemberDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:team:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingTeamQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
     : IQueryHandler<GetBookingTeamQuery, ErrorOr<List<BookingTeamMemberDto>>>
@@ -424,7 +438,11 @@ public sealed class GetBookingTeamQueryHandler(IBookingTourGuideRepository booki
     }
 }
 
-public sealed record GetBookingTourManagerQuery(Guid BookingId) : IQuery<ErrorOr<BookingTeamMemberDto>>;
+public sealed record GetBookingTourManagerQuery(Guid BookingId) : IQuery<ErrorOr<BookingTeamMemberDto>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:team-manager:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingTourManagerQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
     : IQueryHandler<GetBookingTourManagerQuery, ErrorOr<BookingTeamMemberDto>>
@@ -451,7 +469,11 @@ public sealed class GetBookingTourManagerQueryHandler(IBookingTourGuideRepositor
     }
 }
 
-public sealed record GetBookingTourOperatorsQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingTeamMemberDto>>>;
+public sealed record GetBookingTourOperatorsQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingTeamMemberDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:team-operators:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingTourOperatorsQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
     : IQueryHandler<GetBookingTourOperatorsQuery, ErrorOr<List<BookingTeamMemberDto>>>
@@ -475,7 +497,11 @@ public sealed class GetBookingTourOperatorsQueryHandler(IBookingTourGuideReposit
     }
 }
 
-public sealed record GetBookingAssignedTourGuidesQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingTeamMemberDto>>>;
+public sealed record GetBookingAssignedTourGuidesQuery(Guid BookingId) : IQuery<ErrorOr<List<BookingTeamMemberDto>>>, ICacheable
+{
+    public string CacheKey => $"{Application.Common.CacheKey.Booking}:team-guides:{BookingId}";
+    public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
+}
 
 public sealed class GetBookingAssignedTourGuidesQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
     : IQueryHandler<GetBookingAssignedTourGuidesQuery, ErrorOr<List<BookingTeamMemberDto>>>
