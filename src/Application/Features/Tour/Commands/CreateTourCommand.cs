@@ -20,7 +20,8 @@ public sealed record CreateTourCommand(
     TourStatus Status,
     ImageInputDto? Thumbnail = null,
     List<ImageInputDto>? Images = null,
-    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+    Dictionary<string, TourTranslationData>? Translations = null,
+    List<ClassificationDto>? Classifications = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
 }

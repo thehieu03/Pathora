@@ -40,6 +40,7 @@ public class TourInstanceEntity : Aggregate<Guid>
     public decimal AdultPrice { get; set; }
     public decimal ChildPrice { get; set; }
     public decimal InfantPrice { get; set; }
+    public decimal DepositPerPerson { get; set; }
 
     // Aliases for backward compatibility
     public decimal BasePrice => AdultPrice;
@@ -89,6 +90,7 @@ public class TourInstanceEntity : Aggregate<Guid>
             decimal adultPrice,
             decimal childPrice,
             decimal infantPrice,
+            decimal depositPerPerson,
             string performedBy,
             string? location = null,
             ImageEntity? thumbnail = null,
@@ -121,6 +123,7 @@ public class TourInstanceEntity : Aggregate<Guid>
             AdultPrice = adultPrice,
             ChildPrice = childPrice,
             InfantPrice = infantPrice,
+            DepositPerPerson = depositPerPerson,
             Location = location,
             Thumbnail = thumbnail ?? new ImageEntity(),
             Images = images ?? [],
@@ -144,6 +147,7 @@ public class TourInstanceEntity : Aggregate<Guid>
         decimal adultPrice,
         decimal childPrice,
         decimal infantPrice,
+        decimal depositPerPerson,
         string performedBy,
         string? location = null,
         ImageEntity? thumbnail = null,
@@ -164,6 +168,7 @@ public class TourInstanceEntity : Aggregate<Guid>
         AdultPrice = adultPrice;
         ChildPrice = childPrice;
         InfantPrice = infantPrice;
+        DepositPerPerson = depositPerPerson;
         Location = location;
         ConfirmationDeadline = confirmationDeadline;
         if (thumbnail is not null)

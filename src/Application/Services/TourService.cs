@@ -8,6 +8,7 @@ using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Entities.Translations;
+using Domain.Enums;
 using Domain.UnitOfWork;
 using ErrorOr;
 
@@ -71,6 +72,156 @@ public class TourService(
             thumbnail: thumbnail,
             images: images);
         tour.Translations = NormalizeTranslations(request.Translations);
+
+        // Add Classifications with Plans, Activities, Insurances
+        if (request.Classifications != null)
+        {
+            foreach (var cls in request.Classifications)
+            {
+                var classification = TourClassificationEntity.Create(
+                    tour.Id,
+                    cls.Name,
+                    cls.AdultPrice,
+                    cls.ChildPrice,
+                    cls.InfantPrice,
+                    cls.Description,
+                    cls.NumberOfDay,
+                    cls.NumberOfNight,
+                    _user.Id ?? string.Empty);
+
+                // Add Plans (Days)
+                foreach (var plan in cls.Plans)
+                {
+                    var day = TourDayEntity.Create(
+                        classification.Id,
+                        plan.DayNumber,
+                        plan.Title,
+                        _user.Id ?? string.Empty,
+                        plan.Description);
+
+                    // Add Activities
+                    foreach (var act in plan.Activities)
+                    {
+                        var activityOrder = plan.Activities.IndexOf(act) + 1;
+                        var activityType = Enum.TryParse<TourDayActivityType>(act.ActivityType, out var at) ? at : TourDayActivityType.Other;
+                        TimeOnly? startTime = null;
+                        TimeOnly? endTime = null;
+
+                        if (!string.IsNullOrWhiteSpace(act.StartTime) && TimeOnly.TryParse(act.StartTime, out var st))
+                        {
+                            startTime = st;
+                        }
+                        if (!string.IsNullOrWhiteSpace(act.EndTime) && TimeOnly.TryParse(act.EndTime, out var et))
+                        {
+                            endTime = et;
+                        }
+
+                        var activity = TourDayActivityEntity.Create(
+                            day.Id,
+                            activityOrder,
+                            activityType,
+                            act.Title,
+                            _user.Id ?? string.Empty,
+                            act.Description,
+                            act.Note,
+                            startTime,
+                            endTime,
+                            act.EstimatedCost,
+                            act.IsOptional);
+
+                        // Add Routes (Transportations)
+                        foreach (var route in act.Routes)
+                        {
+                            var routeOrder = act.Routes.IndexOf(route) + 1;
+                            var transportationType = Enum.TryParse<TransportationType>(route.TransportationType, out var tt) ? tt : TransportationType.Other;
+
+                            // Create FromLocation
+                            var fromLocation = TourPlanLocationEntity.Create(
+                                route.FromLocationName,
+                                LocationType.Other,
+                                _user.Id ?? string.Empty);
+
+                            // Create ToLocation
+                            var toLocation = TourPlanLocationEntity.Create(
+                                route.ToLocationName,
+                                LocationType.Other,
+                                _user.Id ?? string.Empty);
+
+                            var routeEntity = TourPlanRouteEntity.Create(
+                                routeOrder,
+                                transportationType,
+                                _user.Id ?? string.Empty,
+                                route.TransportationName,
+                                route.Note,
+                                null, // estimatedDepartureTime
+                                null, // estimatedArrivalTime
+                                route.DurationMinutes,
+                                null, // distanceKm
+                                route.Price,
+                                route.TicketInfo,
+                                route.Note);
+
+                            routeEntity.FromLocation = fromLocation;
+                            routeEntity.ToLocation = toLocation;
+                            activity.Routes.Add(routeEntity);
+                        }
+
+                        // Add Accommodation
+                        if (act.Accommodation != null)
+                        {
+                            var accommodation = TourPlanAccommodationEntity.Create(
+                                act.Accommodation.AccommodationName,
+                                Domain.Enums.RoomType.Double,
+                                2, // default roomCapacity
+                                Domain.Enums.MealType.None,
+                                _user.Id ?? string.Empty,
+                                act.Accommodation.CheckInTime != null && TimeOnly.TryParse(act.Accommodation.CheckInTime, out var cit) ? cit : null,
+                                act.Accommodation.CheckOutTime != null && TimeOnly.TryParse(act.Accommodation.CheckOutTime, out var cot) ? cot : null,
+                                null, // roomPrice
+                                null, // numberOfRooms
+                                null, // numberOfNights
+                                null, // totalPrice
+                                null, // specialRequest
+                                act.Accommodation.Address,
+                                null, // city
+                                act.Accommodation.ContactPhone,
+                                null, // website
+                                null, // imageUrl
+                                null, // latitude
+                                null, // longitude
+                                act.Accommodation.Note);
+
+                            activity.Accommodation = accommodation;
+                        }
+
+                        day.Activities.Add(activity);
+                    }
+
+                    classification.Plans.Add(day);
+                }
+
+                // Add Insurances
+                foreach (var ins in cls.Insurances)
+                {
+                    var insuranceType = Enum.TryParse<InsuranceType>(ins.InsuranceType, out var it) ? it : InsuranceType.None;
+
+                    var insurance = TourInsuranceEntity.Create(
+                        ins.InsuranceName,
+                        insuranceType,
+                        ins.InsuranceProvider,
+                        ins.CoverageDescription,
+                        ins.CoverageAmount,
+                        ins.CoverageFee,
+                        _user.Id ?? string.Empty,
+                        ins.IsOptional,
+                        ins.Note);
+
+                    classification.Insurances.Add(insurance);
+                }
+
+                tour.Classifications.Add(classification);
+            }
+        }
 
         await _tourRepository.Create(tour);
         await _unitOfWork.SaveChangeAsync();

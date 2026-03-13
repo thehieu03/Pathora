@@ -21,6 +21,12 @@ public class TourController(IFileService fileService) : BaseApiController
         PropertyNameCaseInsensitive = true
     };
 
+    private static readonly JsonSerializerOptions ClassificationJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+    };
+
     [HttpGet]
     public async Task<IActionResult> GetAll(
         [FromQuery] string? searchText,
@@ -63,17 +69,19 @@ public class TourController(IFileService fileService) : BaseApiController
         [FromForm] TourStatus status,
         IFormFile? thumbnail,
         [FromForm] List<IFormFile>? images,
-        [FromForm] string? translations = null)
+        [FromForm] string? translations = null,
+        [FromForm] string? classifications = null)
     {
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
             ? await UploadFiles(images)
             : null;
         var translationData = ParseTranslations(translations);
+        var classificationData = ParseClassifications(classifications);
 
         var command = new CreateTourCommand(
             tourName, shortDescription, longDescription,
-            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData);
+            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData, classificationData);
 
         var result = await Sender.Send(command);
         return HandleResult(result);
@@ -145,6 +153,25 @@ public class TourController(IFileService fileService) : BaseApiController
             return JsonSerializer.Deserialize<Dictionary<string, TourTranslationData>>(
                 translations,
                 TranslationJsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static List<ClassificationDto>? ParseClassifications(string? classifications)
+    {
+        if (string.IsNullOrWhiteSpace(classifications))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<ClassificationDto>>(
+                classifications,
+                ClassificationJsonOptions);
         }
         catch (JsonException)
         {

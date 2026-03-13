@@ -18,6 +18,7 @@
     "AdultPrice": 3000000,
     "ChildPrice": 3500000,
     "InfantPrice": 2500000,
+    "DepositPerPerson": 500000,
     "Location": "Hạ Long, Quảng Ninh",
     "Status": "Available",
     "Thumbnail": {
@@ -110,6 +111,7 @@
     "AdultPrice": 5500000,
     "ChildPrice": 6500000,
     "InfantPrice": 4500000,
+    "DepositPerPerson": 1000000,
     "Location": "Hạ Long, Quảng Ninh",
     "Status": "Available",
     "Thumbnail": {
@@ -202,6 +204,7 @@
     "AdultPrice": 3800000,
     "ChildPrice": 4200000,
     "InfantPrice": 3200000,
+    "DepositPerPerson": 700000,
     "Location": "Đà Nẵng, Hội An",
     "Status": "Available",
     "Thumbnail": {
@@ -294,6 +297,7 @@
     "AdultPrice": 5200000,
     "ChildPrice": 5800000,
     "InfantPrice": 4500000,
+    "DepositPerPerson": 1000000,
     "Location": "Phú Quốc, Kiên Giang",
     "Status": "Available",
     "Thumbnail": {
@@ -386,6 +390,7 @@
     "AdultPrice": 2500000,
     "ChildPrice": 2800000,
     "InfantPrice": 2000000,
+    "DepositPerPerson": 500000,
     "Location": "Sapa, Lào Cai",
     "Status": "Available",
     "Thumbnail": {
@@ -478,6 +483,7 @@
     "AdultPrice": 6800000,
     "ChildPrice": 7500000,
     "InfantPrice": 5500000,
+    "DepositPerPerson": 1500000,
     "Location": "Bangkok, Pattaya, Thái Lan",
     "Status": "Available",
     "Thumbnail": {
@@ -570,6 +576,7 @@
     "AdultPrice": 17000000,
     "ChildPrice": 18500000,
     "InfantPrice": 14000000,
+    "DepositPerPerson": 3000000,
     "Location": "Tokyo, Osaka, Nhật Bản",
     "Status": "Available",
     "Thumbnail": {
@@ -662,6 +669,7 @@
     "AdultPrice": 11500000,
     "ChildPrice": 12800000,
     "InfantPrice": 9500000,
+    "DepositPerPerson": 2000000,
     "Location": "Seoul, Jeju, Hàn Quốc",
     "Status": "Available",
     "Thumbnail": {
@@ -754,6 +762,7 @@
     "AdultPrice": 3000000,
     "ChildPrice": 3500000,
     "InfantPrice": 2500000,
+    "DepositPerPerson": 500000,
     "Location": "Hạ Long, Quảng Ninh",
     "Status": "Completed",
     "Thumbnail": {
@@ -846,6 +855,7 @@
     "AdultPrice": 3800000,
     "ChildPrice": 4200000,
     "InfantPrice": 3200000,
+    "DepositPerPerson": 700000,
     "Location": "Đà Nẵng, Hội An",
     "Status": "Cancelled",
     "CancellationReason": "Không đủ khách",
