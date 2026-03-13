@@ -803,7 +803,7 @@ export function TourDetailPage() {
         {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs text-gray-400 py-4 px-6 overflow-x-auto">
           <Link
-            href="/"
+            href="/home"
             className="hover:text-gray-600 transition-colors shrink-0">
             {t("landing.tourDetail.home")}
           </Link>

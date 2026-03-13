@@ -154,6 +154,7 @@ export interface TourVm {
   tourName: string;
   shortDescription: string;
   status: string;
+  thumbnail: ImageDto | null;
   createdOnUtc: string;
 }
 

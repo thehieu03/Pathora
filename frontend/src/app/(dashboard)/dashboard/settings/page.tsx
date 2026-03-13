@@ -1,10 +1,9 @@
-import DashboardSectionPlaceholder from "../../../../components/partials/dashboard/DashboardSectionPlaceholder";
+import dynamic from "next/dynamic";
+
+const SettingsPage = dynamic(
+  () => import("@/components/partials/dashboard/SettingsPage"),
+);
 
 export default function DashboardSettingsPage() {
-  return (
-    <DashboardSectionPlaceholder
-      title="Settings"
-      description="Workspace configuration, permissions, and system preferences will be configured here."
-    />
-  );
+  return <SettingsPage />;
 }

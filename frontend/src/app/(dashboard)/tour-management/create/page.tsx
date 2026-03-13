@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
+import FileInput from "@/components/ui/FileInput";
 import { tourService } from "@/services/tourService";
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -88,9 +89,7 @@ interface ServiceForm {
 }
 
 interface BasicInfoForm {
-  tourCode: string;
   tourName: string;
-  thumbnailUrl: string;
   shortDescription: string;
   longDescription: string;
   ecoDescription: string;
@@ -155,9 +154,13 @@ const NAV_ITEMS = [
   {
     label: "Tour Instances",
     icon: "heroicons:calendar-days",
-    href: "/tour-management",
+    href: "/tour-instances",
   },
-  { label: "Bookings", icon: "heroicons:ticket", href: "/bookings" },
+  {
+    label: "Bookings",
+    icon: "heroicons:ticket",
+    href: "/dashboard/bookings",
+  },
   {
     label: "Payments",
     icon: "heroicons:credit-card",
@@ -181,7 +184,7 @@ const NAV_ITEMS = [
   {
     label: "Policies",
     icon: "heroicons:clipboard-document-list",
-    href: "/policies",
+    href: "/dashboard/policies",
   },
   {
     label: "Settings",
@@ -336,9 +339,7 @@ export default function CreateTourPage() {
 
   /* ── Step 1: Basic Info ───────────────────────────────────── */
   const [basicInfo, setBasicInfo] = useState<BasicInfoForm>({
-    tourCode: "",
     tourName: "",
-    thumbnailUrl: "",
     shortDescription: "",
     longDescription: "",
     ecoDescription: "",
@@ -353,6 +354,8 @@ export default function CreateTourPage() {
     seoTitle: "",
     seoDescription: "",
   });
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
 
   /* ── Step 2: Classifications ──────────────────────────────── */
   const [classifications, setClassifications] = useState<ClassificationForm[]>([
@@ -389,8 +392,6 @@ export default function CreateTourPage() {
     const newErrors: Record<string, string> = {};
 
     if (step === 0) {
-      if (!basicInfo.tourCode.trim())
-        newErrors.tourCode = t("tourAdmin.required", "Required");
       if (!basicInfo.tourName.trim())
         newErrors.tourName = t("tourAdmin.required", "Required");
       if (!basicInfo.shortDescription.trim())
@@ -759,7 +760,6 @@ export default function CreateTourPage() {
       const formData = new FormData();
 
       // Basic info
-      formData.append("tourCode", basicInfo.tourCode);
       formData.append("tourName", basicInfo.tourName);
       formData.append("shortDescription", basicInfo.shortDescription);
       formData.append("longDescription", basicInfo.longDescription);
@@ -767,45 +767,43 @@ export default function CreateTourPage() {
       formData.append("seoTitle", basicInfo.seoTitle);
       formData.append("seoDescription", basicInfo.seoDescription);
       formData.append("status", basicInfo.status);
-      if (basicInfo.thumbnailUrl) {
-        formData.append("thumbnailUrl", basicInfo.thumbnailUrl);
-      }
+      if (thumbnail) formData.append("thumbnail", thumbnail);
+      images.forEach((img) => formData.append("images", img));
 
-      // Translations — Vietnamese auto-populated from basicInfo
-      formData.append("translations[vi][TourName]", basicInfo.tourName);
-      formData.append(
-        "translations[vi][ShortDescription]",
-        basicInfo.shortDescription,
-      );
-      formData.append(
-        "translations[vi][LongDescription]",
-        basicInfo.longDescription,
-      );
-      formData.append("translations[vi][SEOTitle]", basicInfo.seoTitle);
-      formData.append(
-        "translations[vi][SEODescription]",
-        basicInfo.seoDescription,
-      );
+      const translationPayload: Record<
+        string,
+        {
+          TourName: string;
+          ShortDescription: string;
+          LongDescription: string;
+          SEOTitle?: string;
+          SEODescription?: string;
+        }
+      > = {
+        vi: {
+          TourName: basicInfo.tourName,
+          ShortDescription: basicInfo.shortDescription,
+          LongDescription: basicInfo.longDescription,
+          SEOTitle: basicInfo.seoTitle,
+          SEODescription: basicInfo.seoDescription,
+        },
+      };
+
       if (
         enTranslation.tourName ||
         enTranslation.shortDescription ||
         enTranslation.longDescription
       ) {
-        formData.append("translations[en][TourName]", enTranslation.tourName);
-        formData.append(
-          "translations[en][ShortDescription]",
-          enTranslation.shortDescription,
-        );
-        formData.append(
-          "translations[en][LongDescription]",
-          enTranslation.longDescription,
-        );
-        formData.append("translations[en][SEOTitle]", enTranslation.seoTitle);
-        formData.append(
-          "translations[en][SEODescription]",
-          enTranslation.seoDescription,
-        );
+        translationPayload.en = {
+          TourName: enTranslation.tourName,
+          ShortDescription: enTranslation.shortDescription,
+          LongDescription: enTranslation.longDescription,
+          SEOTitle: enTranslation.seoTitle,
+          SEODescription: enTranslation.seoDescription,
+        };
       }
+
+      formData.append("translations", JSON.stringify(translationPayload));
 
       // Classifications with nested day plans, activities, and insurance
       classifications.forEach((cls, ci) => {
@@ -1060,30 +1058,6 @@ export default function CreateTourPage() {
               </p>
 
               <div className="space-y-5">
-                {/* Tour Code */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Tour Code <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={basicInfo.tourCode}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        tourCode: e.target.value,
-                      }))
-                    }
-                    placeholder="e.g. TOUR-VN-001"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                  />
-                  {errors.tourCode && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.tourCode}
-                    </p>
-                  )}
-                </div>
-
                 {/* Tour Name */}
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -1106,25 +1080,6 @@ export default function CreateTourPage() {
                       {errors.tourName}
                     </p>
                   )}
-                </div>
-
-                {/* Thumbnail URL */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Thumbnail URL
-                  </label>
-                  <input
-                    type="text"
-                    value={basicInfo.thumbnailUrl}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        thumbnailUrl: e.target.value,
-                      }))
-                    }
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                  />
                 </div>
 
                 {/* Short Description */}
@@ -1206,6 +1161,41 @@ export default function CreateTourPage() {
                     placeholder="SEO-optimized title for search engines"
                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      Thumbnail File
+                    </label>
+                    <FileInput
+                      name="thumbnail"
+                      onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
+                    />
+                    {thumbnail && (
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Selected: {thumbnail.name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      Gallery Images
+                    </label>
+                    <FileInput
+                      name="images"
+                      multiple
+                      onChange={(e) =>
+                        setImages(Array.from(e.target.files ?? []))
+                      }
+                    />
+                    {images.length > 0 && (
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Selected: {images.length} file(s)
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -2582,7 +2572,7 @@ export default function CreateTourPage() {
                         Code:
                       </span>{" "}
                       <span className="text-slate-900 dark:text-white">
-                        {basicInfo.tourCode || "N/A"}
+                        Auto-generated after creation
                       </span>
                     </p>
                     <p className="text-sm">

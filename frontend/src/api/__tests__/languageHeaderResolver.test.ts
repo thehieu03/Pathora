@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   getCurrentApiLanguage,
@@ -6,6 +6,10 @@ import {
 } from "../languageHeader";
 
 describe("languageHeader", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("normalizes complex language tags to en/vi", () => {
     expect(normalizeLanguageForApi("en-US")).toBe("en");
     expect(normalizeLanguageForApi("vi-VN")).toBe("vi");
@@ -20,5 +24,31 @@ describe("languageHeader", () => {
   it("returns currently normalized i18n language", () => {
     expect(getCurrentApiLanguage("en-US")).toBe("en");
     expect(getCurrentApiLanguage("fr-FR")).toBe("vi");
+  });
+
+  it("prefers persisted i18next language from localStorage", () => {
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: () => "en",
+      },
+      navigator: {
+        language: "vi-VN",
+      },
+    });
+
+    expect(getCurrentApiLanguage()).toBe("en");
+  });
+
+  it("falls back to navigator language then default vi", () => {
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: () => null,
+      },
+      navigator: {
+        language: "fr-FR",
+      },
+    });
+
+    expect(getCurrentApiLanguage()).toBe("vi");
   });
 });

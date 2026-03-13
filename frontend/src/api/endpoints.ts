@@ -168,6 +168,12 @@ export interface PublicTourInstanceEndpoints {
   RESOLVE_PRICING: (id: string, participants: number) => string;
 }
 
+// Admin Endpoints Interface
+export interface AdminEndpoints {
+  GET_OVERVIEW: string;
+  GET_DASHBOARD: string;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -182,6 +188,7 @@ export interface ApiEndpoints {
   TOUR: TourEndpoints;
   TOUR_INSTANCE: TourInstanceEndpoints;
   PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints;
+  ADMIN: AdminEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -351,6 +358,12 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_DETAIL: (id: string): string => `/api/public/tour-instances/${id}`,
     RESOLVE_PRICING: (id: string, participants: number): string =>
       `/api/public/tour-instances/${id}/pricing/resolve?participants=${participants}`,
+  },
+
+  // Admin
+  ADMIN: {
+    GET_OVERVIEW: "/api/admin/overview",
+    GET_DASHBOARD: "/api/admin/dashboard",
   },
 };
 

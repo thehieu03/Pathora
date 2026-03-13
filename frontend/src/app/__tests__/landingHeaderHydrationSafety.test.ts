@@ -18,4 +18,13 @@ describe("landing header hydration safety", () => {
       true,
     );
   });
+
+  it("keeps public home navigation pointing to /home", () => {
+    const source = readFile("src/components/partials/shared/LandingHeader.tsx");
+
+    expect(source.includes('{ labelKey: "landing.nav.home", href: "/home" },')).toBe(
+      true,
+    );
+    expect(source.includes('href="/home"')).toBe(true);
+  });
 });

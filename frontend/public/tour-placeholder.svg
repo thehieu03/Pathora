@@ -1,0 +1,31 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tour placeholder image">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="40" x2="1080" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#142850"/>
+      <stop offset="0.55" stop-color="#1F4068"/>
+      <stop offset="1" stop-color="#2B6E8F"/>
+    </linearGradient>
+    <linearGradient id="ridge" x1="0" y1="350" x2="0" y2="675" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6FB1C4" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#4F8BA2" stop-opacity="0.96"/>
+    </linearGradient>
+    <linearGradient id="mountain" x1="380" y1="180" x2="740" y2="510" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9CD7E0"/>
+      <stop offset="1" stop-color="#5E8EA4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <circle cx="910" cy="145" r="72" fill="#FFDFA1" fill-opacity="0.92"/>
+  <path d="M0 420C110 390 188 420 292 432C411 446 524 409 638 404C805 397 902 458 1045 470C1122 477 1168 468 1200 458V675H0V420Z" fill="url(#ridge)"/>
+  <path d="M290 485L463 225L607 485H290Z" fill="url(#mountain)"/>
+  <path d="M438 264L463 225L496 279L463 255L438 264Z" fill="#EAF9FC" fill-opacity="0.9"/>
+  <path d="M547 485L722 180L909 485H547Z" fill="#4E7C93"/>
+  <path d="M694 228L722 180L756 242L722 220L694 228Z" fill="#EAF9FC" fill-opacity="0.84"/>
+  <g opacity="0.9">
+    <rect x="78" y="78" width="228" height="64" rx="32" fill="#FFFFFF" fill-opacity="0.12"/>
+    <path d="M110 112C110 98.7 120.7 88 134 88H170C183.3 88 194 98.7 194 112C194 125.3 183.3 136 170 136H134C120.7 136 110 125.3 110 112Z" fill="#FFFFFF" fill-opacity="0.25"/>
+    <rect x="208" y="98" width="82" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.7"/>
+    <rect x="208" y="113" width="62" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.5"/>
+  </g>
+</svg>

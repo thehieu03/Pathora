@@ -12,6 +12,7 @@ describe("LanguageTabs", () => {
 
     expect(markup).toContain("Tiếng Việt");
     expect(markup).toContain("English");
-    expect(markup).toContain("aria-pressed=\"true\"");
+    expect(markup).toContain("bg-white text-slate-900 shadow-sm");
+    expect(markup).toContain("Required");
   });
 });

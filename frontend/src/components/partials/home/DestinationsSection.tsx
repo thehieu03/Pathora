@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "../shared/LandingImage";
-import { Badge, Card } from "@/components/ui";
+import { Badge, Icon } from "@/components/ui";
 import { SectionContainer } from "../shared/shared";
 import { useTranslation } from "react-i18next";
 import { homeService } from "@/services/homeService";
@@ -10,43 +10,37 @@ import { TrendingDestination, TopAttraction } from "@/types/home";
 
 const FALLBACK_DESTINATIONS = [
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/dfe68e43-da11-41a8-b647-e0bdcc2720c4",
+    image: null,
     city: "Paris",
     country: "France",
     toursCount: 12,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/5389dbb9-c81c-4796-b57d-b521bbbe8de1",
+    image: null,
     city: "Singapore",
     country: "Singapore",
     toursCount: 8,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/c51cdf1f-a737-41bc-adf9-7cba8f4be0c3",
+    image: null,
     city: "Rome",
     country: "Italy",
     toursCount: 15,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/2c81a72e-438c-43a1-a5e4-9dfdbe595748",
+    image: null,
     city: "Bangkok",
     country: "Thailand",
     toursCount: 10,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/8d79382c-bc93-46a0-a421-d3b11f7366ed",
+    image: null,
     city: "Bali",
     country: "Indonesia",
     toursCount: 9,
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/daf96572-083c-4601-9e01-4d98b0cf1add",
+    image: null,
     city: "Phuket",
     country: "Thailand",
     toursCount: 7,
@@ -55,43 +49,144 @@ const FALLBACK_DESTINATIONS = [
 
 const FALLBACK_ATTRACTIONS = [
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/132ea952-f2d5-445e-9fee-4466c6d442e9",
+    image: null,
     name: "Colosseum",
     location: "Italy",
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/9b513ed4-0c16-46ad-b479-3d582dea018e",
+    image: null,
     name: "Statue of Liberty",
     location: "New York",
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/0c3cedba-bd30-49bb-8dda-2d1494be1ceb",
+    image: null,
     name: "Tower of London",
     location: "London",
   },
   {
-    image:
-      "https://www.figma.com/api/mcp/asset/80cb780f-6be5-4a14-8df5-ee5ca9e3c9e0",
+    image: null,
     name: "Vatican Museums",
     location: "Vatican City",
   },
 ];
 
+const DESTINATION_PLACEHOLDER_GRADIENTS = [
+  "from-sky-600 via-cyan-500 to-emerald-400",
+  "from-fuchsia-600 via-violet-500 to-indigo-500",
+  "from-amber-500 via-orange-500 to-rose-500",
+  "from-teal-600 via-emerald-500 to-lime-500",
+  "from-blue-700 via-indigo-600 to-violet-600",
+  "from-rose-600 via-pink-500 to-orange-500",
+];
+
+const ATTRACTION_PLACEHOLDER_GRADIENTS = [
+  "from-blue-600 to-indigo-600",
+  "from-cyan-600 to-teal-600",
+  "from-violet-600 to-purple-600",
+  "from-amber-500 to-orange-500",
+];
+
 interface DestinationData {
-  image: string;
+  image: string | null;
   city: string;
   country: string;
   toursCount: number;
 }
 
 interface AttractionData {
-  image: string;
+  image: string | null;
   name: string;
   location: string;
 }
+
+const TrendingDestinationCard = ({
+  destination,
+  index,
+  toursLabel,
+}: {
+  destination: DestinationData;
+  index: number;
+  toursLabel: string;
+}) => {
+  const [hasImageError, setHasImageError] = useState(false);
+  const hasImage = Boolean(destination.image) && !hasImageError;
+  const gradient = DESTINATION_PLACEHOLDER_GRADIENTS[index % DESTINATION_PLACEHOLDER_GRADIENTS.length];
+
+  return (
+    <Link
+      href="/tours"
+      className="group relative block w-full rounded-2xl overflow-hidden aspect-[4/5] border border-white/30 bg-slate-900/5 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
+      {hasImage ? (
+        <Image
+          src={destination.image!}
+          alt={destination.city}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          onError={() => setHasImageError(true)}
+        />
+      ) : (
+        <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`}>
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute right-3 top-3 w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <Icon icon="heroicons:map-pin" className="size-5 text-white" />
+          </div>
+        </div>
+      )}
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+      <div className="absolute bottom-4 left-3 right-3 text-white">
+        <p className="font-bold text-base leading-tight truncate">{destination.city}</p>
+        <p className="text-xs text-white/85 truncate">{destination.country}</p>
+        <Badge
+          label={toursLabel}
+          className="bg-white/20 text-white text-xs rounded-full px-2 py-0.5 mt-1 inline-block"
+        />
+      </div>
+    </Link>
+  );
+};
+
+const TopAttractionCard = ({
+  attraction,
+  index,
+}: {
+  attraction: AttractionData;
+  index: number;
+}) => {
+  const [hasImageError, setHasImageError] = useState(false);
+  const hasImage = Boolean(attraction.image) && !hasImageError;
+  const gradient = ATTRACTION_PLACEHOLDER_GRADIENTS[index % ATTRACTION_PLACEHOLDER_GRADIENTS.length];
+
+  return (
+    <Link
+      href="/tours"
+      className="group flex items-center gap-4 p-3.5 rounded-xl border border-slate-200 bg-white hover:border-landing-accent/50 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
+      <div className="relative w-[4.5rem] h-[4.5rem] rounded-xl overflow-hidden shrink-0 border border-slate-200">
+        {hasImage ? (
+          <Image
+            src={attraction.image!}
+            alt={attraction.name}
+            fill
+            sizes="72px"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={() => setHasImageError(true)}
+          />
+        ) : (
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+            <Icon icon="heroicons:photo" className="size-7 text-white/90" />
+          </div>
+        )}
+      </div>
+      <div className="min-w-0">
+        <p className="font-semibold text-slate-900 text-sm leading-snug line-clamp-2">
+          {attraction.name}
+        </p>
+        <p className="text-slate-500 text-xs mt-1 line-clamp-1">{attraction.location}</p>
+      </div>
+    </Link>
+  );
+};
 
 export const TrendingDestinationsSection = () => {
   const { t } = useTranslation();
@@ -104,7 +199,7 @@ export const TrendingDestinationsSection = () => {
         const data = await homeService.getTrendingDestinations(6);
         if (data && data.length > 0) {
           const mapped = data.map((dest: TrendingDestination) => ({
-            image: dest.imageUrl || FALLBACK_DESTINATIONS[0].image,
+            image: dest.imageUrl ?? null,
             city: dest.city,
             country: dest.country,
             toursCount: dest.toursCount,
@@ -153,30 +248,15 @@ export const TrendingDestinationsSection = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {destinations.map((dest) => (
-            <Link
-              key={dest.city}
-              href="/tours"
-              className="group relative rounded-xl overflow-hidden aspect-[3/4] shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent">
-              <Image
-                src={dest.image}
-                alt={dest.city}
-                fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-3 right-3 text-white">
-                <p className="font-bold text-base leading-tight">{dest.city}</p>
-                <p className="text-xs text-white/80">{dest.country}</p>
-                <Badge
-                  label={t("landing.destinations.tours", {
-                    count: dest.toursCount,
-                  })}
-                  className="bg-white/20 text-white text-xs rounded-full px-2 py-0.5 mt-1 inline-block"
-                />
-              </div>
-            </Link>
+          {destinations.map((destination, index) => (
+            <TrendingDestinationCard
+              key={`${destination.city}-${destination.country}`}
+              destination={destination}
+              index={index}
+              toursLabel={t("landing.destinations.tours", {
+                count: destination.toursCount,
+              })}
+            />
           ))}
         </div>
       </section>
@@ -195,7 +275,7 @@ export const TopAttractionsSection = () => {
         const data = await homeService.getTopAttractions(8);
         if (data && data.length > 0) {
           const mapped = data.map((attr: TopAttraction) => ({
-            image: attr.imageUrl || FALLBACK_ATTRACTIONS[0].image,
+            image: attr.imageUrl ?? null,
             name: attr.name,
             location:
               attr.city && attr.country
@@ -251,33 +331,12 @@ export const TopAttractionsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-          {attractions.slice(0, 8).map((attr) => (
-            <Link
-              key={attr.name}
-              href="/tours"
-              className="group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-landing-accent rounded-xl">
-              <Card
-                className="bg-white! border border-landing-border rounded-xl! hover:shadow-lg hover:-translate-y-1 transition-all duration-300 hover:border-landing-accent"
-                bodyClass="p-3 flex items-center gap-3">
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
-                  <Image
-                    src={attr.image}
-                    alt={attr.name}
-                    fill
-                    sizes="64px"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-                <div>
-                  <p className="font-medium text-landing-heading text-sm leading-snug">
-                    {attr.name}
-                  </p>
-                  <p className="text-landing-body text-xs mt-0.5">
-                    {attr.location}
-                  </p>
-                </div>
-              </Card>
-            </Link>
+          {attractions.slice(0, 8).map((attraction, index) => (
+            <TopAttractionCard
+              key={`${attraction.name}-${attraction.location}`}
+              attraction={attraction}
+              index={index}
+            />
           ))}
         </div>
       </section>

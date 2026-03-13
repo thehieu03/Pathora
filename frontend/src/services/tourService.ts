@@ -9,6 +9,7 @@ import {
 } from "@/types/tour";
 import { extractResult } from "@/utils/apiResponse";
 import { ApiResponse } from "@/types/home";
+import { normalizeTourListResponse } from "@/services/tourMappers";
 
 const normalizeClassification = (
   classification: TourClassificationDto,
@@ -44,7 +45,8 @@ export const tourService = {
     const response = await api.get<ApiResponse<PaginatedResponse<TourVm>>>(
       `${API_ENDPOINTS.TOUR.GET_ALL}?${params.toString()}`,
     );
-    return extractResult<PaginatedResponse<TourVm>>(response.data);
+    const result = extractResult<PaginatedResponse<TourVm>>(response.data);
+    return normalizeTourListResponse(result);
   },
 
   getTourDetail: async (id: string) => {

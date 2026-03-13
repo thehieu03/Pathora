@@ -1,10 +1,9 @@
-import DashboardSectionPlaceholder from "../../../../components/partials/dashboard/DashboardSectionPlaceholder";
+import dynamic from "next/dynamic";
+
+const InsurancePage = dynamic(
+  () => import("@/components/partials/dashboard/InsurancePage"),
+);
 
 export default function DashboardInsurancePage() {
-  return (
-    <DashboardSectionPlaceholder
-      title="Insurance"
-      description="Insurance products, partner coverage rules, and premium settings will be managed here."
-    />
-  );
+  return <InsurancePage />;
 }

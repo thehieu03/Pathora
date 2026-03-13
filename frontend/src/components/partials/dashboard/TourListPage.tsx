@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourService } from "@/services/tourService";
 import { TourVm } from "@/types/tour";
+import { resolveTourThumbnailUrl } from "@/utils/tourMedia";
+import { AdminLogoutButton } from "./AdminLogoutButton";
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -20,7 +22,11 @@ const NAV_ITEMS = [
     icon: "heroicons:calendar-days",
     href: "/tour-instances",
   },
-  { label: "Bookings", icon: "heroicons:ticket", href: "/bookings" },
+  {
+    label: "Bookings",
+    icon: "heroicons:ticket",
+    href: "/dashboard/bookings",
+  },
   {
     label: "Payments",
     icon: "heroicons:credit-card",
@@ -44,7 +50,7 @@ const NAV_ITEMS = [
   {
     label: "Policies",
     icon: "heroicons:clipboard-document-list",
-    href: "/policies",
+    href: "/dashboard/policies",
   },
   {
     label: "Settings",
@@ -69,6 +75,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         </Link>
         <button
           onClick={onClose}
+          aria-label="Close sidebar"
           className="lg:hidden text-slate-400 hover:text-white">
           <Icon icon="heroicons:x-mark" className="size-5" />
         </button>
@@ -102,10 +109,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             <p className="text-xs text-slate-400 truncate">Administrator</p>
           </div>
         </div>
-        <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-          <Icon icon="heroicons:arrow-right-on-rectangle" className="size-5" />
-          <span>Logout</span>
-        </button>
+        <AdminLogoutButton />
       </div>
     </aside>
   );
@@ -117,7 +121,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
 function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 h-16 flex items-center px-6 gap-4">
-      <button onClick={onMenuClick} className="lg:hidden text-slate-500">
+      <button onClick={onMenuClick} aria-label="Open menu" className="lg:hidden text-slate-500">
         <Icon icon="heroicons:bars-3" className="size-6" />
       </button>
       <div className="relative flex-1 max-w-xl">
@@ -125,14 +129,16 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
           icon="heroicons:magnifying-glass"
           className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400"
         />
+        <label htmlFor="tour-search" className="sr-only">Search</label>
         <input
+          id="tour-search"
           type="text"
           placeholder="Search anything..."
           className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
         />
       </div>
       <div className="ml-auto relative">
-        <button className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
+        <button aria-label="Notifications - 3 unread" className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors">
           <Icon icon="heroicons:bell" className="size-5" />
           <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
             3
@@ -182,7 +188,8 @@ function StatCard({
    Status Badge
    ══════════════════════════════════════════════════════════════ */
 function StatusBadge({ status }: { status: string }) {
-  const lower = status.toLowerCase();
+  const normalizedStatus = status?.trim() || "Unknown";
+  const lower = normalizedStatus.toLowerCase();
   let bgColor = "bg-slate-100";
   let textColor = "text-slate-600";
   let dotColor = "bg-slate-400";
@@ -199,6 +206,10 @@ function StatusBadge({ status }: { status: string }) {
     bgColor = "bg-yellow-100";
     textColor = "text-yellow-700";
     dotColor = "bg-yellow-500";
+  } else if (lower === "rejected") {
+    bgColor = "bg-rose-100";
+    textColor = "text-rose-700";
+    dotColor = "bg-rose-500";
   } else if (lower === "draft") {
     bgColor = "bg-slate-100";
     textColor = "text-slate-600";
@@ -209,7 +220,7 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${bgColor} ${textColor}`}>
       <span className={`w-2 h-2 rounded-full ${dotColor}`} />
-      {status}
+      {normalizedStatus}
     </span>
   );
 }
@@ -230,6 +241,7 @@ export function TourListPage() {
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [failedThumbnailIds, setFailedThumbnailIds] = useState<Set<string>>(new Set());
   const isFirstRender = useRef(true);
 
   /* ── Debounce search text (400ms) ─────────────────────────── */
@@ -257,6 +269,7 @@ export function TourListPage() {
       if (result) {
         setTours(result.data ?? []);
         setTotalItems(result.total ?? 0);
+        setFailedThumbnailIds(new Set());
       }
     } catch (error) {
       console.error("Failed to fetch tours:", error);
@@ -297,8 +310,9 @@ export function TourListPage() {
 
       {/* Backdrop */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
+        <button
+          aria-label="Close sidebar"
+          className="fixed inset-0 bg-black/30 z-40 lg:hidden cursor-default"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -450,10 +464,27 @@ export function TourListPage() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-16 h-16 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
-                              <Icon
-                                icon="heroicons:photo"
-                                className="size-6 text-slate-400"
-                              />
+                              {!failedThumbnailIds.has(tour.id) &&
+                              resolveTourThumbnailUrl(tour.thumbnail) ? (
+                                <img
+                                  src={resolveTourThumbnailUrl(tour.thumbnail) ?? ""}
+                                  alt={tour.tourName || "Tour thumbnail"}
+                                  className="h-full w-full object-cover"
+                                  loading="lazy"
+                                  onError={() =>
+                                    setFailedThumbnailIds((prev) => {
+                                      const next = new Set(prev);
+                                      next.add(tour.id);
+                                      return next;
+                                    })
+                                  }
+                                />
+                              ) : (
+                                <Icon
+                                  icon="heroicons:photo"
+                                  className="size-6 text-slate-400"
+                                />
+                              )}
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-semibold text-slate-900 truncate">
@@ -501,16 +532,16 @@ export function TourListPage() {
                               onClick={() =>
                                 router.push(`/tour-management/${tour.id}/edit`)
                               }
-                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                              title="View / Edit">
+                              aria-label={`View ${tour.tourName}`}
+                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
                               <Icon icon="heroicons:eye" className="size-4" />
                             </button>
                             <button
                               onClick={() =>
                                 router.push(`/tour-management/${tour.id}/edit`)
                               }
-                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                              title="Edit">
+                              aria-label={`Edit ${tour.tourName}`}
+                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
                               <Icon
                                 icon="heroicons:pencil-square"
                                 className="size-4"

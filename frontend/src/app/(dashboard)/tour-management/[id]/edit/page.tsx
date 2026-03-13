@@ -488,41 +488,40 @@ export default function EditTourPage() {
       formData.append("seoDescription", basicInfo.seoDescription);
       formData.append("status", basicInfo.status);
 
-      // Translations — Vietnamese auto-populated from basicInfo
-      formData.append("translations[vi][TourName]", basicInfo.tourName);
-      formData.append(
-        "translations[vi][ShortDescription]",
-        basicInfo.shortDescription,
-      );
-      formData.append(
-        "translations[vi][LongDescription]",
-        basicInfo.longDescription,
-      );
-      formData.append("translations[vi][SEOTitle]", basicInfo.seoTitle);
-      formData.append(
-        "translations[vi][SEODescription]",
-        basicInfo.seoDescription,
-      );
+      const translationPayload: Record<
+        string,
+        {
+          TourName: string;
+          ShortDescription: string;
+          LongDescription: string;
+          SEOTitle?: string;
+          SEODescription?: string;
+        }
+      > = {
+        vi: {
+          TourName: basicInfo.tourName,
+          ShortDescription: basicInfo.shortDescription,
+          LongDescription: basicInfo.longDescription,
+          SEOTitle: basicInfo.seoTitle,
+          SEODescription: basicInfo.seoDescription,
+        },
+      };
+
       if (
         enTranslation.tourName ||
         enTranslation.shortDescription ||
         enTranslation.longDescription
       ) {
-        formData.append("translations[en][TourName]", enTranslation.tourName);
-        formData.append(
-          "translations[en][ShortDescription]",
-          enTranslation.shortDescription,
-        );
-        formData.append(
-          "translations[en][LongDescription]",
-          enTranslation.longDescription,
-        );
-        formData.append("translations[en][SEOTitle]", enTranslation.seoTitle);
-        formData.append(
-          "translations[en][SEODescription]",
-          enTranslation.seoDescription,
-        );
+        translationPayload.en = {
+          TourName: enTranslation.tourName,
+          ShortDescription: enTranslation.shortDescription,
+          LongDescription: enTranslation.longDescription,
+          SEOTitle: enTranslation.seoTitle,
+          SEODescription: enTranslation.seoDescription,
+        };
       }
+
+      formData.append("translations", JSON.stringify(translationPayload));
 
       if (thumbnail) formData.append("thumbnail", thumbnail);
       images.forEach((img) => formData.append("images", img));

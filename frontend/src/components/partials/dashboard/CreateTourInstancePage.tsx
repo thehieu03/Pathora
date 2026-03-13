@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui";
 import { tourService } from "@/services/tourService";
 import { tourInstanceService } from "@/services/tourInstanceService";
 import { TourVm, TourDto, TourClassificationDto } from "@/types/tour";
+import { AdminLogoutButton } from "./AdminLogoutButton";
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -21,7 +22,11 @@ const NAV_ITEMS = [
     icon: "heroicons:calendar-days",
     href: "/tour-instances",
   },
-  { label: "Bookings", icon: "heroicons:ticket", href: "/bookings" },
+  {
+    label: "Bookings",
+    icon: "heroicons:ticket",
+    href: "/dashboard/bookings",
+  },
   {
     label: "Payments",
     icon: "heroicons:credit-card",
@@ -45,7 +50,7 @@ const NAV_ITEMS = [
   {
     label: "Policies",
     icon: "heroicons:clipboard-document-list",
-    href: "/policies",
+    href: "/dashboard/policies",
   },
   {
     label: "Settings",
@@ -98,10 +103,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             <p className="text-xs text-slate-400 truncate">Administrator</p>
           </div>
         </div>
-        <button className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-          <Icon icon="heroicons:arrow-right-on-rectangle" className="size-5" />
-          <span>Logout</span>
-        </button>
+        <AdminLogoutButton />
       </div>
     </aside>
   );

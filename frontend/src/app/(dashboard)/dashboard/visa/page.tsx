@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
+
+const VisaApplicationsPage = dynamic(
+  () => import("@/components/partials/dashboard/VisaApplicationsPage"),
+);
 
 export default function DashboardVisaPage() {
-  redirect("/visa");
+  return <VisaApplicationsPage />;
 }

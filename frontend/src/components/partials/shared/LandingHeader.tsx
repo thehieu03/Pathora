@@ -44,14 +44,18 @@ const languages = [
 const LOGO = LandingLogo;
 
 const navLinks = [
-  { labelKey: "landing.nav.home", href: "/" },
+  { labelKey: "landing.nav.home", href: "/home" },
   { labelKey: "landing.nav.aboutUs", href: "/about" },
   { labelKey: "landing.nav.tourPackages", href: "/tours" },
   { labelKey: "landing.nav.ourPolicies", href: "/policies" },
 ];
 
 const sidebarLinks = [
-  { labelKey: "landing.nav.home", href: "/", icon: "heroicons-outline:home" },
+  {
+    labelKey: "landing.nav.home",
+    href: "/home",
+    icon: "heroicons-outline:home",
+  },
   {
     labelKey: "landing.sidebar.tourDiscovery",
     href: "/tours",
@@ -397,17 +401,17 @@ export const LandingHeader = ({
   const [authView, setAuthView] = useState<"signup" | "login" | "forgot">(
     "signup",
   );
+  const loginRequested = searchParams.get("login") === "true";
+  const effectiveAuthOpen = authOpen || loginRequested;
+  const effectiveAuthView = loginRequested ? "login" : authView;
 
   useEffect(() => {
-    if (searchParams.get("login") === "true" && !authOpen) {
-      setAuthView("login");
-      setAuthOpen(true);
-      // Clean up the URL query param
+    if (loginRequested) {
       const url = new URL(window.location.href);
       url.searchParams.delete("login");
       router.replace(url.pathname, { scroll: false });
     }
-  }, [searchParams]);
+  }, [loginRequested, router]);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -497,7 +501,7 @@ export const LandingHeader = ({
             : "absolute top-0 left-0 right-0 bg-[rgba(255,255,255,0.2)] backdrop-blur-sm"
         } z-50 grid grid-cols-[1fr_auto_1fr] items-center px-4 md:px-8 lg:px-12 py-4 md:py-5 min-h-17.5 md:h-32`}>
         <Link
-          href="/"
+          href="/home"
           className="flex items-center shrink-0 justify-self-start">
           <div className="relative h-12 md:h-25 w-28 md:w-34">
             <Image
@@ -761,10 +765,10 @@ export const LandingHeader = ({
         dialogId="landing-mobile-menu"
       />
       <AuthModal
-        key={authView}
-        open={authOpen}
+        key={effectiveAuthView}
+        open={effectiveAuthOpen}
         onClose={() => setAuthOpen(false)}
-        initialView={authView}
+        initialView={effectiveAuthView}
       />
     </>
   );

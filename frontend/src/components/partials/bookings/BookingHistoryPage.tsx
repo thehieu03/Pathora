@@ -347,7 +347,7 @@ export function BookingHistoryPage() {
           <div className="max-w-330 mx-auto px-4 md:px-6">
             {/* Back link */}
             <Link
-              href="/"
+              href="/home"
               className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white transition-colors mb-6">
               <Icon icon="heroicons:arrow-left" className="size-4" />
               {t("landing.bookings.backToHome")}
@@ -474,11 +474,13 @@ export function BookingHistoryPage() {
           href="https://facebook.com"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Facebook"
           className="size-11 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <Icon icon="mdi:facebook" className="size-5 text-blue-600" />
         </a>
         <Button
           type="button"
+          aria-label="Chat with us"
           className="size-11 rounded-full bg-white shadow-lg border border-gray-100 flex items-center justify-center hover:bg-gray-50 transition-colors">
           <Icon
             icon="heroicons:chat-bubble-oval-left-ellipsis"

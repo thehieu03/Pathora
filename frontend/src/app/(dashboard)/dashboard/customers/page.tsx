@@ -1,10 +1,9 @@
-import DashboardSectionPlaceholder from "../../../../components/partials/dashboard/DashboardSectionPlaceholder";
+import dynamic from "next/dynamic";
+
+const CustomersPage = dynamic(
+  () => import("@/components/partials/dashboard/CustomersPage"),
+);
 
 export default function DashboardCustomersPage() {
-  return (
-    <DashboardSectionPlaceholder
-      title="Customers"
-      description="Customer profiles, segmentation, and engagement analytics will be available in this module."
-    />
-  );
+  return <CustomersPage />;
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { redirectMock } = vi.hoisted(() => ({
@@ -18,6 +17,7 @@ import DashboardCustomersPage from "../(dashboard)/dashboard/customers/page";
 import DashboardInsurancePage from "../(dashboard)/dashboard/insurance/page";
 import DashboardPaymentsPage from "../(dashboard)/dashboard/payments/page";
 import DashboardSettingsPage from "../(dashboard)/dashboard/settings/page";
+import DashboardPoliciesPage from "../(dashboard)/dashboard/policies/page";
 
 describe("dashboard nested routes", () => {
   beforeEach(() => {
@@ -39,32 +39,34 @@ describe("dashboard nested routes", () => {
     expect(redirectMock).toHaveBeenCalledWith("/tour-instances");
   });
 
-  it("redirects legacy dashboard visa route", () => {
-    DashboardVisaPage();
-    expect(redirectMock).toHaveBeenCalledWith("/visa");
+  it("renders visa dashboard page component", () => {
+    const element = DashboardVisaPage();
+    expect(React.isValidElement(element)).toBe(true);
+    expect(redirectMock).not.toHaveBeenCalled();
   });
 
-  it("renders payments placeholder page", () => {
-    const markup = renderToStaticMarkup(<DashboardPaymentsPage />);
-    expect(markup).toContain("Payments");
-    expect(markup).toContain("under construction");
+  it("renders payments dashboard page component", () => {
+    const element = DashboardPaymentsPage();
+    expect(React.isValidElement(element)).toBe(true);
   });
 
-  it("renders customers placeholder page", () => {
-    const markup = renderToStaticMarkup(<DashboardCustomersPage />);
-    expect(markup).toContain("Customers");
-    expect(markup).toContain("under construction");
+  it("renders customers dashboard page component", () => {
+    const element = DashboardCustomersPage();
+    expect(React.isValidElement(element)).toBe(true);
   });
 
-  it("renders insurance placeholder page", () => {
-    const markup = renderToStaticMarkup(<DashboardInsurancePage />);
-    expect(markup).toContain("Insurance");
-    expect(markup).toContain("under construction");
+  it("renders insurance dashboard page component", () => {
+    const element = DashboardInsurancePage();
+    expect(React.isValidElement(element)).toBe(true);
   });
 
-  it("renders settings placeholder page", () => {
-    const markup = renderToStaticMarkup(<DashboardSettingsPage />);
-    expect(markup).toContain("Settings");
-    expect(markup).toContain("under construction");
+  it("renders settings dashboard page component", () => {
+    const element = DashboardSettingsPage();
+    expect(React.isValidElement(element)).toBe(true);
+  });
+
+  it("renders policies dashboard page component", () => {
+    const element = DashboardPoliciesPage();
+    expect(React.isValidElement(element)).toBe(true);
   });
 });
