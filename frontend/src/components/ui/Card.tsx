@@ -28,10 +28,10 @@ const Card = ({
   return (
     <div
       {...props}
-      className={`card rounded-lg bg-card text-card-foreground ${
+      className={`card rounded-xl bg-card text-card-foreground transition-all duration-200 hover:shadow-lg hover:-translate-y-1 ${
         skin === "bordered"
           ? "border border-border"
-          : "shadow-sm"
+          : "shadow-md"
       } ${className}`}
     >
       {(title || subtitle) && (

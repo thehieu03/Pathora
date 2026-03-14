@@ -14,7 +14,7 @@ import Button from "@/components/ui/Button";
 import LanguageTabs, {
   type SupportedLanguage,
 } from "@/components/ui/LanguageTabs";
-import { tourService } from "@/services/tourService";
+import { tourService } from "@/api/services/tourService";
 import { TourDto, TourStatusMap } from "@/types/tour";
 
 /* ── Types (mirrored from create page) ──────────────────────── */

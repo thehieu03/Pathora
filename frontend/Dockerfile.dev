@@ -1,27 +1,20 @@
-# Development Dockerfile for Frontend
-FROM node:22-alpine AS base
-
+FROM node:22-alpine
 WORKDIR /app
 
-# Install dependencies for native modules
-RUN apk add --no-cache libc6-compat shadow
+RUN apk add --no-cache libc6-compat
 
-# Node:alpine image already has node user with UID 1000, no need to create
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy package files first for caching
-COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+COPY --chown=node:node package.json package-lock.json ./
 
-# Copy source code
-COPY . .
-
-# Set ownership (node user already exists in node:alpine)
-RUN chown -R node: /app
+RUN chown -R node:node /app
 
 USER node
 
-# Expose port
+RUN npm ci --legacy-peer-deps --no-audit --no-fund
+
+COPY --chown=node:node . .
+
 EXPOSE 3001
 
-# Start dev server
-CMD ["npm", "run", "dev", "--", "-p", "3001"]
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0", "-p", "3001"]

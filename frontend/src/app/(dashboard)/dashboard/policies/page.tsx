@@ -1,4 +1,4 @@
-import DashboardSectionPlaceholder from "../../../../components/partials/dashboard/DashboardSectionPlaceholder";
+import DashboardSectionPlaceholder from "../../../../features/dashboard/components/DashboardSectionPlaceholder";
 
 export default function DashboardPoliciesPage() {
   return (

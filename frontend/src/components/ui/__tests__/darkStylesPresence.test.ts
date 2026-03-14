@@ -29,7 +29,7 @@ describe("dark style presence", () => {
   it("keeps light-mode defaults in theme-controlled surfaces", () => {
     const toggleSource = readFile("src/components/ui/ThemeToggle.tsx");
     const tourDiscoverySource = readFile(
-      "src/components/partials/tours/TourDiscoveryPage.tsx",
+      "src/features/tours/components/TourDiscoveryPage.tsx",
     );
 
     expect(toggleSource.includes("return null")).toBe(true);

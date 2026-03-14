@@ -101,7 +101,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
   suppressHydrationWarning,
 
 }, ref) => {
-  const baseClasses = `btn inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
+  const baseClasses = `btn inline-flex items-center justify-center rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
     disabled || isLoading ? "pointer-events-none" : ""
   } ${disabled ? "cursor-not-allowed opacity-40" : ""} ${className}`;
 

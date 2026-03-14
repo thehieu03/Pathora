@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 const BookingsPage = dynamic(
-  () => import("@/components/partials/dashboard/BookingsPage"),
+  () => import("@/features/dashboard/components/BookingsPage"),
 );
 
 export default function DashboardBookingsPage() {

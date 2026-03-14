@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 const VisaApplicationsPage = dynamic(
-  () => import("@/components/partials/dashboard/VisaApplicationsPage"),
+  () => import("@/features/dashboard/components/VisaApplicationsPage"),
 );
 
 export default function DashboardVisaPage() {

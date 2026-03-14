@@ -17,8 +17,8 @@ describe("language fallback contract", () => {
   });
 
   it("keeps critical API-backed labels resilient when locale keys are missing", () => {
-    const discovery = readFile("src/components/partials/tours/TourDiscoveryPage.tsx");
-    const landingHeader = readFile("src/components/partials/shared/LandingHeader.tsx");
+    const discovery = readFile("src/features/tours/components/TourDiscoveryPage.tsx");
+    const landingHeader = readFile("src/features/shared/components/LandingHeader.tsx");
 
     expect(discovery.includes('t("tourInstance.spotsLeft", "spots left")')).toBe(true);
     expect(discovery.includes('t("tourInstance.soldOut", "Sold out")')).toBe(true);

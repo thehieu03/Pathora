@@ -1,37 +1,37 @@
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { LandingHeader } from "@/components/partials/shared";
+import { LandingHeader } from "@/features/shared/components";
 import {
   HeroSection,
   LatestToursSection,
   FeaturedTripsSection,
-} from "@/components/partials/home";
+} from "@/features/home/components";
 
 const StatsSection = dynamic(() =>
-  import("@/components/partials/home").then((m) => m.StatsSection),
+  import("@/features/home/components").then((m) => m.StatsSection),
 );
 const TrendingDestinationsSection = dynamic(() =>
-  import("@/components/partials/home").then(
+  import("@/features/home/components").then(
     (m) => m.TrendingDestinationsSection,
   ),
 );
 const TopAttractionsSection = dynamic(() =>
-  import("@/components/partials/home").then((m) => m.TopAttractionsSection),
+  import("@/features/home/components").then((m) => m.TopAttractionsSection),
 );
 const ReviewsSection = dynamic(() =>
-  import("@/components/partials/home").then((m) => m.ReviewsSection),
+  import("@/features/home/components").then((m) => m.ReviewsSection),
 );
 const CTASection = dynamic(() =>
-  import("@/components/partials/home").then((m) => m.CTASection),
+  import("@/features/home/components").then((m) => m.CTASection),
 );
 const WhyChooseSection = dynamic(() =>
-  import("@/components/partials/home").then((m) => m.WhyChooseSection),
+  import("@/features/home/components").then((m) => m.WhyChooseSection),
 );
 const TrustedBrandsSection = dynamic(() =>
-  import("@/components/partials/home").then((m) => m.TrustedBrandsSection),
+  import("@/features/home/components").then((m) => m.TrustedBrandsSection),
 );
 const LandingFooter = dynamic(() =>
-  import("@/components/partials/shared").then((m) => m.LandingFooter),
+  import("@/features/shared/components").then((m) => m.LandingFooter),
 );
 
 const SectionSkeleton = ({ className }: { className: string }) => {

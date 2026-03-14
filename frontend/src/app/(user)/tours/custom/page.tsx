@@ -4,7 +4,7 @@ import CustomTourLoading from "./loading";
 
 const CustomTourPage = dynamic(
   () =>
-    import("@/components/partials/custom-tour").then((m) => m.CustomTourPage),
+    import("@/features/custom-tour/components").then((m) => m.CustomTourPage),
   { loading: () => <CustomTourLoading /> },
 );
 

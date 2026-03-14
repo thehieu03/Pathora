@@ -15,7 +15,7 @@ const Badge = ({
   children,
 }: BadgeProps) => {
   return (
-    <span className={`badge ${className}`}>
+    <span className={`badge rounded-full ${className}`}>
       {!children && (
         <span className="inline-flex items-center">
           {icon && (

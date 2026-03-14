@@ -1,4 +1,4 @@
-import { TourRequestListPage } from "@/components/partials/dashboard/TourRequestListPage";
+import { TourRequestListPage } from "@/features/dashboard/components/TourRequestListPage";
 
 export default function DashboardTourRequestsPage() {
   return <TourRequestListPage />;

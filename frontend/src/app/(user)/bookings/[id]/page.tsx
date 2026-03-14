@@ -4,7 +4,7 @@ import BookingDetailLoading from "./loading";
 
 const BookingDetailPage = dynamic(
   () =>
-    import("@/components/partials/bookings").then((m) => m.BookingDetailPage),
+    import("@/features/bookings/components").then((m) => m.BookingDetailPage),
   { loading: () => <BookingDetailLoading /> },
 );
 

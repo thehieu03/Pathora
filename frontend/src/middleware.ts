@@ -11,7 +11,6 @@ import {
 const PUBLIC_PATH_PREFIXES = [
   "/",
   "/home",
-  "/tours",
   "/tour-detail",
   "/about",
   "/visa",
@@ -20,10 +19,23 @@ const PUBLIC_PATH_PREFIXES = [
   "/auth/callback",
 ];
 
-const isPublicPath = (pathname: string): boolean =>
-  PUBLIC_PATH_PREFIXES.some(
+// Specific public routes under /tours (with prefix matching for sub-paths)
+const PUBLIC_TOURS_ROUTES = [
+  "/tours", // tours list
+  "/tours/instances", // public tour instances (includes /tours/instances/[id])
+];
+
+const isPublicPath = (pathname: string): boolean => {
+  // Special handling for /tours routes
+  if (pathname === "/tours" || pathname.startsWith("/tours/instances")) {
+    return true;
+  }
+
+  // Check prefix matches for other public paths (e.g., /about matches /about, /about/us)
+  return PUBLIC_PATH_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
+};
 
 export function middleware(request: NextRequest) {
   const authStatus = request.cookies.get("auth_status")?.value;

@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import AboutLoading from "./loading";
 
 const AboutUsPage = dynamic(
-  () => import("@/components/partials/about").then((m) => m.AboutUsPage),
+  () => import("@/features/about/components").then((m) => m.AboutUsPage),
   { loading: () => <AboutLoading /> },
 );
 

@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import CheckoutLoading from "./loading";
 
 const CheckoutPage = dynamic(
-  () => import("@/components/partials/checkout").then((m) => m.CheckoutPage),
+  () => import("@/features/checkout/components").then((m) => m.CheckoutPage),
   { loading: () => <CheckoutLoading /> },
 );
 

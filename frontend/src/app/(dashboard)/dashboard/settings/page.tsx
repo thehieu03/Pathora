@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 const SettingsPage = dynamic(
-  () => import("@/components/partials/dashboard/SettingsPage"),
+  () => import("@/features/dashboard/components/SettingsPage"),
 );
 
 export default function DashboardSettingsPage() {

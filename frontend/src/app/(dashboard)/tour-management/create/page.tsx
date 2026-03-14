@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
 import FileInput from "@/components/ui/FileInput";
-import { tourService } from "@/services/tourService";
+import { tourService } from "@/api/services/tourService";
 
 /* ── Types ──────────────────────────────────────────────────── */
 interface ClassificationForm {

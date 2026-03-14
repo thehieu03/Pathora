@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 
 const InsurancePage = dynamic(
-  () => import("@/components/partials/dashboard/InsurancePage"),
+  () => import("@/features/dashboard/components/InsurancePage"),
 );
 
 export default function DashboardInsurancePage() {

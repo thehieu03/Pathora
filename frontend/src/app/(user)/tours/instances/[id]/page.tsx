@@ -1,5 +1,5 @@
 import React from "react";
-import { TourInstancePublicDetailPage } from "@/components/partials/tours/TourInstancePublicDetailPage";
+import { TourInstancePublicDetailPage } from "@/features/tours/components/TourInstancePublicDetailPage";
 
 export default function TourInstancePublicDetailRoute() {
   return <TourInstancePublicDetailPage />;

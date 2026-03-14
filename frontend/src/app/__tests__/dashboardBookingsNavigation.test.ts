@@ -8,17 +8,17 @@ const readFile = (relativePath: string): string => {
 };
 
 const dashboardNavFiles = [
-  "src/components/partials/dashboard/AdminDashboardPage.tsx",
-  "src/components/partials/dashboard/VisaApplicationsPage.tsx",
-  "src/components/partials/dashboard/SettingsPage.tsx",
-  "src/components/partials/dashboard/InsurancePage.tsx",
-  "src/components/partials/dashboard/PaymentsPage.tsx",
-  "src/components/partials/dashboard/CustomersPage.tsx",
-  "src/components/partials/dashboard/TourListPage.tsx",
-  "src/components/partials/dashboard/TourDetailPage.tsx",
-  "src/components/partials/dashboard/TourInstanceDetailPage.tsx",
-  "src/components/partials/dashboard/TourInstanceListPage.tsx",
-  "src/components/partials/dashboard/CreateTourInstancePage.tsx",
+  "src/features/dashboard/components/AdminDashboardPage.tsx",
+  "src/features/dashboard/components/VisaApplicationsPage.tsx",
+  "src/features/dashboard/components/SettingsPage.tsx",
+  "src/features/dashboard/components/InsurancePage.tsx",
+  "src/features/dashboard/components/PaymentsPage.tsx",
+  "src/features/dashboard/components/CustomersPage.tsx",
+  "src/features/dashboard/components/TourListPage.tsx",
+  "src/features/dashboard/components/TourDetailPage.tsx",
+  "src/features/dashboard/components/TourInstanceDetailPage.tsx",
+  "src/features/dashboard/components/TourInstanceListPage.tsx",
+  "src/features/dashboard/components/CreateTourInstancePage.tsx",
   "src/app/(dashboard)/tour-management/create/page.tsx",
 ];
 
@@ -37,7 +37,7 @@ describe("dashboard bookings navigation", () => {
 
     expect(source.includes("DashboardBookingsPage")).toBe(true);
     expect(
-      source.includes("@/components/partials/dashboard/BookingsPage"),
+      source.includes("@/features/dashboard/components/BookingsPage"),
     ).toBe(true);
   });
 });

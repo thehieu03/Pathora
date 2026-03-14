@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import ToursLoading from "./loading";
 
 const TourDiscoveryPage = dynamic(
-  () => import("@/components/partials/tours").then((m) => m.TourDiscoveryPage),
+  () => import("@/features/tours/components").then((m) => m.TourDiscoveryPage),
   { loading: () => <ToursLoading /> },
 );
 

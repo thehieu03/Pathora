@@ -7,7 +7,7 @@ const Grid = ({ items, count = 6 }) => {
     <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5">
       {displayItems.map((_, i) => (
         <div
-          className="rounded-md bg-white dark:bg-slate-700 h-full p-6 shadow-base"
+          className="rounded-xl bg-white dark:bg-slate-700 h-full p-6 shadow-md"
           key={i}
         >
           <div className="animate-pulse">

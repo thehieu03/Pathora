@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
-import { tourRequestService } from "@/services/tourRequestService";
+import { tourRequestService } from "@/api/services/tourRequestService";
 import {
   TOUR_REQUEST_STATUS_MAP,
   normalizeTourRequestStatus,
@@ -13,8 +13,8 @@ import {
   type TourRequestVm,
 } from "@/types/tourRequest";
 import { handleApiError } from "@/utils/apiResponse";
-import { LandingFooter } from "@/components/partials/shared/LandingFooter";
-import { LandingHeader } from "@/components/partials/shared/LandingHeader";
+import { LandingFooter } from "@/features/shared/components/LandingFooter";
+import { LandingHeader } from "@/features/shared/components/LandingHeader";
 
 const PAGE_SIZE = 10;
 

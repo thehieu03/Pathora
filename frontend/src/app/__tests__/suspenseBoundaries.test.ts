@@ -16,7 +16,7 @@ describe("suspense boundaries and prefetching", () => {
   });
 
   it("prefetches navigation routes when links are hovered or focused", () => {
-    const source = readFile("src/components/partials/shared/LandingHeader.tsx");
+    const source = readFile("src/features/shared/components/LandingHeader.tsx");
 
     expect(source.includes("router.prefetch(link.href)")).toBe(true);
     expect(
