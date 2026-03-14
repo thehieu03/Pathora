@@ -1,4 +1,4 @@
-using Api.Controllers;
+using Api.Controllers.Public;
 using Application.Dtos;
 using Application.Features.TourRequest.Commands;
 using Application.Features.TourRequest.Queries;

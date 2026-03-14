@@ -4,7 +4,7 @@ using Application.Features.TourRequest.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.Public;
 
 [Authorize]
 [Route(PublicEndpoint.Base + "/" + PublicEndpoint.TourRequests)]

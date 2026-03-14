@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Localization;
 using Application.Contracts.Public;
 using Contracts;
 using Contracts.Interfaces;
@@ -6,6 +7,7 @@ using BuildingBlocks.CORS;
 using ErrorOr;
 using Domain.Common.Repositories;
 using Domain.Entities;
+using Domain.Entities.Translations;
 
 namespace Application.Features.Public.Queries;
 
@@ -20,10 +22,13 @@ public sealed record SearchToursQuery(
     int? MinDays,
     int? MaxDays,
     int Page = 1,
-    int PageSize = 10) : IQuery<ErrorOr<PaginatedList<SearchTourVm>>>, ICacheable
+    int PageSize = 10,
+    string? Language = null) : IQuery<ErrorOr<PaginatedList<SearchTourVm>>>, ICacheable
 {
+    public string ResolvedLanguage => PublicLanguageResolver.Resolve(Language);
+
     public string CacheKey =>
-        $"{Common.CacheKey.Tour}:search:{Q}:{Destination}:{Classification}:{Date}:{People}:{MinPrice}:{MaxPrice}:{MinDays}:{MaxDays}:{Page}:{PageSize}";
+        $"{Common.CacheKey.Tour}:search:{Q}:{Destination}:{Classification}:{Date}:{People}:{MinPrice}:{MaxPrice}:{MinDays}:{MaxDays}:{Page}:{PageSize}:{ResolvedLanguage}";
     public TimeSpan? Expiration => TimeSpan.FromMinutes(10);
 }
 
@@ -57,6 +62,11 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
             request.MaxPrice,
             request.MinDays,
             request.MaxDays);
+
+        foreach (var tour in tours)
+        {
+            tour.ApplyResolvedTranslations(request.ResolvedLanguage);
+        }
 
         var result = tours.Select(t =>
         {

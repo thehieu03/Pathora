@@ -1,4 +1,4 @@
-using Api.Controllers;
+using Api.Controllers.Public;
 using Application.Dtos;
 using Application.Features.Public.Queries;
 using Contracts;

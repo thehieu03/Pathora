@@ -48,6 +48,13 @@ public sealed class PublicQueryCacheKeyLanguageTests
         AssertLanguageAwareCacheKey(language => new GetPublicTourInstanceDetailQuery(id, language));
     }
 
+    [Fact]
+    public void SearchToursQuery_CacheKey_ShouldContainNormalizedLanguage()
+    {
+        AssertLanguageAwareCacheKey(language =>
+            new SearchToursQuery(null, null, null, null, null, null, null, null, null, 1, 10, language));
+    }
+
     private static void AssertLanguageAwareCacheKey(Func<string?, ICacheable> queryFactory)
     {
         var viQuery = queryFactory("vi-VN");

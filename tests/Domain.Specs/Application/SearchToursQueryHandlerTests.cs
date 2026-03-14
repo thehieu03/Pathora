@@ -103,6 +103,31 @@ public sealed class SearchToursQueryHandlerTests
         Assert.Single(result.Value.Data);
     }
 
+    [Fact]
+    public async Task Handle_WhenTranslationsExist_ShouldReturnDifferentPayloadForViAndEn()
+    {
+        var repository = Substitute.For<ITourRepository>();
+        repository.SearchTours(null, null, null, null, null, null, null, null, null, 1, 10)
+            .Returns(_ => [BuildTourWithTranslations()]);
+        repository.CountSearchTours(null, null, null, null, null, null, null, null, null)
+            .Returns(1);
+
+        var handler = new SearchToursQueryHandler(repository);
+
+        var viResult = await handler.Handle(
+            new SearchToursQuery(null, null, null, null, null, null, null, null, null, 1, 10, "vi"),
+            CancellationToken.None);
+
+        var enResult = await handler.Handle(
+            new SearchToursQuery(null, null, null, null, null, null, null, null, null, 1, 10, "en"),
+            CancellationToken.None);
+
+        Assert.False(viResult.IsError);
+        Assert.False(enResult.IsError);
+        Assert.NotEqual(viResult.Value.Data[0].TourName, enResult.Value.Data[0].TourName);
+        Assert.NotEqual(viResult.Value.Data[0].ClassificationName, enResult.Value.Data[0].ClassificationName);
+    }
+
     private static TourEntity BuildTour(string tourName)
     {
         var fromLocation = TourPlanLocationEntity.Create(
@@ -163,5 +188,35 @@ public sealed class SearchToursQueryHandlerTests
             CreatedOnUtc = DateTimeOffset.UtcNow,
             LastModifiedOnUtc = DateTimeOffset.UtcNow
         };
+    }
+
+    private static TourEntity BuildTourWithTranslations()
+    {
+        var tour = BuildTour("Tour Hạ Long");
+        var classification = tour.Classifications.First();
+
+        classification.Translations["vi"] = new global::Domain.Entities.Translations.TourClassificationTranslationData
+        {
+            Name = "Tiêu chuẩn",
+            Description = "Mô tả vi"
+        };
+        classification.Translations["en"] = new global::Domain.Entities.Translations.TourClassificationTranslationData
+        {
+            Name = "Standard",
+            Description = "English description"
+        };
+
+        tour.Translations["vi"] = new global::Domain.Entities.Translations.TourTranslationData
+        {
+            TourName = "Tour Hạ Long",
+            ShortDescription = "Mô tả vi"
+        };
+        tour.Translations["en"] = new global::Domain.Entities.Translations.TourTranslationData
+        {
+            TourName = "Ha Long Tour",
+            ShortDescription = "English description"
+        };
+
+        return tour;
     }
 }

@@ -5,6 +5,8 @@ using Application.Features.Identity.Queries;
 using Contracts.ModelResponse;
 using ErrorOr;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -288,11 +290,168 @@ public sealed class AuthControllerTests
         Assert.Equal("http://localhost:3000/auth/callback?error=google_auth_not_configured", redirectResult.Url);
     }
 
-    private static (AuthController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TRequest, TResponse>(
+    [Fact]
+    public async Task GoogleCallback_WhenAuthenticationFails_ShouldRedirectToFrontendWithError()
+    {
+        // Arrange
+        var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
+            ErrorOr<ExternalLoginResponse>.Error(401, "google_auth_failed", "Authentication failed"),
+            "/api/auth/google-callback");
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Cors:AllowedOrigins:0"] = "http://localhost:3001"
+            })
+            .Build();
+
+        // Mock the AuthenticateAsync to return failure
+        var authResult = new AuthenticationScheme(
+            "Google",
+            "Google",
+            typeof(Microsoft.AspNetCore.Authentication.Test.TestAuthHandler<int>));
+        controller.ControllerContext.HttpContext.Request.Scheme = "http";
+
+        // Act
+        var actionResult = await controller.GoogleCallback(configuration);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectResult>(actionResult);
+        Assert.Contains("error=google_auth_failed", redirectResult.Url);
+    }
+
+    [Fact]
+    public async Task GoogleCallback_WhenMissingClaims_ShouldRedirectToFrontendWithError()
+    {
+        // Arrange
+        var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
+            ErrorOr<ExternalLoginResponse>.Error(400, "missing_claims", "Missing required claims"),
+            "/api/auth/google-callback");
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Cors:AllowedOrigins:0"] = "http://localhost:3001"
+            })
+            .Build();
+
+        controller.ControllerContext.HttpContext.Request.Scheme = "http";
+
+        // Act
+        var actionResult = await controller.GoogleCallback(configuration);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectResult>(actionResult);
+        Assert.Contains("error=missing_claims", redirectResult.Url);
+    }
+
+    [Fact]
+    public async Task GoogleCallback_WhenExternalLoginSucceeds_ShouldRedirectToFrontendWithTokens()
+    {
+        // Arrange
+        var externalLoginResponse = new ExternalLoginResponse("access-token", "refresh-token", "customer", "/home");
+        var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
+            externalLoginResponse,
+            "/api/auth/google-callback");
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Cors:AllowedOrigins:0"] = "http://localhost:3001"
+            })
+            .Build();
+
+        controller.ControllerContext.HttpContext.Request.Scheme = "http";
+
+        // Act
+        var actionResult = await controller.GoogleCallback(configuration);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectResult>(actionResult);
+        Assert.Equal("http://localhost:3001/auth/callback", redirectResult.Url);
+
+        // Verify auth cookies are set
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("auth_status=1", setCookie);
+        Assert.Contains("auth_portal=customer", setCookie);
+    }
+
+    [Fact]
+    public async Task GoogleCallback_WhenExternalLoginFails_ShouldRedirectToFrontendWithError()
+    {
+        // Arrange
+        var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
+            ErrorOr<ExternalLoginResponse>.Error(500, "login_failed", "Login failed"),
+            "/api/auth/google-callback");
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Cors:AllowedOrigins:0"] = "http://localhost:3001"
+            })
+            .Build();
+
+        controller.ControllerContext.HttpContext.Request.Scheme = "http";
+
+        // Act
+        var actionResult = await controller.GoogleCallback(configuration);
+
+        // Assert
+        var redirectResult = Assert.IsType<RedirectResult>(actionResult);
+        Assert.Contains("error=login_failed", redirectResult.Url);
+    }
+
+    private static (AuthController Controller, ExternalLoginProbe<TCommand, TResponse> Probe) BuildControllerWithExternalLogin<TCommand, TResponse>(
         ErrorOr<TResponse> response,
         string path)
+        where TCommand : IRequest<ErrorOr<TResponse>>
+    {
+        var services = new ServiceCollection();
+        var probe = new ExternalLoginProbe<TCommand, TResponse>(response);
+        services.AddSingleton(probe);
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<RequestProbeHandler<TCommand, TResponse>>());
+        services.AddTransient<IRequestHandler<TCommand, ErrorOr<TResponse>, ExternalLoginProbeHandler<TCommand, TResponse>>>();
+
+        var httpContext = new DefaultHttpContext
+        {
+            RequestServices = services.BuildServiceProvider()
+        };
+        httpContext.Request.Path = path;
+
+        var controller = new AuthController
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = httpContext
+            }
+        };
+
+        return (controller, probe);
+    }
+
+    private sealed class ExternalLoginProbe<TRequest, TResponse>(ErrorOr<TResponse> response)
         where TRequest : IRequest<ErrorOr<TResponse>>
     {
+        public ErrorOr<TResponse> Response { get; } = response;
+        public TRequest? CapturedRequest { get; set; }
+    }
+
+    private sealed class ExternalLoginProbeHandler<TRequest, TResponse>(ExternalLoginProbe<TRequest, TResponse> probe)
+        : IRequestHandler<TRequest, ErrorOr<TResponse>>
+        where TRequest : IRequest<ErrorOr<TResponse>>
+    {
+        public Task<ErrorOr<TResponse>> Handle(TRequest request, CancellationToken cancellationToken)
+        {
+            probe.CapturedRequest = request;
+            return Task.FromResult(probe.Response);
+        }
+    }
+
+    private static (AuthController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TRequest, TResponse>(
+            ErrorOr<TResponse> response,
+            string path)
+            where TRequest : IRequest<ErrorOr<TResponse>>
+        {
         var services = new ServiceCollection();
         var probe = new RequestProbe<TRequest, TResponse>(response);
         services.AddSingleton(probe);

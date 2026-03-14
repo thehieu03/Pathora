@@ -4,7 +4,7 @@ using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.Public;
 
 [AllowAnonymous]
 [Route(PublicEndpoint.Base)]
@@ -72,7 +72,8 @@ public class PublicHomeController : BaseApiController
         [FromQuery] int? minDays,
         [FromQuery] int? maxDays,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 10,
+        [FromServices] ILanguageContext? languageContext = null)
     {
         var result = await Sender.Send(new SearchToursQuery(
             q,
@@ -85,7 +86,8 @@ public class PublicHomeController : BaseApiController
             minDays,
             maxDays,
             page,
-            pageSize));
+            pageSize,
+            languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 

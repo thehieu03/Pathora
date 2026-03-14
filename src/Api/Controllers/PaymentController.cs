@@ -1,14 +1,16 @@
-﻿using Api.Endpoint;
+using Api.Endpoint;
 using Application.Contracts.Payment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Microsoft.AspNetCore.Components.Route(AuthEndpoint.Base)]
+[Authorize]
+[Route(PaymentEndpoint.Base)]
 public class PaymentController : BaseApiController
 {
     [HttpPost(PaymentEndpoint.GetQR)]
-    public async Task<IActionResult> CreateQR(GetQRCommand command)
+    public async Task<IActionResult> CreateQr([FromBody] GetQRCommand command)
     {
         var result = await Sender.Send(command);
         return HandleCreated(result);
