@@ -14,6 +14,7 @@ import { homeService } from "@/api/services/homeService";
 import { normalizeLanguageForApi } from "@/api/languageHeader";
 import { TopReview } from "@/types/home";
 import { formatCurrency } from "@/utils/format";
+import { HiOutlineMinus, HiOutlinePlus } from "react-icons/hi2";
 import {
   TourDto,
   TourDayDto,
@@ -50,9 +51,7 @@ function InfoPill({
         <span className="text-[10px] uppercase tracking-[0.5px] text-gray-400 font-semibold mb-0.5">
           {label}
         </span>
-        <span className="text-sm font-bold text-[#05073c]">
-          {value}
-        </span>
+        <span className="text-sm font-bold text-[#05073c]">{value}</span>
       </div>
     </div>
   );
@@ -86,21 +85,21 @@ function GuestRow({
         )}
       </div>
       <div className="flex items-center gap-2">
-        <Button
+        <button
           type="button"
           onClick={onDecrement}
-          className="bg-gray-100 rounded-[10px] size-7 flex items-center justify-center hover:bg-gray-200 transition-colors">
-          <Icon icon="heroicons:minus" className="size-3.5 text-gray-600" />
-        </Button>
-        <span className="text-sm font-semibold text-[#05073c] w-5 text-center">
+          className="bg-white border border-gray-200 rounded-full w-8 h-8 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50 hover:shadow-md active:scale-95 transition-all text-gray-500 shrink-0">
+          <HiOutlineMinus className="w-4 h-4" strokeWidth={2} />
+        </button>
+        <span className="text-sm font-extrabold text-[#05073c] w-8 text-center tabular-nums">
           {value}
         </span>
-        <Button
+        <button
           type="button"
           onClick={onIncrement}
-          className="bg-gray-100 rounded-[10px] size-7 flex items-center justify-center hover:bg-gray-200 transition-colors">
-          <Icon icon="heroicons:plus" className="size-3.5 text-gray-600" />
-        </Button>
+          className="bg-white border border-gray-200 rounded-full w-8 h-8 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50 hover:shadow-md active:scale-95 transition-all text-gray-500 shrink-0">
+          <HiOutlinePlus className="w-4 h-4" strokeWidth={2} />
+        </button>
       </div>
     </div>
   );
@@ -442,7 +441,12 @@ function ScheduledDeparturesSection({
 
     const fetchData = async () => {
       try {
-        const data = await homeService.getAvailablePublicInstances(undefined, 1, 50, apiLanguage);
+        const data = await homeService.getAvailablePublicInstances(
+          undefined,
+          1,
+          50,
+          apiLanguage,
+        );
         if (!cancelled) {
           const filtered = (data?.data ?? []).filter(
             (inst: NormalizedTourInstanceVm) => inst.tourId === tourId,
@@ -513,19 +517,19 @@ function ScheduledDeparturesSection({
                 month: "short",
                 year: "numeric",
               });
-              const endDateStr = new Date(
-                instance.endDate,
-              ).toLocaleDateString("vi-VN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              });
+              const endDateStr = new Date(instance.endDate).toLocaleDateString(
+                "vi-VN",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                },
+              );
 
               return (
                 <div
                   key={instance.id}
-                  className="border border-gray-100 rounded-xl p-4 hover:border-orange-200 transition-colors"
-                >
+                  className="border border-gray-100 rounded-xl p-4 hover:border-orange-200 transition-colors">
                   {/* Header: dates + status */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -543,19 +547,21 @@ function ScheduledDeparturesSection({
                           {startDateStr} — {endDateStr}
                         </span>
                         <span className="text-[10px] text-gray-400">
-                          {instance.tourInstanceCode} •{" "}
-                          {instance.durationDays} {t("tourInstance.days")} &bull;{" "}
+                          {instance.tourInstanceCode} • {instance.durationDays}{" "}
+                          {t("tourInstance.days")} &bull;{" "}
                           {instance.classificationName}
                         </span>
                       </div>
                     </div>
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${statusInfo.bg} ${statusInfo.text}`}
-                    >
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${statusInfo.bg} ${statusInfo.text}`}>
                       <span
                         className={`size-1.5 rounded-full ${statusInfo.dot}`}
                       />
-                      {t(`tourInstance.statusLabels.${statusKey}`, statusInfo.label)}
+                      {t(
+                        `tourInstance.statusLabels.${statusKey}`,
+                        statusInfo.label,
+                      )}
                     </span>
                   </div>
 
@@ -834,11 +840,19 @@ export function TourDetailPage() {
               <Link href="/home" className="hover:text-white transition-colors">
                 {t("landing.tourDetail.home")}
               </Link>
-              <Icon icon="heroicons:chevron-right" className="size-2.5 opacity-50" />
-              <Link href="/tours" className="hover:text-white transition-colors">
+              <Icon
+                icon="heroicons:chevron-right"
+                className="size-2.5 opacity-50"
+              />
+              <Link
+                href="/tours"
+                className="hover:text-white transition-colors">
                 {t("landing.tourDetail.packageTours")}
               </Link>
-              <Icon icon="heroicons:chevron-right" className="size-2.5 opacity-50" />
+              <Icon
+                icon="heroicons:chevron-right"
+                className="size-2.5 opacity-50"
+              />
               <span className="font-semibold text-white truncate max-w-[150px] md:max-w-none">
                 {tour.tourName}
               </span>
@@ -874,7 +888,6 @@ export function TourDetailPage() {
 
       {/* ── Main Content ───────────────────────────────────── */}
       <div className="max-w-330 mx-auto px-4 md:px-3.75 mt-8">
-
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-5 px-6 pb-16">
           {/* ── Left Column ──────────────────────────────── */}
@@ -898,15 +911,18 @@ export function TourDetailPage() {
                 {galleryImages.length > 1 && (
                   <div
                     className={`grid gap-3 w-[220px] md:w-[260px] shrink-0 ${
-                      galleryImages.length === 2
-                        ? "grid-cols-1"
-                        : "grid-cols-2"
+                      galleryImages.length === 2 ? "grid-cols-1" : "grid-cols-2"
                     }`}>
                     {galleryImages.slice(1, 5).map((img, i) => {
-                      const isTopRight = i === 1 || (galleryImages.length === 2 && i === 0);
-                      const isBottomRight = i === 3 || (galleryImages.length === 2 && i === 0) || (galleryImages.length === 3 && i === 2);
-                      const isLastImage = i === Math.min(galleryImages.length - 2, 3);
-                      
+                      const isTopRight =
+                        i === 1 || (galleryImages.length === 2 && i === 0);
+                      const isBottomRight =
+                        i === 3 ||
+                        (galleryImages.length === 2 && i === 0) ||
+                        (galleryImages.length === 3 && i === 2);
+                      const isLastImage =
+                        i === Math.min(galleryImages.length - 2, 3);
+
                       return (
                         <div
                           key={i}
@@ -921,8 +937,13 @@ export function TourDetailPage() {
                           {/* "+X photos" floating button on last visible image */}
                           {isLastImage && galleryImages.length > 5 && (
                             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex flex-col items-center justify-center">
-                              <Button type="button" className="bg-white text-[#05073c] px-4 py-2 rounded-full shadow-md font-bold text-xs flex items-center gap-2 hover:scale-105 transition-transform">
-                                <Icon icon="heroicons:photo" className="size-4" />
+                              <Button
+                                type="button"
+                                className="bg-white text-[#05073c] px-4 py-2 rounded-full shadow-md font-bold text-xs flex items-center gap-2 hover:scale-105 transition-transform">
+                                <Icon
+                                  icon="heroicons:photo"
+                                  className="size-4"
+                                />
                                 +{galleryImages.length - 5}
                               </Button>
                             </div>
@@ -1065,14 +1086,14 @@ export function TourDetailPage() {
                                     {t("landing.tourDetail.fee", "Fee")}:{" "}
                                     {formatCurrency(ins.coverageFee)}
                                   </span>
-                                    {ins.isOptional && (
-                                      <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full">
-                                        {t(
-                                          "landing.tourDetail.optional",
-                                          "Optional",
-                                        )}
-                                      </span>
-                                    )}
+                                  {ins.isOptional && (
+                                    <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                                      {t(
+                                        "landing.tourDetail.optional",
+                                        "Optional",
+                                      )}
+                                    </span>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1132,37 +1153,62 @@ export function TourDetailPage() {
                 {/* Select Package */}
                 {classifications.length > 0 && (
                   <div className="flex flex-col gap-2">
-                    <span className="text-xs font-bold text-[#05073c]">
+                    <span className="text-[11px] font-extrabold text-gray-400 uppercase tracking-widest pl-1">
                       {t("landing.tourDetail.selectPackage")}
                     </span>
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-3 mt-1">
                       {classifications.map((cls, i) => (
                         <Button
                           key={cls.id}
                           type="button"
                           onClick={() => setSelectedPackage(i)}
-                          className={`flex items-center justify-between px-3 py-3 rounded-[14px] border transition-colors ${
+                          className={`relative flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 overflow-hidden text-left ${
                             selectedPackage === i
-                              ? "bg-orange-50 border-orange-500"
-                              : "border-gray-200 hover:border-gray-300"
+                              ? "bg-orange-50/40 border-orange-500 shadow-[0_8px_20px_rgba(249,115,22,0.12)] scale-[1.02] z-10"
+                              : "bg-white border-gray-100 hover:border-orange-200 hover:bg-orange-50/20 hover:shadow-md hover:scale-[1.01]"
                           }`}>
-                          <div className="flex flex-col items-start">
-                            <span
-                              className={`text-xs font-bold ${selectedPackage === i ? "text-orange-500" : "text-[#05073c]"}`}>
-                              {cls.name}
-                            </span>
-                            <span className="text-[10px] text-gray-400 font-medium">
-                              {cls.durationDays}{" "}
-                              {t("landing.tourDetail.days", "days")}
-                            </span>
+                          {/* Selected Glow */}
+                          {selectedPackage === i && (
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-orange-500/10 to-transparent rounded-bl-full pointer-events-none" />
+                          )}
+                          <div className="flex items-center gap-3.5 relative z-10">
+                            {/* Check Circle */}
+                            <div
+                              className={`size-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors duration-300 ${
+                                selectedPackage === i
+                                  ? "border-orange-500 bg-orange-500 shadow-sm shadow-orange-500/40"
+                                  : "border-gray-300 bg-gray-50 group-hover:border-orange-300"
+                              }`}>
+                              {selectedPackage === i && (
+                                <Icon
+                                  icon="heroicons:check"
+                                  className="size-3 text-white stroke-[3]"
+                                />
+                              )}
+                            </div>
+                            <div className="flex flex-col items-start gap-0.5">
+                              <span
+                                className={`text-sm font-extrabold transition-colors ${selectedPackage === i ? "text-orange-600" : "text-[#05073c]"}`}>
+                                {cls.name}
+                              </span>
+                              <span
+                                className={`flex items-center gap-1 text-[11px] font-medium transition-colors ${selectedPackage === i ? "text-orange-500/80" : "text-gray-400"}`}>
+                                <Icon
+                                  icon="heroicons:clock"
+                                  className="size-3 shrink-0"
+                                />
+                                {cls.durationDays}{" "}
+                                {t("landing.tourDetail.days", "days")}
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex flex-col items-end">
+                          <div className="flex flex-col items-end gap-0.5 relative z-10">
                             <span
-                              className={`text-sm font-bold ${selectedPackage === i ? "text-orange-500" : "text-[#05073c]"}`}>
+                              className={`text-[15px] font-extrabold tabular-nums tracking-tight transition-colors ${selectedPackage === i ? "text-orange-600" : "text-[#05073c]"}`}>
                               {formatCurrency(cls.salePrice)}
                             </span>
                             {cls.price !== cls.salePrice && (
-                              <span className="text-[10px] text-gray-400 line-through font-medium">
+                              <span className="text-[11px] text-gray-400/80 line-through font-semibold tabular-nums">
                                 {formatCurrency(cls.price)}
                               </span>
                             )}
@@ -1290,12 +1336,24 @@ export function TourDetailPage() {
                   <Button
                     type="button"
                     disabled={!canBook}
-                    className={`w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all ${
+                    className={`relative w-full py-4 rounded-2xl text-[15px] tracking-wide font-extrabold text-white overflow-hidden transition-all duration-300 flex items-center justify-center gap-2 ${
                       canBook
-                        ? "bg-gradient-to-r from-orange-500 to-orange-400 shadow-lg shadow-orange-500/30 hover:from-orange-600 hover:to-orange-500 hover:-translate-y-0.5"
-                        : "bg-gray-300 shadow-none cursor-not-allowed"
+                        ? "bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(249,115,22,0.3)] hover:shadow-[0_12px_24px_rgba(249,115,22,0.4)] hover:-translate-y-1 active:scale-[0.98]"
+                        : "bg-gray-100 text-gray-400 border border-gray-200 shadow-inner cursor-not-allowed"
                     }`}>
-                    {t("landing.tourDetail.requestBooking")}
+                    {/* Glass Shine Effect */}
+                    {canBook && (
+                      <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full group-hover/book:translate-x-[150%] transition-transform duration-1000 ease-in-out" />
+                      </div>
+                    )}
+                    <Icon
+                      icon="heroicons:paper-airplane"
+                      className={`size-5 transition-transform ${canBook ? "group-hover/book:-translate-y-0.5 group-hover/book:translate-x-0.5 group-hover/book:rotate-[-10deg]" : ""}`}
+                    />
+                    <span className="relative z-10">
+                      {t("landing.tourDetail.requestBooking")}
+                    </span>
                   </Button>
                   {!canBook && !departureDate && (
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover/book:opacity-100 transition-opacity pointer-events-none shadow-lg">
@@ -1332,8 +1390,12 @@ export function TourDetailPage() {
               </div>
               <Button
                 type="button"
-                className="w-full border border-gray-200 rounded-[14px] py-2.5 text-sm font-semibold text-[#05073c] hover:bg-gray-50 transition-colors">
+                className="w-full border-2 border-gray-100 rounded-xl py-3 text-sm font-extrabold text-[#05073c] hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 transition-all duration-300 flex items-center justify-center gap-2 group">
                 {t("landing.tourDetail.contactUs")}
+                <Icon
+                  icon="heroicons:arrow-small-right"
+                  className="size-4 transition-transform group-hover:translate-x-1"
+                />
               </Button>
             </div>
           </div>

@@ -6,7 +6,6 @@ import {
   PaginatedResponse,
   TourClassificationDto,
   TourDto,
-  TourVm,
   SearchTourVm,
 } from "@/types/tour";
 import { extractResult } from "@/utils/apiResponse";
@@ -16,8 +15,7 @@ const normalizeClassification = (
   classification: TourClassificationDto,
 ): TourClassificationDto => {
   const derivedPrice = classification.price ?? classification.adultPrice ?? 0;
-  const derivedSalePrice =
-    classification.salePrice ?? classification.childPrice ?? derivedPrice;
+  const derivedSalePrice = classification.salePrice ?? derivedPrice;
   const durationDays = classification.durationDays ?? classification.numberOfDay ?? 0;
 
   return {
@@ -131,6 +129,7 @@ export const tourService = {
     const response = await api.get<ApiResponse<TourDto>>(
       buildPublicTourDetailUrl(id, language),
     );
-    return extractResult<TourDto>(response.data);
+    const result = extractResult<TourDto>(response.data);
+    return result ? normalizeTourDetail(result) : null;
   },
 };

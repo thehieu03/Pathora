@@ -502,11 +502,16 @@ export function TourInstancePublicDetailPage() {
               </div>
 
               {/* CTA Button */}
-              <div className="mt-2">
+              <div className="relative group/book mt-2">
                  <Button
                     type="button"
-                    className="w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all bg-gradient-to-r from-orange-500 to-orange-400 shadow-lg shadow-orange-500/30 hover:from-orange-600 hover:to-orange-500 hover:-translate-y-0.5">
-                    {t("landing.tourDetail.requestBooking", "Request Booking")}
+                    className="relative w-full py-4 rounded-2xl text-[15px] tracking-wide font-extrabold text-white overflow-hidden transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(249,115,22,0.3)] hover:shadow-[0_12px_24px_rgba(249,115,22,0.4)] hover:-translate-y-1 active:scale-[0.98]">
+                    {/* Glass Shine Effect */}
+                    <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full group-hover/book:translate-x-[150%] transition-transform duration-1000 ease-in-out" />
+                    </div>
+                    <Icon icon="heroicons:paper-airplane" className="size-5 transition-transform group-hover/book:-translate-y-0.5 group-hover/book:translate-x-0.5 group-hover/book:rotate-[-10deg]" />
+                    <span className="relative z-10">{t("landing.tourDetail.requestBooking", "Request Booking")}</span>
                   </Button>
               </div>
             </div>
@@ -532,8 +537,9 @@ export function TourInstancePublicDetailPage() {
             </div>
             <Button
               type="button"
-              className="w-full border border-gray-200 rounded-[14px] py-2.5 text-sm font-semibold text-[#05073c] hover:bg-gray-50 transition-colors">
+              className="w-full border-2 border-gray-100 rounded-xl py-3 text-sm font-extrabold text-[#05073c] hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 transition-all duration-300 flex items-center justify-center gap-2 group">
               {t("landing.tourDetail.contactUs", "Contact us")}
+              <Icon icon="heroicons:arrow-small-right" className="size-4 transition-transform group-hover:translate-x-1" />
             </Button>
           </div>
         </div> {/* End Right Sidebar */}
