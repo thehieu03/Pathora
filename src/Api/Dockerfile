@@ -2,8 +2,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+ENV TZ=Asia/Ho_Chi_Minh
 
-RUN addgroup -g 1000 -S appgroup \
+RUN apk add --no-cache tzdata \
+    && addgroup -g 1000 -S appgroup \
     && adduser -u 1000 -S appuser -G appgroup
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
@@ -40,7 +42,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish --chown=appuser:appgroup /app/publish .
 
-USER appuser
+USER appuser:appgroup
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health/live || exit 1

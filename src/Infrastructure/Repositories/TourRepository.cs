@@ -56,6 +56,7 @@ public class TourRepository(AppDbContext context) : ITourRepository
         }
         return await query
             .Include(t => t.Thumbnail)
+            .Include(t => t.Classifications)
             .OrderByDescending(t => t.CreatedOnUtc)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)

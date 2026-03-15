@@ -27,6 +27,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseExceptionHandler(_ => { });
 
+// app.UseMiddleware<DatabaseAutoSeedMiddleware>();
+
 app.UseResponseCompression();
 
 app.UseMiddleware<SecurityHeadersMiddleware>();
