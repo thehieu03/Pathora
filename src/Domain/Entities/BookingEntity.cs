@@ -39,6 +39,7 @@ public class BookingEntity : Aggregate<Guid>
     public virtual List<SupplierPayableEntity> SupplierPayables { get; set; } = [];
     public virtual List<CustomerDepositEntity> Deposits { get; set; } = [];
     public virtual List<CustomerPaymentEntity> Payments { get; set; } = [];
+    public virtual List<PaymentTransactionEntity> PaymentTransactions { get; set; } = [];
 
 
     public static BookingEntity Create(

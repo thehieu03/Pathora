@@ -99,7 +99,7 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
         return (total, available, confirmed, soldOut);
     }
 
-    public async Task<List<TourInstanceEntity>> FindPublicAvailable(string? destination, int page, int pageSize)
+    public async Task<List<TourInstanceEntity>> FindPublicAvailable(string? destination, string? sortBy, int page, int pageSize)
     {
         var query = _context.TourInstances
             .AsNoTracking()
@@ -113,8 +113,16 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
             query = query.Where(t => t.Location != null && t.Location.ToLower().Contains(destLower));
         }
 
+        query = sortBy switch
+        {
+            "price-low" => query.OrderBy(t => t.SellingPrice).ThenBy(t => t.BasePrice),
+            "price-high" => query.OrderByDescending(t => t.SellingPrice).ThenByDescending(t => t.BasePrice),
+            "duration-short" => query.OrderBy(t => (t.EndDate - t.StartDate).TotalDays),
+            "duration-long" => query.OrderByDescending(t => (t.EndDate - t.StartDate).TotalDays),
+            "recommended" or _ => query.OrderBy(t => t.StartDate),
+        };
+
         return await query
-            .OrderBy(t => t.StartDate)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync();

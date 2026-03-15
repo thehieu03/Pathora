@@ -23,8 +23,7 @@ namespace Application.Contracts.Payment
     {
         public async Task<ErrorOr<string>> Handle(GetQRCommand request, CancellationToken cancellationToken)
         {
-            // Kiểm tra logic ở đây nếu cần, hoặc để Pipeline tự động gọi Validator
-            return await paymentService.GetQRTest(request.note, request.amount);
+            return await paymentService.GetQR(request.note, request.amount);
         }
     }
 }

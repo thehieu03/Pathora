@@ -49,7 +49,7 @@ public sealed class PublicTourInstanceControllerTests
             expectedStatusCode: StatusCodes.Status200OK,
             expectedInstance: "/api/public/tour-instances/available",
             expectedData: response);
-        Assert.Equal(new GetPublicTourInstancesQuery("ha", 2, 5, "en"), probe.CapturedRequest);
+        Assert.Equal(new GetPublicTourInstancesQuery("ha", null, 2, 5, "en"), probe.CapturedRequest);
     }
 
     [Fact]

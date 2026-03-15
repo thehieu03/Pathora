@@ -53,6 +53,10 @@ internal static class DependencyInjection
         services.AddScoped<IAdminOverviewRepository, AdminOverviewRepository>();
         services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
 
+        services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
+        services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
+        services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegisterRepository, RegisterRepository>();
 

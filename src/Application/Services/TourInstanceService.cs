@@ -24,7 +24,7 @@ public interface ITourInstanceService
     Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetAll(GetAllTourInstancesQuery request);
     Task<ErrorOr<TourInstanceDto>> GetDetail(Guid id);
     Task<ErrorOr<TourInstanceStatsDto>> GetStats();
-    Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, int page, int pageSize, string? language = null);
+    Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, string? sortBy, int page, int pageSize, string? language = null);
     Task<ErrorOr<TourInstanceDto>> GetPublicDetail(Guid id, string? language = null);
 }
 
@@ -192,9 +192,9 @@ title: request.Title,
         return new TourInstanceStatsDto(total, available, confirmed, soldOut);
     }
 
-    public async Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, int page, int pageSize, string? language = null)
+    public async Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, string? sortBy, int page, int pageSize, string? language = null)
     {
-        var entities = await _tourInstanceRepository.FindPublicAvailable(destination, page, pageSize);
+        var entities = await _tourInstanceRepository.FindPublicAvailable(destination, sortBy, page, pageSize);
         var total = await _tourInstanceRepository.CountPublicAvailable(destination);
         var resolvedLanguage = PublicLanguageResolver.Resolve(language);
 

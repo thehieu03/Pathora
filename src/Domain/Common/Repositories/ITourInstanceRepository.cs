@@ -12,7 +12,7 @@ public interface ITourInstanceRepository
     Task Update(TourInstanceEntity tourInstance);
     Task SoftDelete(Guid id);
     Task<(int Total, int Available, int Confirmed, int SoldOut)> GetStats();
-    Task<List<TourInstanceEntity>> FindPublicAvailable(string? destination, int page, int pageSize);
+    Task<List<TourInstanceEntity>> FindPublicAvailable(string? destination, string? sortBy, int page, int pageSize);
     Task<int> CountPublicAvailable(string? destination);
     Task<TourInstanceEntity?> FindPublicById(Guid id);
 }

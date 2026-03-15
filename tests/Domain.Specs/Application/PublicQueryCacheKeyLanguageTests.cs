@@ -38,7 +38,7 @@ public sealed class PublicQueryCacheKeyLanguageTests
     [Fact]
     public void GetPublicTourInstancesQuery_CacheKey_ShouldContainNormalizedLanguage()
     {
-        AssertLanguageAwareCacheKey(language => new GetPublicTourInstancesQuery("ha long", 1, 10, language));
+        AssertLanguageAwareCacheKey(language => new GetPublicTourInstancesQuery("ha long", null, 1, 10, language));
     }
 
     [Fact]

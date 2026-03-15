@@ -14,11 +14,12 @@ public class PublicTourInstanceController : BaseApiController
     [HttpGet(PublicEndpoint.Available)]
     public async Task<IActionResult> GetAvailable(
         [FromQuery] string? destination,
+        [FromQuery] string? sortBy,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10,
         [FromServices] ILanguageContext? languageContext = null)
     {
-        var result = await Sender.Send(new GetPublicTourInstancesQuery(destination, page, pageSize, languageContext?.CurrentLanguage));
+        var result = await Sender.Send(new GetPublicTourInstancesQuery(destination, sortBy, page, pageSize, languageContext?.CurrentLanguage));
         return HandleResult(result);
     }
 

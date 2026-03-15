@@ -4,4 +4,7 @@ public static class PaymentEndpoint
 {
     public const string Base = "api/payment";
     public const string GetQR = "getQR";
+    public const string CreateTransaction = "create-transaction";
+    public const string GetTransaction = "transaction/{code}";
+    public const string ExpireTransaction = "transaction/{code}/expire";
 }
