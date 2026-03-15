@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
 
 /* ── Types ─────────────────────────────────────────────────── */
@@ -252,6 +253,7 @@ export function BookingHistoryPage() {
   /* ── State ──────────────────────────────────────────── */
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 250);
 
   /* ── Filter definitions ──────────────────────────────── */
   const filters: { key: FilterKey; label: string }[] = [
@@ -274,8 +276,8 @@ export function BookingHistoryPage() {
     if (activeFilter !== "all") {
       list = list.filter((b) => b.status === activeFilter);
     }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+    if (debouncedSearchQuery.trim()) {
+      const q = debouncedSearchQuery.toLowerCase();
       list = list.filter(
         (b) =>
           b.tourName.toLowerCase().includes(q) ||
@@ -283,7 +285,7 @@ export function BookingHistoryPage() {
       );
     }
     return list;
-  }, [activeFilter, searchQuery]);
+  }, [activeFilter, debouncedSearchQuery]);
 
   /* ── Stat counts ─────────────────────────────────────── */
   const totalCount = SAMPLE_BOOKINGS.length;

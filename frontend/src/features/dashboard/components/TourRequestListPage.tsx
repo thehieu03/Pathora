@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourRequestService } from "@/api/services/tourRequestService";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   TOUR_REQUEST_STATUS_MAP,
   normalizeTourRequestStatus,
@@ -71,6 +72,7 @@ export function TourRequestListPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState<TourRequestStatus | "All">("All");
   const [searchText, setSearchText] = useState("");
+  const debouncedSearchText = useDebounce(searchText, 300);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -86,7 +88,7 @@ export function TourRequestListPage() {
     try {
       const result = await tourRequestService.getAllTourRequests({
         status,
-        searchText,
+        searchText: debouncedSearchText,
         fromDate: fromDate || undefined,
         toDate: toDate || undefined,
         pageNumber: currentPage,
@@ -105,11 +107,15 @@ export function TourRequestListPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, fromDate, searchText, status, t, toDate]);
+  }, [currentPage, debouncedSearchText, fromDate, status, t, toDate]);
 
   useEffect(() => {
     void loadRequests();
   }, [loadRequests]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchText]);
 
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) {
@@ -156,7 +162,6 @@ export function TourRequestListPage() {
                 value={searchText}
                 onChange={(event) => {
                   setSearchText(event.target.value);
-                  setCurrentPage(1);
                 }}
                 className="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-300"
                 placeholder={t("tourRequest.filters.search")}

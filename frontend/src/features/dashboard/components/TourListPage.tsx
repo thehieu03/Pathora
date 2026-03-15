@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourService } from "@/api/services/tourService";
+import { useDebounce } from "@/hooks/useDebounce";
 import { SearchTourVm } from "@/types/tour";
 import { AdminLogoutButton } from "./AdminLogoutButton";
 
@@ -242,26 +243,17 @@ export function TourListPage() {
   const [tours, setTours] = useState<SearchTourVm[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debouncedSearch = useDebounce(searchText, 400);
   const [statusFilter, setStatusFilter] = useState("all");
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [failedThumbnailIds, setFailedThumbnailIds] = useState<Set<string>>(new Set());
-  const isFirstRender = useRef(true);
 
-  /* ── Debounce search text (400ms) ─────────────────────────── */
+  /* ── Reset to first page when search updates ──────────────── */
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    const timeout = setTimeout(() => {
-      setCurrentPage(1);
-      setDebouncedSearch(searchText);
-    }, 400);
-    return () => clearTimeout(timeout);
-  }, [searchText]);
+    setCurrentPage(1);
+  }, [debouncedSearch]);
 
   /* ── Fetch tours ──────────────────────────────────────────── */
   const fetchTours = useCallback(async () => {

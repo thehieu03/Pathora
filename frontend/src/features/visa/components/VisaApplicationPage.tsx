@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
 
 /* ── Types ─────────────────────────────────────────────────── */
@@ -153,6 +154,7 @@ export function VisaApplicationPage() {
   /* ── State ──────────────────────────────────────────── */
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 250);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   /* ── Filter definitions ──────────────────────────────── */
@@ -170,8 +172,8 @@ export function VisaApplicationPage() {
     if (activeFilter !== "all") {
       list = list.filter((p) => p.status === activeFilter);
     }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+    if (debouncedSearchQuery.trim()) {
+      const q = debouncedSearchQuery.toLowerCase();
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
@@ -179,7 +181,7 @@ export function VisaApplicationPage() {
       );
     }
     return list;
-  }, [activeFilter, searchQuery]);
+  }, [activeFilter, debouncedSearchQuery]);
 
   /* ── Stat counts ─────────────────────────────────────── */
   const approvedCount = SAMPLE_PARTICIPANTS.filter(

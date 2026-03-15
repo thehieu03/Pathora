@@ -1,32 +1,35 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useSyncExternalStore,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { LandingHeader } from "@/features/shared/components/LandingHeader";
-import { LandingFooter } from "@/features/shared/components/LandingFooter";
-import { HeroSection } from "./HeroSection";
-import { SearchBar } from "./SearchBar";
-import { FilterSidebar } from "./FilterSidebar";
-import { FilterDrawer } from "./FilterDrawer";
-import { TourCard } from "./TourCard";
-import { TourInstanceCard } from "./TourInstanceCard";
-import { homeService } from "@/api/services/homeService";
-import { tourService } from "@/api/services/tourService";
 import { normalizeLanguageForApi } from "@/api/languageHeader";
+import { homeService } from "@/api/services/homeService";
+import { Icon } from "@/components/ui";
+import { useDebounce } from "@/hooks/useDebounce";
 import { SearchTour } from "@/types/home";
 import { NormalizedTourInstanceVm } from "@/types/tour";
-import { Icon } from "@/components/ui";
+import {
+  buildTourDiscoverySearchParams,
+  parseTourDiscoveryFilters,
+  TourDiscoveryView,
+} from "@/utils/tourDiscoveryFilters";
+import { LandingFooter } from "@/features/shared/components/LandingFooter";
+import { LandingHeader } from "@/features/shared/components/LandingHeader";
+import { FilterDrawer } from "./FilterDrawer";
+import { FilterSidebar } from "./FilterSidebar";
+import { HeroSection } from "./HeroSection";
+import { SearchBar } from "./SearchBar";
+import { TourCard } from "./TourCard";
+import { TourInstanceCard } from "./TourInstanceCard";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 6;
 
 export const TourDiscoveryPage = () => {
   const { t, i18n } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -37,26 +40,30 @@ export const TourDiscoveryPage = () => {
     return mounted ? t(key, fallback) : fallback;
   };
 
-  // State
   const [tours, setTours] = useState<SearchTour[]>([]);
   const [tourInstances, setTourInstances] = useState<NormalizedTourInstanceVm[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalTours, setTotalTours] = useState(0);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState(() => parseTourDiscoveryFilters(searchParams).destination);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [apiLanguage, setApiLanguage] = useState(() =>
     normalizeLanguageForApi(i18n.resolvedLanguage || i18n.language),
   );
 
-  // Filter state
   const [selectedClassifications, setSelectedClassifications] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("recommended");
-  const [viewType, setViewType] = useState<"tour" | "tourInstance">("tourInstance");
 
-  // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const didInitializeLanguage = useRef(false);
+  const filters = useMemo(() => parseTourDiscoveryFilters(searchParams), [searchParams]);
+  const currentPage = filters.page;
+  const viewType = filters.view;
+  const submittedSearchText = filters.destination;
+  const debouncedSearchText = useDebounce(searchText, 400);
+  const totalPages = Math.max(1, Math.ceil(totalTours / PAGE_SIZE));
+
+  useEffect(() => {
+    setSearchText(submittedSearchText);
+  }, [submittedSearchText]);
 
   useEffect(() => {
     const updateLanguage = (language: string) => {
@@ -71,116 +78,143 @@ export const TourDiscoveryPage = () => {
     };
   }, [i18n]);
 
-  // Fetch tours/instances based on viewType
-  const fetchTours = useCallback(async () => {
-    setLoading(true);
-    try {
-      if (viewType === "tour") {
-        // Fetch Tours (template tours)
-        const result = await tourService.getAllTours(
-          searchText || undefined,
-          currentPage,
-          PAGE_SIZE,
-          apiLanguage,
-        );
-        if (result) {
-          setTours(result.data ?? []);
-          setTotalTours(result.total || 0);
-          setTourInstances([]);
-        }
-      } else {
-        // Fetch Tour Instances (scheduled tours)
-        const result = await homeService.getAvailablePublicInstances(
-          searchText || undefined,
-          currentPage,
-          PAGE_SIZE,
-          apiLanguage,
-        );
-        if (result) {
-          setTourInstances(result.data || []);
-          setTotalTours(result.total || 0);
-          setTours([]);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching tours:", error);
-      if (viewType === "tour") {
-        setTours([]);
-      } else {
-        setTourInstances([]);
-      }
-      setTotalTours(0);
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    apiLanguage,
-    currentPage,
-    searchText,
-    viewType,
-  ]);
+  const syncFilters = useCallback((updates: Partial<typeof filters>) => {
+    const nextFilters = {
+      ...filters,
+      ...updates,
+    };
+    const nextParams = buildTourDiscoverySearchParams(nextFilters);
+    const nextQuery = nextParams.toString();
+    const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+
+    router.replace(nextUrl, { scroll: false });
+  }, [filters, pathname, router]);
 
   useEffect(() => {
-    fetchTours();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Also fetch when viewType changes
-  useEffect(() => {
-    setCurrentPage(1);
-    fetchTours();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewType]);
-
-  useEffect(() => {
-    if (!didInitializeLanguage.current) {
-      didInitializeLanguage.current = true;
+    if (debouncedSearchText.trim() === submittedSearchText) {
       return;
     }
 
-    fetchTours();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiLanguage]);
+    syncFilters({
+      destination: debouncedSearchText.trim(),
+      page: 1,
+    });
+  }, [debouncedSearchText, submittedSearchText, syncFilters]);
 
-  // Handle search
-  const handleSearchSubmit = () => {
-    setCurrentPage(1);
+  useEffect(() => {
+    let isActive = true;
+
+    const fetchTours = async () => {
+      setLoading(true);
+
+      try {
+        if (viewType === "tours") {
+          const result = await homeService.searchTours({
+            q: submittedSearchText || undefined,
+            page: currentPage,
+            pageSize: PAGE_SIZE,
+            language: apiLanguage,
+          });
+
+          if (!isActive) {
+            return;
+          }
+
+          setTours(result?.data ?? []);
+          setTourInstances([]);
+          setTotalTours(result?.total ?? 0);
+          return;
+        }
+
+        const result = await homeService.getAvailablePublicInstances(
+          submittedSearchText || undefined,
+          currentPage,
+          PAGE_SIZE,
+          apiLanguage,
+        );
+
+        if (!isActive) {
+          return;
+        }
+
+        setTourInstances(result?.data ?? []);
+        setTours([]);
+        setTotalTours(result?.total ?? 0);
+      } catch (error) {
+        if (!isActive) {
+          return;
+        }
+
+        console.error("Error fetching tours:", error);
+        setTours([]);
+        setTourInstances([]);
+        setTotalTours(0);
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchTours();
+
+    return () => {
+      isActive = false;
+    };
+  }, [
+    apiLanguage,
+    currentPage,
+    submittedSearchText,
+    viewType,
+  ]);
+
+  const handleSearchSubmit = () => {
+    syncFilters({
+      destination: searchText.trim(),
+      page: 1,
+    });
   };
 
-  // Handle filter changes
   const handleClassificationToggle = (value: string) => {
     setSelectedClassifications((prev) =>
       prev.includes(value)
-        ? prev.filter((c) => c !== value)
+        ? prev.filter((classification) => classification !== value)
         : [...prev, value]
     );
-    setCurrentPage(1);
   };
 
   const handleCategoryToggle = (value: string) => {
     setSelectedCategories((prev) =>
       prev.includes(value)
-        ? prev.filter((c) => c !== value)
+        ? prev.filter((category) => category !== value)
         : [...prev, value]
     );
-    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
     setSelectedClassifications([]);
     setSelectedCategories([]);
-    setCurrentPage(1);
   };
 
   const handleSortChange = (value: string) => {
     setSortBy(value);
-    setCurrentPage(1);
   };
 
-  const handleViewTypeChange = (value: "tour" | "tourInstance") => {
-    setViewType(value);
-    setCurrentPage(1);
+  const handleViewTypeChange = (value: TourDiscoveryView) => {
+    syncFilters({
+      view: value,
+      page: 1,
+    });
+  };
+
+  const handlePageChange = (page: number) => {
+    const nextPage = Math.min(Math.max(page, 1), totalPages);
+
+    if (nextPage === currentPage) {
+      return;
+    }
+
+    syncFilters({ page: nextPage });
   };
 
   return (
@@ -188,10 +222,8 @@ export const TourDiscoveryPage = () => {
       <LandingHeader />
 
       <main className="min-h-screen bg-gray-50">
-        {/* Hero Section */}
         <HeroSection />
 
-        {/* Search Bar */}
         <SearchBar
           searchText={searchText}
           onSearchChange={setSearchText}
@@ -199,10 +231,8 @@ export const TourDiscoveryPage = () => {
           onFilterToggle={() => setFilterDrawerOpen(true)}
         />
 
-        {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
           <div className="flex gap-8">
-            {/* Desktop Sidebar */}
             <div className="hidden lg:block">
               <FilterSidebar
                 selectedClassifications={selectedClassifications}
@@ -213,19 +243,15 @@ export const TourDiscoveryPage = () => {
               />
             </div>
 
-            {/* Tour Grid */}
             <div className="flex-1 min-w-0">
-              {/* Results Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                {/* Left side: View type tabs + Results count */}
                 <div className="flex items-center gap-4">
-                  {/* View type tabs */}
                   <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
                       type="button"
-                      onClick={() => handleViewTypeChange("tour")}
+                      onClick={() => handleViewTypeChange("tours")}
                       className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                        viewType === "tour"
+                        viewType === "tours"
                           ? "bg-white text-gray-900 shadow-sm"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
@@ -234,9 +260,9 @@ export const TourDiscoveryPage = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleViewTypeChange("tourInstance")}
+                      onClick={() => handleViewTypeChange("instances")}
                       className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                        viewType === "tourInstance"
+                        viewType === "instances"
                           ? "bg-white text-gray-900 shadow-sm"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
@@ -245,10 +271,9 @@ export const TourDiscoveryPage = () => {
                     </button>
                   </div>
 
-                  {/* Results count */}
                   <p className="text-gray-600">
                     <span className="font-semibold text-gray-900">{totalTours}</span>{" "}
-                    {viewType === "tour"
+                    {viewType === "tours"
                       ? safeT("landing.tourDiscovery.toursFound", "tours found")
                       : safeT(
                           "landing.tourDiscovery.departuresFound",
@@ -257,13 +282,12 @@ export const TourDiscoveryPage = () => {
                   </p>
                 </div>
 
-                {/* Sort dropdown */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-500">{safeT("landing.tourDiscovery.sortBy", "Sort by")}:</span>
                   <div className="relative">
                     <select
                       value={sortBy}
-                      onChange={(e) => handleSortChange(e.target.value)}
+                      onChange={(event) => handleSortChange(event.target.value)}
                       className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#fa8b02]/20 focus:border-[#fa8b02] cursor-pointer"
                     >
                       <option value="recommended">
@@ -306,9 +330,9 @@ export const TourDiscoveryPage = () => {
               </div>
 
               {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[...Array(PAGE_SIZE)].map((_, index) => (
+                    <div key={index} className="bg-white rounded-2xl overflow-hidden animate-pulse">
                       <div className="aspect-[4/3] bg-gray-200" />
                       <div className="p-4 space-y-3">
                         <div className="h-4 bg-gray-200 rounded w-1/3" />
@@ -318,14 +342,14 @@ export const TourDiscoveryPage = () => {
                     </div>
                   ))}
                 </div>
-              ) : viewType === "tour" && tours.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              ) : viewType === "tours" && tours.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {tours.map((tour) => (
                     <TourCard key={tour.id} tour={tour} />
                   ))}
                 </div>
-              ) : viewType === "tourInstance" && tourInstances.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              ) : viewType === "instances" && tourInstances.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {tourInstances.map((instance) => (
                     <TourInstanceCard key={instance.id} tour={instance} />
                   ))}
@@ -334,7 +358,7 @@ export const TourDiscoveryPage = () => {
                 <div className="text-center py-16">
                   <Icon icon="heroicons-outline:search" className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {viewType === "tour"
+                    {viewType === "tours"
                       ? safeT(
                           "landing.tourDiscovery.noToursFound",
                           "No tours found",
@@ -345,7 +369,7 @@ export const TourDiscoveryPage = () => {
                         )}
                   </h3>
                   <p className="text-gray-500">
-                    {viewType === "tour"
+                    {viewType === "tours"
                       ? safeT(
                           "landing.tourDiscovery.tryAdjustingFilters",
                           "Try adjusting your filters or search terms",
@@ -358,23 +382,24 @@ export const TourDiscoveryPage = () => {
                 </div>
               )}
 
-              {/* Pagination */}
               {totalTours > PAGE_SIZE && (
                 <div className="flex justify-center mt-8">
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      type="button"
+                      onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
                       className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <Icon icon="heroicons-outline:chevron-left" className="w-5 h-5" />
                     </button>
                     <span className="px-4 text-sm text-gray-600">
-                      {currentPage} / {Math.ceil(totalTours / PAGE_SIZE)}
+                      {currentPage} / {totalPages}
                     </span>
                     <button
-                      onClick={() => setCurrentPage((p) => p + 1)}
-                      disabled={currentPage >= Math.ceil(totalTours / PAGE_SIZE)}
+                      type="button"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
                       className="w-10 h-10 rounded-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       <Icon icon="heroicons-outline:chevron-right" className="w-5 h-5" />
@@ -389,7 +414,6 @@ export const TourDiscoveryPage = () => {
 
       <LandingFooter />
 
-      {/* Mobile Filter Drawer */}
       <FilterDrawer
         isOpen={filterDrawerOpen}
         onClose={() => setFilterDrawerOpen(false)}

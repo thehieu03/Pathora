@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourInstanceService } from "@/api/services/tourInstanceService";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   NormalizedTourInstanceVm,
   TourInstanceStats,
@@ -242,6 +243,7 @@ export function TourInstanceListPage() {
   const [instances, setInstances] = useState<NormalizedTourInstanceVm[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
+  const debouncedSearchText = useDebounce(searchText, 300);
   const [statusFilter, setStatusFilter] = useState("all");
   const [totalItems, setTotalItems] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
@@ -258,7 +260,7 @@ export function TourInstanceListPage() {
     try {
       setLoading(true);
       const result = await tourInstanceService.getAllInstances(
-        searchText || undefined,
+        debouncedSearchText || undefined,
         statusFilter,
         currentPage,
         pageSize,
@@ -276,7 +278,7 @@ export function TourInstanceListPage() {
     } finally {
       setLoading(false);
     }
-  }, [searchText, statusFilter, currentPage, t]);
+  }, [currentPage, debouncedSearchText, statusFilter, t]);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -295,11 +297,10 @@ export function TourInstanceListPage() {
     fetchStats();
   }, [fetchStats]);
 
-  // Debounced search — reset to page 1
+  // Reset to page 1 when debounced search changes
   useEffect(() => {
-    const timeout = setTimeout(() => setCurrentPage(1), 300);
-    return () => clearTimeout(timeout);
-  }, [searchText]);
+    setCurrentPage(1);
+  }, [debouncedSearchText]);
 
   /* ── Pagination ───────────────────────────────────────────── */
   const totalPages = Math.ceil(totalItems / pageSize);

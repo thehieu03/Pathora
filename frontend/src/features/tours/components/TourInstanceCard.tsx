@@ -63,13 +63,13 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
         {/* Content */}
         <div className="p-4">
           {/* Location */}
-          <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+          <div className="flex items-center gap-1 text-sm text-gray-500 mb-1.5">
             <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
             <span>{location}</span>
           </div>
 
           {/* Title */}
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#fa8b02] transition-colors">
+          <h3 className="text-xl font-semibold text-gray-900 leading-tight mb-2.5 line-clamp-2 min-h-[56px] group-hover:text-[#fa8b02] transition-colors">
             {tour.title || tour.tourName}
           </h3>
 
@@ -101,7 +101,7 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
 
           {/* Price */}
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold text-[#fa8b02]">
+            <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
               {formatCurrency(tour.price || tour.sellingPrice)}
             </span>
             <span className="text-sm text-gray-400">

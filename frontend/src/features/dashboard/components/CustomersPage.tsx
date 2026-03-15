@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
+import { useDebounce } from "@/hooks/useDebounce";
 import type { AdminCustomer } from "@/types/admin";
 import { AdminLogoutButton } from "./AdminLogoutButton";
 
@@ -279,6 +280,7 @@ export function CustomersPage() {
   const [dataState, setDataState] = useState<CustomersDataState>("loading");
   const [customers, setCustomers] = useState<AdminCustomer[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const debouncedSearchQuery = useDebounce(searchQuery, 250);
 
   useEffect(() => {
     let active = true;
@@ -306,8 +308,8 @@ export function CustomersPage() {
   }, [reloadToken]);
 
   const filteredCustomers = useMemo(() => {
-    return filterCustomers(customers, statusFilter, searchQuery);
-  }, [customers, statusFilter, searchQuery]);
+    return filterCustomers(customers, statusFilter, debouncedSearchQuery);
+  }, [customers, statusFilter, debouncedSearchQuery]);
 
   const customerRows = useMemo(() => {
     return buildCustomerTableRows(filteredCustomers);
