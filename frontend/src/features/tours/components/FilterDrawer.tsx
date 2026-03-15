@@ -7,23 +7,81 @@ import { Icon } from "@/components/ui";
 import { Transition, TransitionChild } from "@headlessui/react";
 import { CustomizeBanner } from "./CustomizeBanner";
 
-const CLASSIFICATION_OPTIONS = [
-  "Standard Tour",
-  "Premium Tour",
-  "VIP / Luxury Tour",
-  "Budget Tour",
-  "Private Tour",
-  "Group Tour",
+interface FilterOption {
+  value: string;
+  labelKey: string;
+  fallback: string;
+}
+
+const CLASSIFICATION_OPTIONS: FilterOption[] = [
+  {
+    value: "Standard Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.standard",
+    fallback: "Standard Tour",
+  },
+  {
+    value: "Premium Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.premium",
+    fallback: "Premium Tour",
+  },
+  {
+    value: "VIP / Luxury Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.vipLuxury",
+    fallback: "VIP / Luxury Tour",
+  },
+  {
+    value: "Budget Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.budget",
+    fallback: "Budget Tour",
+  },
+  {
+    value: "Private Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.private",
+    fallback: "Private Tour",
+  },
+  {
+    value: "Group Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.group",
+    fallback: "Group Tour",
+  },
 ];
 
-const CATEGORY_OPTIONS = [
-  "Adventure Tour",
-  "Cultural Tour",
-  "Relaxation Tour",
-  "Eco Tour",
-  "Food Tour",
-  "Religious Tour",
-  "Honeymoon Tour",
+const CATEGORY_OPTIONS: FilterOption[] = [
+  {
+    value: "Adventure Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.adventure",
+    fallback: "Adventure Tour",
+  },
+  {
+    value: "Cultural Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.cultural",
+    fallback: "Cultural Tour",
+  },
+  {
+    value: "Relaxation Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.relaxation",
+    fallback: "Relaxation Tour",
+  },
+  {
+    value: "Eco Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.eco",
+    fallback: "Eco Tour",
+  },
+  {
+    value: "Food Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.food",
+    fallback: "Food Tour",
+  },
+  {
+    value: "Religious Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.religious",
+    fallback: "Religious Tour",
+  },
+  {
+    value: "Honeymoon Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.honeymoon",
+    fallback: "Honeymoon Tour",
+  },
 ];
 
 interface FilterDrawerProps {
@@ -46,9 +104,6 @@ export const FilterDrawer = ({
   onClearFilters,
 }: FilterDrawerProps) => {
   const { t } = useTranslation();
-
-  const hasActiveFilters =
-    selectedClassifications.length > 0 || selectedCategories.length > 0;
 
   return (
     <Transition show={isOpen}>
@@ -101,27 +156,27 @@ export const FilterDrawer = ({
                 <div className="flex flex-col gap-2">
                   {CLASSIFICATION_OPTIONS.map((option) => (
                     <label
-                      key={option}
+                      key={option.value}
                       className="flex items-center gap-3 cursor-pointer py-2 text-sm text-gray-600"
                     >
                       <input
                         type="checkbox"
-                        checked={selectedClassifications.includes(option)}
-                        onChange={() => onClassificationToggle(option)}
+                        checked={selectedClassifications.includes(option.value)}
+                        onChange={() => onClassificationToggle(option.value)}
                         className="sr-only"
                       />
                       <div
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                          selectedClassifications.includes(option)
+                          selectedClassifications.includes(option.value)
                             ? "border-[#fa8b02] bg-[#fa8b02]"
                             : "border-gray-300 bg-white"
                         }`}
                       >
-                        {selectedClassifications.includes(option) && (
+                        {selectedClassifications.includes(option.value) && (
                           <Icon icon="heroicons-outline:check" className="w-3 h-3 text-white" />
                         )}
                       </div>
-                      <span>{option}</span>
+                      <span>{t(option.labelKey, option.fallback)}</span>
                     </label>
                   ))}
                 </div>
@@ -135,27 +190,27 @@ export const FilterDrawer = ({
                 <div className="flex flex-col gap-2">
                   {CATEGORY_OPTIONS.map((option) => (
                     <label
-                      key={option}
+                      key={option.value}
                       className="flex items-center gap-3 cursor-pointer py-2 text-sm text-gray-600"
                     >
                       <input
                         type="checkbox"
-                        checked={selectedCategories.includes(option)}
-                        onChange={() => onCategoryToggle(option)}
+                        checked={selectedCategories.includes(option.value)}
+                        onChange={() => onCategoryToggle(option.value)}
                         className="sr-only"
                       />
                       <div
                         className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                          selectedCategories.includes(option)
+                          selectedCategories.includes(option.value)
                             ? "border-[#fa8b02] bg-[#fa8b02]"
                             : "border-gray-300 bg-white"
                         }`}
                       >
-                        {selectedCategories.includes(option) && (
+                        {selectedCategories.includes(option.value) && (
                           <Icon icon="heroicons-outline:check" className="w-3 h-3 text-white" />
                         )}
                       </div>
-                      <span>{option}</span>
+                      <span>{t(option.labelKey, option.fallback)}</span>
                     </label>
                   ))}
                 </div>

@@ -1477,8 +1477,15 @@
       "toursLower": "tours",
       "scheduledTours": "Scheduled Tours",
       "recommended": "Recommended",
+      "viewType": {
+        "tour": "By Tour",
+        "tourInstance": "By Departure"
+      },
+      "toursFound": "tours found",
+      "departuresFound": "departures found",
       "maxPax": "Max {{count}} pax",
       "filtersLabel": "Filters",
+      "showResults": "Show Results",
       "customizeYourTour": "Customize Your Tour",
       "customizeDescription": "Can't find what you're looking for? Let us design a personalized tour just for you!",
       "createCustomTour": "Create Custom Tour",
@@ -1486,12 +1493,39 @@
       "byDeparture": "By Departure",
       "departuresLower": "departures",
       "noResults": "No Tours Found",
+      "noToursFound": "No tours found",
+      "noDeparturesFound": "No departures found",
       "noResultsDescription": "Try adjusting your search or filters to find what you're looking for.",
+      "tryAdjustingFilters": "Try adjusting your filters or search terms",
       "noInstancesTitle": "No Departures Found",
       "noInstancesDescription": "There are no upcoming departures matching your search. Please check back later.",
       "errorLoading": "Failed to load tours. Please try again.",
       "errorLoadingInstances": "Failed to load departures. Please try again.",
       "retry": "Retry",
+      "sort": {
+        "recommended": "Recommended",
+        "price-low": "Price: Low to High",
+        "price-high": "Price: High to Low",
+        "duration-short": "Duration: Shortest",
+        "duration-long": "Duration: Longest"
+      },
+      "classificationOptions": {
+        "standard": "Standard Tour",
+        "premium": "Premium Tour",
+        "vipLuxury": "VIP / Luxury Tour",
+        "budget": "Budget Tour",
+        "private": "Private Tour",
+        "group": "Group Tour"
+      },
+      "categoryOptions": {
+        "adventure": "Adventure Tour",
+        "cultural": "Cultural Tour",
+        "relaxation": "Relaxation Tour",
+        "eco": "Eco Tour",
+        "food": "Food Tour",
+        "religious": "Religious Tour",
+        "honeymoon": "Honeymoon Tour"
+      },
       "filters": {
         "departureDate": "Departure Date",
         "destination": "Destination",

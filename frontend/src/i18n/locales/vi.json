@@ -1477,8 +1477,15 @@
       "toursLower": "tour",
       "scheduledTours": "Tour theo lịch",
       "recommended": "Đề xuất",
+      "viewType": {
+        "tour": "Theo Tour",
+        "tourInstance": "Theo Lịch Khởi Hành"
+      },
+      "toursFound": "tour được tìm thấy",
+      "departuresFound": "lịch khởi hành được tìm thấy",
       "maxPax": "Tối đa {{count}} khách",
       "filtersLabel": "Bộ lọc",
+      "showResults": "Xem kết quả",
       "customizeYourTour": "Tùy chỉnh tour của bạn",
       "customizeDescription": "Không tìm thấy tour phù hợp? Để chúng tôi thiết kế tour cá nhân hóa dành riêng cho bạn!",
       "createCustomTour": "Tạo tour tùy chỉnh",
@@ -1486,12 +1493,39 @@
       "byDeparture": "Theo Lịch Khởi Hành",
       "departuresLower": "lịch khởi hành",
       "noResults": "Không Tìm Thấy Tour",
+      "noToursFound": "Không tìm thấy tour",
+      "noDeparturesFound": "Không tìm thấy lịch khởi hành",
       "noResultsDescription": "Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc để tìm kết quả phù hợp.",
+      "tryAdjustingFilters": "Hãy thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm",
       "noInstancesTitle": "Không Tìm Thấy Lịch Khởi Hành",
       "noInstancesDescription": "Không có lịch khởi hành nào phù hợp với tìm kiếm của bạn. Vui lòng quay lại sau.",
       "errorLoading": "Không thể tải danh sách tour. Vui lòng thử lại.",
       "errorLoadingInstances": "Không thể tải lịch khởi hành. Vui lòng thử lại.",
       "retry": "Thử lại",
+      "sort": {
+        "recommended": "Đề xuất",
+        "price-low": "Giá: Thấp đến cao",
+        "price-high": "Giá: Cao đến thấp",
+        "duration-short": "Thời gian: Ngắn nhất",
+        "duration-long": "Thời gian: Dài nhất"
+      },
+      "classificationOptions": {
+        "standard": "Tour tiêu chuẩn",
+        "premium": "Tour cao cấp",
+        "vipLuxury": "Tour VIP / Sang trọng",
+        "budget": "Tour tiết kiệm",
+        "private": "Tour riêng",
+        "group": "Tour đoàn"
+      },
+      "categoryOptions": {
+        "adventure": "Tour phiêu lưu",
+        "cultural": "Tour văn hóa",
+        "relaxation": "Tour nghỉ dưỡng",
+        "eco": "Tour sinh thái",
+        "food": "Tour ẩm thực",
+        "religious": "Tour tâm linh",
+        "honeymoon": "Tour trăng mật"
+      },
       "filters": {
         "departureDate": "Ngày khởi hành",
         "destination": "Điểm đến",

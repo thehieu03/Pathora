@@ -1,24 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pathora Frontend
 
-## Getting Started
+## Recommended Setup: Backend in Docker, Frontend Local
 
-First, run the development server:
+### 1) Start backend services in Docker (from `D:\DoAn`)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose up -d redis minio api
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2) Configure frontend API endpoint (in `pathora/frontend/.env.local`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+NEXT_PUBLIC_API_GATEWAY=http://localhost:8080
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3) Run frontend locally (from `pathora/frontend`)
+
+```bash
+npm ci
+npm run dev
+```
+
+Open [http://localhost:3001](http://localhost:3001) in your browser.
+
+### 4) Quick checks
+
+```bash
+docker compose ps
+```
+
+- Backend should be `healthy` on port `8080`.
+- Frontend should run locally on port `3001` (not in Docker).
 
 ## Image Host Allowlist
 

@@ -11,7 +11,7 @@ import {
   tourInstanceService,
 } from "@/api/services/tourInstanceService";
 import { tourService } from "@/api/services/tourService";
-import { DynamicPricingDto, ImageDto, TourDto, TourVm } from "@/types/tour";
+import { DynamicPricingDto, ImageDto, SearchTourVm, TourDto, TourVm } from "@/types/tour";
 
 type DynamicTierForm = {
   minParticipants: string;
@@ -199,7 +199,7 @@ export function CreateTourInstancePage() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const [tours, setTours] = useState<TourVm[]>([]);
+  const [tours, setTours] = useState<SearchTourVm[]>([]);
   const [tourDetail, setTourDetail] = useState<TourDto | null>(null);
   const [loadingTour, setLoadingTour] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -15,105 +15,102 @@ export const TourCard = ({ tour }: TourCardProps) => {
   const { t } = useTranslation();
 
   return (
-    <article className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 group">
-      {/* Image */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden">
-        {tour.thumbnail ? (
-          <Image
-            src={tour.thumbnail}
-            alt={tour.tourName}
-            fill
-            sizes="(max-width: 767px) 100vw, 400px"
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-[#05073c] to-[#1a1c5e] flex items-center justify-center">
-            <Icon
-              icon="heroicons-outline:calendar-days"
-              className="w-10 h-10 text-white/40"
+    <Link href={`/tours/${tour.id}`} className="group block">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        {/* Image */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          {tour.thumbnail ? (
+            <Image
+              src={tour.thumbnail}
+              alt={tour.tourName}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
-          </div>
-        )}
-
-        {/* Classification badge */}
-        {tour.classificationName && (
-          <span className="absolute bottom-3 left-3 bg-black/50 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full">
-            {tour.classificationName}
-          </span>
-        )}
-      </div>
-
-      {/* Content */}
-      <div className="p-4">
-        {/* Location & Rating */}
-        <div className="flex items-center justify-between mb-2">
-          {tour.location && (
-            <div className="flex items-center gap-1 text-xs text-gray-500">
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#05073c] to-[#1a1c5e] flex items-center justify-center">
               <Icon
-                icon="heroicons-solid:map-pin"
-                className="w-3 h-3 shrink-0"
+                icon="heroicons-outline:calendar-days"
+                className="w-10 h-10 text-white/40"
               />
-              <span>{tour.location}</span>
             </div>
           )}
+
+          {/* Classification badge */}
+          {tour.classificationName && (
+            <div className="absolute top-3 left-3">
+              <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
+                {tour.classificationName}
+              </span>
+            </div>
+          )}
+
+          {/* Rating Badge */}
           {tour.rating && (
-            <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-100 text-[10px] font-bold text-gray-600 px-2 py-0.5 rounded-full">
-              <Icon
-                icon="heroicons-solid:star"
-                className="w-3 h-3 text-[#fa8b02]"
-              />
-              {tour.rating.toFixed(1)}
-            </span>
+            <div className="absolute top-3 right-3">
+              <span className="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 text-xs font-bold text-gray-700 rounded-full">
+                <Icon
+                  icon="heroicons-solid:star"
+                  className="w-3.5 h-3.5 text-[#fa8b02]"
+                />
+                {tour.rating.toFixed(1)}
+              </span>
+            </div>
           )}
         </div>
 
-        {/* Title */}
-        <h3 className="text-sm font-semibold text-gray-900 leading-snug mb-3 line-clamp-2 min-h-[40px]">
-          {tour.tourName}
-        </h3>
+        {/* Content */}
+        <div className="p-4">
+          {/* Location */}
+          <div className="flex items-center gap-1 text-sm text-gray-500 mb-2">
+            <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
+            <span>{tour.location || t("common.noData", "N/A")}</span>
+          </div>
 
-        {/* Duration */}
-        <div className="flex items-center gap-2 mb-3">
-          <span className="inline-flex items-center gap-1 bg-gray-50 border border-gray-100 text-xs text-gray-600 px-2 py-0.5 rounded-full">
-            <Icon
-              icon="heroicons-outline:clock"
-              className="w-3 h-3 text-gray-500"
-            />
-            {tour.durationDays} {tour.durationDays === 1 ? "day" : "days"}
-          </span>
-        </div>
+          {/* Title */}
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[48px] group-hover:text-[#fa8b02] transition-colors">
+            {tour.tourName}
+          </h3>
 
-        {/* Price + Arrow */}
-        <div className="flex items-center justify-between border-t border-gray-100 pt-3">
-          <p className="text-xs text-gray-500">
-            <span>{t("landing.tourDiscovery.from", "From")} </span>
+          {/* Meta info / Duration */}
+          <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+            <div className="flex items-center gap-1">
+              <Icon icon="heroicons-outline:clock" className="w-4 h-4" />
+              <span>
+                {tour.durationDays} {t("tourInstance.days", "days")}
+              </span>
+            </div>
+          </div>
+
+          {/* Price */}
+          <div className="flex flex-col gap-0.5 mt-2">
             {tour.salePrice > 0 && tour.salePrice < tour.price ? (
-              <>
-                <span className="text-sm font-bold text-[#fa8b02]">
+              <div className="flex items-baseline gap-2">
+                 <span className="text-xl font-bold text-[#fa8b02]">
                   {formatCurrency(tour.salePrice)}
                 </span>
-                <span className="ml-1 line-through text-[11px] text-gray-400">
+                <span className="text-sm line-through text-gray-400">
                   {formatCurrency(tour.price)}
                 </span>
-              </>
+              </div>
             ) : (
-              <span className="text-sm font-bold text-gray-900">
-                {formatCurrency(tour.price)}
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl font-bold text-[#fa8b02]">
+                  {formatCurrency(tour.price)}
+                </span>
+                <span className="text-sm text-gray-400">
+                   {t("tourInstance.perPersonShort", "/person")}
+                </span>
+              </div>
+            )}
+            {tour.salePrice > 0 && tour.salePrice < tour.price && (
+              <span className="text-sm text-gray-400">
+                {t("tourInstance.perPersonShort", "/person")}
               </span>
             )}
-            <span> /pax</span>
-          </p>
-          <Link
-            href={`/tours/${tour.id}`}
-            className="w-[26px] h-[26px] bg-orange-50 rounded-[10px] flex items-center justify-center hover:bg-[#fa8b02] group/arrow transition-colors"
-          >
-            <Icon
-              icon="heroicons-outline:arrow-right"
-              className="w-3.5 h-3.5 text-[#fa8b02] group-hover/arrow:text-white transition-colors"
-            />
-          </Link>
+          </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 };

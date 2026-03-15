@@ -7,8 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourService } from "@/api/services/tourService";
-import { TourVm } from "@/types/tour";
-import { resolveTourThumbnailUrl } from "@/utils/tourMedia";
+import { SearchTourVm } from "@/types/tour";
 import { AdminLogoutButton } from "./AdminLogoutButton";
 
 /* ══════════════════════════════════════════════════════════════
@@ -240,7 +239,7 @@ export function TourListPage() {
   const router = useRouter();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [tours, setTours] = useState<TourVm[]>([]);
+  const [tours, setTours] = useState<SearchTourVm[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -292,19 +291,17 @@ export function TourListPage() {
   }, [fetchTours]);
 
   /* ── Derived stat counts ──────────────────────────────────── */
+  // Public API returns only active tours, so all are active
   const statCounts = {
     total: totalItems,
-    active: tours.filter((t) => t.status?.toLowerCase() === "active").length,
-    inactive: tours.filter((t) => t.status?.toLowerCase() === "inactive")
-      .length,
-    draft: tours.filter((t) => t.status?.toLowerCase() === "draft").length,
+    active: totalItems,
+    inactive: 0,
+    draft: 0,
   };
 
   /* ── Filtered tours ───────────────────────────────────────── */
-  const filteredTours =
-    statusFilter === "all"
-      ? tours
-      : tours.filter((t) => t.status?.toLowerCase() === statusFilter);
+  // All tours from public API are active
+  const filteredTours = tours;
 
   /* ── Pagination ───────────────────────────────────────────── */
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -472,9 +469,9 @@ export function TourListPage() {
                           <div className="flex items-center gap-3">
                             <div className="w-16 h-16 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
                               {!failedThumbnailIds.has(tour.id) &&
-                              resolveTourThumbnailUrl(tour.thumbnail) ? (
+                              tour.thumbnail ? (
                                 <img
-                                  src={resolveTourThumbnailUrl(tour.thumbnail) ?? ""}
+                                  src={tour.thumbnail}
                                   alt={tour.tourName || "Tour thumbnail"}
                                   className="h-full w-full object-cover"
                                   loading="lazy"

@@ -6,24 +6,82 @@ import Button from "@/components/ui/Button";
 import { Icon } from "@/components/ui";
 import { CustomizeBanner } from "./CustomizeBanner";
 
+interface FilterOption {
+  value: string;
+  labelKey: string;
+  fallback: string;
+}
+
 // Filter options
-const CLASSIFICATION_OPTIONS = [
-  "Standard Tour",
-  "Premium Tour",
-  "VIP / Luxury Tour",
-  "Budget Tour",
-  "Private Tour",
-  "Group Tour",
+const CLASSIFICATION_OPTIONS: FilterOption[] = [
+  {
+    value: "Standard Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.standard",
+    fallback: "Standard Tour",
+  },
+  {
+    value: "Premium Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.premium",
+    fallback: "Premium Tour",
+  },
+  {
+    value: "VIP / Luxury Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.vipLuxury",
+    fallback: "VIP / Luxury Tour",
+  },
+  {
+    value: "Budget Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.budget",
+    fallback: "Budget Tour",
+  },
+  {
+    value: "Private Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.private",
+    fallback: "Private Tour",
+  },
+  {
+    value: "Group Tour",
+    labelKey: "landing.tourDiscovery.classificationOptions.group",
+    fallback: "Group Tour",
+  },
 ];
 
-const CATEGORY_OPTIONS = [
-  "Adventure Tour",
-  "Cultural Tour",
-  "Relaxation Tour",
-  "Eco Tour",
-  "Food Tour",
-  "Religious Tour",
-  "Honeymoon Tour",
+const CATEGORY_OPTIONS: FilterOption[] = [
+  {
+    value: "Adventure Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.adventure",
+    fallback: "Adventure Tour",
+  },
+  {
+    value: "Cultural Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.cultural",
+    fallback: "Cultural Tour",
+  },
+  {
+    value: "Relaxation Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.relaxation",
+    fallback: "Relaxation Tour",
+  },
+  {
+    value: "Eco Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.eco",
+    fallback: "Eco Tour",
+  },
+  {
+    value: "Food Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.food",
+    fallback: "Food Tour",
+  },
+  {
+    value: "Religious Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.religious",
+    fallback: "Religious Tour",
+  },
+  {
+    value: "Honeymoon Tour",
+    labelKey: "landing.tourDiscovery.categoryOptions.honeymoon",
+    fallback: "Honeymoon Tour",
+  },
 ];
 
 interface FilterSidebarProps {
@@ -67,35 +125,37 @@ const FilterCheckboxList = ({
   options,
   selected,
   onToggle,
+  getLabel,
 }: {
-  options: string[];
+  options: FilterOption[];
   selected: string[];
-  onToggle: (option: string) => void;
+  onToggle: (optionValue: string) => void;
+  getLabel: (key: string, fallback: string) => string;
 }) => (
   <div className="flex flex-col gap-2">
     {options.map((option) => (
       <label
-        key={option}
+        key={option.value}
         className="flex items-center gap-3 cursor-pointer py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
       >
         <input
           type="checkbox"
-          checked={selected.includes(option)}
-          onChange={() => onToggle(option)}
+          checked={selected.includes(option.value)}
+          onChange={() => onToggle(option.value)}
           className="sr-only"
         />
         <div
           className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-            selected.includes(option)
+            selected.includes(option.value)
               ? "border-[#fa8b02] bg-[#fa8b02]"
               : "border-gray-300 bg-white"
           }`}
         >
-          {selected.includes(option) && (
+          {selected.includes(option.value) && (
             <Icon icon="heroicons-outline:check" className="w-3 h-3 text-white" />
           )}
         </div>
-        <span>{option}</span>
+        <span>{getLabel(option.labelKey, option.fallback)}</span>
       </label>
     ))}
   </div>
@@ -178,6 +238,7 @@ export const FilterSidebar = ({
             options={CLASSIFICATION_OPTIONS}
             selected={selectedClassifications}
             onToggle={onClassificationToggle}
+            getLabel={safeT}
           />
         </FilterSection>
 
@@ -187,6 +248,7 @@ export const FilterSidebar = ({
             options={CATEGORY_OPTIONS}
             selected={selectedCategories}
             onToggle={onCategoryToggle}
+            getLabel={safeT}
           />
         </FilterSection>
 

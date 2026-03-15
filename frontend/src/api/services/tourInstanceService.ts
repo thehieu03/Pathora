@@ -215,7 +215,7 @@ export const tourInstanceService = {
 
   getStats: async () => {
     const response = await api.get<ApiResponse<TourInstanceStats>>(
-      `${API_ENDPOINTS.TOUR_INSTANCE.GET_ALL}stats`,
+      API_ENDPOINTS.TOUR_INSTANCE.GET_STATS,
     );
     return extractResult<TourInstanceStats>(response.data);
   },

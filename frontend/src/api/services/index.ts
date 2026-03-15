@@ -4,4 +4,5 @@ export { discountService } from "./discountService";
 export { inventoryService } from "./inventoryService";
 export { notificationService } from "./notificationService";
 export { orderService } from "./orderService";
+export { paymentService } from "./paymentService";
 export { reportService } from "./reportService";

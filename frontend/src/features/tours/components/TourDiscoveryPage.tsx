@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useSyncExternalStore } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
@@ -12,7 +18,7 @@ import { TourCard } from "./TourCard";
 import { TourInstanceCard } from "./TourInstanceCard";
 import { homeService } from "@/api/services/homeService";
 import { tourService } from "@/api/services/tourService";
-import { mapTourVmToSearchTour } from "@/api/services/tourMappers";
+import { normalizeLanguageForApi } from "@/api/languageHeader";
 import { SearchTour } from "@/types/home";
 import { NormalizedTourInstanceVm } from "@/types/tour";
 import { Icon } from "@/components/ui";
@@ -20,7 +26,7 @@ import { Icon } from "@/components/ui";
 const PAGE_SIZE = 12;
 
 export const TourDiscoveryPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -38,6 +44,9 @@ export const TourDiscoveryPage = () => {
   const [totalTours, setTotalTours] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [apiLanguage, setApiLanguage] = useState(() =>
+    normalizeLanguageForApi(i18n.resolvedLanguage || i18n.language),
+  );
 
   // Filter state
   const [selectedClassifications, setSelectedClassifications] = useState<string[]>([]);
@@ -47,6 +56,20 @@ export const TourDiscoveryPage = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
+  const didInitializeLanguage = useRef(false);
+
+  useEffect(() => {
+    const updateLanguage = (language: string) => {
+      setApiLanguage(normalizeLanguageForApi(language));
+    };
+
+    updateLanguage(i18n.resolvedLanguage || i18n.language);
+    i18n.on("languageChanged", updateLanguage);
+
+    return () => {
+      i18n.off("languageChanged", updateLanguage);
+    };
+  }, [i18n]);
 
   // Fetch tours/instances based on viewType
   const fetchTours = useCallback(async () => {
@@ -57,10 +80,11 @@ export const TourDiscoveryPage = () => {
         const result = await tourService.getAllTours(
           searchText || undefined,
           currentPage,
-          PAGE_SIZE
+          PAGE_SIZE,
+          apiLanguage,
         );
         if (result) {
-          setTours((result.data ?? []).map(mapTourVmToSearchTour));
+          setTours(result.data ?? []);
           setTotalTours(result.total || 0);
           setTourInstances([]);
         }
@@ -69,7 +93,8 @@ export const TourDiscoveryPage = () => {
         const result = await homeService.getAvailablePublicInstances(
           searchText || undefined,
           currentPage,
-          PAGE_SIZE
+          PAGE_SIZE,
+          apiLanguage,
         );
         if (result) {
           setTourInstances(result.data || []);
@@ -88,7 +113,12 @@ export const TourDiscoveryPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, searchText, selectedClassifications, sortBy, viewType]);
+  }, [
+    apiLanguage,
+    currentPage,
+    searchText,
+    viewType,
+  ]);
 
   useEffect(() => {
     fetchTours();
@@ -99,7 +129,18 @@ export const TourDiscoveryPage = () => {
   useEffect(() => {
     setCurrentPage(1);
     fetchTours();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewType]);
+
+  useEffect(() => {
+    if (!didInitializeLanguage.current) {
+      didInitializeLanguage.current = true;
+      return;
+    }
+
+    fetchTours();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiLanguage]);
 
   // Handle search
   const handleSearchSubmit = () => {
@@ -182,32 +223,37 @@ export const TourDiscoveryPage = () => {
                   <div className="flex bg-gray-100 rounded-lg p-1">
                     <button
                       type="button"
-                      onClick={() => setViewType("tour")}
+                      onClick={() => handleViewTypeChange("tour")}
                       className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                         viewType === "tour"
                           ? "bg-white text-gray-900 shadow-sm"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
-                      {safeT("landing.tourDiscovery.viewType.tour", "Tours")}
+                      {safeT("landing.tourDiscovery.viewType.tour", "By Tour")}
                     </button>
                     <button
                       type="button"
-                      onClick={() => setViewType("tourInstance")}
+                      onClick={() => handleViewTypeChange("tourInstance")}
                       className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                         viewType === "tourInstance"
                           ? "bg-white text-gray-900 shadow-sm"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
-                      {safeT("landing.tourDiscovery.viewType.tourInstance", "Tour Instances")}
+                      {safeT("landing.tourDiscovery.viewType.tourInstance", "By Departure")}
                     </button>
                   </div>
 
                   {/* Results count */}
                   <p className="text-gray-600">
                     <span className="font-semibold text-gray-900">{totalTours}</span>{" "}
-                    {safeT("landing.tourDiscovery.toursFound", "tours found")}
+                    {viewType === "tour"
+                      ? safeT("landing.tourDiscovery.toursFound", "tours found")
+                      : safeT(
+                          "landing.tourDiscovery.departuresFound",
+                          "departures found",
+                        )}
                   </p>
                 </div>
 
@@ -220,11 +266,36 @@ export const TourDiscoveryPage = () => {
                       onChange={(e) => handleSortChange(e.target.value)}
                       className="appearance-none bg-white border border-gray-200 rounded-lg px-4 py-2 pr-10 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#fa8b02]/20 focus:border-[#fa8b02] cursor-pointer"
                     >
-                      <option value="recommended">{safeT("landing.tourDiscovery.sort.recommended", "Recommended")}</option>
-                      <option value="price-low">{safeT("landing.tourDiscovery.sort.price-low", "Price: Low to High")}</option>
-                      <option value="price-high">{safeT("landing.tourDiscovery.sort.price-high", "Price: High to Low")}</option>
-                      <option value="duration-short">{safeT("landing.tourDiscovery.sort.duration-short", "Duration: Shortest")}</option>
-                      <option value="duration-long">{safeT("landing.tourDiscovery.sort.duration-long", "Duration: Longest")}</option>
+                      <option value="recommended">
+                        {safeT(
+                          "landing.tourDiscovery.sort.recommended",
+                          "Recommended",
+                        )}
+                      </option>
+                      <option value="price-low">
+                        {safeT(
+                          "landing.tourDiscovery.sort.price-low",
+                          "Price: Low to High",
+                        )}
+                      </option>
+                      <option value="price-high">
+                        {safeT(
+                          "landing.tourDiscovery.sort.price-high",
+                          "Price: High to Low",
+                        )}
+                      </option>
+                      <option value="duration-short">
+                        {safeT(
+                          "landing.tourDiscovery.sort.duration-short",
+                          "Duration: Shortest",
+                        )}
+                      </option>
+                      <option value="duration-long">
+                        {safeT(
+                          "landing.tourDiscovery.sort.duration-long",
+                          "Duration: Longest",
+                        )}
+                      </option>
                     </select>
                     <Icon
                       icon="heroicons-outline:chevron-down"
@@ -263,10 +334,26 @@ export const TourDiscoveryPage = () => {
                 <div className="text-center py-16">
                   <Icon icon="heroicons-outline:search" className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {safeT("landing.tourDiscovery.noToursFound", "No tours found")}
+                    {viewType === "tour"
+                      ? safeT(
+                          "landing.tourDiscovery.noToursFound",
+                          "No tours found",
+                        )
+                      : safeT(
+                          "landing.tourDiscovery.noDeparturesFound",
+                          "No departures found",
+                        )}
                   </h3>
                   <p className="text-gray-500">
-                    {safeT("landing.tourDiscovery.tryAdjustingFilters", "Try adjusting your filters or search terms")}
+                    {viewType === "tour"
+                      ? safeT(
+                          "landing.tourDiscovery.tryAdjustingFilters",
+                          "Try adjusting your filters or search terms",
+                        )
+                      : safeT(
+                          "landing.tourDiscovery.noInstancesDescription",
+                          "There are no upcoming departures matching your search. Please check back later.",
+                        )}
                   </p>
                 </div>
               )}

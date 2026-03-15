@@ -133,17 +133,6 @@ function StatCard({ label, value, change, changeType, icon, iconBg, iconColor }:
   );
 }
 
-const PAYMENTS = [
-  { id: "PAY-001", booking: "Japan Sakura Tour", customer: "Nguyen Van A", method: "QR Code", amount: 3200, status: "completed", date: "Mar 10, 2026" },
-  { id: "PAY-002", booking: "Korea Autumn Adventure", customer: "Tran Thi B", method: "Credit Card", amount: 2100, status: "completed", date: "Mar 9, 2026" },
-  { id: "PAY-003", booking: "Thailand Beach Paradise", customer: "Le Van C", method: "Cash", amount: 1850, status: "pending", date: "Mar 8, 2026" },
-  { id: "PAY-004", booking: "Europe Grand Tour", customer: "Pham Thi D", method: "Bank Transfer", amount: 5600, status: "completed", date: "Mar 7, 2026" },
-  { id: "PAY-005", booking: "Bali Eco Retreat", customer: "Hoang Van E", method: "QR Code", amount: 1420, status: "refunded", date: "Mar 6, 2026" },
-  { id: "PAY-006", booking: "Singapore Urban Experience", customer: "Nguyen Thi F", method: "Credit Card", amount: 2800, status: "completed", date: "Mar 5, 2026" },
-  { id: "PAY-007", booking: "Vietnam Heritage Tour", customer: "Tran Van G", method: "Cash", amount: 980, status: "pending", date: "Mar 4, 2026" },
-  { id: "PAY-008", booking: "Japan Cherry Blossom", customer: "Le Thi H", method: "Bank Transfer", amount: 3400, status: "completed", date: "Mar 3, 2026" },
-];
-
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
   completed: { bg: "bg-green-100", text: "text-green-700" },
   pending: { bg: "bg-amber-100", text: "text-amber-700" },
@@ -188,10 +177,7 @@ export function PaymentsPage() {
     };
   }, []);
 
-  const payments =
-    overview?.payments && overview.payments.length > 0
-      ? overview.payments
-      : PAYMENTS;
+  const payments = overview?.payments ?? [];
 
   const filteredPayments =
     statusFilter === "all"
@@ -254,17 +240,25 @@ export function PaymentsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {filteredPayments.map((payment, index) => (
-                    <tr key={paymentRowKeys[index]} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4"><span className="font-mono text-sm text-slate-600">{payment.id}</span></td>
-                      <td className="px-6 py-4"><span className="text-sm text-slate-900">{payment.booking}</span></td>
-                      <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.customer}</span></td>
-                      <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.method}</span></td>
-                      <td className="px-6 py-4 text-right"><span className="font-semibold text-slate-900">${payment.amount.toLocaleString()}</span></td>
-                      <td className="px-6 py-4 text-center"><StatusBadge status={payment.status} /></td>
-                      <td className="px-6 py-4"><span className="text-sm text-slate-500">{payment.date}</span></td>
+                  {filteredPayments.length > 0 ? (
+                    filteredPayments.map((payment, index) => (
+                      <tr key={paymentRowKeys[index]} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4"><span className="font-mono text-sm text-slate-600">{payment.id}</span></td>
+                        <td className="px-6 py-4"><span className="text-sm text-slate-900">{payment.booking}</span></td>
+                        <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.customer}</span></td>
+                        <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.method}</span></td>
+                        <td className="px-6 py-4 text-right"><span className="font-semibold text-slate-900">${payment.amount.toLocaleString()}</span></td>
+                        <td className="px-6 py-4 text-center"><StatusBadge status={payment.status} /></td>
+                        <td className="px-6 py-4"><span className="text-sm text-slate-500">{payment.date}</span></td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">
+                        No payment transactions available yet.
+                      </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

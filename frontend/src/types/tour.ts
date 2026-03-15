@@ -158,6 +158,24 @@ export interface TourVm {
   createdOnUtc: string;
 }
 
+// Public tour list view model (used for By Tour view)
+export interface SearchTourVm {
+  id: string;
+  tourName: string;
+  thumbnail: string | null;
+  shortDescription: string | null;
+  location: string | null;
+  durationDays: number;
+  price: number;
+  salePrice: number;
+  classificationName: string | null;
+  rating: number | null;
+  // Optional fields for admin page
+  tourCode?: string;
+  status?: string;
+  createdOnUtc?: string;
+}
+
 // Paginated response
 export interface PaginatedResponse<T> {
   total: number;

@@ -36,24 +36,21 @@ function InfoPill({
   icon,
   label,
   value,
-  hasBorder = true,
 }: {
   icon: string;
   label: string;
   value: string;
-  hasBorder?: boolean;
 }) {
   return (
-    <div
-      className={`flex items-center gap-2 px-3 md:px-4 py-3 md:py-4 flex-1 min-w-0 ${hasBorder ? "md:border-r md:border-gray-100" : ""}`}>
-      <div className="bg-orange-50 rounded-[14px] size-8 md:size-9 flex items-center justify-center shrink-0">
-        <Icon icon={icon} className="text-orange-500 size-4" />
+    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex items-center gap-3">
+      <div className="bg-orange-50/80 rounded-full size-12 flex items-center justify-center shrink-0">
+        <Icon icon={icon} className="text-orange-500 size-5" />
       </div>
       <div className="flex flex-col min-w-0">
-        <span className="text-[10px] uppercase tracking-[0.5px] text-gray-400 leading-[15px]">
+        <span className="text-[10px] uppercase tracking-[0.5px] text-gray-400 font-semibold mb-0.5">
           {label}
         </span>
-        <span className="text-xs font-semibold text-[#05073c] leading-4">
+        <span className="text-sm font-bold text-[#05073c]">
           {value}
         </span>
       </div>
@@ -786,7 +783,7 @@ export function TourDetailPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* ── Hero Section ───────────────────────────────────── */}
-      <div className="relative h-[460px] overflow-hidden">
+      <div className="relative h-[60vh] max-h-[600px] overflow-hidden">
         {heroImage && (
           <Image
             src={heroImage}
@@ -798,7 +795,7 @@ export function TourDetailPage() {
           />
         )}
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[rgba(5,7,60,0.6)] via-transparent to-[rgba(5,7,60,0.85)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/80" />
 
         {/* Header */}
         <div className="absolute inset-x-0 top-0 z-20">
@@ -810,19 +807,19 @@ export function TourDetailPage() {
           <div className="flex items-center justify-between px-6">
             <Link
               href="/tours"
-              className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-white text-sm font-medium hover:bg-white/25 transition-colors">
+              className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-white text-sm font-medium hover:bg-white/25 transition-colors backdrop-blur-md">
               <Icon icon="heroicons:arrow-left" className="size-4" />
               {t("landing.tourDetail.allTours")}
             </Link>
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors">
+                className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors backdrop-blur-md">
                 <Icon icon="heroicons:heart" className="size-5 text-white" />
               </Button>
               <Button
                 type="button"
-                className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors">
+                className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors backdrop-blur-md">
                 <Icon icon="heroicons:share" className="size-5 text-white" />
               </Button>
             </div>
@@ -830,49 +827,53 @@ export function TourDetailPage() {
         </div>
 
         {/* Hero content */}
-        <div className="absolute inset-x-0 bottom-0 z-10 max-w-330 mx-auto px-4 md:px-3.75 pb-6">
-          <div className="px-6">
-            {/* Badges */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-                <Icon icon="heroicons:tag" className="size-3" />
-                {tour.tourCode}
+        <div className="absolute inset-x-0 bottom-0 z-10 max-w-330 mx-auto px-4 md:px-3.75 pb-10">
+          <div className="px-6 flex flex-col items-start gap-4">
+            {/* Breadcrumb Floating Pill */}
+            <nav className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[11px] text-white/90">
+              <Link href="/home" className="hover:text-white transition-colors">
+                {t("landing.tourDetail.home")}
+              </Link>
+              <Icon icon="heroicons:chevron-right" className="size-2.5 opacity-50" />
+              <Link href="/tours" className="hover:text-white transition-colors">
+                {t("landing.tourDetail.packageTours")}
+              </Link>
+              <Icon icon="heroicons:chevron-right" className="size-2.5 opacity-50" />
+              <span className="font-semibold text-white truncate max-w-[150px] md:max-w-none">
+                {tour.tourName}
               </span>
+            </nav>
+
+            <div>
+              {/* Badges */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="bg-orange-500 text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
+                  <Icon icon="heroicons:tag" className="size-3" />
+                  {tour.tourCode}
+                </span>
+                {tour.classifications?.[0] && (
+                  <span className="bg-white/20 backdrop-blur-md border border-white/20 text-white text-[11px] font-bold px-3 py-1 rounded-full">
+                    {tour.classifications[0].name}
+                  </span>
+                )}
+              </div>
+
+              {/* Title */}
+              <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight max-w-2xl mb-4 drop-shadow-lg">
+                {tour.tourName}
+              </h1>
+
+              {/* Description */}
+              <p className="text-sm md:text-base text-white/80 max-w-xl leading-relaxed font-medium">
+                {tour.shortDescription}
+              </p>
             </div>
-
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold text-white leading-[1.25] max-w-xl mb-2">
-              {tour.tourName}
-            </h1>
-
-            {/* Description */}
-            <p className="text-sm text-white/70 max-w-lg leading-relaxed mb-3">
-              {tour.shortDescription}
-            </p>
           </div>
         </div>
       </div>
 
       {/* ── Main Content ───────────────────────────────────── */}
-      <div className="max-w-330 mx-auto px-4 md:px-3.75">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-xs text-gray-400 py-4 px-6 overflow-x-auto">
-          <Link
-            href="/home"
-            className="hover:text-gray-600 transition-colors shrink-0">
-            {t("landing.tourDetail.home")}
-          </Link>
-          <Icon icon="heroicons:chevron-right" className="size-3 shrink-0" />
-          <Link
-            href="/tours"
-            className="hover:text-gray-600 transition-colors shrink-0">
-            {t("landing.tourDetail.packageTours")}
-          </Link>
-          <Icon icon="heroicons:chevron-right" className="size-3 shrink-0" />
-          <span className="text-gray-600 font-medium truncate">
-            {tour.tourName}
-          </span>
-        </nav>
+      <div className="max-w-330 mx-auto px-4 md:px-3.75 mt-8">
 
         {/* Two-column layout */}
         <div className="flex flex-col lg:flex-row gap-5 px-6 pb-16">
@@ -881,59 +882,61 @@ export function TourDetailPage() {
             {/* Image Gallery */}
             {galleryImages.length > 0 && (
               <div
-                className={`flex gap-2 h-[256px] md:h-[260px] rounded-2xl overflow-hidden`}>
+                className={`flex gap-3 h-[280px] md:h-[320px] rounded-3xl overflow-hidden shadow-sm`}>
                 {/* Large image - full width when only 1 image */}
                 <div
-                  className={`relative min-w-0 rounded-2xl overflow-hidden ${galleryImages.length === 1 ? "w-full" : "flex-1"}`}>
+                  className={`relative min-w-0 rounded-l-3xl overflow-hidden group ${galleryImages.length === 1 ? "w-full rounded-r-3xl" : "flex-1"}`}>
                   <Image
                     src={galleryImages[0]}
                     alt={tour.tourName}
                     fill
-                    className="object-cover"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
                 {/* Small images grid - only show slots that have images */}
                 {galleryImages.length > 1 && (
                   <div
-                    className={`grid gap-2 w-[190px] md:w-[220px] shrink-0 ${
+                    className={`grid gap-3 w-[220px] md:w-[260px] shrink-0 ${
                       galleryImages.length === 2
                         ? "grid-cols-1"
-                        : galleryImages.length === 3
-                          ? "grid-cols-1"
-                          : "grid-cols-2"
+                        : "grid-cols-2"
                     }`}>
-                    {galleryImages.slice(1, 5).map((img, i) => (
-                      <div
-                        key={i}
-                        className="relative rounded-xl overflow-hidden">
-                        <Image
-                          src={img}
-                          alt={`Gallery ${i + 2}`}
-                          fill
-                          className="object-cover"
-                          sizes="110px"
-                        />
-                        {/* "+X photos" badge on last visible image */}
-                        {i === Math.min(galleryImages.length - 2, 3) &&
-                          galleryImages.length > 5 && (
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-xl">
-                              <span className="text-white text-sm font-bold">
-                                {t("landing.tourDetail.morePhotos", {
-                                  count: galleryImages.length - 5,
-                                })}
-                              </span>
+                    {galleryImages.slice(1, 5).map((img, i) => {
+                      const isTopRight = i === 1 || (galleryImages.length === 2 && i === 0);
+                      const isBottomRight = i === 3 || (galleryImages.length === 2 && i === 0) || (galleryImages.length === 3 && i === 2);
+                      const isLastImage = i === Math.min(galleryImages.length - 2, 3);
+                      
+                      return (
+                        <div
+                          key={i}
+                          className={`relative overflow-hidden group ${isTopRight ? "rounded-tr-3xl" : ""} ${isBottomRight ? "rounded-br-3xl" : ""}`}>
+                          <Image
+                            src={img}
+                            alt={`Gallery ${i + 2}`}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                            sizes="130px"
+                          />
+                          {/* "+X photos" floating button on last visible image */}
+                          {isLastImage && galleryImages.length > 5 && (
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex flex-col items-center justify-center">
+                              <Button type="button" className="bg-white text-[#05073c] px-4 py-2 rounded-full shadow-md font-bold text-xs flex items-center gap-2 hover:scale-105 transition-transform">
+                                <Icon icon="heroicons:photo" className="size-4" />
+                                +{galleryImages.length - 5}
+                              </Button>
                             </div>
                           )}
-                      </div>
-                    ))}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
             )}
 
-            {/* Info Pills */}
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm grid grid-cols-2 md:flex md:flex-wrap">
+            {/* Info Cards Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
               {duration && (
                 <InfoPill
                   icon="heroicons:clock"
@@ -959,39 +962,40 @@ export function TourDetailPage() {
                     ? `${insurances.length} ${t("landing.tourDetail.included", "included")}`
                     : t("landing.tourDetail.none", "None")
                 }
-                hasBorder={false}
               />
             </div>
 
             {/* Tabs: Overview / Itinerary */}
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-              {/* Tab bar */}
-              <div className="flex border-b border-gray-100">
-                <Button
-                  type="button"
-                  onClick={() => setActiveTab("overview")}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors border-b-[1.6px] ${
-                    activeTab === "overview"
-                      ? "bg-orange-50/50 border-orange-500 text-orange-500"
-                      : "border-transparent text-gray-400 hover:text-gray-600"
-                  }`}>
-                  <Icon
-                    icon="heroicons:information-circle"
-                    className="size-4"
-                  />
-                  {t("landing.tourDetail.overview")}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => setActiveTab("itinerary")}
-                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors border-b-[1.6px] ${
-                    activeTab === "itinerary"
-                      ? "bg-orange-50/50 border-orange-500 text-orange-500"
-                      : "border-transparent text-gray-400 hover:text-gray-600"
-                  }`}>
-                  <Icon icon="heroicons:document-text" className="size-4" />
-                  {t("landing.tourDetail.itinerary")}
-                </Button>
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden mt-6">
+              {/* Segmented Control Tab bar */}
+              <div className="p-4 border-b border-gray-100">
+                <div className="bg-gray-100 p-1 rounded-2xl inline-flex w-full sm:w-auto">
+                  <Button
+                    type="button"
+                    onClick={() => setActiveTab("overview")}
+                    className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold transition-all rounded-xl ${
+                      activeTab === "overview"
+                        ? "bg-white shadow-sm text-orange-500"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"
+                    }`}>
+                    <Icon
+                      icon="heroicons:information-circle"
+                      className="size-4"
+                    />
+                    {t("landing.tourDetail.overview")}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setActiveTab("itinerary")}
+                    className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold transition-all rounded-xl ${
+                      activeTab === "itinerary"
+                        ? "bg-white shadow-sm text-orange-500"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"
+                    }`}>
+                    <Icon icon="heroicons:document-text" className="size-4" />
+                    {t("landing.tourDetail.itinerary")}
+                  </Button>
+                </div>
               </div>
 
               {/* Tab content */}
@@ -1118,11 +1122,11 @@ export function TourDetailPage() {
           </div>
 
           {/* ── Right Sidebar ────────────────────────────── */}
-          <div className="w-full lg:w-80 shrink-0 flex flex-col gap-4 lg:sticky lg:top-4 self-start">
+          <div className="w-full lg:w-80 shrink-0 flex flex-col gap-6 lg:sticky lg:top-24 self-start">
             {/* Booking Card */}
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-md overflow-hidden">
+            <div className="bg-white border border-gray-100 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.08)] overflow-hidden">
               {/* Orange gradient top bar */}
-              <div className="h-1 bg-gradient-to-r from-orange-500 to-orange-600" />
+              <div className="h-2 bg-gradient-to-r from-orange-500 to-orange-400" />
 
               <div className="p-5 flex flex-col gap-5">
                 {/* Select Package */}
@@ -1282,20 +1286,21 @@ export function TourDetailPage() {
                 </div>
 
                 {/* Request Booking Button */}
-                <div className="relative group/book">
+                <div className="relative group/book mt-2">
                   <Button
                     type="button"
                     disabled={!canBook}
-                    className={`w-full py-3 rounded-[14px] text-sm font-bold text-white transition-all ${
+                    className={`w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all ${
                       canBook
-                        ? "bg-orange-500 shadow-[0px_4px_6px_0px_#ffd6a8,0px_2px_4px_0px_#ffd6a8] hover:bg-orange-600"
-                        : "bg-orange-500/50 shadow-[0px_4px_6px_0px_#ffd6a8,0px_2px_4px_0px_#ffd6a8] cursor-not-allowed"
+                        ? "bg-gradient-to-r from-orange-500 to-orange-400 shadow-lg shadow-orange-500/30 hover:from-orange-600 hover:to-orange-500 hover:-translate-y-0.5"
+                        : "bg-gray-300 shadow-none cursor-not-allowed"
                     }`}>
                     {t("landing.tourDetail.requestBooking")}
                   </Button>
                   {!canBook && !departureDate && (
-                    <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover/book:opacity-100 transition-opacity pointer-events-none">
+                    <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-[11px] font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover/book:opacity-100 transition-opacity pointer-events-none shadow-lg">
                       {t("landing.tourDetail.selectDateFirst")}
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
                     </div>
                   )}
                 </div>

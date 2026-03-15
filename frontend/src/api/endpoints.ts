@@ -1,6 +1,6 @@
 /**
  * API Endpoints Configuration
- * All endpoints are relative to VITE_API_GATEWAY base URL
+ * All endpoints are relative to NEXT_PUBLIC_API_GATEWAY base URL
  */
 
 // Type for endpoint functions that take an ID parameter
@@ -94,6 +94,11 @@ export interface NotificationEndpoints {
   GET_TOP_10_UNREAD: string;
 }
 
+// Payment Service Endpoints Interface
+export interface PaymentEndpoints {
+  GET_QR: string;
+}
+
 // Communication Service Endpoints Interface
 export interface CommunicationEndpoints {
   NOTIFICATION_HUB: string;
@@ -118,6 +123,7 @@ export interface PublicHomeEndpoints {
   GET_TOP_ATTRACTIONS: (limit?: number) => string;
   GET_HOME_STATS: string;
   GET_TOP_REVIEWS: (limit?: number) => string;
+  GET_ALL_TOURS: (params?: { searchText?: string; page?: number; pageSize?: number; lang?: string }) => string;
   SEARCH_TOURS: (params?: SearchToursParams) => string;
   GET_DESTINATIONS: string;
   GET_TOUR_DETAIL: EndpointWithId;
@@ -152,6 +158,7 @@ export interface TourEndpoints {
 export interface TourInstanceEndpoints {
   GET_ALL: string;
   GET_DETAIL: EndpointWithId;
+  GET_STATS: string;
   GET_PRICING_TIERS: EndpointWithId;
   CREATE: string;
   UPDATE: string;
@@ -192,6 +199,7 @@ export interface ApiEndpoints {
   ORDER: OrderEndpoints;
   REPORT: ReportEndpoints;
   NOTIFICATION: NotificationEndpoints;
+  PAYMENT: PaymentEndpoints;
   COMMUNICATION: CommunicationEndpoints;
   AUTH: AuthEndpoints;
   PUBLIC_HOME: PublicHomeEndpoints;
@@ -290,6 +298,11 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_TOP_10_UNREAD: "/api/notifications/unread/top10",
   },
 
+  // Payment Service
+  PAYMENT: {
+    GET_QR: "/api/payment/getQR",
+  },
+
   // Communication Service
   COMMUNICATION: {
     NOTIFICATION_HUB: "/hubs/notifications",
@@ -314,6 +327,14 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_TOP_ATTRACTIONS: (limit = 8): string => `/api/public/attractions/top?limit=${limit}`,
     GET_HOME_STATS: "/api/public/stats",
     GET_TOP_REVIEWS: (limit = 6): string => `/api/public/reviews/top?limit=${limit}`,
+    GET_ALL_TOURS: (params?: { searchText?: string; page?: number; pageSize?: number; lang?: string }): string => {
+      const url = new URLSearchParams();
+      if (params?.searchText) url.append("searchText", params.searchText);
+      if (params?.page) url.append("pageNumber", params.page.toString());
+      if (params?.pageSize) url.append("pageSize", params.pageSize.toString());
+      if (params?.lang) url.append("lang", params.lang);
+      return `/api/public/tours?${url.toString()}`;
+    },
     SEARCH_TOURS: (params?: SearchToursParams): string => {
       const url = new URLSearchParams();
       if (params?.q) url.append("q", params.q);
@@ -335,12 +356,12 @@ export const API_ENDPOINTS: ApiEndpoints = {
 
   // Tour Admin
   TOUR: {
-    GET_ALL: "/api/tour/",
+    GET_ALL: "/api/tour",
     GET_DETAIL: (id: string): string => `/api/tour/${id}`,
     GET_CLASSIFICATION_PRICING_TIERS: (classificationId: string): string =>
       `/api/tour/classifications/${classificationId}/pricing-tiers`,
-    CREATE: "/api/tour/",
-    UPDATE: "/api/tour/",
+    CREATE: "/api/tour",
+    UPDATE: "/api/tour",
     DELETE: (id: string): string => `/api/tour/${id}`,
     UPSERT_CLASSIFICATION_PRICING_TIERS: (classificationId: string): string =>
       `/api/tour/classifications/${classificationId}/pricing-tiers`,
@@ -348,12 +369,13 @@ export const API_ENDPOINTS: ApiEndpoints = {
 
   // Tour Instance
   TOUR_INSTANCE: {
-    GET_ALL: "/api/tour-instance/",
+    GET_ALL: "/api/tour-instance",
     GET_DETAIL: (id: string): string => `/api/tour-instance/${id}`,
+    GET_STATS: "/api/tour-instance/stats",
     GET_PRICING_TIERS: (id: string): string =>
       `/api/tour-instance/${id}/pricing-tiers`,
-    CREATE: "/api/tour-instance/",
-    UPDATE: "/api/tour-instance/",
+    CREATE: "/api/tour-instance",
+    UPDATE: "/api/tour-instance",
     DELETE: (id: string): string => `/api/tour-instance/${id}`,
     CHANGE_STATUS: (id: string): string => `/api/tour-instance/${id}/status`,
     UPSERT_PRICING_TIERS: (id: string): string =>

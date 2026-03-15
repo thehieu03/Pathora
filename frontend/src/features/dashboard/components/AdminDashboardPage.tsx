@@ -18,14 +18,15 @@ import type {
 } from "@/types/admin";
 import { AdminLogoutButton } from "./AdminLogoutButton";
 
+// Design tokens from globals.css --primary, --success, --warning, --info, --destructive
 const COLORS = {
-  primary: "#f97316",
+  primary: "#2563eb",
   secondary: "#6366f1",
-  success: "#22c55e",
-  warning: "#eab308",
+  success: "#10b981",
+  warning: "#f59e0b",
   danger: "#ef4444",
-  info: "#06b6d4",
-  purple: "#a855f7",
+  info: "#0ea5e9",
+  purple: "#8b5cf6",
   slate: "#64748b",
 };
 

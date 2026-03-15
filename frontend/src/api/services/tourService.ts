@@ -7,10 +7,10 @@ import {
   TourClassificationDto,
   TourDto,
   TourVm,
+  SearchTourVm,
 } from "@/types/tour";
 import { extractResult } from "@/utils/apiResponse";
 import { ApiResponse } from "@/types/home";
-import { normalizeTourListResponse } from "@/api/services/tourMappers";
 
 const normalizeClassification = (
   classification: TourClassificationDto,
@@ -47,17 +47,26 @@ const buildPublicTourDetailUrl = (id: string, language?: string) => {
 };
 
 export const tourService = {
-  getAllTours: async (searchText?: string, pageNumber = 1, pageSize = 10) => {
-    const params = new URLSearchParams();
-    if (searchText) params.append("searchText", searchText);
-    params.append("pageNumber", pageNumber.toString());
-    params.append("pageSize", pageSize.toString());
+  getAllTours: async (
+    searchText?: string,
+    pageNumber = 1,
+    pageSize = 10,
+    language?: string,
+  ) => {
+    const normalizedLanguage = normalizeLanguageForApi(language);
+    const url = API_ENDPOINTS.PUBLIC_HOME.GET_ALL_TOURS({
+      searchText,
+      page: pageNumber,
+      pageSize,
+      lang: normalizedLanguage,
+    });
 
-    const response = await api.get<ApiResponse<PaginatedResponse<TourVm>>>(
-      `${API_ENDPOINTS.TOUR.GET_ALL}?${params.toString()}`,
-    );
-    const result = extractResult<PaginatedResponse<TourVm>>(response.data);
-    return normalizeTourListResponse(result);
+    const response = await api.get<ApiResponse<PaginatedResponse<SearchTourVm>>>(url);
+    const result = extractResult<PaginatedResponse<SearchTourVm>>(response.data);
+    return {
+      total: result?.total ?? 0,
+      data: result?.data ?? [],
+    };
   },
 
   getTourDetail: async (id: string) => {

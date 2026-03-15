@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "@/features/shared/components/LandingImage";
 import { Icon } from "@/components/ui";
+import { useTranslation } from "react-i18next";
 import { formatCurrency } from "@/utils/format";
 import { NormalizedTourInstanceVm } from "@/types/tour";
 
@@ -11,8 +12,17 @@ interface TourInstanceCardProps {
 }
 
 export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
+  const { t, i18n } = useTranslation();
+  const locale =
+    (i18n.resolvedLanguage || i18n.language || "en").toLowerCase() === "vi"
+      ? "vi-VN"
+      : "en-US";
   const imageUrl = tour.thumbnail?.publicURL || "/images/placeholder-tour.jpg";
-  const location = tour.location || "Unknown Location";
+  const location = tour.location || t("common.noData", "N/A");
+  const statusKey = tour.status?.trim().toLowerCase().replace(/[\s_]+/g, "");
+  const statusLabel = statusKey
+    ? t(`tourInstance.statusLabels.${statusKey}`, tour.status)
+    : tour.status;
 
   return (
     <Link href={`/tours/instances/${tour.id}`} className="group block">
@@ -28,10 +38,14 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
           />
           {/* Badge */}
           <div className="absolute top-3 left-3">
-            <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
-              {tour.classificationName || "Standard Tour"}
-            </span>
-          </div>
+              <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
+                {tour.classificationName ||
+                  t(
+                    "landing.tourDiscovery.classificationOptions.standard",
+                    "Standard Tour",
+                  )}
+              </span>
+            </div>
           {/* Status Badge */}
           {tour.status && (
             <div className="absolute top-3 right-3">
@@ -40,9 +54,7 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
                 tour.status === "soldout" ? "bg-red-100 text-red-700" :
                 "bg-gray-100 text-gray-700"
               }`}>
-                {tour.status === "available" ? "Available" :
-                 tour.status === "soldout" ? "Sold Out" :
-                 tour.status}
+                {statusLabel}
               </span>
             </div>
           )}
@@ -66,7 +78,7 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
               <Icon icon="heroicons-outline:calendar" className="w-4 h-4" />
               <span>
-                {new Date(tour.startDate).toLocaleDateString()} - {new Date(tour.endDate).toLocaleDateString()}
+                {new Date(tour.startDate).toLocaleDateString(locale)} - {new Date(tour.endDate).toLocaleDateString(locale)}
               </span>
             </div>
           )}
@@ -75,11 +87,15 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
           <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
             <div className="flex items-center gap-1">
               <Icon icon="heroicons-outline:clock" className="w-4 h-4" />
-              <span>{tour.durationDays} {tour.durationDays === 1 ? "day" : "days"}</span>
+              <span>
+                {tour.durationDays} {t("tourInstance.days", "days")}
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <Icon icon="heroicons-outline:user-group" className="w-4 h-4" />
-              <span>{tour.maxParticipation} max</span>
+              <span>
+                {tour.maxParticipation} {t("tourInstance.people", "people")}
+              </span>
             </div>
           </div>
 
@@ -88,13 +104,16 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
             <span className="text-xl font-bold text-[#fa8b02]">
               {formatCurrency(tour.price || tour.sellingPrice)}
             </span>
-            <span className="text-sm text-gray-400">/ person</span>
+            <span className="text-sm text-gray-400">
+              {t("tourInstance.perPersonShort", "/person")}
+            </span>
           </div>
 
           {/* Available spots */}
           {tour.maxParticipation && (
             <div className="mt-2 text-sm text-gray-500">
-              {tour.maxParticipation - (tour.registeredParticipants || 0)} spots remaining
+              {tour.maxParticipation - (tour.registeredParticipants || 0)}{" "}
+              {t("tourInstance.spotsAvailable", "spots available")}
             </div>
           )}
         </div>
