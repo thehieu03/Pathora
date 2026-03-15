@@ -1,4 +1,5 @@
 using Domain.Common.Repositories;
+using Common.Extensions;
 using Domain.Entities;
 using Domain.Enums;
 using Infrastructure.Data;
@@ -213,9 +214,10 @@ public class TourRepository(AppDbContext context) : ITourRepository
         int? minDays,
         int? maxDays)
     {
+        // For public search, show all non-deleted tours (not just Active)
         var query = _context.Tours
             .AsNoTracking()
-            .Where(t => t.Status == TourStatus.Active && !t.IsDeleted)
+            .Where(t => !t.IsDeleted)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))
@@ -229,8 +231,8 @@ public class TourRepository(AppDbContext context) : ITourRepository
                     .SelectMany(p => p.Activities)
                     .SelectMany(a => a.Routes)
                     .Any(r =>
-                        r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(search) ||
-                        r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(search)));
+                        (r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(search)) ||
+                        (r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(search))));
         }
 
         if (!string.IsNullOrWhiteSpace(destination))
@@ -240,8 +242,8 @@ public class TourRepository(AppDbContext context) : ITourRepository
                 .SelectMany(c => c.Plans)
                 .SelectMany(p => p.Activities)
                 .SelectMany(a => a.Routes)
-                .Any(r => r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(destLower) ||
-                          r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(destLower)));
+                .Any(r => (r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(destLower)) ||
+                          (r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(destLower))));
         }
 
         if (!string.IsNullOrWhiteSpace(classification))
