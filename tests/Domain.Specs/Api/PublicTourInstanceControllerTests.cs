@@ -42,7 +42,7 @@ public sealed class PublicTourInstanceControllerTests
                 "/api/public/tour-instances/available");
         var languageContext = new TestLanguageContext { CurrentLanguage = "en" };
 
-        var actionResult = await controller.GetAvailable("ha", 2, 5, languageContext);
+        var actionResult = await controller.GetAvailable("ha", null, 2, 5, languageContext);
 
         ApiControllerTestHelper.AssertSuccessResponse(
             actionResult,

@@ -37,7 +37,8 @@ public class IdentityService(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IRegisterRepository registerRepository,
-    IMailRepository mailRepository
+    IMailRepository mailRepository,
+    IOtpRepository otpRepository
     )
     : IIdentityService
 {
@@ -50,13 +51,32 @@ public class IdentityService(
     private readonly IRoleRepository _roleRepository = roleRepository;
     private readonly IRegisterRepository _registerRepository = registerRepository;
     private readonly IMailRepository mailRepository = mailRepository;
+    private readonly IOtpRepository _otpRepository = otpRepository;
 
     public async Task<ErrorOr<Success>> Register(RegisterRequest request)
     {
+        // Check if email is temporarily locked due to failed attempts
+        var lockoutExpiration = await _otpRepository.GetLockoutExpiration(request.Email);
+        if (lockoutExpiration.IsError)
+        {
+            return Error.Failure("Auth.LockoutCheckFailed", "Unable to verify registration eligibility");
+        }
+
+        if (lockoutExpiration.Value.HasValue)
+        {
+            var remainingMinutes = (lockoutExpiration.Value.Value - DateTimeOffset.UtcNow).TotalMinutes;
+            var minutes = Math.Ceiling(remainingMinutes).ToString("F0");
+            return Error.Custom(403, ErrorConstants.Auth.EmailTemporarilyLockedCode,
+                ErrorConstants.Auth.EmailTemporarilyLockedDescription.Format(new(minutes)));
+        }
 
         var isUnique = await _userRepository.IsEmailUnique(request.Email);
         if (!isUnique)
+        {
+            // Increment failed attempts on duplicate email (email already registered)
+            await _otpRepository.IncrementFailedAttempts(request.Email);
             return Error.Conflict("User.DuplicateEmail", "Email đã được sử dụng");
+        }
 
         try
         {
@@ -88,6 +108,9 @@ public class IdentityService(
 
                 await mailRepo.AddAsync(mailEntity);
             });
+
+            // Clear failed attempts on successful registration
+            await _otpRepository.ClearFailedAttempts(request.Email);
         }
         catch (Exception)
         {

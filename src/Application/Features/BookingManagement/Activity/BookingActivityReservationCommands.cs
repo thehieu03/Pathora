@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -154,11 +155,26 @@ public sealed record GetBookingActivityReservationsQuery(Guid BookingId) : IQuer
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetBookingActivityReservationsQueryHandler(IBookingActivityReservationRepository bookingActivityReservationRepository)
+public sealed class GetBookingActivityReservationsQueryHandler(
+    IBookingActivityReservationRepository bookingActivityReservationRepository,
+    IBookingRepository bookingRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingActivityReservationsQuery, ErrorOr<List<BookingActivityReservationDto>>>
 {
     public async Task<ErrorOr<List<BookingActivityReservationDto>>> Handle(GetBookingActivityReservationsQuery request, CancellationToken cancellationToken)
     {
+        // Ownership validation
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var entities = await bookingActivityReservationRepository.GetByBookingIdAsync(request.BookingId);
 
         return entities.Select(x => new BookingActivityReservationDto(

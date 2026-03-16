@@ -2,7 +2,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000001",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000001",
-    "Amount": 1000000,
+    "Amount": 10000,
     "PaidAt": "2026-04-15T18:00:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260415-001",
@@ -15,7 +15,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000002",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000002",
-    "Amount": 3456000,
+    "Amount": 10000,
     "PaidAt": "2026-04-17T12:00:00Z",
     "PaymentMethod": "Cash",
     "TransactionRef": null,
@@ -28,7 +28,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000003",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000004",
-    "Amount": 5600000,
+    "Amount": 10000,
     "PaidAt": "2026-05-10T14:30:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260510-001",
@@ -41,7 +41,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000004",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000005",
-    "Amount": 1400000,
+    "Amount": 10000,
     "PaidAt": "2026-05-25T09:00:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260525-001",
@@ -54,7 +54,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000005",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000007",
-    "Amount": 4500000,
+    "Amount": 10000,
     "PaidAt": "2026-06-05T16:00:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260605-001",
@@ -67,7 +67,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000006",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000008",
-    "Amount": 11000000,
+    "Amount": 10000,
     "PaidAt": "2026-04-01T11:30:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260401-001",
@@ -80,7 +80,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000007",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000010",
-    "Amount": 1800000,
+    "Amount": 10000,
     "PaidAt": "2026-03-08T10:00:00Z",
     "PaymentMethod": "Cash",
     "TransactionRef": null,
@@ -93,7 +93,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000008",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000011",
-    "Amount": 1600000,
+    "Amount": 10000,
     "PaidAt": "2026-03-20T15:00:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260320-001",
@@ -106,7 +106,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000009",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000013",
-    "Amount": 4200000,
+    "Amount": 10000,
     "PaidAt": "2026-04-05T13:00:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260405-001",
@@ -119,7 +119,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000010",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000014",
-    "Amount": 3400000,
+    "Amount": 10000,
     "PaidAt": "2026-04-10T09:30:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260410-001",
@@ -132,7 +132,7 @@
   {
     "Id": "01952981-0000-7000-8000-000000000011",
     "SupplierPayableId": "01952980-0000-7000-8000-000000000015",
-    "Amount": 8500000,
+    "Amount": 10000,
     "PaidAt": "2026-04-18T16:45:00Z",
     "PaymentMethod": "BankTransfer",
     "TransactionRef": "SUP-VCB-20260418-001",

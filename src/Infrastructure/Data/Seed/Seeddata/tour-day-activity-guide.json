@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "Id": "019529c0-0000-7000-8000-000000000001",
+    "TourDayActivityStatusId": "019529b0-0000-7000-8000-000000000001",
+    "TourGuideId": "01952990-0000-7000-8000-000000000001",
+    "Role": "LeadGuide",
+    "CheckInTime": "2026-04-15T06:45:00Z",
+    "CheckOutTime": "2026-04-15T18:10:00Z",
+    "Note": "Lead guide completed all day-1 checkpoints.",
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529c0-0000-7000-8000-000000000002",
+    "TourDayActivityStatusId": "019529b0-0000-7000-8000-000000000002",
+    "TourGuideId": "01952990-0000-7000-8000-000000000002",
+    "Role": "Assistant",
+    "CheckInTime": "2026-05-02T08:00:00Z",
+    "CheckOutTime": null,
+    "Note": "Assistant guide supporting translation and logistics.",
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

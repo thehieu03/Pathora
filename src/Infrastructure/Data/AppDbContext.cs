@@ -90,6 +90,7 @@ public class AppDbContext : DbContext
     public DbSet<CustomerDepositEntity> CustomerDeposits => Set<CustomerDepositEntity>();
     public DbSet<PaymentEntity> Payments => Set<PaymentEntity>();
     public DbSet<PaymentTransactionEntity> PaymentTransactions => Set<PaymentTransactionEntity>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

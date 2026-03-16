@@ -1,29 +1,21 @@
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Seed;
 
 public static class AppDbContextSeed
 {
-    public static async Task<bool> SeedIfNeededAsync(AppDbContext context, CancellationToken cancellationToken = default)
+    public static Task SeedFreshAsync(AppDbContext context, CancellationToken cancellationToken = default)
     {
-        // Check if full seed data already exists by verifying late-batch tables.
-        // This prevents partial-batch failures from being treated as "fully seeded".
-        var hasFullSeedData = await context.Set<CustomerPaymentEntity>().AsNoTracking().AnyAsync(cancellationToken)
-            && await context.Set<VisaEntity>().AsNoTracking().AnyAsync(cancellationToken)
-            && await context.Set<TourDayActivityGuideEntity>().AsNoTracking().AnyAsync(cancellationToken);
-
-        if (hasFullSeedData)
-        {
-            return false;
-        }
-
         SeedDataPreflightValidator.ValidateRequiredSeedFiles();
-
-        // Use the consolidated BookingContextSeed which handles all entity seeding
         BookingContextSeed.SeedData(context);
 
-        return true;
+        return Task.CompletedTask;
+    }
+
+    public static Task<bool> SeedIfNeededAsync(AppDbContext context, CancellationToken cancellationToken = default)
+    {
+        SeedDataPreflightValidator.ValidateRequiredSeedFiles();
+        return Task.FromResult(BookingContextSeed.SeedData(context));
     }
 
     private static async Task SaveChangesUtcAsync(AppDbContext context, CancellationToken cancellationToken)

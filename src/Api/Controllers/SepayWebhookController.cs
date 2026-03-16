@@ -1,14 +1,18 @@
+using Api.Endpoint;
 using Application.Services;
 using Domain.ApiThirdPatyResponse;
-using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Route("api/webhook/sepay")]
+[Route(SepayWebhookEndpoint.Base)]
 [ApiController]
 public class SepayWebhookController : ControllerBase
 {
+    private const string NoTransactionsToProcessMessage = "No transactions to process";
+    private const string HealthyStatus = "healthy";
+    private const string DefaultAmountLiteral = "0";
+
     private readonly IPaymentService _paymentService;
     private readonly ILogger<SepayWebhookController> _logger;
 
@@ -29,7 +33,7 @@ public class SepayWebhookController : ControllerBase
         if (callbackData.Transactions == null || !callbackData.Transactions.Any())
         {
             _logger.LogWarning("Sepay webhook received but no transactions found");
-            return Ok(new { success = true, message = "No transactions to process" });
+            return Ok(new { success = true, message = NoTransactionsToProcessMessage });
         }
 
         var results = new List<object>();
@@ -44,7 +48,7 @@ public class SepayWebhookController : ControllerBase
                     BankBrandName = transaction.bank_brand_name,
                     AccountNumber = transaction.account_number,
                     TransactionDate = ParseTransactionDate(transaction.transaction_date),
-                    Amount = ParseAmount(transaction.amount_in ?? transaction.amount_out ?? "0"),
+                    Amount = ParseAmount(transaction.amount_in ?? transaction.amount_out ?? DefaultAmountLiteral),
                     TransactionContent = transaction.transaction_content,
                     ReferenceNumber = transaction.reference_number
                 };
@@ -93,10 +97,10 @@ public class SepayWebhookController : ControllerBase
     /// <summary>
     /// Endpoint kiểm tra trạng thái webhook (health check)
     /// </summary>
-    [HttpGet("health")]
+    [HttpGet(SepayWebhookEndpoint.Health)]
     public IActionResult HealthCheck()
     {
-        return Ok(new { status = "healthy", timestamp = DateTimeOffset.UtcNow });
+        return Ok(new { status = HealthyStatus, timestamp = DateTimeOffset.UtcNow });
     }
 
     private static DateTimeOffset ParseTransactionDate(string? dateStr)
@@ -114,13 +118,13 @@ public class SepayWebhookController : ControllerBase
     private static decimal ParseAmount(string? amountStr)
     {
         if (string.IsNullOrEmpty(amountStr))
-            return 0;
+            return decimal.Zero;
 
         // Remove any formatting and parse
         var cleaned = amountStr.Replace(",", "").Replace(".", "").Trim();
         if (decimal.TryParse(cleaned, out var amount))
             return amount;
 
-        return 0;
+        return decimal.Zero;
     }
 }

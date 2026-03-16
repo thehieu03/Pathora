@@ -159,6 +159,10 @@ public static class ErrorConstants
 
         public static readonly LocalizedMessage PasswordChangedForAccountsDescriptionTemplate =
             new("Đã đổi mật khẩu cho {0} tài khoản", "Password changed for {0} accounts");
+
+        public const string EmailTemporarilyLockedCode = "Auth.EmailTemporarilyLocked";
+        public static readonly LocalizedMessage EmailTemporarilyLockedDescription =
+            new("Email này đã bị tạm khóa do đăng ký thất bại nhiều lần. Vui lòng thử lại sau {0} phút.", "This email has been temporarily locked due to multiple failed registration attempts. Please try again in {0} minutes.");
     }
 
     public static class Booking
@@ -307,6 +311,41 @@ public static class ErrorConstants
             new("Không tìm thấy payable.", "Supplier payable not found.");
     }
 
+    public static class Payment
+    {
+        public const string TransactionNotFoundCode = "Payment.TransactionNotFound";
+        public static readonly LocalizedMessage TransactionNotFoundDescription =
+            new("Không tìm thấy giao dịch thanh toán", "Payment transaction not found");
+
+        public const string TransactionExpiredCode = "Payment.TransactionExpired";
+        public static readonly LocalizedMessage TransactionExpiredDescription =
+            new("Giao dịch thanh toán đã hết hạn", "Payment transaction has expired");
+
+        public const string TransactionAlreadyCompletedCode = "Payment.TransactionAlreadyCompleted";
+        public static readonly LocalizedMessage TransactionAlreadyCompletedDescription =
+            new("Giao dịch thanh toán đã hoàn thành", "Payment transaction already completed");
+
+        public const string InvalidAmountCode = "Payment.InvalidAmount";
+        public static readonly LocalizedMessage InvalidAmountDescription =
+            new("Số tiền thanh toán không hợp lệ", "Invalid payment amount");
+
+        public const string InvalidPaymentMethodCode = "Payment.InvalidPaymentMethod";
+        public static readonly LocalizedMessage InvalidPaymentMethodDescription =
+            new("Phương thức thanh toán không hợp lệ", "Invalid payment method");
+
+        public const string BookingNotFoundCode = "Payment.BookingNotFound";
+        public static readonly LocalizedMessage BookingNotFoundDescription =
+            new("Không tìm thấy đơn đặt tour", "Tour booking not found");
+
+        public const string PaymentProcessingFailedCode = "Payment.PaymentProcessingFailed";
+        public static readonly LocalizedMessage PaymentProcessingFailedDescription =
+            new("Xử lý thanh toán thất bại", "Payment processing failed");
+
+        public const string TransactionAlreadyCancelledCode = "Payment.TransactionAlreadyCancelled";
+        public static readonly LocalizedMessage TransactionAlreadyCancelledDescription =
+            new("Giao dịch thanh toán đã bị hủy", "Payment transaction already cancelled");
+    }
+
     public static class ActivityStatus
     {
         public const string NotFoundCode = "ActivityStatus.NotFound";
@@ -420,6 +459,7 @@ public static class ErrorConstants
             var value when value == TourRequest.AdminOnlyCode => TourRequest.AdminOnlyDescription,
             var value when value == TourRequest.InvalidStatusTransitionCode => TourRequest.InvalidStatusTransitionDescription,
             var value when value == User.DuplicateEmailCode => User.DuplicateEmailDescription,
+            var value when value == Auth.EmailTemporarilyLockedCode => Auth.EmailTemporarilyLockedDescription,
             var value when value == User.UnauthorizedCode => User.UnauthorizedDescription,
             var value when value == User.FunctionsNotFoundCode => User.FunctionsNotFoundDescription,
             var value when value == Booking.NotFoundCode => Booking.NotFoundDescription,
@@ -447,6 +487,14 @@ public static class ErrorConstants
             var value when value == SupplierPayable.NotFoundCode => SupplierPayable.NotFoundDescription,
             var value when value == ActivityStatus.NotFoundCode => ActivityStatus.NotFoundDescription,
             var value when value == ActivityStatus.CancelledCode => ActivityStatus.CancelledDescription,
+            var value when value == Payment.TransactionNotFoundCode => Payment.TransactionNotFoundDescription,
+            var value when value == Payment.TransactionExpiredCode => Payment.TransactionExpiredDescription,
+            var value when value == Payment.TransactionAlreadyCompletedCode => Payment.TransactionAlreadyCompletedDescription,
+            var value when value == Payment.InvalidAmountCode => Payment.InvalidAmountDescription,
+            var value when value == Payment.InvalidPaymentMethodCode => Payment.InvalidPaymentMethodDescription,
+            var value when value == Payment.BookingNotFoundCode => Payment.BookingNotFoundDescription,
+            var value when value == Payment.PaymentProcessingFailedCode => Payment.PaymentProcessingFailedDescription,
+            var value when value == Payment.TransactionAlreadyCancelledCode => Payment.TransactionAlreadyCancelledDescription,
             _ => null,
         };
 

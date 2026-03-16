@@ -1,15 +1,28 @@
 ﻿using Application.Contracts.Payment;
 using Domain.ApiThirdPatyResponse;
 using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace Infrastructure.CronJobs;
 
-internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundService
+internal class PaymentProcessor(
+    IServiceScopeFactory scopeFactory,
+    IConfiguration configuration,
+    ILogger<PaymentProcessor> logger) : BackgroundService
 {
     private readonly HttpClient _httpClient = new();
+    private readonly ILogger<PaymentProcessor> _logger = logger;
+    private readonly string _authenticationKey = NormalizeConfigValue(configuration["Payment:AuthenticationKey"]);
+    private readonly string _accountNumber = NormalizeConfigValue(configuration["Payment:Account"]);
+    private readonly string _sepayApiBaseUrl = NormalizeConfigValue(configuration["Payment:ApiBaseUrl"]);
+    private readonly int _pollingLimit = Math.Max(configuration.GetValue<int?>("Payment:PollingLimit") ?? 20, 1);
+    private readonly TimeSpan _pollingInterval = TimeSpan.FromSeconds(Math.Max(configuration.GetValue<int?>("Payment:PollingIntervalSeconds") ?? 30, 5));
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -17,11 +30,21 @@ internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundS
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        if (string.IsNullOrWhiteSpace(_authenticationKey)
+            || string.IsNullOrWhiteSpace(_accountNumber)
+            || string.IsNullOrWhiteSpace(_sepayApiBaseUrl))
+        {
+            _logger.LogWarning(
+                "Payment processor disabled because required Payment configuration is missing. Configure Payment:AuthenticationKey, Payment:Account, and Payment:ApiBaseUrl.");
+            return;
+        }
+
         _httpClient.DefaultRequestHeaders.Clear();
-        _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer DEU74RNAROTL0XLKZF7GKOAONZBC2MRCWHU1DVMI0NFSEW8JSYY3PHXM9TCWZGSO");
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _authenticationKey);
+
         while (!stoppingToken.IsCancellationRequested)
         {
-            string url = "https://my.sepay.vn/userapi/transactions/list?account_number=0378175727&limit=20";
+            var url = $"{_sepayApiBaseUrl.TrimEnd('/')}/userapi/transactions/list?account_number={Uri.EscapeDataString(_accountNumber)}&limit={_pollingLimit}";
             try
             {
                 var response = await _httpClient.GetAsync(url, stoppingToken);
@@ -35,9 +58,26 @@ internal class PaymentProcessor(IServiceScopeFactory scopeFactory) : BackgroundS
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error fetching transactions: {ex.Message}");
-                throw;
+                _logger.LogError(ex, "Error fetching transactions from SePay endpoint.");
             }
+
+            await Task.Delay(_pollingInterval, stoppingToken);
         }
+    }
+
+    private static string NormalizeConfigValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = value.Trim();
+        if (trimmed.StartsWith("${", StringComparison.Ordinal) && trimmed.EndsWith("}", StringComparison.Ordinal))
+        {
+            return string.Empty;
+        }
+
+        return trimmed;
     }
 }

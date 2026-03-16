@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Threading.RateLimiting;
+using Api.Configuration;
 using Api.Infrastructure;
 using Api.Swagger.Extensions;
 using ApiExceptionHandler = Api.Exceptions.Handler.CustomExceptionHandler;
@@ -9,6 +10,7 @@ using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -31,6 +33,7 @@ public static class DependencyInjection
         services.AddSwaggerServices(configuration);
 
         services.AddControllers();
+        services.AddSignalR();
         services.AddHttpContextAccessor();
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddCors(options =>
@@ -53,6 +56,8 @@ public static class DependencyInjection
         services.AddIdentityServices();
         services.AddRateLimiterServices();
         services.AddResponseCompressionServices();
+        services.AddSingleton<IDatabaseStartupLifecycle, EfCoreDatabaseStartupLifecycle>();
+        services.AddSingleton<DatabaseStartupInitializer>();
 
         return services;
     }

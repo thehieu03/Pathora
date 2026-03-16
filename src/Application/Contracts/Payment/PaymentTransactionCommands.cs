@@ -1,5 +1,7 @@
+using Application.Common.Constant;
 using Application.Services;
 using BuildingBlocks.CORS;
+using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Enums;
 using ErrorOr;
@@ -37,13 +39,33 @@ public class CreatePaymentTransactionCommandValidator : AbstractValidator<Create
     }
 }
 
-public sealed class CreatePaymentTransactionCommandHandler(IPaymentService paymentService)
+public sealed class CreatePaymentTransactionCommandHandler(
+    IPaymentService paymentService,
+    IBookingRepository bookingRepository)
     : IRequestHandler<CreatePaymentTransactionCommand, ErrorOr<PaymentTransactionEntity>>
 {
     public async Task<ErrorOr<PaymentTransactionEntity>> Handle(
         CreatePaymentTransactionCommand request,
         CancellationToken cancellationToken)
     {
+        // Verify booking exists
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking == null)
+        {
+            return Error.NotFound(ErrorConstants.Payment.BookingNotFoundCode, ErrorConstants.Payment.BookingNotFoundDescription);
+        }
+
+        // Verify booking can accept payments
+        if (booking.Status == BookingStatus.Cancelled)
+        {
+            return Error.Conflict(ErrorConstants.Payment.TransactionAlreadyCancelledCode, ErrorConstants.Payment.TransactionAlreadyCancelledDescription);
+        }
+
+        if (booking.Status == BookingStatus.Completed)
+        {
+            return Error.Conflict(ErrorConstants.Payment.TransactionAlreadyCompletedCode, ErrorConstants.Payment.TransactionAlreadyCompletedDescription);
+        }
+
         return await paymentService.CreatePaymentTransactionAsync(
             bookingId: request.BookingId,
             type: request.Type,

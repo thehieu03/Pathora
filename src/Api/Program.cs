@@ -2,9 +2,12 @@ using Api;
 using Api.Middleware;
 using Api.Configuration;
 using Api.Swagger.Extensions;
+using Api.Services;
 using Application;
 using Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,11 +16,19 @@ builder.Logging.ClearProviders();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApiServices(builder.Configuration);
+
+// Configure outbox worker
+builder.Services.Configure<OutboxWorkerOptions>(builder.Configuration.GetSection("OutboxWorker"));
+builder.Services.AddSingleton<OutboxWorkerOptions>(sp => sp.GetRequiredService<IOptions<OutboxWorkerOptions>>().Value);
+builder.Services.AddHostedService<OutboxWorkerService>();
+
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
     .AddCheck<DatabaseHealthCheck>("database");
 
 var app = builder.Build();
+
+await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAsync();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -26,8 +37,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseExceptionHandler(_ => { });
-
-// app.UseMiddleware<DatabaseAutoSeedMiddleware>();
 
 app.UseResponseCompression();
 
@@ -60,6 +69,9 @@ if (disableAuthorization)
     controllerEndpoints.AllowAnonymous();
     Log.Warning("Authorization is disabled via configuration key Auth:DisableAuthorization");
 }
+
+// Map SignalR hubs
+app.MapHub<Api.Hubs.NotificationsHub>("/hubs/notifications");
 
 app.Run();
 

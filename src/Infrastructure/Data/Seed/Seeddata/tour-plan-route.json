@@ -12,7 +12,7 @@
     "EstimatedArrivalTime": "10:30:00",
     "DurationMinutes": 150,
     "DistanceKm": 120,
-    "Price": 350000,
+    "Price": 10000,
     "BookingReference": "BO-2026-001",
     "Note": "Rest stop at highway rest area",
     "Translations": {
@@ -41,7 +41,7 @@
     "EstimatedArrivalTime": "07:30:00",
     "DurationMinutes": 90,
     "DistanceKm": 800,
-    "Price": 2500000,
+    "Price": 10000,
     "BookingReference": "VN-2026-001",
     "Note": "Include checked baggage",
     "Translations": {
@@ -70,7 +70,7 @@
     "EstimatedArrivalTime": "10:00:00",
     "DurationMinutes": 60,
     "DistanceKm": 30,
-    "Price": 800000,
+    "Price": 10000,
     "BookingReference": "CAR-2026-001",
     "Note": "Pick-up from hotel lobby",
     "Translations": {
@@ -99,7 +99,7 @@
     "EstimatedArrivalTime": "15:30:00",
     "DurationMinutes": 90,
     "DistanceKm": 600,
-    "Price": 1800000,
+    "Price": 10000,
     "BookingReference": "VJ-2026-001",
     "Note": "Optional meal service",
     "Translations": {
@@ -128,7 +128,7 @@
     "EstimatedArrivalTime": "06:00:00",
     "DurationMinutes": 600,
     "DistanceKm": 300,
-    "Price": 900000,
+    "Price": 10000,
     "BookingReference": "VR-2026-001",
     "Note": "Overnight train journey",
     "Translations": {
@@ -157,7 +157,7 @@
     "EstimatedArrivalTime": "14:30:00",
     "DurationMinutes": 270,
     "DistanceKm": 2000,
-    "Price": 5500000,
+    "Price": 10000,
     "BookingReference": "TG-2026-001",
     "Note": "In-flight entertainment included",
     "Translations": {
@@ -186,7 +186,7 @@
     "EstimatedArrivalTime": "13:00:00",
     "DurationMinutes": 300,
     "DistanceKm": 3500,
-    "Price": 8500000,
+    "Price": 10000,
     "BookingReference": "JL-2026-001",
     "Note": "Narita Airport arrival",
     "Translations": {
@@ -215,7 +215,7 @@
     "EstimatedArrivalTime": "16:00:00",
     "DurationMinutes": 300,
     "DistanceKm": 3000,
-    "Price": 7000000,
+    "Price": 10000,
     "BookingReference": "KE-2026-001",
     "Note": "Transit at Incheon",
     "Translations": {

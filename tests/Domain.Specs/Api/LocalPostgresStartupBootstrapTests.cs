@@ -3,13 +3,24 @@ namespace Domain.Specs.Api;
 public sealed class LocalPostgresStartupBootstrapTests
 {
     [Fact]
-    public void Program_WhenStartingApi_ShouldNotRunAutoMigrationOrSeed()
+    public void Program_WhenStartingApi_ShouldInvokeStartupInitializer()
+    {
+        var programPath = Path.Combine(GetSolutionRoot(), "src", "Api", "Program.cs");
+        var sourceCode = File.ReadAllText(programPath);
+
+        Assert.Contains("DatabaseStartupInitializer", sourceCode, StringComparison.Ordinal);
+        Assert.Contains("InitializeAsync", sourceCode, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Program_WhenStartingApi_ShouldNotInlineMigrationOrSeedOperations()
     {
         var programPath = Path.Combine(GetSolutionRoot(), "src", "Api", "Program.cs");
         var sourceCode = File.ReadAllText(programPath);
 
         Assert.DoesNotContain("await dbContext.Database.MigrateAsync();", sourceCode, StringComparison.Ordinal);
         Assert.DoesNotContain("await AppDbContextSeed.SeedIfNeededAsync(dbContext);", sourceCode, StringComparison.Ordinal);
+        Assert.DoesNotContain("await dbContext.Database.EnsureDeletedAsync();", sourceCode, StringComparison.Ordinal);
     }
 
     private static string GetSolutionRoot()

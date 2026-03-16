@@ -30,7 +30,7 @@ public sealed class TourInstanceServicePublicLanguageTests
     public async Task GetPublicAvailable_WhenTranslationsExist_ShouldReturnDifferentPayloadForViAndEn()
     {
         _tourInstanceRepository
-            .FindPublicAvailable(Arg.Any<string?>(), Arg.Any<int>(), Arg.Any<int>())
+            .FindPublicAvailable(Arg.Any<string?>(), Arg.Any<string?>(), Arg.Any<int>(), Arg.Any<int>())
             .Returns(_ => [BuildTourInstance()]);
         _tourInstanceRepository
             .CountPublicAvailable(Arg.Any<string?>())
@@ -38,8 +38,8 @@ public sealed class TourInstanceServicePublicLanguageTests
 
         var sut = new TourInstanceService(_tourInstanceRepository, _tourRepository, _user, _mapper);
 
-        var viResult = await sut.GetPublicAvailable(null, 1, 10, "vi");
-        var enResult = await sut.GetPublicAvailable(null, 1, 10, "en");
+        var viResult = await sut.GetPublicAvailable(null, null, 1, 10, "vi");
+        var enResult = await sut.GetPublicAvailable(null, null, 1, 10, "en");
 
         Assert.False(viResult.IsError);
         Assert.False(enResult.IsError);

@@ -35,6 +35,21 @@ public sealed class LocalPostgresDevelopmentConfigurationTests
         Assert.DoesNotContain("Host=pathora-db.duckdns.org", connectionLine, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void ResetAndReseedFlag_WhenLoadingConfiguration_ShouldBeDisabledByDefault()
+    {
+        var apiProjectPath = Path.Combine(GetSolutionRoot(), "src", "Api");
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(apiProjectPath)
+            .AddJsonFile("appsettings.json", optional: false)
+            .AddJsonFile("appsettings.Development.json", optional: false)
+            .Build();
+
+        var resetAndReseedEnabled = configuration.GetValue<bool>("Dev:ResetAndReseedOnStartup");
+
+        Assert.False(resetAndReseedEnabled);
+    }
+
     private static string GetSolutionRoot()
     {
         var current = new DirectoryInfo(AppContext.BaseDirectory);

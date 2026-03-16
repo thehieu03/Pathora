@@ -20,6 +20,7 @@ public sealed class IdentityServicePortalMetadataTests
     private readonly IRoleRepository _roleRepository = Substitute.For<IRoleRepository>();
     private readonly IRegisterRepository _registerRepository = Substitute.For<IRegisterRepository>();
     private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
+    private readonly IOtpRepository _otpRepository = Substitute.For<IOtpRepository>();
     private readonly IdentityService _sut;
 
     public IdentityServicePortalMetadataTests()
@@ -33,7 +34,8 @@ public sealed class IdentityServicePortalMetadataTests
             _userRepository,
             _roleRepository,
             _registerRepository,
-            _mailRepository);
+            _mailRepository,
+            _otpRepository);
     }
 
     [Fact]

@@ -56,6 +56,7 @@ internal static class DependencyInjection
         services.AddScoped<ICustomerPaymentRepository, CustomerPaymentRepository>();
         services.AddScoped<ICustomerDepositRepository, CustomerDepositRepository>();
         services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegisterRepository, RegisterRepository>();

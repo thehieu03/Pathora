@@ -105,6 +105,7 @@ public class AuthController : BaseApiController
     }
 
     /// <summary>DEV ONLY – reset a user password without authentication.</summary>
+    [AllowAnonymous]
     [HttpPost(AuthEndpoint.DevResetPassword)]
     public async Task<IActionResult> DevResetPassword(
         [FromBody] DevResetPasswordRequest request,
@@ -115,6 +116,9 @@ public class AuthController : BaseApiController
     {
         if (!env.IsDevelopment() || !configuration.GetValue<bool>("Dev:EnableDevEndpoints"))
             return NotFound();
+
+        if (!IsValidDevApiKey(configuration, Request))
+            return Unauthorized();
 
         var user = await db.Users
             .FirstOrDefaultAsync(u => u.Email == request.Email && !u.IsDeleted);
@@ -135,6 +139,7 @@ public class AuthController : BaseApiController
     }
 
     /// <summary>DEV ONLY – reset password for all active users.</summary>
+    [AllowAnonymous]
     [HttpPost(AuthEndpoint.DevResetAllPasswords)]
     public async Task<IActionResult> DevResetAllPasswords(
         [FromBody] DevResetAllPasswordsRequest request,
@@ -145,6 +150,9 @@ public class AuthController : BaseApiController
     {
         if (!env.IsDevelopment() || !configuration.GetValue<bool>("Dev:EnableDevEndpoints"))
             return NotFound();
+
+        if (!IsValidDevApiKey(configuration, Request))
+            return Unauthorized();
 
         if (string.IsNullOrWhiteSpace(request.NewPassword))
             return BadRequest(new
@@ -220,13 +228,41 @@ public class AuthController : BaseApiController
 
     private static string GetFrontendUrl(IConfiguration configuration)
     {
-        return configuration["Cors:AllowedOrigins:0"] ?? "http://localhost:3000";
+        var configuredFrontendUrl = configuration["AppConfig:FrontendBaseUrl"];
+        if (!string.IsNullOrWhiteSpace(configuredFrontendUrl))
+        {
+            return configuredFrontendUrl.TrimEnd('/');
+        }
+
+        var firstAllowedOrigin = configuration
+            .GetSection("Cors:AllowedOrigins")
+            .GetChildren()
+            .Select(child => child.Value)
+            .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
+
+        if (!string.IsNullOrWhiteSpace(firstAllowedOrigin))
+        {
+            return firstAllowedOrigin.TrimEnd('/');
+        }
+
+        throw new InvalidOperationException(
+            "Frontend redirect URL is not configured. Set AppConfig:FrontendBaseUrl or Cors:AllowedOrigins.");
     }
 
     private static bool IsGoogleConfigured(IConfiguration configuration)
     {
         return !string.IsNullOrWhiteSpace(configuration["Authentication:Google:ClientId"]) &&
                !string.IsNullOrWhiteSpace(configuration["Authentication:Google:ClientSecret"]);
+    }
+
+    private static bool IsValidDevApiKey(IConfiguration configuration, HttpRequest request)
+    {
+        var configuredKey = configuration["Dev:DevApiKey"];
+        if (string.IsNullOrWhiteSpace(configuredKey))
+            return false;
+
+        var providedKey = request.Headers["X-Dev-Api-Key"].FirstOrDefault();
+        return !string.IsNullOrEmpty(providedKey) && configuredKey == providedKey;
     }
 }
 

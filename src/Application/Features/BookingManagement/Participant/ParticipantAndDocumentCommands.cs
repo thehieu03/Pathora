@@ -2,6 +2,7 @@ using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -588,11 +589,25 @@ public sealed class GetBookingParticipantsQueryHandler(
     IBookingParticipantRepository bookingParticipantRepository,
     IPassportRepository passportRepository,
     IVisaApplicationRepository visaApplicationRepository,
-    IVisaRepository visaRepository)
+    IVisaRepository visaRepository,
+    IBookingRepository bookingRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingParticipantsQuery, ErrorOr<List<ParticipantDto>>>
 {
     public async Task<ErrorOr<List<ParticipantDto>>> Handle(GetBookingParticipantsQuery request, CancellationToken cancellationToken)
     {
+        // Ownership validation - check if user can access this booking
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var participants = await bookingParticipantRepository.GetByBookingIdAsync(request.BookingId);
         var result = new List<ParticipantDto>();
 

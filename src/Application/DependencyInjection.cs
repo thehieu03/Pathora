@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<ITourInstanceService, TourInstanceService>();
         services.AddScoped<IDynamicPricingService, DynamicPricingService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IOwnershipValidator, OwnershipValidator>();
 
         return services;
     }

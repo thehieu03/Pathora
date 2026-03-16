@@ -7,10 +7,12 @@ using ErrorOr;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 
 namespace Domain.Specs.Api;
 
@@ -272,6 +274,24 @@ public sealed class AuthControllerTests
     }
 
     [Fact]
+    public void DevResetPassword_ShouldAllowAnonymous()
+    {
+        var method = typeof(AuthController).GetMethod(nameof(AuthController.DevResetPassword));
+
+        Assert.NotNull(method);
+        Assert.NotNull(method!.GetCustomAttributes(typeof(AllowAnonymousAttribute), inherit: true).SingleOrDefault());
+    }
+
+    [Fact]
+    public void DevResetAllPasswords_ShouldAllowAnonymous()
+    {
+        var method = typeof(AuthController).GetMethod(nameof(AuthController.DevResetAllPasswords));
+
+        Assert.NotNull(method);
+        Assert.NotNull(method!.GetCustomAttributes(typeof(AllowAnonymousAttribute), inherit: true).SingleOrDefault());
+    }
+
+    [Fact]
     public void GoogleLogin_WhenGoogleIsNotConfigured_ShouldRedirectToFrontendCallbackError()
     {
         var (controller, _) = BuildController<GetTabsQuery, List<TabVm>>(
@@ -295,8 +315,9 @@ public sealed class AuthControllerTests
     {
         // Arrange
         var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
-            ErrorOr<ExternalLoginResponse>.Error(401, "google_auth_failed", "Authentication failed"),
-            "/api/auth/google-callback");
+            Error.Unauthorized("google_auth_failed", "Authentication failed"),
+            "/api/auth/google-callback",
+            AuthenticateResult.Fail("Authentication failed"));
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -305,11 +326,6 @@ public sealed class AuthControllerTests
             })
             .Build();
 
-        // Mock the AuthenticateAsync to return failure
-        var authResult = new AuthenticationScheme(
-            "Google",
-            "Google",
-            typeof(Microsoft.AspNetCore.Authentication.Test.TestAuthHandler<int>));
         controller.ControllerContext.HttpContext.Request.Scheme = "http";
 
         // Act
@@ -325,8 +341,12 @@ public sealed class AuthControllerTests
     {
         // Arrange
         var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
-            ErrorOr<ExternalLoginResponse>.Error(400, "missing_claims", "Missing required claims"),
-            "/api/auth/google-callback");
+            Error.Failure("missing_claims", "Missing required claims"),
+            "/api/auth/google-callback",
+            AuthenticateResult.Success(
+                new AuthenticationTicket(
+                    new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "Missing Required")], "TestAuth")),
+                    CookieAuthenticationDefaults.AuthenticationScheme)));
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -352,7 +372,16 @@ public sealed class AuthControllerTests
         var externalLoginResponse = new ExternalLoginResponse("access-token", "refresh-token", "customer", "/home");
         var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
             externalLoginResponse,
-            "/api/auth/google-callback");
+            "/api/auth/google-callback",
+            AuthenticateResult.Success(
+                new AuthenticationTicket(
+                    new ClaimsPrincipal(new ClaimsIdentity(
+                    [
+                        new Claim(ClaimTypes.NameIdentifier, "google-id-123"),
+                        new Claim(ClaimTypes.Email, "customer@example.com"),
+                        new Claim(ClaimTypes.Name, "Customer User")
+                    ], "TestAuth")),
+                    CookieAuthenticationDefaults.AuthenticationScheme)));
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -373,7 +402,7 @@ public sealed class AuthControllerTests
         // Verify auth cookies are set
         var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
         Assert.Contains("auth_status=1", setCookie);
-        Assert.Contains("auth_portal=customer", setCookie);
+        Assert.Contains("auth_portal=user", setCookie);
     }
 
     [Fact]
@@ -381,8 +410,17 @@ public sealed class AuthControllerTests
     {
         // Arrange
         var (controller, _) = BuildControllerWithExternalLogin<ExternalLoginCommand, ExternalLoginResponse>(
-            ErrorOr<ExternalLoginResponse>.Error(500, "login_failed", "Login failed"),
-            "/api/auth/google-callback");
+            Error.Failure("login_failed", "Login failed"),
+            "/api/auth/google-callback",
+            AuthenticateResult.Success(
+                new AuthenticationTicket(
+                    new ClaimsPrincipal(new ClaimsIdentity(
+                    [
+                        new Claim(ClaimTypes.NameIdentifier, "google-id-123"),
+                        new Claim(ClaimTypes.Email, "customer@example.com"),
+                        new Claim(ClaimTypes.Name, "Customer User")
+                    ], "TestAuth")),
+                    CookieAuthenticationDefaults.AuthenticationScheme)));
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -401,16 +439,53 @@ public sealed class AuthControllerTests
         Assert.Contains("error=login_failed", redirectResult.Url);
     }
 
+    [Fact]
+    public void GoogleLogin_WhenFrontendUrlNotConfigured_ShouldThrow()
+    {
+        var (controller, _) = BuildController<GetTabsQuery, List<TabVm>>(
+            new List<TabVm>(),
+            "/api/auth/google-login");
+        // Configuration without AppConfig:FrontendBaseUrl and Cors:AllowedOrigins
+        var configuration = new ConfigurationBuilder().Build();
+
+        var exception = Assert.Throws<InvalidOperationException>(() => controller.GoogleLogin(configuration));
+
+        Assert.Contains("AppConfig:FrontendBaseUrl", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("http://localhost:3001", "http://localhost:3001/auth/callback?error=google_auth_not_configured")]
+    [InlineData("https://app.pathora.com", "https://app.pathora.com/auth/callback?error=google_auth_not_configured")]
+    public void GoogleLogin_WhenGoogleNotConfigured_ShouldRedirectToConfiguredOrigin(string frontendUrl, string expectedRedirect)
+    {
+        var (controller, _) = BuildController<GetTabsQuery, List<TabVm>>(
+            new List<TabVm>(),
+            "/api/auth/google-login");
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Cors:AllowedOrigins:0"] = frontendUrl
+            })
+            .Build();
+
+        var actionResult = controller.GoogleLogin(configuration);
+
+        var redirectResult = Assert.IsType<RedirectResult>(actionResult);
+        Assert.Equal(expectedRedirect, redirectResult.Url);
+    }
+
     private static (AuthController Controller, ExternalLoginProbe<TCommand, TResponse> Probe) BuildControllerWithExternalLogin<TCommand, TResponse>(
         ErrorOr<TResponse> response,
-        string path)
+        string path,
+        AuthenticateResult authenticateResult)
         where TCommand : IRequest<ErrorOr<TResponse>>
     {
         var services = new ServiceCollection();
         var probe = new ExternalLoginProbe<TCommand, TResponse>(response);
         services.AddSingleton(probe);
+        services.AddSingleton<IAuthenticationService>(new FakeAuthenticationService(authenticateResult));
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<RequestProbeHandler<TCommand, TResponse>>());
-        services.AddTransient<IRequestHandler<TCommand, ErrorOr<TResponse>, ExternalLoginProbeHandler<TCommand, TResponse>>>();
+        services.AddTransient<IRequestHandler<TCommand, ErrorOr<TResponse>>, ExternalLoginProbeHandler<TCommand, TResponse>>();
 
         var httpContext = new DefaultHttpContext
         {
@@ -427,6 +502,34 @@ public sealed class AuthControllerTests
         };
 
         return (controller, probe);
+    }
+
+    private sealed class FakeAuthenticationService(AuthenticateResult authenticateResult) : IAuthenticationService
+    {
+        public Task<AuthenticateResult> AuthenticateAsync(HttpContext context, string? scheme)
+        {
+            return Task.FromResult(authenticateResult);
+        }
+
+        public Task ChallengeAsync(HttpContext context, string? scheme, AuthenticationProperties? properties)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task ForbidAsync(HttpContext context, string? scheme, AuthenticationProperties? properties)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SignInAsync(HttpContext context, string? scheme, ClaimsPrincipal principal, AuthenticationProperties? properties)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task SignOutAsync(HttpContext context, string? scheme, AuthenticationProperties? properties)
+        {
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class ExternalLoginProbe<TRequest, TResponse>(ErrorOr<TResponse> response)
