@@ -194,6 +194,29 @@ export interface TourRequestEndpoints {
   REVIEW: EndpointWithId;
 }
 
+// Booking Management Endpoints Interface
+export interface BookingEndpoints {
+  GET_LIST: string;
+  GET_DETAIL: EndpointWithId;
+  GET_ACTIVITIES: EndpointWithId;
+  GET_ACTIVITY_DETAIL: (id: string, activityId: string) => string;
+  GET_TRANSPORT_DETAILS: EndpointWithId;
+  GET_ACCOMMODATION_DETAILS: EndpointWithId;
+  GET_PARTICIPANTS: EndpointWithId;
+  GET_PAYABLES: EndpointWithId;
+  GET_ACTIVITY_STATUSES: EndpointWithId;
+  GET_ACTIVITY_STATUS_DETAIL: (id: string, tourDayId: string) => string;
+  START_ACTIVITY: (id: string, tourDayId: string) => string;
+  COMPLETE_ACTIVITY: (id: string, tourDayId: string) => string;
+  CANCEL_ACTIVITY: (id: string, tourDayId: string) => string;
+  GET_TEAM: EndpointWithId;
+  ADD_TEAM_MEMBER: EndpointWithId;
+  CONFIRM_TEAM_MEMBER: (id: string, userId: string) => string;
+  SET_TOUR_MANAGER: EndpointWithId;
+  SET_TOUR_OPERATORS: EndpointWithId;
+  SET_TOUR_GUIDES: EndpointWithId;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -211,6 +234,7 @@ export interface ApiEndpoints {
   PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints;
   ADMIN: AdminEndpoints;
   TOUR_REQUESTS: TourRequestEndpoints;
+  BOOKING: BookingEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -413,6 +437,41 @@ export const API_ENDPOINTS: ApiEndpoints = {
     ADMIN_LIST: "/api/tour-requests",
     ADMIN_DETAIL: (id: string): string => `/api/tour-requests/${id}`,
     REVIEW: (id: string): string => `/api/tour-requests/${id}/review`,
+  },
+
+  // Booking Management
+  BOOKING: {
+    GET_LIST: "/api/bookings",
+    GET_DETAIL: (id: string): string => `/api/bookings/${id}`,
+    GET_ACTIVITIES: (id: string): string => `/api/bookings/${id}/activities`,
+    GET_ACTIVITY_DETAIL: (id: string, activityId: string): string =>
+      `/api/bookings/${id}/activities/${activityId}`,
+    GET_TRANSPORT_DETAILS: (id: string): string =>
+      `/api/bookings/${id}/transport-details`,
+    GET_ACCOMMODATION_DETAILS: (id: string): string =>
+      `/api/bookings/${id}/accommodation-details`,
+    GET_PARTICIPANTS: (id: string): string => `/api/bookings/${id}/participants`,
+    GET_PAYABLES: (id: string): string => `/api/bookings/${id}/payables`,
+    GET_ACTIVITY_STATUSES: (id: string): string =>
+      `/api/bookings/${id}/activity-statuses`,
+    GET_ACTIVITY_STATUS_DETAIL: (id: string, tourDayId: string): string =>
+      `/api/bookings/${id}/activity-statuses/${tourDayId}`,
+    START_ACTIVITY: (id: string, tourDayId: string): string =>
+      `/api/bookings/${id}/activity-statuses/${tourDayId}/start`,
+    COMPLETE_ACTIVITY: (id: string, tourDayId: string): string =>
+      `/api/bookings/${id}/activity-statuses/${tourDayId}/complete`,
+    CANCEL_ACTIVITY: (id: string, tourDayId: string): string =>
+      `/api/bookings/${id}/activity-statuses/${tourDayId}/cancel`,
+    GET_TEAM: (id: string): string => `/api/bookings/${id}/team`,
+    ADD_TEAM_MEMBER: (id: string): string => `/api/bookings/${id}/team`,
+    CONFIRM_TEAM_MEMBER: (id: string, userId: string): string =>
+      `/api/bookings/${id}/team/${userId}/confirm`,
+    SET_TOUR_MANAGER: (id: string): string =>
+      `/api/bookings/${id}/team/tour-manager`,
+    SET_TOUR_OPERATORS: (id: string): string =>
+      `/api/bookings/${id}/team/tour-operators`,
+    SET_TOUR_GUIDES: (id: string): string =>
+      `/api/bookings/${id}/team/tour-guides`,
   },
 };
 

@@ -11,8 +11,8 @@ export {
   type CustomAxiosRequestConfig,
 } from "./axiosInstance";
 
-export { 
-  API_ENDPOINTS, 
+export {
+  API_ENDPOINTS,
   default as endpoints,
   type ApiEndpoints,
   type CatalogEndpoints,
@@ -25,4 +25,5 @@ export {
   type AuthEndpoints,
   type EndpointWithId,
   type EndpointWithOrderNo,
+  type BookingEndpoints,
 } from "./endpoints";

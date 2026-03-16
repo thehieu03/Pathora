@@ -8,11 +8,43 @@ export interface GetQrPayload {
   amount: number;
 }
 
+// Backend enums (matching C# enums)
+export enum TransactionTypeEnum {
+  Deposit = 1,
+  FullPayment = 2,
+  Refund = 3,
+}
+
+export enum PaymentMethodEnum {
+  Cash = 1,
+  BankTransfer = 2,
+  Card = 3,
+  Momo = 4,
+  VnPay = 5,
+}
+
+export enum TransactionStatusEnum {
+  Pending = 1,
+  Processing = 2,
+  Completed = 3,
+  Failed = 4,
+  Refunded = 5,
+  Cancelled = 6,
+}
+
+// Frontend-facing string types for developer convenience
+export type TransactionTypeString = "Deposit" | "FullPayment" | "Refund";
+export type PaymentMethodString = "Cash" | "BankTransfer" | "Card" | "Momo" | "VnPay";
+
+// Convert string to enum integer for API
+const toTransactionType = (type: TransactionTypeString): number => TransactionTypeEnum[type];
+const toPaymentMethod = (method: PaymentMethodString): number => PaymentMethodEnum[method];
+
 export interface CreateTransactionPayload {
   bookingId: string;
-  type: "Deposit" | "FullPayment" | "Refund";
+  type: TransactionTypeString;
   amount: number;
-  paymentMethod: "Cash" | "BankTransfer" | "Card" | "Momo" | "VnPay";
+  paymentMethod: PaymentMethodString;
   paymentNote: string;
   createdBy: string;
   expirationMinutes?: number;
@@ -50,9 +82,16 @@ export const paymentService = {
   },
 
   createTransaction: async (payload: CreateTransactionPayload) => {
+    // Convert string enums to integers for backend
+    const apiPayload = {
+      ...payload,
+      type: toTransactionType(payload.type),
+      paymentMethod: toPaymentMethod(payload.paymentMethod),
+    };
+
     const response = await api.post<ApiResponse<PaymentTransaction>>(
       API_ENDPOINTS.PAYMENT.CREATE_TRANSACTION,
-      payload,
+      apiPayload,
     );
 
     return extractResult<PaymentTransaction>(response.data);
