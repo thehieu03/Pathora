@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -217,12 +218,25 @@ public sealed record GetActivityStatusesQuery(Guid BookingId) : IQuery<ErrorOr<L
 }
 
 public sealed class GetActivityStatusesQueryHandler(
+    IBookingRepository bookingRepository,
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
-    ITourDayActivityGuideRepository tourDayActivityGuideRepository)
+    ITourDayActivityGuideRepository tourDayActivityGuideRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetActivityStatusesQuery, ErrorOr<List<TourDayActivityStatusDto>>>
 {
     public async Task<ErrorOr<List<TourDayActivityStatusDto>>> Handle(GetActivityStatusesQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var statuses = await tourDayActivityStatusRepository.GetByBookingIdAsync(request.BookingId);
         var result = new List<TourDayActivityStatusDto>();
 
@@ -261,13 +275,26 @@ public sealed record GetActivityStatusByTourDayQuery(Guid BookingId, Guid TourDa
 }
 
 public sealed class GetActivityStatusByTourDayQueryHandler(
+    IBookingRepository bookingRepository,
     ITourDayActivityStatusRepository tourDayActivityStatusRepository,
     ITourDayActivityGuideRepository tourDayActivityGuideRepository,
+    IOwnershipValidator ownershipValidator,
     ILanguageContext? languageContext = null)
     : IQueryHandler<GetActivityStatusByTourDayQuery, ErrorOr<TourDayActivityStatusDto>>
 {
     public async Task<ErrorOr<TourDayActivityStatusDto>> Handle(GetActivityStatusByTourDayQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)

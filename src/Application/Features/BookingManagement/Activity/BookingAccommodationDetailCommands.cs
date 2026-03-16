@@ -2,6 +2,7 @@ using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -218,12 +219,25 @@ public sealed record GetBookingAccommodationDetailsQuery(Guid BookingId) : IQuer
 }
 
 public sealed class GetBookingAccommodationDetailsQueryHandler(
+    IBookingRepository bookingRepository,
     IBookingActivityReservationRepository bookingActivityReservationRepository,
-    IBookingAccommodationDetailRepository bookingAccommodationDetailRepository)
+    IBookingAccommodationDetailRepository bookingAccommodationDetailRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingAccommodationDetailsQuery, ErrorOr<List<AccommodationDetailDto>>>
 {
     public async Task<ErrorOr<List<AccommodationDetailDto>>> Handle(GetBookingAccommodationDetailsQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var activities = await bookingActivityReservationRepository.GetByBookingIdAsync(request.BookingId);
 
         var result = new List<AccommodationDetailDto>();
