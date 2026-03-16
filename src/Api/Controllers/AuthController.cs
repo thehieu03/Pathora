@@ -1,6 +1,7 @@
 using Api.Endpoint;
 using Api.Infrastructure;
 using Application.Common.Constant;
+using Application.Contracts.Identity;
 using Contracts.Interfaces;
 using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
@@ -65,6 +66,21 @@ public class AuthController : BaseApiController
         var result = await Sender.Send(command);
         return HandleResult(result);
     }
+
+    [HttpPost(AuthEndpoint.ForgotPassword)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var result = await Sender.Send(new ForgotPasswordCommand(request));
+        return HandleResult(result);
+    }
+
+    [HttpPost(AuthEndpoint.ResetPassword)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await Sender.Send(new ResetPasswordCommand(request));
+        return HandleResult(result);
+    }
+
     [Authorize]
     [HttpPost(AuthEndpoint.Logout)]
     public async Task<IActionResult> Logout([FromBody] LogoutCommand command)

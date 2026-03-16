@@ -8,6 +8,7 @@ using Domain.Entities;
 using Domain.Mails;
 using Domain.UnitOfWork;
 using ErrorOr;
+using Microsoft.Extensions.Configuration;
 using NSubstitute;
 
 namespace Domain.Specs.Application;
@@ -24,10 +25,13 @@ public sealed class IdentityServiceTests
     private readonly IRegisterRepository _registerRepository = Substitute.For<IRegisterRepository>();
     private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
     private readonly IOtpRepository _otpRepository = Substitute.For<IOtpRepository>();
+    private readonly IPasswordResetTokenRepository _passwordResetTokenRepository = Substitute.For<IPasswordResetTokenRepository>();
+    private readonly IConfiguration _configuration = Substitute.For<IConfiguration>();
     private readonly IdentityService _sut;
 
     public IdentityServiceTests()
     {
+        _configuration["App:FrontendUrl"].Returns("http://localhost:3001");
         _sut = new IdentityService(
             _user,
             _tokenManager,
@@ -38,7 +42,9 @@ public sealed class IdentityServiceTests
             _roleRepository,
             _registerRepository,
             _mailRepository,
-            _otpRepository);
+            _otpRepository,
+            _passwordResetTokenRepository,
+            _configuration);
     }
 
     [Fact]

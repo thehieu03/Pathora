@@ -8,6 +8,7 @@ using Domain.Entities;
 using Domain.Mails;
 using Domain.UnitOfWork;
 using ErrorOr;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace Application.Services;
@@ -21,6 +22,7 @@ public interface IIdentityService
     Task<ErrorOr<Success>> Logout(LogoutRequest request);
     Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request);
     Task<ErrorOr<Success>> ForgotPassword(ForgotPasswordRequest request);
+    Task<ErrorOr<Success>> ResetPassword(ResetPasswordRequest request);
     Task<ErrorOr<Success>> SendOtp(string email);
     Task<ErrorOr<UserInfoVm>> GetUserInfo();
     Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request);
@@ -38,7 +40,9 @@ public class IdentityService(
     IRoleRepository roleRepository,
     IRegisterRepository registerRepository,
     IMailRepository mailRepository,
-    IOtpRepository otpRepository
+    IOtpRepository otpRepository,
+    IPasswordResetTokenRepository passwordResetTokenRepository,
+    IConfiguration configuration
     )
     : IIdentityService
 {
@@ -52,6 +56,8 @@ public class IdentityService(
     private readonly IRegisterRepository _registerRepository = registerRepository;
     private readonly IMailRepository mailRepository = mailRepository;
     private readonly IOtpRepository _otpRepository = otpRepository;
+    private readonly IPasswordResetTokenRepository _passwordResetTokenRepository = passwordResetTokenRepository;
+    private readonly IConfiguration _configuration = configuration;
 
     public async Task<ErrorOr<Success>> Register(RegisterRequest request)
     {
@@ -251,9 +257,98 @@ public class IdentityService(
         return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> ForgotPassword(ForgotPasswordRequest request)
+    public async Task<ErrorOr<Success>> ForgotPassword(ForgotPasswordRequest request)
     {
-        throw new NotImplementedException();
+        // Find user by email
+        var userEntity = await _userRepository.FindByEmail(request.Email);
+
+        // Always return success to prevent email enumeration
+        // Only send email if user exists
+
+        if (userEntity is null)
+        {
+            return Result.Success;
+        }
+
+        // Generate secure token
+        var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        var tokenHash = _passwordHasher.HashPassword(token);
+        var expiresAt = DateTimeOffset.UtcNow.AddMinutes(15); // 15 minutes expiry
+
+        // Create reset token record
+        var resetToken = Domain.Entities.PasswordResetTokenEntity.Create(
+            userEntity.Id.ToString(),
+            tokenHash,
+            expiresAt);
+
+        var tokenResult = await _passwordResetTokenRepository.CreateAsync(resetToken);
+        if (tokenResult.IsError)
+        {
+            return Error.Failure("PasswordReset.Failed", "Failed to create reset token");
+        }
+
+        // Get frontend URL from config
+        var frontendUrl = _configuration["AppConfig:FrontendBaseUrl"] ?? "http://localhost:3001";
+        var resetLink = $"{frontendUrl}/reset-password?token={token}";
+
+        // Create and queue password reset email
+        var mailEntity = new Domain.Mails.MailEntity
+        {
+            To = request.Email,
+            Subject = "Đặt Lại Mật Khẩu",
+            Body = JsonSerializer.Serialize(new Domain.Mails.PasswordResetMail(resetLink, userEntity.Username ?? userEntity.Email, 15)),
+            Template = nameof(Domain.Mails.PasswordResetMail),
+        };
+
+        var mailRepo = _unitOfWork.GenericRepository<Domain.Mails.MailEntity>();
+        await mailRepo.AddAsync(mailEntity);
+        await _unitOfWork.SaveChangeAsync();
+
+        return Result.Success;
+    }
+
+    public async Task<ErrorOr<Success>> ResetPassword(ResetPasswordRequest request)
+    {
+        // Find valid token
+        var tokenHash = _passwordHasher.HashPassword(request.Token);
+        var tokenResult = await _passwordResetTokenRepository.GetValidTokenAsync(tokenHash);
+
+        if (tokenResult.IsError)
+        {
+            return Error.NotFound("PasswordReset.InvalidToken", "Invalid or expired reset token");
+        }
+
+        var resetToken = tokenResult.Value;
+        if (resetToken is null)
+        {
+            return Error.NotFound("PasswordReset.InvalidToken", "Invalid or expired reset token");
+        }
+
+        // Find user
+        if (!Guid.TryParse(resetToken.UserId, out var userId))
+        {
+            return Error.Failure("PasswordReset.InvalidToken", "Invalid user ID in token");
+        }
+
+        var userEntity = await _userRepository.FindById(userId);
+        if (userEntity is null)
+        {
+            return Error.NotFound("PasswordReset.UserNotFound", "User not found");
+        }
+
+        // Update password
+        userEntity.ChangePassword(_passwordHasher.HashPassword(request.NewPassword), userId.ToString());
+        _userRepository.Update(userEntity);
+
+        // Mark token as used
+        await _passwordResetTokenRepository.MarkAsUsedAsync(resetToken.Id);
+
+        // Delete all tokens for this user (security: invalidate all outstanding tokens)
+        await _passwordResetTokenRepository.DeleteByUserIdAsync(userId.ToString());
+
+        await _unitOfWork.SaveChangeAsync();
+
+        return Result.Success;
     }
 
     public Task<ErrorOr<Success>> SendOtp(string email)
