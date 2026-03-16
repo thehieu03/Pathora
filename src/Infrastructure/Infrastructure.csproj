@@ -47,6 +47,9 @@
     <EmbeddedResource Update="Mails\Templates\RegisterMail.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Update="Mails\Templates\PasswordResetMail.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

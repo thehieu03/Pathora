@@ -5,7 +5,9 @@ using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.UnitOfWork;
+using Microsoft.Extensions.Configuration;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 
 namespace Domain.Specs.Application;
 
@@ -21,10 +23,13 @@ public sealed class IdentityServicePortalMetadataTests
     private readonly IRegisterRepository _registerRepository = Substitute.For<IRegisterRepository>();
     private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
     private readonly IOtpRepository _otpRepository = Substitute.For<IOtpRepository>();
+    private readonly IPasswordResetTokenRepository _passwordResetTokenRepository = Substitute.For<IPasswordResetTokenRepository>();
+    private readonly IConfiguration _configuration = Substitute.For<IConfiguration>();
     private readonly IdentityService _sut;
 
     public IdentityServicePortalMetadataTests()
     {
+        _configuration["App:FrontendUrl"].Returns("http://localhost:3001");
         _sut = new IdentityService(
             _user,
             _tokenManager,
@@ -35,7 +40,9 @@ public sealed class IdentityServicePortalMetadataTests
             _roleRepository,
             _registerRepository,
             _mailRepository,
-            _otpRepository);
+            _otpRepository,
+            _passwordResetTokenRepository,
+            _configuration);
     }
 
     [Fact]

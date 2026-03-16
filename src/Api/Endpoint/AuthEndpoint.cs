@@ -14,4 +14,6 @@ public static class AuthEndpoint
     public const string GoogleLogin = "google-login";
     public const string GoogleCallback = "google-callback";
     public const string ConfirmRegister = "confirm-register";
+    public const string ForgotPassword = "forgot-password";
+    public const string ResetPassword = "reset-password";
 }
