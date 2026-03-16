@@ -304,12 +304,18 @@ const LoginView = ({
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [login, { isLoading }] = useLoginMutation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Clear error when user starts typing
+    if (loginError) {
+      setLoginError(null);
+    }
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -332,8 +338,12 @@ const LoginView = ({
       toast.success(t("landing.auth.loginSuccess"));
       onClose();
       router.replace(destination);
-    } catch {
-      // Global error toast is handled by apiSlice / middleware
+    } catch (err: unknown) {
+      // Handle specific login errors and display in form
+      const apiError = handleApiError(err);
+      // Translate the error message key to display user-friendly text
+      const translatedError = t(apiError.message, apiError.message);
+      setLoginError(translatedError);
     }
   };
 
@@ -394,6 +404,13 @@ const LoginView = ({
               </button>
             }
           />
+          {/* Error message display */}
+          {loginError && (
+            <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+              <Icon icon="heroicons-outline:exclamation-circle" className="h-5 w-5 flex-shrink-0" />
+              <span>{loginError}</span>
+            </div>
+          )}
           <div className="flex justify-end">
             <button
               type="button"

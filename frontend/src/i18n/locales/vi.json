@@ -891,6 +891,8 @@
     "TIMEOUT_ERROR": "Yêu cầu đã hết thời gian chờ, vui lòng thử lại.",
     "BAD_REQUEST": "Yêu cầu không hợp lệ",
     "UNAUTHORIZED": "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại",
+    "INVALID_CREDENTIALS": "Email hoặc mật khẩu không đúng",
+    "USER_DISABLED": "Tài khoản đã bị vô hiệu hóa. Vui liên hệ hỗ trợ.",
     "FORBIDDEN": "Bạn không có quyền truy cập tài nguyên này",
     "NOT_FOUND": "Không tìm thấy tài nguyên yêu cầu",
     "SERVER_ERROR": "Lỗi máy chủ, vui lòng thử lại sau",

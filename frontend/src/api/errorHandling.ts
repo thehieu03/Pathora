@@ -88,6 +88,19 @@ const getStatusErrorKey = (status: number): string => {
   }
 };
 
+// Map backend error codes to frontend translation keys for login-specific errors
+const mapBackendErrorCode = (errorMessage: string): string => {
+  // Map backend error codes to translation keys
+  if (errorMessage === "User.NotFound" || errorMessage === "User.InvalidPassword") {
+    return "INVALID_CREDENTIALS";
+  }
+  if (errorMessage === "User.Disabled" || errorMessage === "User.IsDisabled") {
+    return "USER_DISABLED";
+  }
+  // Return original if no mapping found
+  return errorMessage;
+};
+
 export const resolveErrorToast = (
   error: AxiosError<ErrorResponsePayload>,
 ): ErrorToastPayload => {
@@ -101,14 +114,22 @@ export const resolveErrorToast = (
     const firstError = data?.errors?.[0];
 
     if (firstError?.errorMessage || firstError?.message) {
+      const rawKey = firstError.errorMessage ?? firstError.message ?? "DEFAULT_ERROR";
+      const mappedKey = mapBackendErrorCode(rawKey);
       return {
-        key: firstError.errorMessage ?? firstError.message ?? "DEFAULT_ERROR",
+        key: mappedKey,
         details: firstError.details,
       };
     }
 
     if (data?.message) {
-      return { key: data.message };
+      const mappedKey = mapBackendErrorCode(data.message);
+      return { key: mappedKey };
+    }
+
+    // For 401 on login endpoints, check if it's invalid credentials vs session expired
+    if (response.status === 401) {
+      return { key: "INVALID_CREDENTIALS" };
     }
 
     return { key: getStatusErrorKey(response.status) };

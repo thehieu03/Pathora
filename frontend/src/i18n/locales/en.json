@@ -891,6 +891,8 @@
     "TIMEOUT_ERROR": "Request timed out, please try again.",
     "BAD_REQUEST": "Invalid request",
     "UNAUTHORIZED": "Session expired, please login again",
+    "INVALID_CREDENTIALS": "Invalid email or password",
+    "USER_DISABLED": "Account is disabled. Please contact support.",
     "FORBIDDEN": "You don't have permission to access this resource",
     "NOT_FOUND": "The requested resource was not found",
     "SERVER_ERROR": "Server error, please try again later",
