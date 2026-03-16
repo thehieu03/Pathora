@@ -97,6 +97,9 @@ export interface NotificationEndpoints {
 // Payment Service Endpoints Interface
 export interface PaymentEndpoints {
   GET_QR: string;
+  CREATE_TRANSACTION: string;
+  GET_TRANSACTION: (code: string) => string;
+  EXPIRE_TRANSACTION: (code: string) => string;
 }
 
 // Communication Service Endpoints Interface
@@ -301,6 +304,9 @@ export const API_ENDPOINTS: ApiEndpoints = {
   // Payment Service
   PAYMENT: {
     GET_QR: "/api/payment/getQR",
+    CREATE_TRANSACTION: "/api/payment/create-transaction",
+    GET_TRANSACTION: (code: string): string => `/api/payment/transaction/${code}`,
+    EXPIRE_TRANSACTION: (code: string): string => `/api/payment/transaction/${code}/expire`,
   },
 
   // Communication Service

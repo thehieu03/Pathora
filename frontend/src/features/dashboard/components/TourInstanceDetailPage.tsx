@@ -251,7 +251,7 @@ export default function TourInstanceDetailPage() {
       const detail = await tourInstanceService.getInstanceDetail(id);
       setData(detail);
       setForm(detail ? toEditForm(detail) : null);
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = handleApiError(error);
       toast.error(apiError.message || "Failed to load tour instance details");
       setData(null);
@@ -423,7 +423,7 @@ export default function TourInstanceDetailPage() {
 
       await loadData();
       setIsEditing(false);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof yup.ValidationError) {
         const nextErrors: Record<string, string> = {};
         for (const issue of error.inner) {

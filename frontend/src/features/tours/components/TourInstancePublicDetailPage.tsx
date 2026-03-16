@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -10,19 +10,42 @@ import Image from "@/features/shared/components/LandingImage";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { homeService } from "@/api/services/homeService";
+import { handleApiError } from "@/utils/apiResponse";
 import {
   NormalizedTourInstanceDto,
   TourInstanceStatusMap,
 } from "@/types/tour";
 
-const formatCurrency = (value: number): string =>
-  `${new Intl.NumberFormat("vi-VN").format(value)} VND`;
+// Localized currency formatter - adapts to active language locale
+const createCurrencyFormatter = (locale: string) =>
+  new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 
-const toDateText = (value?: string | null): string => {
+// Localized date formatter - adapts to active language locale
+const createDateFormatter = (locale: string) =>
+  new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+// Format currency with locale awareness
+const formatCurrency = (value: number, locale: string): string => {
+  const formatter = createCurrencyFormatter(locale);
+  return formatter.format(value).replace("VND", "VND").trim();
+};
+
+// Format date with locale awareness
+const toDateText = (value: string | null | undefined, locale: string): string => {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("en-GB");
+  const formatter = createDateFormatter(locale);
+  return formatter.format(date);
 };
 
 /* ── Info Pill ─────────────────────────────────────────────── */
@@ -72,24 +95,49 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export function TourInstancePublicDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const id = params.id as string;
+
+  const resolveApiLanguage = useCallback((): string => {
+    return i18n.resolvedLanguage || i18n.language || "en";
+  }, [i18n.resolvedLanguage, i18n.language]);
 
   const [activeTab, setActiveTab] = useState<"overview" | "pricing">("overview");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<NormalizedTourInstanceDto | null>(null);
+  const [apiLanguage, setApiLanguage] = useState(() => resolveApiLanguage());
 
+  useEffect(() => {
+    const handleLanguageChanged = (language: string): void => {
+      setApiLanguage(language || resolveApiLanguage());
+    };
+
+    i18n.on("languageChanged", handleLanguageChanged);
+    setApiLanguage(resolveApiLanguage());
+
+    return () => {
+      i18n.off("languageChanged", handleLanguageChanged);
+    };
+  }, [i18n, resolveApiLanguage]);
+
+  // Formatter locale based on active language (e.g., 'en' -> 'en-GB', 'vi' -> 'vi-VN')
+  const formatterLocale = useMemo(() => {
+    return apiLanguage === "vi" ? "vi-VN" : "en-GB";
+  }, [apiLanguage]);
+
+  // Subscribe to language changes and refetch data
   useEffect(() => {
     if (!id) return;
 
     const loadData = async () => {
       try {
         setLoading(true);
-        const detail = await homeService.getPublicInstanceDetail(id);
+        const detail = await homeService.getPublicInstanceDetail(id, apiLanguage);
         setData(detail);
-      } catch (error) {
-        console.error("Failed to load public instance detail", error);
+      } catch (error: unknown) {
+        const handledError = handleApiError(error);
+        console.error("Failed to load public instance detail:", handledError.message);
         setData(null);
       } finally {
         setLoading(false);
@@ -97,7 +145,7 @@ export function TourInstancePublicDetailPage() {
     };
 
     loadData();
-  }, [id]);
+  }, [id, apiLanguage]);
 
   const heroImage = useMemo(() => {
     if (!data) return "";
@@ -306,12 +354,12 @@ export function TourInstancePublicDetailPage() {
             <InfoPill
               icon="heroicons:calendar"
               label={t("tourInstance.startDate", "Start Date")}
-              value={toDateText(data.startDate)}
+              value={toDateText(data.startDate, formatterLocale)}
             />
             <InfoPill
               icon="heroicons:calendar-days"
               label={t("tourInstance.endDate", "End Date")}
-              value={toDateText(data.endDate)}
+              value={toDateText(data.endDate, formatterLocale)}
             />
             <InfoPill
               icon="heroicons:users"
@@ -412,7 +460,7 @@ export function TourInstancePublicDetailPage() {
                       {t("tourInstance.confirmationDeadline", "Confirmation Deadline")}
                     </h2>
                     <p className="mt-3 text-sm text-slate-700 font-semibold bg-gray-50 border border-gray-100 p-3 rounded-xl inline-block">
-                      {toDateText(data.confirmationDeadline)}
+                      {toDateText(data.confirmationDeadline, formatterLocale)}
                     </p>
                   </article>
                 </div>
@@ -444,7 +492,7 @@ export function TourInstancePublicDetailPage() {
                                 <td className="px-2 py-3">{tier.minParticipants}</td>
                                 <td className="px-2 py-3">{tier.maxParticipants}</td>
                                 <td className="px-2 py-3 font-bold text-orange-600">
-                                  {formatCurrency(tier.pricePerPerson)}
+                                  {formatCurrency(tier.pricePerPerson, formatterLocale)}
                                 </td>
                               </tr>
                             ))}
@@ -476,15 +524,15 @@ export function TourInstancePublicDetailPage() {
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-sm text-gray-500">{t("tourInstance.adultPrice", "Adult")}</span>
-                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.basePrice)}</span>
+                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.basePrice, formatterLocale)}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-sm text-gray-500">{t("tourInstance.childPrice", "Child")}</span>
-                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.sellingPrice)}</span>
+                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.sellingPrice, formatterLocale)}</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-sm text-gray-500">{t("tourInstance.infantPrice", "Infant")}</span>
-                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.operatingCost)}</span>
+                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.operatingCost, formatterLocale)}</span>
                 </div>
               </div>
 
@@ -494,10 +542,13 @@ export function TourInstancePublicDetailPage() {
                   {t("tourInstance.form.depositPerPerson", "Deposit Required")}
                 </span>
                 <span className="text-[28px] font-black text-orange-500 leading-tight">
-                  {formatCurrency(data.depositPerPerson)}
+                  {formatCurrency(data.depositPerPerson, formatterLocale)}
                 </span>
                 <span className="text-[10px] text-gray-500 leading-snug mt-1">
-                  * Deposit is required to secure your booking. The remaining balance is due prior to departure.
+                  {t(
+                    "tourInstance.depositRequiredNote",
+                    "Deposit is required to secure your booking. The remaining balance is due prior to departure.",
+                  )}
                 </span>
               </div>
 

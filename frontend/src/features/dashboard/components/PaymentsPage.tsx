@@ -246,7 +246,21 @@ export function PaymentsPage() {
                         <td className="px-6 py-4"><span className="font-mono text-sm text-slate-600">{payment.id}</span></td>
                         <td className="px-6 py-4"><span className="text-sm text-slate-900">{payment.booking}</span></td>
                         <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.customer}</span></td>
-                        <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.method}</span></td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center gap-1.5 text-sm text-slate-600">
+                            <Icon
+                              icon={
+                                payment.method.toLowerCase().includes("bank")
+                                  ? "heroicons:building-library"
+                                  : payment.method.toLowerCase().includes("cash")
+                                    ? "heroicons:banknotes"
+                                    : "heroicons:qr-code"
+                              }
+                              className="size-4 text-slate-400"
+                            />
+                            {payment.method}
+                          </span>
+                        </td>
                         <td className="px-6 py-4 text-right"><span className="font-semibold text-slate-900">${payment.amount.toLocaleString()}</span></td>
                         <td className="px-6 py-4 text-center"><StatusBadge status={payment.status} /></td>
                         <td className="px-6 py-4"><span className="text-sm text-slate-500">{payment.date}</span></td>

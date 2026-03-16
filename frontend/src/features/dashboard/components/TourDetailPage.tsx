@@ -248,8 +248,9 @@ export function TourDetailPage() {
       if (result) {
         setTour(result);
       }
-    } catch (error) {
-      console.error("Failed to fetch tour detail:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to fetch tour detail:", handledError.message);
       toast.error(t("tourAdmin.fetchError", "Failed to load tour details"));
     } finally {
       setLoading(false);
@@ -308,8 +309,9 @@ export function TourDetailPage() {
           ...current,
           [selectedPackage.id]: tiers,
         }));
-      } catch (error) {
-        console.error("Failed to load classification pricing tiers:", error);
+      } catch (error: unknown) {
+        const handledError = handleApiError(error);
+        console.error("Failed to load classification pricing tiers:", handledError.message);
       }
     };
 
@@ -360,8 +362,7 @@ export function TourDetailPage() {
       toast.success(
         t("toast.classificationPricingSaved", "Classification pricing tiers saved."),
       );
-    } catch (error) {
-      console.error("Failed to save classification pricing tiers:", error);
+    } catch (error: unknown) {
       const apiError = handleApiError(error);
       toast.error(apiError.message || "Failed to save classification pricing tiers.");
     } finally {

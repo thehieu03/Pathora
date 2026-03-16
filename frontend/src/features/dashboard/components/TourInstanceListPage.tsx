@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourInstanceService } from "@/api/services/tourInstanceService";
+import { handleApiError } from "@/utils/apiResponse";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
   NormalizedTourInstanceVm,
@@ -269,8 +270,9 @@ export function TourInstanceListPage() {
         setInstances(result.data ?? []);
         setTotalItems(result.total ?? 0);
       }
-    } catch (error) {
-      console.error("Failed to fetch tour instances:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to fetch tour instances:", handledError.message);
       toast.error(
         t("tourInstance.fetchError", "Failed to load tour instances"),
       );

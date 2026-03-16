@@ -11,6 +11,7 @@ import {
   tourInstanceService,
 } from "@/api/services/tourInstanceService";
 import { tourService } from "@/api/services/tourService";
+import { handleApiError } from "@/utils/apiResponse";
 import { DynamicPricingDto, ImageDto, SearchTourVm, TourDto, TourVm } from "@/types/tour";
 
 type DynamicTierForm = {
@@ -227,8 +228,9 @@ export function CreateTourInstancePage() {
       setLoading(true);
       const result = await tourService.getAllTours(undefined, 1, 100);
       setTours(result?.data ?? []);
-    } catch (error) {
-      console.error("Failed to fetch tours", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to fetch tours:", handledError.message);
       toast.error(t("tourInstance.fetchError", "Failed to load tour instances"));
     } finally {
       setLoading(false);
@@ -251,9 +253,39 @@ export function CreateTourInstancePage() {
         setLoadingTour(true);
         const detail = await tourService.getTourDetail(form.tourId);
         setTourDetail(detail);
-        setForm((current) => ({ ...current, classificationId: "" }));
-      } catch (error) {
-        console.error("Failed to fetch tour detail", error);
+        setForm((current) => {
+          const next = { ...current, classificationId: "" };
+
+          // Auto-populate fields from tour if empty
+          if (detail) {
+            // Thumbnail
+            if (!next.thumbnailUrl.trim() && detail.thumbnail?.publicURL) {
+              next.thumbnailUrl = detail.thumbnail.publicURL;
+            }
+
+            // Gallery images - only if currently empty
+            if (next.imageUrls.length === 0 && detail.images?.length > 0) {
+              next.imageUrls = detail.images
+                .map((img) => img.publicURL)
+                .filter((url): url is string => Boolean(url));
+            }
+
+            // Location from tour
+            if (!next.location.trim() && detail.location) {
+              next.location = detail.location;
+            }
+
+            // Included services from tour (using translations for current language)
+            if (next.includedServices.length === 0 && detail.includedServices?.length > 0) {
+              next.includedServices = detail.includedServices;
+            }
+          }
+
+          return next;
+        });
+      } catch (error: unknown) {
+        const handledError = handleApiError(error);
+        console.error("Failed to fetch tour detail:", handledError.message);
         toast.error(
           t("toast.failedToLoadTourDetails", "Failed to load tour details"),
         );
@@ -431,7 +463,7 @@ export function CreateTourInstancePage() {
 
       toast.success(t("tourInstance.created", "Tour instance created successfully!"));
       router.push("/tour-instances");
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof yup.ValidationError) {
         const nextErrors: Record<string, string> = {};
         for (const issue of error.inner) {
@@ -443,7 +475,8 @@ export function CreateTourInstancePage() {
         return;
       }
 
-      console.error("Failed to create tour instance", error);
+      const handledError = handleApiError(error);
+      console.error("Failed to create tour instance:", handledError.message);
       toast.error(t("tourInstance.createError", "Failed to create tour instance"));
     } finally {
       setSubmitting(false);

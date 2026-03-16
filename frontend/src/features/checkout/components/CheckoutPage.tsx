@@ -1,12 +1,17 @@
 "use client";
 import Checkbox from "@/components/ui/Checkbox";
 import Button from "@/components/ui/Button";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { paymentService, PaymentTransaction } from "@/api/services/paymentService";
+import { handleApiError } from "@/utils/apiResponse";
+import { useAuth } from "@/contexts/AuthContext";
 
 /* ── Sample Booking Data (would come from API/router state) ── */
 const SAMPLE_BOOKING = {
@@ -26,6 +31,12 @@ const SAMPLE_BOOKING = {
 
 /* ── Helpers ───────────────────────────────────────────────── */
 const fmt = (n: number) => "$" + n.toLocaleString("en-US");
+
+const copyToClipboard = (text: string, successMsg: string) => {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.success(successMsg);
+  });
+};
 
 /* ── Step Indicator ────────────────────────────────────────── */
 function StepIndicator() {
@@ -176,26 +187,316 @@ function PaymentOption({
   );
 }
 
+/* ── Countdown Timer Hook ──────────────────────────────────── */
+function useCountdown(expiredAt: string | undefined) {
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    if (!expiredAt) return;
+
+    const update = () => {
+      const now = Date.now();
+      const exp = new Date(expiredAt).getTime();
+      const diff = exp - now;
+
+      if (diff <= 0) {
+        setTimeLeft("00:00");
+        return;
+      }
+
+      const minutes = Math.floor(diff / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(
+        `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
+      );
+    };
+
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [expiredAt]);
+
+  return timeLeft;
+}
+
+/* ── Bank Account Info Component ───────────────────────────── */
+function BankAccountInfo({ t }: { t: (key: string) => string }) {
+  return (
+    <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+      <div className="flex items-center gap-2 mb-3">
+        <Icon icon="heroicons:building-library" className="size-5 text-blue-600" />
+        <h4 className="text-sm font-semibold text-slate-900">
+          {t("landing.checkout.bankAccountInfo")}
+        </h4>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">{t("landing.checkout.bankName")}</span>
+          <span className="text-sm font-semibold text-slate-900">MBBank (MB)</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">{t("landing.checkout.accountNumber")}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-slate-900 font-mono">0378175727</span>
+            <button
+              type="button"
+              onClick={() => copyToClipboard("0378175727", t("landing.checkout.copied"))}
+              className="size-6 rounded-md bg-blue-100 hover:bg-blue-200 flex items-center justify-center transition-colors cursor-pointer">
+              <Icon icon="heroicons:clipboard-document" className="size-3.5 text-blue-600" />
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">{t("landing.checkout.accountHolder")}</span>
+          <span className="text-sm font-semibold text-slate-900">PATHORA TRAVEL</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Payment Status Panel ──────────────────────────────────── */
+function PaymentStatusPanel({
+  transaction,
+  paymentConfirmed,
+  t,
+}: {
+  transaction: PaymentTransaction;
+  paymentConfirmed: boolean;
+  t: (key: string) => string;
+}) {
+  const timeLeft = useCountdown(transaction.expiredAt);
+
+  if (paymentConfirmed) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-6">
+        <div className="size-16 rounded-full bg-green-100 flex items-center justify-center">
+          <Icon icon="heroicons:check-circle" className="size-10 text-green-500" />
+        </div>
+        <h3 className="text-lg font-bold text-green-600">
+          {t("landing.checkout.paymentReceived")}
+        </h3>
+        <p className="text-sm text-gray-500 text-center">
+          {t("landing.checkout.paymentConfirmedDesc")}
+        </p>
+        <div className="bg-green-50 rounded-xl px-4 py-3 border border-green-200 w-full text-center">
+          <span className="text-xs text-gray-500">{t("landing.checkout.transactionCode")}</span>
+          <p className="text-lg font-bold font-mono text-green-600 mt-1">
+            {transaction.transactionCode}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const statusSteps = ["Pending", "Processing", "Completed"] as const;
+  const currentIdx = statusSteps.indexOf(
+    transaction.status as (typeof statusSteps)[number],
+  );
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Status indicator */}
+      <div className="flex items-center justify-between bg-orange-50 rounded-xl px-4 py-3 border border-orange-200">
+        <div className="flex items-center gap-2">
+          <div className="size-2.5 rounded-full bg-orange-400 animate-pulse" />
+          <span className="text-sm font-semibold text-orange-600">
+            {t("landing.checkout.awaitingPayment")}
+          </span>
+        </div>
+        {timeLeft && (
+          <div className="flex items-center gap-1.5">
+            <Icon icon="heroicons:clock" className="size-4 text-orange-500" />
+            <span className="text-sm font-mono font-bold text-orange-600">{timeLeft}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Transaction code — large, copyable */}
+      <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-200">
+        <span className="text-xs text-gray-500 block mb-1">
+          {t("landing.checkout.transactionCode")}
+        </span>
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-2xl font-bold font-mono text-slate-900 tracking-wider">
+            {transaction.transactionCode}
+          </span>
+          <button
+            type="button"
+            onClick={() =>
+              copyToClipboard(transaction.transactionCode, t("landing.checkout.copied"))
+            }
+            className="size-8 rounded-lg bg-orange-100 hover:bg-orange-200 flex items-center justify-center transition-colors cursor-pointer">
+            <Icon icon="heroicons:clipboard-document" className="size-4 text-orange-600" />
+          </button>
+        </div>
+      </div>
+
+      {/* QR code image */}
+      {transaction.qrCodeUrl && (
+        <div className="bg-white rounded-xl p-4 border border-gray-200 flex flex-col items-center">
+          <img
+            src={transaction.qrCodeUrl}
+            alt="Payment QR Code"
+            className="size-48 rounded-lg object-contain"
+          />
+          <p className="text-xs font-semibold text-slate-900 mt-3">
+            {t("landing.checkout.scanToPay")}
+          </p>
+        </div>
+      )}
+
+      {/* Bank account details */}
+      <BankAccountInfo t={t} />
+
+      {/* Status progress */}
+      <div className="flex items-center justify-between px-2">
+        {statusSteps.map((step, i) => (
+          <React.Fragment key={step}>
+            <div className="flex flex-col items-center gap-1">
+              <div
+                className={`size-6 rounded-full flex items-center justify-center ${
+                  i <= currentIdx
+                    ? "bg-orange-500 text-white"
+                    : "bg-gray-200 text-gray-400"
+                }`}>
+                {i < currentIdx ? (
+                  <Icon icon="heroicons:check" className="size-3.5" />
+                ) : (
+                  <span className="text-[10px] font-bold">{i + 1}</span>
+                )}
+              </div>
+              <span
+                className={`text-[10px] font-medium ${
+                  i <= currentIdx ? "text-orange-600" : "text-gray-400"
+                }`}>
+                {t(`landing.checkout.status${step}`)}
+              </span>
+            </div>
+            {i < statusSteps.length - 1 && (
+              <div
+                className={`h-0.5 flex-1 mx-2 -mt-4 ${
+                  i < currentIdx ? "bg-orange-500" : "bg-gray-200"
+                }`}
+              />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+
+      <p className="text-xs text-gray-400 text-center">
+        {t("landing.checkout.transferInstructions")}
+      </p>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════
    ██  CheckoutPage
    ══════════════════════════════════════════════════════════════ */
 export function CheckoutPage() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const { user } = useAuth();
 
   /* ── State ─────────────────────────────────────────────── */
   const [paymentOption, setPaymentOption] = useState<"full" | "deposit">(
     "deposit",
   );
-  const [paymentMethod, setPaymentMethod] = useState<"qr" | "cash">("qr");
+  const [paymentMethod, setPaymentMethod] = useState<"qr" | "cash" | "bank_transfer">("qr");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [acknowledgeInfo, setAcknowledgeInfo] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [transaction, setTransaction] = useState<PaymentTransaction | null>(null);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   /* ── Derived ──────────────────────────────────────────── */
+  const bookingId = searchParams.get("bookingId") ?? SAMPLE_BOOKING.tourTitle;
   const totalPrice = SAMPLE_BOOKING.pricePerAdult * SAMPLE_BOOKING.adults;
   const depositAmount = Math.round(totalPrice * SAMPLE_BOOKING.depositRate);
   const remainingBalance = totalPrice - depositAmount;
   const payAmount = paymentOption === "full" ? totalPrice : depositAmount;
-  const canConfirm = agreeTerms && acknowledgeInfo;
+  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction;
+
+  /* ── Polling for payment status ────────────────────────── */
+  const startPolling = useCallback((transactionCode: string) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const updated = await paymentService.getTransaction(transactionCode);
+        if (updated) {
+          setTransaction(updated);
+          if (updated.status === "Completed") {
+            setPaymentConfirmed(true);
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
+          } else if (updated.status === "Failed" || updated.status === "Cancelled") {
+            toast.error(t("landing.checkout.paymentFailed"));
+            if (pollingRef.current) {
+              clearInterval(pollingRef.current);
+              pollingRef.current = null;
+            }
+          }
+        }
+      } catch {
+        // Silently retry on network errors
+      }
+    }, 5000);
+  }, [t]);
+
+  /* ── Cleanup polling on unmount ────────────────────────── */
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    };
+  }, []);
+
+  /* ── Handle Confirm Booking ────────────────────────────── */
+  const handleConfirmBooking = async () => {
+    setLoading(true);
+
+    const mapPaymentMethod = (method: "qr" | "cash" | "bank_transfer") => {
+      switch (method) {
+        case "qr":
+          return "BankTransfer" as const;
+        case "bank_transfer":
+          return "BankTransfer" as const;
+        case "cash":
+          return "Cash" as const;
+      }
+    };
+
+    try {
+      const result = await paymentService.createTransaction({
+        bookingId,
+        type: paymentOption === "full" ? "FullPayment" : "Deposit",
+        amount: payAmount,
+        paymentMethod: mapPaymentMethod(paymentMethod),
+        paymentNote: `Payment for ${SAMPLE_BOOKING.tourTitle} - ${paymentOption === "full" ? "Full Payment" : "Deposit 30%"}`,
+        createdBy: user?.email ?? user?.username ?? "guest",
+      });
+
+      if (result) {
+        setTransaction(result);
+        toast.success(t("landing.checkout.transactionCreated"));
+        startPolling(result.transactionCode);
+      }
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to create transaction:", handledError.message);
+      toast.error(t("landing.checkout.transactionError"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* ── Cancellation Policy items ────────────────────────── */
   const cancellationItems = [
@@ -340,6 +641,7 @@ export function CheckoutPage() {
                     <Button
                       type="button"
                       onClick={() => setPaymentOption("full")}
+                      disabled={!!transaction}
                       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-colors ${
                         paymentOption === "full"
                           ? "border-orange-500 bg-orange-50"
@@ -374,6 +676,7 @@ export function CheckoutPage() {
                     <Button
                       type="button"
                       onClick={() => setPaymentOption("deposit")}
+                      disabled={!!transaction}
                       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-colors ${
                         paymentOption === "deposit"
                           ? "border-orange-500 bg-orange-50"
@@ -475,59 +778,118 @@ export function CheckoutPage() {
                     {t("landing.checkout.paymentMethod")}
                   </h3>
 
-                  {/* Method options */}
-                  <div className="flex flex-col gap-3 mb-5">
-                    <PaymentOption
-                      icon="heroicons:device-phone-mobile"
-                      label={t("landing.checkout.qrPayment")}
-                      description={t("landing.checkout.qrPaymentDesc")}
-                      selected={paymentMethod === "qr"}
-                      onClick={() => setPaymentMethod("qr")}
+                  {/* ── Transaction created: show status panel ── */}
+                  {transaction ? (
+                    <PaymentStatusPanel
+                      transaction={transaction}
+                      paymentConfirmed={paymentConfirmed}
+                      t={t}
                     />
-                    <PaymentOption
-                      icon="heroicons:wallet"
-                      label={t("landing.checkout.cashPayment")}
-                      description={t("landing.checkout.cashPaymentDesc")}
-                      selected={paymentMethod === "cash"}
-                      onClick={() => setPaymentMethod("cash")}
-                    />
-                  </div>
+                  ) : (
+                    <>
+                      {/* Method options */}
+                      <div className="flex flex-col gap-3 mb-5">
+                        <PaymentOption
+                          icon="heroicons:device-phone-mobile"
+                          label={t("landing.checkout.qrPayment")}
+                          description={t("landing.checkout.qrPaymentDesc")}
+                          selected={paymentMethod === "qr"}
+                          onClick={() => setPaymentMethod("qr")}
+                        />
+                        <PaymentOption
+                          icon="heroicons:building-library"
+                          label={t("landing.checkout.bankTransferPayment")}
+                          description={t("landing.checkout.bankTransferPaymentDesc")}
+                          selected={paymentMethod === "bank_transfer"}
+                          onClick={() => setPaymentMethod("bank_transfer")}
+                        />
+                        <PaymentOption
+                          icon="heroicons:wallet"
+                          label={t("landing.checkout.cashPayment")}
+                          description={t("landing.checkout.cashPaymentDesc")}
+                          selected={paymentMethod === "cash"}
+                          onClick={() => setPaymentMethod("cash")}
+                        />
+                      </div>
 
-                  {/* QR Code Display Area */}
-                  {paymentMethod === "qr" && (
-                    <div className="bg-gray-50 rounded-xl p-4 mb-5">
-                      <div className="bg-white rounded-lg flex items-center justify-center h-56 mb-3">
-                        <div
-                          className="size-48 rounded-lg flex items-center justify-center"
-                          style={{
-                            backgroundImage:
-                              "linear-gradient(135deg, rgb(243,244,246) 0%, rgb(229,231,235) 100%)",
-                          }}>
-                          <div className="flex flex-col items-center gap-2">
-                            <Icon
-                              icon="heroicons:device-phone-mobile"
-                              className="size-12 text-gray-400"
-                            />
-                            <span className="text-xs text-gray-500">
-                              QR Code Demo
-                            </span>
+                      {/* QR Code Display Area */}
+                      {paymentMethod === "qr" && (
+                        <div className="bg-gray-50 rounded-xl p-4 mb-5">
+                          <div className="bg-white rounded-lg flex items-center justify-center h-56 mb-3">
+                            <div
+                              className="size-48 rounded-lg flex items-center justify-center"
+                              style={{
+                                backgroundImage:
+                                  "linear-gradient(135deg, rgb(243,244,246) 0%, rgb(229,231,235) 100%)",
+                              }}>
+                              <div className="flex flex-col items-center gap-2">
+                                <Icon
+                                  icon="heroicons:device-phone-mobile"
+                                  className="size-12 text-gray-400"
+                                />
+                                <span className="text-xs text-gray-500">
+                                  QR Code Demo
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-xs font-semibold text-slate-900">
+                              {t("landing.checkout.scanToPay")}
+                            </p>
+                            <p className="text-[10px] text-gray-500 mt-1">
+                              {t("landing.checkout.bankingAccepted")}
+                            </p>
                           </div>
                         </div>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-xs font-semibold text-slate-900">
-                          {t("landing.checkout.scanToPay")}
-                        </p>
-                        <p className="text-[10px] text-gray-500 mt-1">
-                          {t("landing.checkout.bankingAccepted")}
-                        </p>
-                      </div>
-                    </div>
+                      )}
+
+                      {/* Bank Transfer Details Panel */}
+                      {paymentMethod === "bank_transfer" && (
+                        <div className="flex flex-col gap-4 mb-5">
+                          {/* Bank account info */}
+                          <BankAccountInfo t={t} />
+
+                          {/* Transfer instructions */}
+                          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                            <div className="flex items-start gap-2">
+                              <Icon
+                                icon="heroicons:information-circle"
+                                className="size-5 text-amber-500 shrink-0 mt-0.5"
+                              />
+                              <div>
+                                <p className="text-xs font-semibold text-amber-700 mb-1">
+                                  {t("landing.checkout.transferNote")}
+                                </p>
+                                <p className="text-[11px] text-amber-600 leading-4">
+                                  {t("landing.checkout.transferInstructions")}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* QR placeholder — will be populated after transaction creation */}
+                          <div className="bg-gray-50 rounded-xl p-4 flex flex-col items-center">
+                            <div className="size-40 rounded-lg bg-white border border-gray-200 flex items-center justify-center mb-2">
+                              <div className="flex flex-col items-center gap-2">
+                                <Icon
+                                  icon="heroicons:qr-code"
+                                  className="size-10 text-gray-300"
+                                />
+                                <span className="text-[10px] text-gray-400">
+                                  {t("landing.checkout.qrAfterConfirm")}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
 
-                  {/* Price breakdown */}
+                  {/* Price breakdown — always visible */}
                   <div
-                    className="rounded-xl p-4 flex flex-col gap-2 mb-5"
+                    className="rounded-xl p-4 flex flex-col gap-2 mb-5 mt-5"
                     style={{
                       backgroundImage:
                         "linear-gradient(158deg, rgb(255,247,237) 0%, rgb(255,251,235) 100%)",
@@ -564,17 +926,32 @@ export function CheckoutPage() {
                   </div>
 
                   {/* Confirm Booking Button */}
-                  <Button
-                    type="button"
-                    disabled={!canConfirm}
-                    className={`w-full h-12 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all ${
-                      canConfirm
-                        ? "bg-orange-500 hover:bg-orange-600 shadow-[0_4px_6px_0_#ffd6a8,0_2px_4px_0_#ffd6a8] cursor-pointer"
-                        : "bg-orange-500 opacity-50 cursor-not-allowed shadow-[0_4px_6px_0_#ffd6a8,0_2px_4px_0_#ffd6a8]"
-                    }`}>
-                    {t("landing.checkout.confirmBooking")}
-                    <Icon icon="heroicons:chevron-right" className="size-4" />
-                  </Button>
+                  {!transaction && (
+                    <Button
+                      type="button"
+                      disabled={!canConfirm}
+                      onClick={handleConfirmBooking}
+                      className={`w-full h-12 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all ${
+                        canConfirm
+                          ? "bg-orange-500 hover:bg-orange-600 shadow-[0_4px_6px_0_#ffd6a8,0_2px_4px_0_#ffd6a8] cursor-pointer"
+                          : "bg-orange-500 opacity-50 cursor-not-allowed shadow-[0_4px_6px_0_#ffd6a8,0_2px_4px_0_#ffd6a8]"
+                      }`}>
+                      {loading ? (
+                        <>
+                          <Icon
+                            icon="heroicons:arrow-path"
+                            className="size-4 animate-spin"
+                          />
+                          {t("landing.checkout.processing")}
+                        </>
+                      ) : (
+                        <>
+                          {t("landing.checkout.confirmBooking")}
+                          <Icon icon="heroicons:chevron-right" className="size-4" />
+                        </>
+                      )}
+                    </Button>
+                  )}
 
                   <p className="text-center text-[10px] text-gray-400 mt-3">
                     {t("landing.checkout.secureBookingNote")}

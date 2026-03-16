@@ -22,7 +22,7 @@ type BookingStatus =
 
 type TourTier = "standard" | "luxury" | "premium";
 type PaymentStatus = "paid" | "partial" | "unpaid";
-type PaymentMethod = "qr_code" | "cash";
+type PaymentMethod = "qr_code" | "cash" | "bank_transfer";
 
 interface BookingDetail {
   id: string;
@@ -190,6 +190,7 @@ export function BookingDetailPage() {
     const map: Record<PaymentMethod, string> = {
       qr_code: t("landing.bookingDetail.methodQRCode"),
       cash: t("landing.bookingDetail.methodCash"),
+      bank_transfer: t("landing.bookingDetail.methodBankTransfer"),
     };
     return map[m];
   };
@@ -318,7 +319,11 @@ export function BookingDetailPage() {
                     </p>
                     <div className="flex items-center gap-2">
                       <Icon
-                        icon="heroicons:credit-card"
+                        icon={
+                          booking.paymentMethod === "bank_transfer"
+                            ? "heroicons:building-library"
+                            : "heroicons:credit-card"
+                        }
                         className="size-4 text-gray-500"
                       />
                       <span className="text-sm font-semibold text-gray-700">

@@ -9,10 +9,10 @@ import { ToastPosition } from "react-toastify";
 import { handleResponseError, waitForRetry } from "./responseInterceptor";
 import { showErrorToast } from "./showErrorToast";
 import { getCurrentApiLanguage } from "./languageHeader";
+import { API_GATEWAY_BASE_URL } from "@/configs/apiGateway";
 import { getCookie } from "@/utils/cookie";
 
-const API_BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:8080";
+const API_BASE_URL: string = API_GATEWAY_BASE_URL;
 
 interface ToastConfig {
   position: ToastPosition;

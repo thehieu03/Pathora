@@ -8,6 +8,7 @@ const ADMIN_ROLE_TYPES = new Set([1, 2, 9]);
 
 export const ADMIN_ROUTE_PREFIXES = [
   "/dashboard",
+  "/tour-requests",
   "/tour-management",
   "/tour-instances",
 ] as const;
@@ -61,4 +62,64 @@ export const isLoginEntryPath = (
   }
 
   return pathname === "/home" && searchParams.get("login") === "true";
+};
+
+/**
+ * Validates that a `next` path is a safe internal relative path.
+ * Prevents open-redirect vulnerabilities by rejecting external URLs,
+ * absolute paths, or paths with protocols.
+ */
+export const isSafeNextPath = (next?: string | null): next is string => {
+  if (!next || typeof next !== "string") {
+    return false;
+  }
+
+  // Must start with /
+  if (!next.startsWith("/")) {
+    return false;
+  }
+
+  // Must be a relative path (no protocol, no host)
+  try {
+    const url = new URL(next, "http://localhost");
+    // If it has a different origin, it's not safe
+    if (url.origin !== "http://localhost") {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
+  // Should not contain null bytes or other dangerous characters
+  if (next.includes("\0") || next.includes("\n")) {
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * Resolves the post-login destination, prioritizing a valid `next` parameter
+ * for non-admin users when present.
+ */
+export const resolveLoginDestination = ({
+  next,
+  defaultPath,
+  portal,
+  roles,
+  fallbackPath = USER_DEFAULT_PATH,
+}: {
+  next?: string | null;
+  defaultPath?: string | null;
+  portal?: string | null;
+  roles?: RoleLike[] | null;
+  fallbackPath?: string;
+}): string => {
+  // First priority: valid next parameter for non-admin users
+  if (isSafeNextPath(next) && !isAdminPortal(portal) && !hasAdminRole(roles)) {
+    return next;
+  }
+
+  // Fall back to existing resolvePostLoginPath logic
+  return resolvePostLoginPath({ defaultPath, portal, roles, fallbackPath });
 };

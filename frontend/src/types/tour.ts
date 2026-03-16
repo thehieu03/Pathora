@@ -133,6 +133,8 @@ export interface TourDto {
   images: ImageDto[];
   classifications: TourClassificationDto[];
   translations?: Record<string, TourTranslationData>;
+  location?: string | null;
+  includedServices?: string[];
   createdBy: string | null;
   createdOnUtc: string;
   lastModifiedBy: string | null;

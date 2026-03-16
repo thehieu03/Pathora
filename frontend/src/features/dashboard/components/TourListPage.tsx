@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon } from "@/components/ui";
 import { tourService } from "@/api/services/tourService";
+import { handleApiError } from "@/utils/apiResponse";
 import { useDebounce } from "@/hooks/useDebounce";
 import { SearchTourVm } from "@/types/tour";
 import { AdminLogoutButton } from "./AdminLogoutButton";
@@ -269,8 +270,9 @@ export function TourListPage() {
         setTotalItems(result.total ?? 0);
         setFailedThumbnailIds(new Set());
       }
-    } catch (error) {
-      console.error("Failed to fetch tours:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to fetch tours:", handledError.message);
       toast.error(t("tourAdmin.fetchError", "Failed to load tours"));
       setTours([]);
     } finally {

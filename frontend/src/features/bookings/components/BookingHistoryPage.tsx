@@ -23,7 +23,7 @@ type BookingStatus =
 type TourTier = "standard" | "luxury" | "premium";
 
 type PaymentStatus = "paid" | "partial" | "unpaid";
-type PaymentMethod = "qr_code" | "cash";
+type PaymentMethod = "qr_code" | "cash" | "bank_transfer";
 
 interface Booking {
   id: string;
@@ -134,6 +134,22 @@ const SAMPLE_BOOKINGS: Booking[] = [
     guests: 4,
     totalAmount: 4800,
     image: "/assets/images/tours/seoul.jpg",
+  },
+  {
+    id: "7",
+    tourName: "Da Nang Beach Retreat",
+    reference: "PATH-2026-006",
+    tier: "standard",
+    status: "confirmed",
+    paymentStatus: "partial",
+    paymentMethod: "bank_transfer",
+    location: "Da Nang, Vietnam",
+    duration: "4 Days",
+    departure: "Apr 20",
+    guests: 2,
+    totalAmount: 1600,
+    remainingAmount: 1120,
+    image: "/assets/images/tours/hanoi.jpg",
   },
 ];
 
@@ -333,6 +349,7 @@ export function BookingHistoryPage() {
     const map: Record<PaymentMethod, string> = {
       qr_code: t("landing.bookings.methodQRCode"),
       cash: t("landing.bookings.methodCash"),
+      bank_transfer: t("landing.bookings.methodBankTransfer"),
     };
     return map[m];
   };

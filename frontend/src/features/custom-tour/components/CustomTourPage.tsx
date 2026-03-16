@@ -168,7 +168,7 @@ export function CustomTourPage() {
           </Link>
         </span>,
       );
-    } catch (error) {
+    } catch (error: unknown) {
       const apiError = handleApiError(error);
       toast.error(
         t(apiError.message, {

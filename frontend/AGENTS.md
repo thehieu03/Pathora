@@ -42,4 +42,5 @@
 
 ## Security & Configuration Tips
 - Never commit secrets; `.env*` files are ignored by default.
+- Follow workspace hardcoded-value governance in `../../docs/hardcoded-value-governance.md` for runtime URLs/config defaults.
 - When introducing new remote image hosts, update `images.remotePatterns` in `next.config.ts`.

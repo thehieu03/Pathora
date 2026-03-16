@@ -15,6 +15,7 @@ import LanguageTabs, {
   type SupportedLanguage,
 } from "@/components/ui/LanguageTabs";
 import { tourService } from "@/api/services/tourService";
+import { handleApiError } from "@/utils/apiResponse";
 import { TourDto, TourStatusMap } from "@/types/tour";
 
 /* ── Types (mirrored from create page) ──────────────────────── */
@@ -285,8 +286,9 @@ export default function EditTourPage() {
         );
         setInsurances(insForms);
       }
-    } catch (error) {
-      console.error("Failed to load tour:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to load tour:", handledError.message);
       toast.error(t("tourAdmin.loadError", "Failed to load tour"));
       router.push("/tour-management");
     } finally {
@@ -598,8 +600,9 @@ export default function EditTourPage() {
       await tourService.updateTour(formData);
       toast.success(t("tourAdmin.updateSuccess", "Tour updated successfully!"));
       router.push("/tour-management");
-    } catch (error) {
-      console.error("Failed to update tour:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to update tour:", handledError.message);
       toast.error(t("tourAdmin.updateError", "Failed to update tour"));
     } finally {
       setSaving(false);

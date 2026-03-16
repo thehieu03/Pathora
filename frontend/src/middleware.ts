@@ -17,6 +17,8 @@ const PUBLIC_PATH_PREFIXES = [
   "/policies",
   "/checkout",
   "/auth/callback",
+  "/tours",
+  "/tours/instances",
 ];
 
 // Specific public routes under /tours (with prefix matching for sub-paths)
@@ -26,12 +28,13 @@ const PUBLIC_TOURS_ROUTES = [
 ];
 
 const isPublicPath = (pathname: string): boolean => {
-  // Special handling for /tours routes
-  if (pathname === "/tours" || pathname.startsWith("/tours/instances")) {
-    return true;
+  // Special handling for /tours/custom - requires login, not public
+  if (pathname.startsWith("/tours/custom")) {
+    return false;
   }
 
-  // Check prefix matches for other public paths (e.g., /about matches /about, /about/us)
+  // Check prefix matches for public paths (e.g., /about matches /about, /about/us)
+  // Also handles /tours, /tours/instances via PUBLIC_PATH_PREFIXES
   return PUBLIC_PATH_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
@@ -57,6 +60,9 @@ export function middleware(request: NextRequest) {
   if (!authenticated && !publicPath) {
     const loginUrl = new URL(USER_DEFAULT_PATH, request.url);
     loginUrl.searchParams.set("login", "true");
+    // Preserve the original destination so user returns after login
+    const nextDestination = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+    loginUrl.searchParams.set("next", nextDestination);
     return NextResponse.redirect(loginUrl);
   }
 

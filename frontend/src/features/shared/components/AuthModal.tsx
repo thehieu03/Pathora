@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Checkbox from "@/components/ui/Checkbox";
 import TextInput from "@/components/ui/TextInput";
 import React, { useState, useEffect, useCallback, useRef } from "react";
@@ -11,9 +11,9 @@ import {
   useLoginMutation,
   useRegisterMutation,
 } from "@/store/api/auth/authApiSlice";
-import { resolvePostLoginPath } from "@/utils/authRouting";
-
-const GOOGLE_LOGIN_URL = `${process.env.NEXT_PUBLIC_API_GATEWAY}/api/auth/google-login`;
+import { GOOGLE_LOGIN_URL } from "@/configs/apiGateway";
+import { resolveLoginDestination, isAdminPortal, hasAdminRole } from "@/utils/authRouting";
+import { handleApiError } from "@/utils/apiResponse";
 
 type AuthView = "signup" | "login" | "forgot";
 
@@ -146,8 +146,18 @@ const SignUpView = ({
     } catch (err: unknown) {
       // Error is handled by RTK Query / middleware generally,
       // but specific form errors could be shown here
-      console.error(err);
-      toast.error(t("landing.auth.registrationFailed"));
+      const apiError = handleApiError(err);
+      console.error("Registration failed:", apiError.message);
+
+      // Check for email temporarily locked error
+      if (apiError.code === "Auth.EmailTemporarilyLocked") {
+        // Extract minutes from message if available, otherwise show default
+        const minutesMatch = apiError.message.match(/(\d+)\s*phút/i);
+        const minutes = minutesMatch ? minutesMatch[1] : "30";
+        toast.error(t("landing.auth.emailTemporarilyLocked", { minutes }));
+      } else {
+        toast.error(t("landing.auth.registrationFailed"));
+      }
     }
   };
 
@@ -296,6 +306,7 @@ const LoginView = ({
   const [form, setForm] = useState({ email: "", password: "" });
   const [login, { isLoading }] = useLoginMutation();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
@@ -307,10 +318,17 @@ const LoginView = ({
         email: form.email,
         password: form.password,
       }).unwrap();
-      const destination = resolvePostLoginPath({
+
+      // Get next parameter from URL (preserved from original protected destination)
+      const nextParam = searchParams.get("next");
+
+      const destination = resolveLoginDestination({
+        next: nextParam,
         defaultPath: loginResult.data?.defaultPath ?? null,
         portal: loginResult.data?.portal ?? null,
+        roles: null, // Login response doesn't include roles - use portal-based logic
       });
+
       toast.success(t("landing.auth.loginSuccess"));
       onClose();
       router.replace(destination);
@@ -432,8 +450,7 @@ const ForgotPasswordView = ({ goToLogin }: { goToLogin: () => void }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: integrate with auth API
-    console.log("Reset password for:", email);
+    // Note: This would integrate with a password reset API in production
     setSubmitted(true);
   };
 

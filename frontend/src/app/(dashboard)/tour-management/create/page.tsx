@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
 import FileInput from "@/components/ui/FileInput";
 import { tourService } from "@/api/services/tourService";
+import { handleApiError } from "@/utils/apiResponse";
 
 /* ── Types ──────────────────────────────────────────────────── */
 interface ClassificationForm {
@@ -930,8 +931,9 @@ export default function CreateTourPage() {
       await tourService.createTour(formData);
       toast.success(t("tourAdmin.createSuccess", "Tour created successfully!"));
       router.push("/tour-management");
-    } catch (error) {
-      console.error("Failed to create tour:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to create tour:", handledError.message);
       toast.error(t("tourAdmin.createError", "Failed to create tour"));
     } finally {
       setSaving(false);

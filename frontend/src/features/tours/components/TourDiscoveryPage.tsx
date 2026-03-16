@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { normalizeLanguageForApi } from "@/api/languageHeader";
 import { homeService } from "@/api/services/homeService";
+import { handleApiError } from "@/utils/apiResponse";
 import { Icon } from "@/components/ui";
 import { useDebounce } from "@/hooks/useDebounce";
 import { SearchTour } from "@/types/home";
@@ -131,6 +132,7 @@ export const TourDiscoveryPage = () => {
           currentPage,
           PAGE_SIZE,
           apiLanguage,
+          sortBy,
         );
 
         if (!isActive) {
@@ -140,12 +142,13 @@ export const TourDiscoveryPage = () => {
         setTourInstances(result?.data ?? []);
         setTours([]);
         setTotalTours(result?.total ?? 0);
-      } catch (error) {
+      } catch (error: unknown) {
         if (!isActive) {
           return;
         }
 
-        console.error("Error fetching tours:", error);
+        const handledError = handleApiError(error);
+        console.error("Error fetching tours:", handledError.message);
         setTours([]);
         setTourInstances([]);
         setTotalTours(0);

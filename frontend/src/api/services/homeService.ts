@@ -161,10 +161,12 @@ export const homeService = {
     page = 1,
     pageSize = 6,
     language?: string,
+    sortBy?: string,
   ) => {
     const lang = language ?? i18n.resolvedLanguage ?? i18n.language ?? "en";
     const params = new URLSearchParams();
     if (destination) params.append("destination", destination);
+    if (sortBy) params.append("sortBy", sortBy);
     params.append("page", page.toString());
     params.append("pageSize", pageSize.toString());
 

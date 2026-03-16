@@ -37,4 +37,26 @@ describe("language-aware content refetch", () => {
     expect(detail.includes("languageChanged")).toBe(true);
     expect(detail.includes("}, [tourId, apiLanguage]);")).toBe(true);
   });
+
+  it("keeps tour instance detail wired to language-change refetch", () => {
+    const instanceDetail = readFile("src/features/tours/components/TourInstancePublicDetailPage.tsx");
+
+    expect(instanceDetail.includes("const [apiLanguage, setApiLanguage] = useState(() => resolveApiLanguage());")).toBe(true);
+    expect(instanceDetail.includes('i18n.on("languageChanged", handleLanguageChanged);')).toBe(true);
+    expect(instanceDetail.includes('i18n.off("languageChanged", handleLanguageChanged);')).toBe(true);
+    expect(instanceDetail.includes("homeService.getPublicInstanceDetail(id, apiLanguage)")).toBe(true);
+    expect(instanceDetail.includes("}, [id, apiLanguage]);")).toBe(true);
+  });
+
+  it("keeps locale-aware formatting helpers wired on tour instance detail page", () => {
+    const instanceDetail = readFile("src/features/tours/components/TourInstancePublicDetailPage.tsx");
+
+    expect(instanceDetail.includes("new Intl.NumberFormat(locale")).toBe(true);
+    expect(instanceDetail.includes("new Intl.DateTimeFormat(locale")).toBe(true);
+    expect(instanceDetail.includes('return apiLanguage === "vi" ? "vi-VN" : "en-GB";')).toBe(true);
+    expect(instanceDetail.includes("formatCurrency(data.basePrice, formatterLocale)")).toBe(true);
+    expect(instanceDetail.includes("formatCurrency(data.depositPerPerson, formatterLocale)")).toBe(true);
+    expect(instanceDetail.includes("toDateText(data.startDate, formatterLocale)")).toBe(true);
+    expect(instanceDetail.includes("toDateText(data.confirmationDeadline, formatterLocale)")).toBe(true);
+  });
 });
