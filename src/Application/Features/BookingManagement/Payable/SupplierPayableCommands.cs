@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -183,12 +184,25 @@ public sealed record GetSupplierPayablesQuery(Guid BookingId) : IQuery<ErrorOr<L
 }
 
 public sealed class GetSupplierPayablesQueryHandler(
+    IBookingRepository bookingRepository,
     ISupplierPayableRepository supplierPayableRepository,
-    ISupplierReceiptRepository supplierReceiptRepository)
+    ISupplierReceiptRepository supplierReceiptRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetSupplierPayablesQuery, ErrorOr<List<SupplierPayableDto>>>
 {
     public async Task<ErrorOr<List<SupplierPayableDto>>> Handle(GetSupplierPayablesQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var payables = await supplierPayableRepository.GetByBookingIdAsync(request.BookingId);
         var result = new List<SupplierPayableDto>();
 

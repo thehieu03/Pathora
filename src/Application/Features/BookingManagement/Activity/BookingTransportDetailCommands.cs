@@ -2,6 +2,7 @@ using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Common;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -220,12 +221,25 @@ public sealed record GetBookingTransportDetailsQuery(Guid BookingId) : IQuery<Er
 }
 
 public sealed class GetBookingTransportDetailsQueryHandler(
+    IBookingRepository bookingRepository,
     IBookingActivityReservationRepository bookingActivityReservationRepository,
-    IBookingTransportDetailRepository bookingTransportDetailRepository)
+    IBookingTransportDetailRepository bookingTransportDetailRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingTransportDetailsQuery, ErrorOr<List<TransportDetailDto>>>
 {
     public async Task<ErrorOr<List<TransportDetailDto>>> Handle(GetBookingTransportDetailsQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var activities = await bookingActivityReservationRepository.GetByBookingIdAsync(request.BookingId);
 
         var result = new List<TransportDetailDto>();

@@ -1,6 +1,7 @@
 using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
+using Application.Services;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
 using Domain.Common.Repositories;
@@ -458,11 +459,25 @@ public sealed record GetBookingTeamQuery(Guid BookingId) : IQuery<ErrorOr<List<B
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetBookingTeamQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
+public sealed class GetBookingTeamQueryHandler(
+    IBookingRepository bookingRepository,
+    IBookingTourGuideRepository bookingTourGuideRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingTeamQuery, ErrorOr<List<BookingTeamMemberDto>>>
 {
     public async Task<ErrorOr<List<BookingTeamMemberDto>>> Handle(GetBookingTeamQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var assignments = await bookingTourGuideRepository.GetByBookingIdAsync(request.BookingId);
         return assignments.Select(ToDto).ToList();
     }
@@ -489,12 +504,25 @@ public sealed record GetBookingTourManagerQuery(Guid BookingId) : IQuery<ErrorOr
 }
 
 public sealed class GetBookingTourManagerQueryHandler(
+    IBookingRepository bookingRepository,
     IBookingTourGuideRepository bookingTourGuideRepository,
+    IOwnershipValidator ownershipValidator,
     ILanguageContext? languageContext = null)
     : IQueryHandler<GetBookingTourManagerQuery, ErrorOr<BookingTeamMemberDto>>
 {
     public async Task<ErrorOr<BookingTeamMemberDto>> Handle(GetBookingTourManagerQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignments = await bookingTourGuideRepository.GetByBookingIdAsync(request.BookingId);
         var manager = assignments.FirstOrDefault(x => x.AssignedRole == AssignedRole.TourManager);
@@ -524,11 +552,25 @@ public sealed record GetBookingTourOperatorsQuery(Guid BookingId) : IQuery<Error
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetBookingTourOperatorsQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
+public sealed class GetBookingTourOperatorsQueryHandler(
+    IBookingRepository bookingRepository,
+    IBookingTourGuideRepository bookingTourGuideRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingTourOperatorsQuery, ErrorOr<List<BookingTeamMemberDto>>>
 {
     public async Task<ErrorOr<List<BookingTeamMemberDto>>> Handle(GetBookingTourOperatorsQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var assignments = await bookingTourGuideRepository.GetByBookingIdAsync(request.BookingId);
         return assignments
             .Where(x => x.AssignedRole == AssignedRole.TourOperator)
@@ -552,11 +594,25 @@ public sealed record GetBookingAssignedTourGuidesQuery(Guid BookingId) : IQuery<
     public TimeSpan? Expiration => TimeSpan.FromMinutes(5);
 }
 
-public sealed class GetBookingAssignedTourGuidesQueryHandler(IBookingTourGuideRepository bookingTourGuideRepository)
+public sealed class GetBookingAssignedTourGuidesQueryHandler(
+    IBookingRepository bookingRepository,
+    IBookingTourGuideRepository bookingTourGuideRepository,
+    IOwnershipValidator ownershipValidator)
     : IQueryHandler<GetBookingAssignedTourGuidesQuery, ErrorOr<List<BookingTeamMemberDto>>>
 {
     public async Task<ErrorOr<List<BookingTeamMemberDto>>> Handle(GetBookingAssignedTourGuidesQuery request, CancellationToken cancellationToken)
     {
+        var booking = await bookingRepository.GetByIdAsync(request.BookingId);
+        if (booking is null)
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
+        if (!await ownershipValidator.CanAccessAsync(booking.UserId ?? Guid.Empty, cancellationToken))
+        {
+            return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
+        }
+
         var assignments = await bookingTourGuideRepository.GetByBookingIdAsync(request.BookingId);
         return assignments
             .Where(x => x.AssignedRole == AssignedRole.TourGuide)
