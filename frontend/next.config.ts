@@ -51,6 +51,14 @@ const envRemotePatterns = parseRemoteImagePatterns(
   process.env.NEXT_PUBLIC_REMOTE_IMAGE_HOSTS,
 );
 
+const defaultRemotePatterns: RemotePattern[] = [
+  {
+    protocol: "https",
+    hostname: "cdn3.ivivu.com",
+    pathname: "/**",
+  },
+];
+
 const allowUnoptimized = process.env.NEXT_PUBLIC_IMAGES_UNOPTIMIZED === "true";
 
 const nextConfig: NextConfig = {
@@ -62,7 +70,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy-Report-Only",
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss:;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss: http://host.docker.internal:8080;",
           },
           {
             key: "X-Frame-Options",
@@ -105,6 +113,7 @@ const nextConfig: NextConfig = {
         port: "9000",
         pathname: "/**",
       },
+      ...defaultRemotePatterns,
       ...envRemotePatterns,
     ],
   },

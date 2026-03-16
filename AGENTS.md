@@ -1,155 +1,177 @@
-# Repository Guidelines for Agentic Coding Assistants
+# Repository Guidelines for Agents
 
-## Purpose
-- This file is the source of truth for coding agents working in `D:\DoAn\pathora`.
-- Workspace tracks:
-  - root review/orchestration: `D:\DoAn\pathora`
-  - backend implementation: `D:\DoAn\panthora_be`
-  - frontend implementation: `D:\DoAn\pathora\frontend`
-- Main app stack in this workspace: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4 + Sass, Redux Toolkit, RTK Query, Axios, SignalR, i18next (`en`, `vi`), Vitest.
+## Project Overview
 
-## Working Directory
-- Root orchestration/review tasks run from `D:\DoAn\pathora`.
-- Frontend Node/npm commands run from `frontend/`.
+Pathora is an admin dashboard/portal with a frontend in `frontend/` built on **Next.js 16 and **React  (App Router)**19**. It communicates with a backend API gateway via Axios and receives real-time updates via SignalR.
 
-## Install, Build, Lint, Test, and Dev
-```bash
-npm ci
-npm run dev
-npm run lint
-npm run test
-npm run build
-npm run start
-npm run analyze
+## Project Structure
+
 ```
-- `dev`: local server at `http://localhost:3000`.
-- `lint`: ESLint via `frontend/eslint.config.mjs` (Next core-web-vitals + TypeScript rules).
-- `test`: `vitest run --pool=threads --maxWorkers=1 --no-file-parallelism`.
-- `build`: production build gate; `start`: serve production build.
-- `analyze`: bundle analysis build (`ANALYZE=true next build`).
-
-## Running a Single Test (Important)
-```bash
-# Run one test file
-npm run test -- src/utils/__tests__/apiResponse.test.ts
-
-# Run one test by name pattern
-npm run test -- src/utils/__tests__/apiResponse.test.ts -t "extracts items from nested result.items"
-```
-- Always use npm argument forwarding (`--`) before Vitest filters.
-- Keep `-t` patterns specific to avoid running/skipping unintended tests.
-
-## Recommended Validation Gate
-```bash
-cd frontend && npm run lint && npm run test && npm run build
-```
-
-## Repository Structure
-```text
 frontend/
-  src/app/                         App Router pages/layouts
-    (dashboard)/                   Protected dashboard/admin routes
-    auth/                          Auth callback route(s)
-    home/, tours/, checkout/, ...  Public-facing routes
-  src/components/ui/               Reusable UI primitives
-  src/components/partials/         Feature/domain components
-  src/api/                         Axios setup, interceptors, endpoint map
-  src/services/                    Service wrappers around API calls
-  src/store/                       Redux store + RTK Query
-  src/hooks/                       Custom hooks (theme, layout, realtime)
-  src/contexts/                    React context providers
-  src/i18n/                        i18next config and locale JSON files
-  src/utils/                       Shared helpers (API unwrapping, auth cookies)
+├── src/
+│   ├── app/                    # Next.js App Router (layout.tsx, page.tsx)
+│   │   ├── (auth)/             # Public routes: login, register
+│   │   └── (dashboard)/        # Protected: dashboard, products, orders, etc.
+│   ├── components/ui/          # Reusable UI primitives (Button, Input, etc.)
+│   ├── components/partials/    # Feature-specific components by domain
+│   ├── api/                    # Axios instance, endpoints
+│   ├── services/              # Domain services (catalogService, orderService, etc.)
+│   ├── store/                  # Redux Toolkit + RTK Query
+│   ├── hooks/                  # Custom hooks (useAuth, useRealtimeRefresh)
+│   ├── contexts/               # React Context (AuthContext)
+│   └── i18n/                   # i18next locales (en.json, vi.json)
+├── public/                     # Static assets
+└── package.json
 ```
-- `src/pages-legacy` and `src/layout-legacy` are excluded by TS config; do not place new code there.
 
-## Architecture and Data Flow
-- Keep protected/admin flows under `src/app/(dashboard)`.
-- Global state setup is `src/store/index.ts`.
-- RTK Query base API is `src/store/api/apiSlice.ts`.
-- Axios instance and interceptors are in `src/api/axiosInstance.ts`.
-- Services in `src/services/` call Axios helpers or `executeApiRequest` wrappers.
-- Auth session helpers are in `src/utils/authSession.ts`.
-- Middleware auth gating is in `src/middleware.ts` and uses `access_token` / `auth_status` plus `auth_portal` for portal route guards.
+**Legacy code** (`src/pages-legacy`, `src/layout-legacy`) is excluded—do not use.
 
-## Formatting Rules
-- Use 2-space indentation.
-- Use semicolons.
-- Use double quotes.
-- Preserve LF line endings.
-- No project-level Prettier config is present; follow existing file style and ESLint output.
+---
 
-## Import Conventions
-- Preferred import order:
-  1. React/Next imports
-  2. External packages
-  3. Alias imports (`@/...`)
-  4. Relative imports (`./`, `../`)
-  5. `import type` near related imports
-- Prefer alias paths for shared modules (`@/*` maps to `frontend/src/*`).
-- Keep import groups compact; avoid unnecessary blank lines.
+## Build, Test, and Development Commands
 
-## TypeScript Conventions
-- `strict` is `false`; do not assume strict-mode safety.
-- Avoid `any`; prefer `unknown` with narrowing.
-- Add explicit types for exported functions, service APIs, and complex returns.
-- Reuse shared types in `src/types/` and `src/store/domain/` when applicable.
+All commands run from `frontend/`:
 
-## Naming Conventions
-- Components: PascalCase (`TourCard.tsx`).
-- Hooks: `use` + camelCase (`useRealtimeRefresh.ts`).
-- Constants: UPPER_SNAKE_CASE (`API_ENDPOINTS`).
-- Types/interfaces: PascalCase (`ApiResponse<T>`).
-- Utilities/functions: camelCase (`extractResult`).
-- Route folders: lowercase except dynamic segments (`[id]`) and route groups (`(dashboard)`).
+```bash
+npm ci                          # Install exact dependencies from lockfile
+npm run dev                     # Start dev server at http://localhost:3000
+npm run lint                    # Run ESLint (Next.js core-web-vitals + TypeScript)
+npm run build                   # Production build (primary validation)
+npm run start                   # Run production server after build
+npm run lint && npm run build   # Full validation gate
+```
 
-## API Response and Service Conventions
-- Backend payloads are commonly wrapped in `result`, `data`, and sometimes nested `items`.
-- Prefer helpers from `src/utils/apiResponse.ts`:
-  - `extractItems<T>()`
-  - `extractResult<T>()`
-  - `extractData<T>()`
-- Service modules returning normalized outcomes should use `executeApiRequest` from `src/services/serviceExecutor.ts` and return `ApiResponse<T>`.
+**Testing**: No test suite configured. Validate changes with `npm run lint && npm run build`.
 
-## Error Handling Conventions
-- Use `try/catch` around async service-level operations, or use `executeApiRequest` to centralize.
-- Normalize unknown/Axios errors with `handleApiError()`.
-- Keep unauthorized handling centralized in Axios interceptors (`clearAuthSession`, redirect behavior).
-- Prefer i18n error keys under `error_response.*` for user-visible messages.
-- Do not duplicate 401 cleanup logic in multiple places.
+---
 
-## Forms, i18n, and Styling
-- Forms: React Hook Form + Yup.
-- i18n: use `useTranslation()` and keep `en.json` and `vi.json` keys in sync.
-- Keep first render language deterministic (`en`) and rely on hydration sync logic in `src/i18n/config.ts`.
-- Styling uses Tailwind utilities plus Sass; preserve existing dark/RTL/layout behavior.
+## Coding Style & Conventions
 
-## Environment and Security
-- Never commit secrets or `.env*` values.
-- Important environment variables:
-  - `NEXT_PUBLIC_API_GATEWAY` (defaults to `http://localhost:5182`)
-  - `NEXT_PUBLIC_REMOTE_IMAGE_HOSTS` (comma-separated host allowlist)
-  - `NEXT_PUBLIC_IMAGES_UNOPTIMIZED` (`true` to bypass Next image optimizer)
-- Remote image patterns and security headers are in `frontend/next.config.ts`.
+### Formatting
+- **2-space indentation**, semicolons required, **double quotes**, LF line endings
+- Follow ESLint in `eslint.config.mjs`
 
-## Cursor and Copilot Rules
-- Cursor rules check:
-  - No `.cursorrules` file found in this repository.
-  - No `.cursor/rules/` directory found in this repository.
-- Copilot rules exist in `.github/copilot-instructions.md`; follow these key points:
-  - Run commands from `frontend/`.
-  - Preserve auth and dashboard routing patterns.
-  - Respect cookie auth conventions (`access_token`, `refresh_token`, `auth_status`, `auth_portal`).
-  - Prefer `extractItems` / `extractResult` for response unwrapping.
-- Copilot instructions mention no test suite, but `frontend/package.json` defines `npm run test`; trust package scripts as latest source of truth.
+### TypeScript
+- Use strict typing where possible
+- Define domain types in `src/store/domain/`
+- Use interfaces for objects, types for unions/primitives
 
-## Root Orchestrator Role
-- Default role in `D:\DoAn\pathora`: Root Orchestrator/Reviewer.
-- For `/opsx-propose`, create synchronized changes across root/backend/frontend with the same change name.
-- Root track handles contract alignment and final review; worker tracks handle implementation.
+### Path Aliases
+Use `@/*` imports (maps to `./src/*`):
+```typescript
+import Button from "@/components/ui/Button";
+import { useAuth } from "@/contexts/AuthContext";
+```
 
-## Commit and PR Guidance
-- Keep commits scoped to one logical change.
-- Use short imperative commit messages.
-- Do not mix broad refactors with feature delivery unless requested.
-- PRs should include summary, rationale, linked task, validation commands, and UI evidence for visual changes.
+### Naming Conventions
+| Type | Convention | Example |
+|------|------------|---------|
+| Components | PascalCase | `UserProfile.tsx`, `OrderList.tsx` |
+| Hooks | camelCase + `use` prefix | `useAuth.ts`, `useRealtimeRefresh.ts` |
+| Constants | UPPER_SNAKE_CASE | `API_ENDPOINTS`, `MAX_UPLOAD_SIZE` |
+| Interfaces/Types | PascalCase | `User`, `OrderItem`, `ApiResponse<T>` |
+| Route folders | lowercase | `(dashboard)/orders/page.tsx` |
+| Utilities | camelCase | `formatCurrency.ts`, `apiResponse.ts` |
+
+### Imports Order
+1. React/Next.js imports
+2. External libraries (axios, redux, etc.)
+3. Path alias imports (`@/...`)
+4. Relative imports
+5. Type imports
+
+---
+
+## Component Architecture
+
+- **UI Components** (`src/components/ui/`): Reusable primitives (Button, Input, Modal, Dropdown)
+- **Feature Components** (`src/components/partials/`): Domain-specific (e.g., `orders/OrderTable.tsx`)
+- **Forms**: Use **React Hook Form** + **Yup** for validation
+
+---
+
+## API Layer
+
+- **Axios** (`src/api/axiosInstance.ts`): Centralized with interceptors, auto-injects bearer token, redirects to login on 401
+- **Endpoints** (`src/api/endpoints.ts`): Define all API endpoints centrally
+- **Services** (`src/services/`): Domain services (catalogService, orderService, etc.)
+- **RTK Query**: Data fetching/caching via `src/store/api/apiSlice.ts`
+- **Response handling**: Use helpers from `src/utils/apiResponse.ts`
+- **Admin seeded-data policy**: For dashboard/admin pages, use backend API as primary data source; avoid introducing new hardcoded datasets as default behavior.
+
+---
+
+## State Management
+
+- **Redux Toolkit**: Global state (auth, layout, cart) in `src/store/index.ts`
+- **RTK Query**: API data fetching/caching in `src/store/api/apiSlice.ts`
+- **React Context**: Auth operations in `src/contexts/AuthContext.tsx`
+
+---
+
+## Real-time Updates
+
+SignalR via `src/services/signalRService.ts`. Use `useRealtimeRefresh` hook to trigger refetches on server events.
+
+---
+
+## Internationalization (i18n)
+
+- Uses **i18next** with `en` and `vi` locales in `src/i18n/locales/`
+- Error toasts include i18n translation support
+- Use `useTranslation()` hook for strings
+
+---
+
+## Styling
+
+- **Tailwind CSS v4** with Sass
+- Supports dark mode, RTL, multiple layout modes
+- Custom hooks: `useDarkMode`, `useRtl`, `useSidebar`
+- Theme config in `src/configs/themeConfig.ts`
+
+---
+
+## Security
+
+- Never commit secrets; use `.env.local`
+- Important variable: `NEXT_PUBLIC_API_GATEWAY` (default: `http://localhost:5000`)
+- Add external image domains to `images.remotePatterns` in `next.config.ts`
+
+---
+
+## Error Handling
+
+- Use try-catch for async operations
+- Display user-friendly errors via toast notifications
+- Include i18n translation keys for error messages
+- Log errors appropriately for debugging
+
+---
+
+## Commit & Pull Request Guidelines
+
+- Use short, imperative commit subjects (e.g., `Fix login redirect issue`, `Add order export feature`)
+- Keep commits focused on one logical change
+- Avoid combining refactors and feature work in one commit
+- **PRs should include**: summary, linked issue/task, validation steps, screenshots for UI changes
+
+---
+
+## Cursor Workflow Commands
+
+- `/opsx-propose` - Propose a new change with proposal, design, and tasks
+- `/opsx-apply` - Implement tasks from an OpenSpec change
+- `/opsx-archive` - Archive a completed change
+- `/opsx-explore` - Explore and investigate codebase
+
+---
+
+## Validation
+
+Before marking work complete, run:
+```bash
+cd frontend && npm run lint && npm run build
+```
+
+Ensure no ESLint errors and build succeeds.

@@ -9,14 +9,14 @@ const readFile = (relativePath: string): string => {
 
 describe("suspense boundaries and prefetching", () => {
   it("wraps lazy home sections in suspense boundaries with section-shaped fallbacks", () => {
-    const source = readFile("src/app/home/page.tsx");
+    const source = readFile("src/app/(user)/home/page.tsx");
 
     expect(source.includes("<Suspense fallback={<SectionSkeleton")).toBe(true);
     expect(source.includes("animate-pulse")).toBe(true);
   });
 
   it("prefetches navigation routes when links are hovered or focused", () => {
-    const source = readFile("src/components/partials/shared/LandingHeader.tsx");
+    const source = readFile("src/features/shared/components/LandingHeader.tsx");
 
     expect(source.includes("router.prefetch(link.href)")).toBe(true);
     expect(

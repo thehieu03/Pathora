@@ -16,53 +16,57 @@ export const getPreferredTheme = (
   storedTheme: string | null,
   prefersDark: boolean,
 ): ThemePreference => {
-  const parsedTheme = parseThemePreference(storedTheme);
-  if (parsedTheme) {
-    return parsedTheme;
-  }
-
-  return prefersDark ? "dark" : "light";
+  void storedTheme;
+  void prefersDark;
+  return "light";
 };
 
 export const getSystemPrefersDark = (): boolean => {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return false;
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return false;
 };
 
 export const applyThemeClass = (
   theme: ThemePreference,
-  rootElement: { classList: { add: (...tokens: string[]) => void; remove: (...tokens: string[]) => void } },
-  bodyElement?: { classList: { add: (...tokens: string[]) => void; remove: (...tokens: string[]) => void } } | null,
+  rootElement: {
+    classList: {
+      add: (...tokens: string[]) => void;
+      remove: (...tokens: string[]) => void;
+    };
+  },
+  bodyElement?: {
+    classList: {
+      add: (...tokens: string[]) => void;
+      remove: (...tokens: string[]) => void;
+    };
+  } | null,
 ): void => {
-  const oppositeTheme = theme === "dark" ? "light" : "dark";
+  void theme;
+  const forcedTheme: ThemePreference = "light";
 
-  rootElement.classList.remove(oppositeTheme);
-  rootElement.classList.add(theme);
+  rootElement.classList.remove("light", "dark");
+  rootElement.classList.add(forcedTheme);
 
   if (bodyElement) {
-    bodyElement.classList.remove(oppositeTheme);
-    bodyElement.classList.add(theme);
+    bodyElement.classList.remove("light", "dark");
+    bodyElement.classList.add(forcedTheme);
   }
 };
 
 export const buildThemeInitScript = (): string => {
   return `(() => {
   try {
-    const themeKey = "${THEME_STORAGE_KEY}";
-    const storedTheme = localStorage.getItem(themeKey);
-    const resolvedTheme = storedTheme === "dark" || storedTheme === "light"
-      ? storedTheme
-      : (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const forcedTheme = "light";
     const root = document.documentElement;
     const body = document.body;
+
+    localStorage.setItem("${THEME_STORAGE_KEY}", forcedTheme);
+    localStorage.setItem("darkMode", "false");
+
     root.classList.remove("light", "dark");
-    root.classList.add(resolvedTheme);
+    root.classList.add(forcedTheme);
     if (body) {
       body.classList.remove("light", "dark");
-      body.classList.add(resolvedTheme);
+      body.classList.add(forcedTheme);
     }
   } catch (error) {
     // no-op

@@ -81,7 +81,7 @@ const InputGroup = ({
         </label>
       )}
       <div
-        className={`inputGroup flex items-stretch ${append ? "has-append" : ""} ${prepend ? "has-prepend" : ""} ${error ? "is-invalid" : ""} ${validate ? "is-valid" : ""} ${horizontal ? "flex-1" : ""} `}
+        className={`inputGroup flex items-stretch rounded-lg overflow-hidden transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary focus-within:shadow-sm ${append ? "has-append" : ""} ${prepend ? "has-prepend" : ""} ${error ? "is-invalid" : ""} ${validate ? "is-valid" : ""} ${horizontal ? "flex-1" : ""} `}
       >
         {/* prepend*/}
         {prepend && (

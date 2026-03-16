@@ -91,7 +91,7 @@ const Modal = ({
           >
             <TransitionChild as={Fragment} {...contentTransitionClasses}>
               <DialogPanel
-                className={`w-full transform overflow-hidden rounded-md bg-white text-left align-middle shadow-xl transition-all dark:bg-slate-800 ${className} ${
+                className={`w-full transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-2xl transition-all dark:bg-slate-800 ${className} ${
                   scrollContent ? "overscroll-contain" : ""
                 }`}
               >

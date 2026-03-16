@@ -1,4 +1,8 @@
-import type { AxiosError, AxiosRequestHeaders, RawAxiosRequestHeaders } from "axios";
+import type {
+  AxiosError,
+  AxiosRequestHeaders,
+  RawAxiosRequestHeaders,
+} from "axios";
 
 interface ErrorDetail {
   errorMessage?: string;
@@ -17,7 +21,12 @@ interface ErrorToastPayload {
 }
 
 interface ErrorLogPayload {
+  message: string;
+  code: string;
   endpoint: string;
+  baseUrl: string;
+  requestUrl: string;
+  origin: string;
   method: string;
   statusCode: number | null;
   timestamp: string;
@@ -116,13 +125,27 @@ export const buildErrorLogPayload = (
   error: AxiosError,
   timestamp = new Date().toISOString(),
 ): ErrorLogPayload => {
+  const message = error.message ?? "Unknown error";
+  const code = error.code ?? "UNKNOWN";
   const method = (error.config?.method ?? "GET").toUpperCase();
-  const endpoint = error.config?.url ?? "unknown";
+  const requestUrl = error.config?.url ?? "unknown";
+  const baseUrl = error.config?.baseURL ?? "unknown";
+  const endpoint =
+    /^https?:\/\//i.test(requestUrl) || baseUrl === "unknown"
+      ? requestUrl
+      : `${baseUrl.replace(/\/$/, "")}/${requestUrl.replace(/^\//, "")}`;
+  const origin =
+    typeof window !== "undefined" ? window.location.origin : "server";
   const statusCode = error.response?.status ?? null;
   const headers = sanitizeHeaders(error.config?.headers);
 
   return {
+    message,
+    code,
     endpoint,
+    baseUrl,
+    requestUrl,
+    origin,
     method,
     statusCode,
     timestamp,
@@ -134,9 +157,9 @@ export const logApiError = (
   error: AxiosError,
   timestamp = new Date().toISOString(),
 ): void => {
-  console.error("[API_ERROR]", buildErrorLogPayload(error, timestamp));
+  console.warn("[API_ERROR]", buildErrorLogPayload(error, timestamp));
 
   if (process.env.NODE_ENV === "development") {
-    console.error("[API_ERROR_FULL]", error);
+    console.debug("[API_ERROR_FULL]", error);
   }
 };

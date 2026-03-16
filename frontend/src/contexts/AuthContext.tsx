@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "@/store/infrastructure/authSlice";
 import type { RootState, AppDispatch } from "@/store";
 import type { UserInfo } from "@/types";
-import { clearAuthSession } from "@/utils/authSession";
 
 type LoginRequest = Record<string, unknown>;
 type RegisterRequest = Record<string, unknown>;
@@ -24,7 +23,12 @@ export const useAuth = (): AuthContextValue => {
   const authState = useSelector((state: RootState) => state.auth);
 
   const logout = () => {
-    clearAuthSession();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user");
+      document.cookie = "access_token=; path=/; max-age=0";
+      document.cookie = "auth_status=; path=/; max-age=0";
+      document.cookie = "auth_portal=; path=/; max-age=0";
+    }
     dispatch(logOut());
   };
 

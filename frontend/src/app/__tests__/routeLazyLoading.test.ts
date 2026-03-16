@@ -11,17 +11,17 @@ describe("route lazy loading", () => {
   it("configures dynamic route imports with explicit loading fallbacks", () => {
     const routes = [
       {
-        pagePath: "src/app/about/page.tsx",
+        pagePath: "src/app/(user)/about/page.tsx",
         loadingImport: "import AboutLoading from \"./loading\";",
         loadingReference: "AboutLoading",
       },
       {
-        pagePath: "src/app/policies/page.tsx",
+        pagePath: "src/app/(user)/policies/page.tsx",
         loadingImport: "import PoliciesLoading from \"./loading\";",
         loadingReference: "PoliciesLoading",
       },
       {
-        pagePath: "src/app/tours/page.tsx",
+        pagePath: "src/app/(user)/tours/page.tsx",
         loadingImport: "import ToursLoading from \"./loading\";",
         loadingReference: "ToursLoading",
       },

@@ -1,4 +1,4 @@
-import { TourInstanceListPage } from "@/components/partials/dashboard/TourInstanceListPage";
+import { TourInstanceListPage } from "@/features/dashboard/components/TourInstanceListPage";
 
 export default function TourInstancesRoute() {
   return <TourInstanceListPage />;

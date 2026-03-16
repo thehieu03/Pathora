@@ -14,7 +14,8 @@ import Button from "@/components/ui/Button";
 import LanguageTabs, {
   type SupportedLanguage,
 } from "@/components/ui/LanguageTabs";
-import { tourService } from "@/services/tourService";
+import { tourService } from "@/api/services/tourService";
+import { handleApiError } from "@/utils/apiResponse";
 import { TourDto, TourStatusMap } from "@/types/tour";
 
 /* ── Types (mirrored from create page) ──────────────────────── */
@@ -285,8 +286,9 @@ export default function EditTourPage() {
         );
         setInsurances(insForms);
       }
-    } catch (error) {
-      console.error("Failed to load tour:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to load tour:", handledError.message);
       toast.error(t("tourAdmin.loadError", "Failed to load tour"));
       router.push("/tour-management");
     } finally {
@@ -488,41 +490,40 @@ export default function EditTourPage() {
       formData.append("seoDescription", basicInfo.seoDescription);
       formData.append("status", basicInfo.status);
 
-      // Translations — Vietnamese auto-populated from basicInfo
-      formData.append("translations[vi][TourName]", basicInfo.tourName);
-      formData.append(
-        "translations[vi][ShortDescription]",
-        basicInfo.shortDescription,
-      );
-      formData.append(
-        "translations[vi][LongDescription]",
-        basicInfo.longDescription,
-      );
-      formData.append("translations[vi][SEOTitle]", basicInfo.seoTitle);
-      formData.append(
-        "translations[vi][SEODescription]",
-        basicInfo.seoDescription,
-      );
+      const translationPayload: Record<
+        string,
+        {
+          TourName: string;
+          ShortDescription: string;
+          LongDescription: string;
+          SEOTitle?: string;
+          SEODescription?: string;
+        }
+      > = {
+        vi: {
+          TourName: basicInfo.tourName,
+          ShortDescription: basicInfo.shortDescription,
+          LongDescription: basicInfo.longDescription,
+          SEOTitle: basicInfo.seoTitle,
+          SEODescription: basicInfo.seoDescription,
+        },
+      };
+
       if (
         enTranslation.tourName ||
         enTranslation.shortDescription ||
         enTranslation.longDescription
       ) {
-        formData.append("translations[en][TourName]", enTranslation.tourName);
-        formData.append(
-          "translations[en][ShortDescription]",
-          enTranslation.shortDescription,
-        );
-        formData.append(
-          "translations[en][LongDescription]",
-          enTranslation.longDescription,
-        );
-        formData.append("translations[en][SEOTitle]", enTranslation.seoTitle);
-        formData.append(
-          "translations[en][SEODescription]",
-          enTranslation.seoDescription,
-        );
+        translationPayload.en = {
+          TourName: enTranslation.tourName,
+          ShortDescription: enTranslation.shortDescription,
+          LongDescription: enTranslation.longDescription,
+          SEOTitle: enTranslation.seoTitle,
+          SEODescription: enTranslation.seoDescription,
+        };
       }
+
+      formData.append("translations", JSON.stringify(translationPayload));
 
       if (thumbnail) formData.append("thumbnail", thumbnail);
       images.forEach((img) => formData.append("images", img));
@@ -599,8 +600,9 @@ export default function EditTourPage() {
       await tourService.updateTour(formData);
       toast.success(t("tourAdmin.updateSuccess", "Tour updated successfully!"));
       router.push("/tour-management");
-    } catch (error) {
-      console.error("Failed to update tour:", error);
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to update tour:", handledError.message);
       toast.error(t("tourAdmin.updateError", "Failed to update tour"));
     } finally {
       setSaving(false);
@@ -772,14 +774,14 @@ export default function EditTourPage() {
                             tourName: e.target.value,
                           }))
                         }
-                        placeholder="Enter tour name in English"
+                        placeholder={t("placeholder.enterTourNameEn", "Enter tour name in English")}
                       />
                     </div>
                   </div>
                   <div className="mt-4">
-                    <Textarea
-                      label={`${t("tourAdmin.shortDescription", "Short Description")} (EN)`}
-                      value={enTranslation.shortDescription}
+                      <Textarea
+                        label={`${t("tourAdmin.shortDescription", "Short Description")} (EN)`}
+                        value={enTranslation.shortDescription}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setEnTranslation((prev) => ({
                           ...prev,
@@ -787,13 +789,13 @@ export default function EditTourPage() {
                         }))
                       }
                       row={2}
-                      placeholder="Brief tour description in English"
-                    />
+                       placeholder={t("placeholder.briefDescEn", "Brief tour description in English")}
+                     />
                   </div>
                   <div className="mt-4">
-                    <Textarea
-                      label={`${t("tourAdmin.longDescription", "Long Description")} (EN)`}
-                      value={enTranslation.longDescription}
+                      <Textarea
+                        label={`${t("tourAdmin.longDescription", "Long Description")} (EN)`}
+                        value={enTranslation.longDescription}
                       onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                         setEnTranslation((prev) => ({
                           ...prev,
@@ -801,8 +803,8 @@ export default function EditTourPage() {
                         }))
                       }
                       row={5}
-                      placeholder="Detailed tour description in English"
-                    />
+                       placeholder={t("placeholder.detailedDescEn", "Detailed tour description in English")}
+                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <TextInput

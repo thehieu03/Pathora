@@ -1,87 +1,69 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isJwtExpired } from "./utils/jwt";
 import {
   ADMIN_DEFAULT_PATH,
-  USER_DEFAULT_PATH,
+  isAdminPortal,
   isAdminRoutePath,
-  isUserPrivateRoutePath,
-  normalizePortal,
-} from "./utils/postLoginRouting";
+  isLoginEntryPath,
+  USER_DEFAULT_PATH,
+} from "./utils/authRouting";
 
-export const isPublicPath = (pathname: string): boolean => {
-  return (
-    pathname === "/" ||
-    pathname.startsWith("/home") ||
-    pathname.startsWith("/tours") ||
-    pathname.startsWith("/tour-detail") ||
-    pathname.startsWith("/about") ||
-    pathname.startsWith("/visa") ||
-    pathname.startsWith("/policies") ||
-    pathname.startsWith("/checkout") ||
-    pathname.startsWith("/auth/callback")
+const PUBLIC_PATH_PREFIXES = [
+  "/",
+  "/home",
+  "/tour-detail",
+  "/about",
+  "/visa",
+  "/policies",
+  "/checkout",
+  "/auth/callback",
+  "/tours",
+  "/tours/instances",
+];
+
+// Specific public routes under /tours (with prefix matching for sub-paths)
+const PUBLIC_TOURS_ROUTES = [
+  "/tours", // tours list
+  "/tours/instances", // public tour instances (includes /tours/instances/[id])
+];
+
+const isPublicPath = (pathname: string): boolean => {
+  // Special handling for /tours/custom - requires login, not public
+  if (pathname.startsWith("/tours/custom")) {
+    return false;
+  }
+
+  // Check prefix matches for public paths (e.g., /about matches /about, /about/us)
+  // Also handles /tours, /tours/instances via PUBLIC_PATH_PREFIXES
+  return PUBLIC_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 };
 
-export const hasValidAuthSession = (
-  accessToken: string | null | undefined,
-  authStatus: string | null | undefined,
-  nowMs = Date.now(),
-): boolean => {
-  const token = accessToken?.trim();
-  if (token) {
-    return !isJwtExpired(token, nowMs);
-  }
-
-  const normalizedAuthStatus = authStatus?.trim().toLowerCase();
-  return normalizedAuthStatus === "1" || normalizedAuthStatus === "true";
-};
-
-export const getPortalGuardRedirectPath = (
-  pathname: string,
-  portal: string | null | undefined,
-): string | null => {
-  const normalizedPortal = normalizePortal(portal);
-  if (!normalizedPortal) {
-    return null;
-  }
-
-  if (normalizedPortal === "user" && isAdminRoutePath(pathname)) {
-    return USER_DEFAULT_PATH;
-  }
-
-  if (normalizedPortal === "admin" && isUserPrivateRoutePath(pathname)) {
-    return ADMIN_DEFAULT_PATH;
-  }
-
-  return null;
-};
-
 export function middleware(request: NextRequest) {
-  const accessToken = request.cookies.get("access_token")?.value;
   const authStatus = request.cookies.get("auth_status")?.value;
   const authPortal = request.cookies.get("auth_portal")?.value;
-  const pathname = request.nextUrl.pathname;
+  const { pathname, searchParams } = request.nextUrl;
 
-  if (isPublicPath(pathname)) {
-    return NextResponse.next();
+  const authenticated = Boolean(authStatus);
+  const adminPortal = isAdminPortal(authPortal);
+  const publicPath = isPublicPath(pathname);
+
+  if (authenticated && adminPortal && isLoginEntryPath(pathname, searchParams)) {
+    return NextResponse.redirect(new URL(ADMIN_DEFAULT_PATH, request.url));
   }
 
-  if (!hasValidAuthSession(accessToken, authStatus)) {
-    const loginUrl = new URL("/home", request.url);
+  if (authenticated && !adminPortal && isAdminRoutePath(pathname)) {
+    return NextResponse.redirect(new URL(USER_DEFAULT_PATH, request.url));
+  }
+
+  if (!authenticated && !publicPath) {
+    const loginUrl = new URL(USER_DEFAULT_PATH, request.url);
     loginUrl.searchParams.set("login", "true");
-    const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete("access_token");
-    response.cookies.delete("refresh_token");
-    response.cookies.delete("auth_status");
-    response.cookies.delete("auth_portal");
-    return response;
-  }
-
-  const redirectPath = getPortalGuardRedirectPath(pathname, authPortal);
-  if (redirectPath) {
-    const redirectUrl = new URL(redirectPath, request.url);
-    return NextResponse.redirect(redirectUrl);
+    // Preserve the original destination so user returns after login
+    const nextDestination = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+    loginUrl.searchParams.set("next", nextDestination);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();

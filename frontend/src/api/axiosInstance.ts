@@ -9,10 +9,10 @@ import { ToastPosition } from "react-toastify";
 import { handleResponseError, waitForRetry } from "./responseInterceptor";
 import { showErrorToast } from "./showErrorToast";
 import { getCurrentApiLanguage } from "./languageHeader";
-import { clearAuthSession, getValidAccessToken } from "../utils/authSession";
+import { API_GATEWAY_BASE_URL } from "@/configs/apiGateway";
+import { getCookie } from "@/utils/cookie";
 
-const API_BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
+const API_BASE_URL: string = API_GATEWAY_BASE_URL;
 
 interface ToastConfig {
   position: ToastPosition;
@@ -58,8 +58,10 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 
 const onUnauthorized = (): void => {
-  clearAuthSession();
-
+  if (typeof document !== "undefined") {
+    document.cookie =
+      "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  }
   if (typeof window !== "undefined") {
     window.location.href = "/";
   }
@@ -68,12 +70,10 @@ const onUnauthorized = (): void => {
 const attachInterceptors = (instance: AxiosInstance): void => {
   instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-      const token = getValidAccessToken();
+      const token = getCookie("access_token");
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
-      } else {
-        delete config.headers.Authorization;
       }
       config.headers["Accept-Language"] = getCurrentApiLanguage();
 

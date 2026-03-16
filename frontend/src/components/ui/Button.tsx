@@ -1,6 +1,7 @@
 import React from "react";
 import Icon from "@/components/ui/Icon";
 import Link from "next/link";
+import i18n from "@/i18n/config";
 
 type ButtonProps = {
   text?: string;
@@ -42,11 +43,6 @@ const LoadingSpinner = ({ loadingClass }: { loadingClass?: string }) => (
   </svg>
 );
 
-type ButtonContentProps = Omit<
-  ButtonProps,
-  "onClick" | "link" | "type" | "disabled" | "className" | "ariaLabel"
->;
-
 const ButtonContent = ({
   text,
   children,
@@ -55,8 +51,10 @@ const ButtonContent = ({
   iconPosition = "left",
   iconClass = "text-[20px]",
   loadingClass,
-  suppressHydrationWarning,
-}: ButtonContentProps) => {
+}: Omit<
+  ButtonProps,
+  "onClick" | "link" | "type" | "disabled" | "className" | "ariaLabel"
+>) => {
   if (children && !isLoading) return children;
 
   if (!children && !isLoading) {
@@ -68,11 +66,7 @@ const ButtonContent = ({
             <Icon icon={icon} aria-hidden="true" />
           </span>
         )}
-        {text && (
-          <span suppressHydrationWarning={suppressHydrationWarning}>
-            {text}
-          </span>
-        )}
+        {text && <span>{text}</span>}
       </span>
     );
   }
@@ -81,7 +75,7 @@ const ButtonContent = ({
     return (
       <>
         <LoadingSpinner loadingClass={loadingClass} />
-        <span suppressHydrationWarning={suppressHydrationWarning}>Loading…</span>
+        <span>{i18n.t("common.loading", "Loading...")}</span>
       </>
     );
   }
@@ -107,7 +101,7 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
   suppressHydrationWarning,
 
 }, ref) => {
-  const baseClasses = `btn inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
+  const baseClasses = `btn inline-flex items-center justify-center rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
     disabled || isLoading ? "pointer-events-none" : ""
   } ${disabled ? "cursor-not-allowed opacity-40" : ""} ${className}`;
 

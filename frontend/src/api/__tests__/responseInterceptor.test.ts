@@ -15,7 +15,10 @@ const toConfig = (
 
 describe("responseInterceptor", () => {
   beforeEach(() => {
-    vi.spyOn(console, "error").mockImplementation(() => {
+    vi.spyOn(console, "warn").mockImplementation(() => {
+      return;
+    });
+    vi.spyOn(console, "debug").mockImplementation(() => {
       return;
     });
   });

@@ -1,74 +1,46 @@
-# AGENTS Guide - `pathora/frontend`
+# Repository Guidelines
 
-Purpose: local guidance for coding agents working directly in `D:\DoAn\pathora\frontend`.
+## Project Structure & Module Organization
+- Core code lives in `src/`.
+- App Router entry files are in `src/app` (`layout.tsx`, `page.tsx`, `not-found.tsx`).
+- Reusable UI and feature blocks are in `src/components` (`ui/`, `partials/`, `skeleton/`).
+- API and domain logic are split across `src/api`, `src/services`, `src/store`, and `src/hooks`.
+- Localization lives in `src/i18n/locales` (`en.json`, `vi.json`).
+- Static files are in `public/`; bundled images/styles also exist in `src/assets` and `src/styles`.
+- Legacy code (`src/pages-legacy`, `src/layout-legacy`) is excluded from TypeScript builds; prefer new work in `src/app`.
 
-## 1) Instruction Precedence
-- Direct user request always wins.
-- Then follow this file.
-- Then follow parent guidance in `D:\DoAn\pathora\AGENTS.md`.
+## Build, Test, and Development Commands
+- `npm ci`: install dependencies from `package-lock.json`.
+- `npm run dev`: start local dev server at `http://localhost:3000`.
+- `npm run lint`: run ESLint (Next.js core-web-vitals + TypeScript rules).
+- `npm run build`: create production build and catch build-time issues.
+- `npm run start`: run the production server after a successful build.
 
-## 2) Base Guidance Source
-- Treat `../AGENTS.md` as the primary frontend standard for:
-  - build/lint/test commands
-  - code style/import/type conventions
-  - API response handling and i18n rules
-  - security and commit/PR expectations
+## Coding Style & Naming Conventions
+- Language: TypeScript + React (Next.js 16, React 19).
+- Use 2-space indentation, semicolons, and double quotes to match existing files.
+- Use path alias imports with `@/*` (example: `@/components/ui/Button`).
+- Components: PascalCase file and export names (`HeroSection.tsx`).
+- Hooks: camelCase with `use` prefix (`useRealtimeRefresh.ts`).
+- Constants: `UPPER_SNAKE_CASE`; route segment folders should stay lowercase.
+- Keep Tailwind utility usage consistent with existing patterns.
 
-## 3) Working Directory and Validation
-Run commands from `D:\DoAn\pathora\frontend`.
+## Testing Guidelines
+- There is currently no dedicated `npm test` script in this repository.
+- Minimum validation for each change: `npm run lint` and `npm run build`.
+- Add focused manual checks for impacted pages/flows (especially auth, i18n, and dashboard widgets).
+- If adding tests, prefer `*.test.ts`/`*.test.tsx` naming and include the run command in the PR.
 
-```bash
-npm ci
-npm run lint
-npm run test
-npm run build
-```
+## Commit & Pull Request Guidelines
+- Follow concise, imperative commit subjects (examples in history: `Internationalize landing and header components`, `Standardize Tailwind utility classes`).
+- Keep commits scoped to one logical change.
+- PRs should include:
+  - what changed and why
+  - linked issue/task ID
+  - validation commands run
+  - screenshots or short recordings for UI changes
 
-Single-test examples:
-
-```bash
-npm run test -- src/utils/__tests__/apiResponse.test.ts
-npm run test -- src/utils/__tests__/apiResponse.test.ts -t "extractData"
-```
-
-## 4) Default Role in `frontend` (Frontend Worker)
-When an agent starts in this folder, default to **worker-implementer mode**.
-
-Worker mode rules:
-- Implement only frontend tasks from local OpenSpec changes (`openspec/changes/`).
-- Keep edits scoped to the active frontend change/task.
-- Do not implement backend code from this context.
-- Update `openspec/changes/<change>/tasks.md` checkboxes immediately as tasks complete.
-
-## 4.1) Cross-Repo `/opsx-propose` Contract
-If user asks for orchestration-style planning, use one shared change name and create synchronized changes in:
-- `D:\DoAn\pathora\openspec\changes\<change-name>` (root review)
-- `D:\DoAn\panthora_be\openspec\changes\<change-name>` (backend implementation)
-- `D:\DoAn\pathora\frontend\openspec\changes\<change-name>` (frontend implementation)
-
-Each track should include apply-ready artifacts: `proposal.md`, `design.md`, `specs/**`, `tasks.md`.
-In frontend context, keep implementation tasks frontend-only but maintain contract alignment with backend/root artifacts.
-
-Handoff to root orchestrator/reviewer:
-- Provide changed frontend files.
-- Provide exact validation commands and outcomes.
-- Call out any backend contract dependencies (payload fields, cookies, routes).
-
-Override behavior:
-- If user explicitly requests orchestrator/reviewer-only behavior, follow user instruction.
-
-## 5) Cursor and Copilot Rules Check
-Checked on 2026-03-11:
-- `.cursorrules`: not found in this folder.
-- `.cursor/rules/`: not found in this folder.
-- Inherit Copilot-related guidance from `../AGENTS.md`.
-
-## 6) Init Handshake (Mandatory)
-- On the first assistant reply after `/init` (or first message in a new session), the agent MUST explicitly announce its role.
-- Required content:
-  1. current role
-  2. scope/responsibility
-  3. active repository path
-- Required response format:
-  - `[INIT] Role: Frontend Worker | Scope: Frontend implementation + frontend tests only | Repo: D:\DoAn\pathora\frontend`
-- If user requests work in another repo, restate role/path in the same format before proceeding.
+## Security & Configuration Tips
+- Never commit secrets; `.env*` files are ignored by default.
+- Follow workspace hardcoded-value governance in `../../docs/hardcoded-value-governance.md` for runtime URLs/config defaults.
+- When introducing new remote image hosts, update `images.remotePatterns` in `next.config.ts`.

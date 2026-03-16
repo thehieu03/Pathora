@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { LayoutState, SkinMode, ContentWidth, MenuLayoutType, NavbarType, FooterType } from "../domain/layout";
+import type {
+  LayoutState,
+  SkinMode,
+  ContentWidth,
+  MenuLayoutType,
+  NavbarType,
+  FooterType,
+} from "../domain/layout";
 import themeConfig from "@/configs/themeConfig";
 
 const getFromLocalStorage = <T>(key: string, defaultValue: T): T => {
@@ -17,31 +24,7 @@ const getFromLocalStorage = <T>(key: string, defaultValue: T): T => {
 const initialRtl = (): boolean =>
   getFromLocalStorage("direction", themeConfig.layout.isRTL);
 const initialDarkMode = (): boolean => {
-  if (typeof window === "undefined") {
-    return themeConfig.layout.darkMode;
-  }
-
-  const storedTheme = window.localStorage.getItem("theme");
-  if (storedTheme === "dark") {
-    return true;
-  }
-  if (storedTheme === "light") {
-    return false;
-  }
-
-  const legacyDarkMode = window.localStorage.getItem("darkMode");
-  if (legacyDarkMode === "true") {
-    return true;
-  }
-  if (legacyDarkMode === "false") {
-    return false;
-  }
-
-  if (typeof window.matchMedia === "function") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-
-  return themeConfig.layout.darkMode;
+  return false;
 };
 const initialSidebarCollapsed = (): boolean =>
   getFromLocalStorage("sidebarCollapsed", themeConfig.layout.menu.isCollapsed);
@@ -75,10 +58,11 @@ export const layoutSlice = createSlice({
   initialState,
   reducers: {
     handleDarkMode: (state, action: PayloadAction<boolean>) => {
-      state.darkMode = action.payload;
+      void action;
+      state.darkMode = false;
       if (typeof window !== "undefined") {
-        window.localStorage.setItem("darkMode", String(action.payload));
-        window.localStorage.setItem("theme", action.payload ? "dark" : "light");
+        window.localStorage.setItem("darkMode", "false");
+        window.localStorage.setItem("theme", "light");
       }
     },
     handleSidebarCollapsed: (state, action: PayloadAction<boolean>) => {

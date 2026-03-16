@@ -2,36 +2,28 @@ import { apiSlice } from "../apiSlice";
 import { setUser, setToken, logOut } from "../../infrastructure/authSlice";
 import type { UserInfo } from "../../domain/auth";
 import type { ApiSharedResponse } from "@/types";
-import {
-  clearAuthSession,
-  persistAuthSession,
-} from "../../../utils/authSession";
+import { isAdminPortal } from "@/utils/authRouting";
 
 // ─── Cookie helpers ────────────────────────────────────────────────────────
 
-type AuthDispatch = (
-  action: ReturnType<typeof setToken> | ReturnType<typeof logOut>,
-) => void;
+const DAY_SECONDS = 60 * 60 * 24;
 
-export const clearSessionAndLogout = (
-  dispatch: AuthDispatch,
-): void => {
-  clearAuthSession();
-  dispatch(logOut());
+const setCookie = (name: string, value: string, maxAge = DAY_SECONDS): void => {
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
 };
 
-const isUnauthorizedError = (error: unknown): boolean => {
-  if (!error || typeof error !== "object") {
-    return false;
-  }
+const removeCookie = (name: string): void => {
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC`;
+};
 
-  const maybeError = error as {
-    error?: {
-      status?: number;
-    };
-  };
+const setAuthSessionCookies = (portal: string | null): void => {
+  setCookie("auth_status", "1", DAY_SECONDS * 7);
+  setCookie("auth_portal", isAdminPortal(portal) ? "admin" : "user", DAY_SECONDS * 7);
+};
 
-  return maybeError.error?.status === 401;
+const clearAuthSessionCookies = (): void => {
+  removeCookie("auth_status");
+  removeCookie("auth_portal");
 };
 
 // ─── Request / Response shapes ─────────────────────────────────────────────
@@ -41,25 +33,12 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface TokenData {
+interface TokenData {
   accessToken: string;
   refreshToken: string;
-  portal?: string | null;
-  defaultPath?: string | null;
+  portal: string | null;
+  defaultPath: string | null;
 }
-
-export const applySuccessfulAuthSession = (
-  tokens: TokenData,
-  dispatch: AuthDispatch,
-): void => {
-  persistAuthSession(
-    tokens.accessToken,
-    tokens.refreshToken,
-    tokens.portal,
-    tokens.defaultPath,
-  );
-  dispatch(setToken(tokens.accessToken));
-};
 
 export interface LogoutRequest {
   refreshToken: string;
@@ -108,7 +87,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
           const tokens = data.data;
           if (!tokens) return;
 
-          applySuccessfulAuthSession(tokens, dispatch);
+          setCookie("access_token", tokens.accessToken);
+          setCookie("refresh_token", tokens.refreshToken, DAY_SECONDS * 7);
+          setAuthSessionCookies(tokens.portal);
+          dispatch(setToken(tokens.accessToken));
 
           // Fetch user info right after login to populate Redux
           const result = await dispatch(
@@ -120,7 +102,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
             dispatch(setUser(result.data.data));
           }
         } catch {
-          clearSessionAndLogout(dispatch);
           // errors are handled by axiosInstance / apiSlice globally
         }
       },
@@ -139,10 +120,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
           if (data.data) {
             dispatch(setUser(data.data));
           }
-        } catch (error) {
-          if (isUnauthorizedError(error)) {
-            clearSessionAndLogout(dispatch);
-          }
+        } catch {
+          // unauthenticated — leave state as-is
         }
       },
     }),
@@ -166,10 +145,16 @@ export const authApiSlice = apiSlice.injectEndpoints({
           const tokens = data.data;
           if (!tokens) return;
 
-          applySuccessfulAuthSession(tokens, dispatch);
+          setCookie("access_token", tokens.accessToken);
+          setCookie("refresh_token", tokens.refreshToken, DAY_SECONDS * 7);
+          setAuthSessionCookies(tokens.portal);
+          dispatch(setToken(tokens.accessToken));
         } catch {
           // token expired — force logout
-          clearSessionAndLogout(dispatch);
+          removeCookie("access_token");
+          removeCookie("refresh_token");
+          clearAuthSessionCookies();
+          dispatch(logOut());
         }
       },
     }),
@@ -187,7 +172,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Auth"],
       async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         // Clear client state immediately (optimistic), regardless of server result
-        clearSessionAndLogout(dispatch);
+        removeCookie("access_token");
+        removeCookie("refresh_token");
+        clearAuthSessionCookies();
+        dispatch(logOut());
         try {
           await queryFulfilled;
         } catch {

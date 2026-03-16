@@ -61,7 +61,7 @@ SignalR (`@microsoft/signalr`) for live data updates. `useRealtimeRefresh` hook 
 ## Key Conventions
 
 - Path alias: `@/*` maps to project root (e.g., `@/src/components/...`)
-- TypeScript strict mode enabled
+- TypeScript strict mode disabled (`"strict": false` in tsconfig). Avoid `any`; use `unknown` with type guards.
 - Form validation uses React Hook Form + Yup
 - API response extraction helpers in `src/utils/apiResponse.ts`
 - Store domain types in `src/store/domain/`, infrastructure (slices) in `src/store/infrastructure/`

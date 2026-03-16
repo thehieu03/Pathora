@@ -27,7 +27,7 @@ const Alert = ({
   if (!isShow) return null;
 
   return (
-    <div className={`alert ${className}`} role="alert">
+    <div className={`alert rounded-lg shadow-sm ${className}`} role="alert">
       <div className="flex items-start gap-3 rtl:space-x-reverse">
         {icon && (
           <div className="flex-0 text-[22px]" aria-hidden="true">

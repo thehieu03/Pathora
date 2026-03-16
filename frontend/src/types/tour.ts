@@ -105,15 +105,16 @@ export interface TourClassificationDto {
   id: string;
   tourId: string;
   name: string;
-  price: number;
-  salePrice: number;
   adultPrice?: number;
   childPrice?: number;
   infantPrice?: number;
+  price: number;
+  salePrice: number;
   description: string;
-  durationDays: number;
   numberOfDay?: number;
   numberOfNight?: number;
+  durationDays: number;
+  dynamicPricing?: DynamicPricingDto[];
   plans: TourDayDto[];
   insurances: TourInsuranceDto[];
 }
@@ -132,6 +133,8 @@ export interface TourDto {
   images: ImageDto[];
   classifications: TourClassificationDto[];
   translations?: Record<string, TourTranslationData>;
+  location?: string | null;
+  includedServices?: string[];
   createdBy: string | null;
   createdOnUtc: string;
   lastModifiedBy: string | null;
@@ -153,7 +156,26 @@ export interface TourVm {
   tourName: string;
   shortDescription: string;
   status: string;
+  thumbnail: ImageDto | null;
   createdOnUtc: string;
+}
+
+// Public tour list view model (used for By Tour view)
+export interface SearchTourVm {
+  id: string;
+  tourName: string;
+  thumbnail: string | null;
+  shortDescription: string | null;
+  location: string | null;
+  durationDays: number;
+  price: number;
+  salePrice: number;
+  classificationName: string | null;
+  rating: number | null;
+  // Optional fields for admin page
+  tourCode?: string;
+  status?: string;
+  createdOnUtc?: string;
 }
 
 // Paginated response
@@ -247,18 +269,23 @@ export const LocationTypeMap: Record<number, string> = {
 export interface TourInstanceVm {
   id: string;
   tourId: string;
+  tourInstanceCode: string;
+  title: string;
   tourName: string;
   tourCode: string;
   classificationName: string;
-  location: string;
+  location: string | null;
   thumbnail: ImageDto | null;
+  images: ImageDto[];
   startDate: string;
   endDate: string;
   durationDays: number;
-  registeredParticipants: number;
-  maxParticipants: number;
-  minParticipants: number;
-  price: number;
+  currentParticipation: number;
+  maxParticipation: number;
+  minParticipation: number;
+  basePrice: number;
+  sellingPrice: number;
+  depositPerPerson: number;
   status: string;
   instanceType: string;
 }
@@ -267,7 +294,7 @@ export interface TourInstanceGuideDto {
   name: string;
   avatarUrl: string | null;
   languages: string[];
-  experience: string;
+  experience: string | null;
 }
 
 export interface DynamicPricingDto {
@@ -276,26 +303,38 @@ export interface DynamicPricingDto {
   pricePerPerson: number;
 }
 
+export interface DynamicPricingResolutionDto {
+  resolvedPricePerPerson: number;
+  pricingSource: "instance" | "classification" | "fallback";
+  minParticipants: number | null;
+  maxParticipants: number | null;
+}
+
 export interface TourInstanceDto {
   id: string;
   tourId: string;
+  tourInstanceCode: string;
+  title: string;
   tourName: string;
   tourCode: string;
   classificationId: string;
   classificationName: string;
-  location: string;
+  location: string | null;
   thumbnail: ImageDto | null;
+  images: ImageDto[];
   startDate: string;
   endDate: string;
   durationDays: number;
-  registeredParticipants: number;
-  maxParticipants: number;
-  minParticipants: number;
-  price: number;
-  salePrice: number;
+  currentParticipation: number;
+  maxParticipation: number;
+  minParticipation: number;
+  basePrice: number;
+  sellingPrice: number;
+  operatingCost: number;
+  depositPerPerson: number;
   status: string;
   instanceType: string;
-  category: string;
+  cancellationReason?: string | null;
   rating: number;
   totalBookings: number;
   revenue: number;
@@ -304,6 +343,16 @@ export interface TourInstanceDto {
   includedServices: string[];
   dynamicPricing: DynamicPricingDto[];
 }
+
+export type NormalizedTourInstanceVm = TourInstanceVm & {
+  price: number;
+  registeredParticipants: number;
+};
+
+export type NormalizedTourInstanceDto = TourInstanceDto & {
+  price: number;
+  registeredParticipants: number;
+};
 
 export interface TourInstanceStats {
   totalInstances: number;
@@ -315,7 +364,8 @@ export interface TourInstanceStats {
 export const TourInstanceStatusMap: Record<string, { label: string; bg: string; text: string; dot: string }> = {
   available: { label: "Available", bg: "bg-blue-100", text: "text-blue-700", dot: "bg-blue-500" },
   confirmed: { label: "Confirmed", bg: "bg-green-100", text: "text-green-700", dot: "bg-green-500" },
-  sold_out: { label: "Sold Out", bg: "bg-red-100", text: "text-red-700", dot: "bg-red-500" },
+  soldout: { label: "Sold Out", bg: "bg-red-100", text: "text-red-700", dot: "bg-red-500" },
+  inprogress: { label: "In Progress", bg: "bg-amber-100", text: "text-amber-700", dot: "bg-amber-500" },
   cancelled: { label: "Cancelled", bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
   completed: { label: "Completed", bg: "bg-purple-100", text: "text-purple-700", dot: "bg-purple-500" },
 };

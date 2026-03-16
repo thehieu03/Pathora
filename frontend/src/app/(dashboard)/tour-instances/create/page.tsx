@@ -1,4 +1,4 @@
-import { CreateTourInstancePage } from "@/components/partials/dashboard/CreateTourInstancePage";
+import { CreateTourInstancePage } from "@/features/dashboard/components/CreateTourInstancePage";
 
 export default function CreateTourInstanceRoute() {
   return <CreateTourInstancePage />;

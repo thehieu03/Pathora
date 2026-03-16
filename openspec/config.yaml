@@ -1,20 +1,17 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Multi-workspace planning defaults:
+  - Backend workspace: D:\DoAn\panthora_be
+  - Frontend workspace: D:\DoAn\pathora
+  - Review workspace: D:\DoAn\panthora_be
+  Always include workspace paths in tasks for clarity.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  tasks:
+    - "Build tasks.md with exactly 3 top-level groups: Backend, Frontend, Code Review."
+    - "Backend group must target backend implementation work in D:\\DoAn\\panthora_be."
+    - "Frontend group must target frontend implementation work in D:\\DoAn\\pathora."
+    - "Code Review group must be review-only and run after Backend and Frontend groups complete."
+    - "Use checkbox format with numbered sub-steps in each group."
+    - "Include review checklist items: API contract compatibility, integration risks, and regression verification."

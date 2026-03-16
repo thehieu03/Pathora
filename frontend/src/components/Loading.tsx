@@ -1,8 +1,8 @@
 "use client";
 import React, { useSyncExternalStore } from "react";
 import useDarkMode from "@/hooks/useDarkMode";
-import LogoWhite from "@/assets/images/logo/logo-white.svg";
-import Logo from "@/assets/images/logo/logo.png";
+import LogoWhite from "@/assets/images/logo/pathora-logo-white.svg";
+import Logo from "@/assets/images/logo/pathora-logo.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 

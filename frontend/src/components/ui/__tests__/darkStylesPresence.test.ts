@@ -8,33 +8,34 @@ const readFile = (relativePath: string): string => {
 };
 
 describe("dark style presence", () => {
-  it("has dark styles in target ui components", () => {
-    const targets = [
-      "src/components/ui/Button.tsx",
-      "src/components/ui/TextInput.tsx",
-      "src/components/ui/Card.tsx",
-      "src/components/ui/Modal.tsx",
-      "src/components/ui/Dropdown.tsx",
-      "src/components/skeleton/Table.tsx",
+  it("has theme-aware styles in core ui components", () => {
+    const checks: Array<[string, string[]]> = [
+      ["src/components/ui/Button.tsx", ["bg-primary", "text-primary-foreground"]],
+      ["src/components/ui/TextInput.tsx", ["bg-background", "text-muted-foreground"]],
+      ["src/components/ui/Card.tsx", ["bg-card", "text-card-foreground"]],
+      ["src/components/ui/Modal.tsx", ["dark:bg-slate-800"]],
+      ["src/components/ui/Dropdown.tsx", ["dark:bg-slate-800"]],
+      ["src/components/skeleton/Table.tsx", ["dark:bg-slate-700"]],
     ];
 
-    targets.forEach((filePath) => {
+    checks.forEach(([filePath, expectedTokens]) => {
       const source = readFile(filePath);
-      expect(source.includes("dark:")).toBe(true);
+      expectedTokens.forEach((token) => {
+        expect(source.includes(token)).toBe(true);
+      });
     });
   });
 
-  it("has dark styles in layout/navigation areas", () => {
-    const targets = [
-      "src/components/partials/shared/LandingHeader.tsx",
-      "src/components/partials/shared/LandingFooter.tsx",
-      "src/app/home/page.tsx",
-    ];
+  it("keeps light-mode defaults in theme-controlled surfaces", () => {
+    const toggleSource = readFile("src/components/ui/ThemeToggle.tsx");
+    const tourDiscoverySource = readFile(
+      "src/features/tours/components/TourDiscoveryPage.tsx",
+    );
 
-    targets.forEach((filePath) => {
-      const source = readFile(filePath);
-      expect(source.includes("dark:")).toBe(true);
-    });
+    expect(toggleSource.includes("return null")).toBe(true);
+    expect(tourDiscoverySource.includes("dark:")).toBe(false);
+    expect(tourDiscoverySource.includes("bg-white")).toBe(true);
+    expect(tourDiscoverySource.includes("text-[#05073c]")).toBe(true);
   });
 
   it("injects theme init script before hydration in root layout", () => {
