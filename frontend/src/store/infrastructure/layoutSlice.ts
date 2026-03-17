@@ -23,9 +23,6 @@ const getFromLocalStorage = <T>(key: string, defaultValue: T): T => {
 
 const initialRtl = (): boolean =>
   getFromLocalStorage("direction", themeConfig.layout.isRTL);
-const initialDarkMode = (): boolean => {
-  return false;
-};
 const initialSidebarCollapsed = (): boolean =>
   getFromLocalStorage("sidebarCollapsed", themeConfig.layout.menu.isCollapsed);
 const initialSemiDarkMode = (): boolean =>
@@ -39,7 +36,6 @@ const initialMonochrome = (): boolean =>
 
 const initialState: LayoutState = {
   isRTL: initialRtl(),
-  darkMode: initialDarkMode(),
   isCollapsed: initialSidebarCollapsed(),
   customizer: themeConfig.layout.customizer,
   semiDarkMode: initialSemiDarkMode(),
@@ -57,14 +53,6 @@ export const layoutSlice = createSlice({
   name: "layout",
   initialState,
   reducers: {
-    handleDarkMode: (state, action: PayloadAction<boolean>) => {
-      void action;
-      state.darkMode = false;
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("darkMode", "false");
-        window.localStorage.setItem("theme", "light");
-      }
-    },
     handleSidebarCollapsed: (state, action: PayloadAction<boolean>) => {
       state.isCollapsed = action.payload;
       window.localStorage.setItem("sidebarCollapsed", String(action.payload));
@@ -111,7 +99,6 @@ export const layoutSlice = createSlice({
 });
 
 export const {
-  handleDarkMode,
   handleSidebarCollapsed,
   handleCustomizer,
   handleSemiDarkMode,

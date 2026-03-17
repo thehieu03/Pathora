@@ -11,7 +11,6 @@ export interface MenuConfig {
 
 export interface LayoutConfig {
   isRTL: boolean;
-  darkMode: boolean;
   semiDarkMode: boolean;
   skin: SkinMode;
   contentWidth: ContentWidth;
@@ -26,7 +25,6 @@ export interface LayoutConfig {
 
 export interface LayoutState {
   isRTL: boolean;
-  darkMode: boolean;
   isCollapsed: boolean;
   customizer: boolean;
   semiDarkMode: boolean;

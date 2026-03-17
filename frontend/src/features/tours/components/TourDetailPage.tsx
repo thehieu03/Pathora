@@ -808,27 +808,15 @@ export function TourDetailPage() {
           <LandingHeader />
         </div>
 
-        {/* Back + Heart/Share buttons */}
+        {/* Back button */}
         <div className="absolute inset-x-0 top-[81px] z-10 max-w-330 mx-auto px-4 md:px-3.75">
-          <div className="flex items-center justify-between px-6">
+          <div className="px-6">
             <Link
               href="/tours"
-              className="flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-white text-sm font-medium hover:bg-white/25 transition-colors backdrop-blur-md">
+              className="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-4 py-2 text-white text-sm font-medium hover:bg-white/25 transition-colors backdrop-blur-md">
               <Icon icon="heroicons:arrow-left" className="size-4" />
               {t("landing.tourDetail.allTours")}
             </Link>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors backdrop-blur-md">
-                <Icon icon="heroicons:heart" className="size-5 text-white" />
-              </Button>
-              <Button
-                type="button"
-                className="bg-white/15 border border-white/20 rounded-full size-10 flex items-center justify-center hover:bg-white/25 transition-colors backdrop-blur-md">
-                <Icon icon="heroicons:share" className="size-5 text-white" />
-              </Button>
-            </div>
           </div>
         </div>
 

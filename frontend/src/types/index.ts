@@ -103,7 +103,6 @@ export interface ApiSharedResponse<T> {
 
 export interface LayoutState {
   isRTL: boolean;
-  darkMode: boolean;
   isCollapsed: boolean;
   customizer: boolean;
   semiDarkMode: boolean;
