@@ -4,7 +4,7 @@ stages:
 deploy-app:
   stage: build-and-deploy
   tags:
-    - do-an-2
+    - do-an-3
   only:
     - main
   script:
