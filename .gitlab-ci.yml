@@ -11,7 +11,7 @@ deploy-app:
     - echo "Bắt đầu quá trình build Image cho Backend..."
     
     # 1. Build image mới (Đặt tên pathora-be cho khớp với compose của bạn)
-    - docker build -t pathora-be:latest .
+    - docker build -f src/Api/Dockerfile -t pathora-be:latest .
     # 3. Dùng Compose để cập nhật hệ thống
     - echo "Đang cập nhật các container qua Docker Compose..."
     - cd /home/huynqhe180309
