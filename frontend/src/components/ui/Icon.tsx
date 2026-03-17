@@ -236,13 +236,22 @@ export const Icon = ({
   // Size mapping
   const size = width ? (typeof width === "number" ? width : width) : undefined;
 
+  // Filter out undefined values and empty styles to avoid hydration mismatch with Dark Reader
+  const sanitizedStyle = style && Object.entries(style).reduce((acc, [key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      acc[key] = value;
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+
   return (
     <IconComponent
       className={className}
-      style={Object.keys(style).length > 0 ? style : undefined}
+      style={Object.keys(sanitizedStyle || {}).length > 0 ? sanitizedStyle : undefined}
       size={size}
       aria-hidden={ariaLabel ? false : ariaHidden}
       aria-label={ariaLabel}
+      suppressHydrationWarning
       {...rest}
     />
   );

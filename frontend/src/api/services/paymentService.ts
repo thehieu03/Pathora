@@ -37,8 +37,8 @@ export type TransactionTypeString = "Deposit" | "FullPayment" | "Refund";
 export type PaymentMethodString = "Cash" | "BankTransfer" | "Card" | "Momo" | "VnPay";
 
 // Convert string to enum integer for API
-const toTransactionType = (type: TransactionTypeString): number => TransactionTypeEnum[type];
-const toPaymentMethod = (method: PaymentMethodString): number => PaymentMethodEnum[method];
+const toTransactionType = (type: TransactionTypeString): number => TransactionTypeEnum[type as keyof typeof TransactionTypeEnum];
+const toPaymentMethod = (method: PaymentMethodString): number => PaymentMethodEnum[method as keyof typeof PaymentMethodEnum];
 
 export interface CreateTransactionPayload {
   bookingId: string;

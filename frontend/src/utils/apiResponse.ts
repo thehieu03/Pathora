@@ -85,6 +85,18 @@ export const extractData = <T>(payload: unknown): T | null => {
   return extractResult<T>(payload);
 };
 
+interface BackendErrorItem {
+  code?: string;
+  errorMessage?: string;
+  message?: string;
+  details?: string;
+}
+
+interface BackendErrorPayload {
+  message?: string;
+  errors?: BackendErrorItem[];
+}
+
 // Map backend error codes/messages to translation keys
 const mapToTranslationKey = (errorMessage: string): string => {
   // Map backend error codes to translation keys for login-specific errors
@@ -98,34 +110,84 @@ const mapToTranslationKey = (errorMessage: string): string => {
   return errorMessage;
 };
 
-export const handleApiError = (error: unknown): ApiError => {
-  if (isAxiosError(error)) {
-    const responseData = error.response?.data as
-      | {
-          message?: string;
-          errors?: Array<{
-            code?: string;
-            errorMessage?: string;
-            message?: string;
-            details?: string;
-          }>;
-        }
-      | undefined;
+const shouldUseDetailsAsErrorCode = (details: string | undefined): boolean => {
+  if (!details) {
+    return false;
+  }
 
-    const firstError = responseData?.errors?.[0];
-    const rawMessage =
+  return (
+    details === "User.NotFound" ||
+    details === "User.InvalidPassword" ||
+    details === "User.Disabled" ||
+    details === "User.IsDisabled"
+  );
+};
+
+const extractBackendErrorPayload = (
+  payload: unknown,
+): { rawMessage: string; rawCode: string; rawDetails?: string } => {
+  if (!payload || typeof payload !== "object") {
+    return {
+      rawMessage: "DEFAULT_ERROR",
+      rawCode: "UNKNOWN_ERROR",
+    };
+  }
+
+  const body = payload as BackendErrorPayload;
+  const firstError = body.errors?.[0];
+
+  return {
+    rawMessage:
       firstError?.errorMessage ??
       firstError?.message ??
-      responseData?.message ??
-      "DEFAULT_ERROR";
+      body.message ??
+      "DEFAULT_ERROR",
+    rawCode: firstError?.code ?? "UNKNOWN_ERROR",
+    rawDetails: firstError?.details,
+  };
+};
+
+export const handleApiError = (error: unknown): ApiError => {
+  if (isAxiosError(error)) {
+    const { rawMessage, rawCode, rawDetails } = extractBackendErrorPayload(error.response?.data);
+    const rawMappingCandidate = shouldUseDetailsAsErrorCode(rawDetails)
+      ? rawDetails
+      : rawMessage;
 
     // Map to translation key for specific error types
-    const translationKey = mapToTranslationKey(rawMessage);
+    const translationKey = mapToTranslationKey(rawMappingCandidate);
 
     return {
-      code: firstError?.code ?? String(error.response?.status ?? "UNKNOWN_ERROR"),
+      code: rawCode !== "UNKNOWN_ERROR" ? rawCode : String(error.response?.status ?? "UNKNOWN_ERROR"),
       message: translationKey,
-      details: firstError?.details,
+      details: rawDetails,
+    };
+  }
+
+  if (error && typeof error === "object" && "status" in error) {
+    const rtkError = error as {
+      status?: number | string;
+      data?: unknown;
+      error?: string;
+    };
+    const { rawMessage, rawCode, rawDetails } = extractBackendErrorPayload(rtkError.data);
+    const fallbackMessage = rtkError.error ?? rawMessage;
+    const rawMappingCandidate = shouldUseDetailsAsErrorCode(rawDetails)
+      ? rawDetails
+      : fallbackMessage;
+
+    if (process.env.NODE_ENV === "development") {
+      console.warn("[handleApiError][rtk]", {
+        status: rtkError.status,
+        rawMessage,
+        rawDetails,
+      });
+    }
+
+    return {
+      code: rawCode !== "UNKNOWN_ERROR" ? rawCode : String(rtkError.status ?? "UNKNOWN_ERROR"),
+      message: mapToTranslationKey(rawMappingCandidate),
+      details: rawDetails,
     };
   }
 
