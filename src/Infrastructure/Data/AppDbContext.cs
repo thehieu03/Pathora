@@ -92,6 +92,7 @@ public class AppDbContext : DbContext
     public DbSet<PaymentTransactionEntity> PaymentTransactions => Set<PaymentTransactionEntity>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<PasswordResetTokenEntity> PasswordResetTokens => Set<PasswordResetTokenEntity>();
+    public DbSet<SiteContentEntity> SiteContents => Set<SiteContentEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -15,7 +15,9 @@ public static class AppDbContextSeed
     public static Task<bool> SeedIfNeededAsync(AppDbContext context, CancellationToken cancellationToken = default)
     {
         SeedDataPreflightValidator.ValidateRequiredSeedFiles();
-        return Task.FromResult(BookingContextSeed.SeedData(context));
+        var seeded = BookingContextSeed.SeedData(context);
+        seeded |= SiteContentSeedData.SeedData(context);
+        return Task.FromResult(seeded);
     }
 
     private static async Task SaveChangesUtcAsync(AppDbContext context, CancellationToken cancellationToken)

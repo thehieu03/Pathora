@@ -62,6 +62,8 @@ internal static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IRegisterRepository, RegisterRepository>();
 
+        services.AddScoped<ISiteContentRepository, SiteContentRepository>();
+
         return services;
     }
 }
