@@ -57,7 +57,7 @@ public sealed class IdentityServicePortalMetadataTests
         _tokenManager.GenerateToken(userEntity).Returns(("access-token", "refresh-token"));
         _roleRepository.FindByUserId(userId.ToString()).Returns(new List<RoleEntity>
         {
-            new() { Id = 10, Name = "Customer", Type = 3 }
+            new() { Id = 9, Name = "Customer", Type = 2 }
         });
 
         var result = await _sut.Login(new LoginRequest("customer@example.com", "secret"));

@@ -2,8 +2,8 @@ namespace Application.Common.Auth;
 
 public static class AuthPortalResolver
 {
-    private const int CustomerRoleType = 3;
-    private static readonly HashSet<int> AdminRoleTypes = [1, 2, 9];
+    private const int CustomerRoleType = 2;
+    private static readonly HashSet<int> AdminRoleTypes = [0, 1, 9];
 
     public static PortalRouting Resolve(IEnumerable<int> roleTypes)
     {
