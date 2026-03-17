@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 /* ── Image Assets ──────────────────────────────────────────── */
 const HERO_BG =
@@ -192,12 +193,16 @@ const HeroBanner = () => {
 /* ═══════════════════════════════════════════════════════════ */
 /*  Stats Bar                                                  */
 /* ═══════════════════════════════════════════════════════════ */
-const StatsBar = () => {
+interface StatsBarProps {
+  stats?: typeof STATS;
+}
+
+const StatsBar = ({ stats = STATS }: StatsBarProps) => {
   const { t } = useTranslation();
   return (
     <section className="bg-[#05073c] px-6 md:px-22 py-10">
       <div className="max-w-[1152px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-        {STATS.map((stat) => (
+        {stats.map((stat) => (
           <div
             key={stat.labelKey}
             className="flex flex-col items-center gap-1 text-center">
@@ -276,7 +281,11 @@ const WhoWeAreSection = () => {
 /* ═══════════════════════════════════════════════════════════ */
 /*  Values Section                                             */
 /* ═══════════════════════════════════════════════════════════ */
-const ValuesSection = () => {
+interface ValuesSectionProps {
+  values?: typeof VALUES;
+}
+
+const ValuesSection = ({ values = VALUES }: ValuesSectionProps) => {
   const { t } = useTranslation();
   return (
     <section className="bg-[#f9fafb] py-16">
@@ -293,7 +302,7 @@ const ValuesSection = () => {
 
         {/* Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {VALUES.map((v) => (
+          {values.map((v) => (
             <div
               key={v.titleKey}
               className="bg-white rounded-2xl border border-[#f3f4f6] shadow-sm p-6 hover:shadow-md transition-shadow">
@@ -317,7 +326,11 @@ const ValuesSection = () => {
 /* ═══════════════════════════════════════════════════════════ */
 /*  Timeline / Our Journey                                     */
 /* ═══════════════════════════════════════════════════════════ */
-const TimelineSection = () => {
+interface TimelineSectionProps {
+  milestones?: typeof MILESTONES;
+}
+
+const TimelineSection = ({ milestones = MILESTONES }: TimelineSectionProps) => {
   const { t } = useTranslation();
   return (
     <section className="py-16">
@@ -338,7 +351,7 @@ const TimelineSection = () => {
           <div className="absolute left-[18px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-[#fa8b02] via-[#ffd6a8] to-transparent" />
 
           <div className="flex flex-col gap-8">
-            {MILESTONES.map((m) => (
+            {milestones.map((m) => (
               <div key={m.year} className="relative pl-[60px]">
                 {/* Dot */}
                 <div className="absolute left-0 top-1 w-9 h-9 rounded-full border-[1.6px] border-[#fa8b02] bg-white shadow-sm flex items-center justify-center">
@@ -366,7 +379,11 @@ const TimelineSection = () => {
 /* ═══════════════════════════════════════════════════════════ */
 /*  Team Section                                               */
 /* ═══════════════════════════════════════════════════════════ */
-const TeamSection = () => {
+interface TeamSectionProps {
+  teamMembers?: TeamMember[];
+}
+
+const TeamSection = ({ teamMembers = TEAM_MEMBERS }: TeamSectionProps) => {
   const { t } = useTranslation();
   return (
     <section className="bg-[#f9fafb] py-16">
@@ -383,7 +400,7 @@ const TeamSection = () => {
 
         {/* Team Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-          {TEAM_MEMBERS.map((member) => (
+          {teamMembers.map((member) => (
             <div
               key={member.name}
               className="bg-white rounded-2xl border border-[#f3f4f6] shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -480,9 +497,21 @@ const FloatingButtons = () => (
 );
 
 /* ═══════════════════════════════════════════════════════════ */
-/*  Main About Us Page                                         */
+/*  Main About Us Page with Dynamic Content                    */
 /* ═══════════════════════════════════════════════════════════ */
 export const AboutUsPage = () => {
+  const { content, loading, error } = useSiteContent("about");
+
+  // Parse dynamic content or use fallback to static data
+  const teamMembers = content?.["team-members"] as TeamMember[] | undefined || TEAM_MEMBERS;
+  const milestones = content?.["milestones"] as MilestoneItem[] | undefined || MILESTONES;
+  const stats = content?.["stats"] as typeof STATS | undefined || STATS;
+  const values = content?.["values"] as typeof VALUES | undefined || VALUES;
+
+  if (error) {
+    console.warn("Failed to load dynamic about content, using static fallback:", error);
+  }
+
   return (
     <main
       id="main-content"
@@ -494,20 +523,20 @@ export const AboutUsPage = () => {
       {/* Hero */}
       <HeroBanner />
 
-      {/* Stats */}
-      <StatsBar />
+      {/* Stats - pass dynamic stats */}
+      <StatsBar stats={stats} />
 
       {/* Who We Are */}
       <WhoWeAreSection />
 
-      {/* Values */}
-      <ValuesSection />
+      {/* Values - pass dynamic values */}
+      <ValuesSection values={values} />
 
-      {/* Timeline */}
-      <TimelineSection />
+      {/* Timeline - pass dynamic milestones */}
+      <TimelineSection milestones={milestones} />
 
-      {/* Team */}
-      <TeamSection />
+      {/* Team - pass dynamic team members */}
+      <TeamSection teamMembers={teamMembers} />
 
       {/* CTA */}
       <CTABanner />

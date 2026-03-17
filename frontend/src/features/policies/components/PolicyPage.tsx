@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 /* ── Image Assets ──────────────────────────────────────────── */
 const HERO_BG =
@@ -270,9 +271,18 @@ const FloatingButtons = () => (
 );
 
 /* ═══════════════════════════════════════════════════════════ */
-/*  Main Policy Page                                           */
+/*  Main Policy Page with Dynamic Content                      */
 /* ═══════════════════════════════════════════════════════════ */
 export const PolicyPage = () => {
+  const { content, loading, error } = useSiteContent("policies");
+
+  // Parse dynamic content or use fallback to static data
+  const policySections = (content?.["policy-sections"] as PolicySection[] | undefined) || POLICY_SECTIONS;
+
+  if (error) {
+    console.warn("Failed to load dynamic policies content, using static fallback:", error);
+  }
+
   return (
     <main
       id="main-content"
@@ -295,7 +305,7 @@ export const PolicyPage = () => {
 
           {/* Policy Sections */}
           <div className="flex flex-col gap-8">
-            {POLICY_SECTIONS.map((section) => (
+            {policySections.map((section) => (
               <PolicyCard key={section.titleKey} section={section} />
             ))}
           </div>
