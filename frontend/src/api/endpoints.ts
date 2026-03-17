@@ -217,6 +217,13 @@ export interface BookingEndpoints {
   SET_TOUR_GUIDES: EndpointWithId;
 }
 
+// Site Content Endpoints Interface
+export interface SiteContentEndpoints {
+  GET_BY_PAGE: (pageKey: string) => string;
+  GET_BY_KEY: (pageKey: string, contentKey: string) => string;
+  UPSERT: (pageKey: string, contentKey: string) => string;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -235,6 +242,7 @@ export interface ApiEndpoints {
   ADMIN: AdminEndpoints;
   TOUR_REQUESTS: TourRequestEndpoints;
   BOOKING: BookingEndpoints;
+  SITE_CONTENT: SiteContentEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -472,6 +480,13 @@ export const API_ENDPOINTS: ApiEndpoints = {
       `/api/bookings/${id}/team/tour-operators`,
     SET_TOUR_GUIDES: (id: string): string =>
       `/api/bookings/${id}/team/tour-guides`,
+  },
+
+  // Site Content
+  SITE_CONTENT: {
+    GET_BY_PAGE: (pageKey: string): string => `/api/site-content?pageKey=${pageKey}`,
+    GET_BY_KEY: (pageKey: string, contentKey: string): string => `/api/site-content/${pageKey}/${contentKey}`,
+    UPSERT: (pageKey: string, contentKey: string): string => `/api/site-content/${pageKey}/${contentKey}`,
   },
 };
 

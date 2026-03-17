@@ -605,20 +605,6 @@ export const LandingHeader = ({
 
             {/* Right Side Actions */}
             <div className="hidden lg:flex items-center gap-3">
-              {/* Live mode (customizer) toggle */}
-              <Button
-                type="button"
-                onClick={() => dispatch(handleCustomizer(!customizerOpen))}
-                className={`w-10 h-10 flex items-center justify-center rounded-full transition-all focus-visible:outline-none cursor-pointer ${
-                  customizerOpen
-                    ? "bg-[#fa8b02]/20 text-[#fa8b02] border border-[#fa8b02]"
-                    : "text-white/70 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20"
-                }`}
-                aria-label="Toggle live customizer"
-              >
-                <FiSliders suppressHydrationWarning className="w-4 h-4" />
-              </Button>
-
               {/* Language Switcher */}
               <div className="relative" ref={languageMenuRef}>
                 <Button

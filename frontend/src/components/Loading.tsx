@@ -1,7 +1,5 @@
 "use client";
 import React, { useSyncExternalStore } from "react";
-import useDarkMode from "@/hooks/useDarkMode";
-import LogoWhite from "@/assets/images/logo/pathora-logo-white.svg";
 import Logo from "@/assets/images/logo/pathora-logo.svg";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -9,7 +7,6 @@ import { RootState } from "@/store";
 const emptySubscribe = () => () => {};
 
 const Loading = () => {
-  const [isDark] = useDarkMode();
   const { isAuth } = useSelector((state: RootState) => state.auth);
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
@@ -51,7 +48,7 @@ const Loading = () => {
     <div className="app_height flex flex-col items-center justify-center">
       {!isAuth && (
         <div className="mb-3">
-          <img src={isDark ? LogoWhite.src : Logo.src} alt="Logo" />
+          <img src={Logo.src} alt="Logo" />
         </div>
       )}
       <svg
