@@ -1,6 +1,5 @@
 stages:
   - build-and-deploy
-
 deploy-app:
   stage: build-and-deploy
   tags:
@@ -9,7 +8,6 @@ deploy-app:
     - main
   script:
     - echo "Bắt đầu quá trình build Image cho Backend..."
-    
     # 1. Build image mới (Đặt tên pathora-be cho khớp với compose của bạn)
     - docker build -t pathora-be:latest .
     # 3. Dùng Compose để cập nhật hệ thống
