@@ -1174,6 +1174,7 @@ export default function CreateTourPage() {
                     </label>
                     <FileInput
                       name="thumbnail"
+                      selectedFile={thumbnail}
                       onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
                     />
                     {thumbnail && (
@@ -1190,6 +1191,7 @@ export default function CreateTourPage() {
                     <FileInput
                       name="images"
                       multiple
+                      selectedFiles={images}
                       onChange={(e) =>
                         setImages(Array.from(e.target.files ?? []))
                       }

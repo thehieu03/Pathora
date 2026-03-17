@@ -866,7 +866,7 @@ export default function EditTourPage() {
                 <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                   {t("tourAdmin.newThumbnail", "New Thumbnail")}
                 </label>
-                <FileInput name="thumbnail" onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)} />
+                <FileInput name="thumbnail" selectedFile={thumbnail} onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)} />
               </div>
               {existingImageCount > 0 && (
                 <p className="text-xs text-slate-500 mb-2">
@@ -878,7 +878,7 @@ export default function EditTourPage() {
                 <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
                   {t("tourAdmin.newImages", "New Gallery Images")}
                 </label>
-                <FileInput name="images" multiple onChange={(e) => setImages(Array.from(e.target.files ?? []))} />
+                <FileInput name="images" multiple selectedFiles={images} onChange={(e) => setImages(Array.from(e.target.files ?? []))} />
               </div>
             </Card>
           </div>
