@@ -45,6 +45,8 @@ public static class DependencyInjection
     private static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
     {
         var redisConnection = configuration["Redis:ConnectionString"];
+        var environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") ?? "Production";
+        var isDevelopment = environment.Equals("Development", StringComparison.OrdinalIgnoreCase);
 
         var fusionCacheBuilder = services.AddFusionCache()
             .WithDefaultEntryOptions(new FusionCacheEntryOptions
@@ -53,7 +55,9 @@ public static class DependencyInjection
             })
             .WithSerializer(new FusionCacheSystemTextJsonSerializer());
 
-        if (!string.IsNullOrEmpty(redisConnection))
+        // Only use Redis in non-Development environments
+        // In Development, use in-memory cache only (faster startup, no Redis required)
+        if (!isDevelopment && !string.IsNullOrEmpty(redisConnection))
         {
             services.AddStackExchangeRedisCache(options => options.Configuration = redisConnection);
             fusionCacheBuilder.WithRegisteredDistributedCache();
