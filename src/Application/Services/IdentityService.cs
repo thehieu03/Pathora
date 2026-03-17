@@ -152,22 +152,37 @@ public class IdentityService(
 
     public async Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request)
     {
+        Console.WriteLine($"[DEBUG] ExternalLogin called with email: {request.ProviderEmail}, googleId: {request.ProviderKey}");
+
         // 1. Try to find user by GoogleId
         var userEntity = await _userRepository.FindByGoogleId(request.ProviderKey);
+        Console.WriteLine($"[DEBUG] FindByGoogleId result: {userEntity?.Id}");
 
         if (userEntity is null)
         {
             // 2. Try to find user by email — link the GoogleId
             userEntity = await _userRepository.FindByEmail(request.ProviderEmail);
+            Console.WriteLine($"[DEBUG] FindByEmail result: {userEntity?.Id}");
+
             if (userEntity is not null)
             {
-                userEntity.LinkGoogle(request.ProviderKey, "google");
-                _userRepository.Update(userEntity);
-                await _unitOfWork.SaveChangeAsync();
+                // User exists by email - link GoogleId if not already linked
+                if (string.IsNullOrEmpty(userEntity.GoogleId))
+                {
+                    userEntity.LinkGoogle(request.ProviderKey, "google");
+                    _userRepository.Update(userEntity);
+                    await _unitOfWork.SaveChangeAsync();
+                    Console.WriteLine($"[DEBUG] Linked GoogleId to existing user");
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] User already has GoogleId: {userEntity.GoogleId}");
+                }
             }
             else
             {
                 // 3. Create a new user from Google info
+                Console.WriteLine($"[DEBUG] Creating new user from Google");
                 userEntity = UserEntity.CreateFromGoogle(
                     request.ProviderKey,
                     request.ProviderEmail,
@@ -176,25 +191,41 @@ public class IdentityService(
 
                 try
                 {
-                    await _unitOfWork.BeginTransactionAsync();
-                    await _userRepository.Create(userEntity);
-
-                    var addRoleResult = await _roleRepository.AddUser(userEntity.Id, [DefaultRoleIds.Customer]);
-                    if (addRoleResult.IsError)
+                    await _unitOfWork.ExecuteTransactionAsync(async () =>
                     {
-                        await _unitOfWork.RollbackTransactionAsync();
-                        return addRoleResult.Errors;
-                    }
+                        await _userRepository.Create(userEntity);
+                        Console.WriteLine($"[DEBUG] User created with Id: {userEntity.Id}");
 
-                    await _unitOfWork.SaveChangeAsync();
-                    await _unitOfWork.CommitTransactionAsync();
+                        var addRoleResult = await _roleRepository.AddUser(userEntity.Id, [DefaultRoleIds.Customer]);
+                        Console.WriteLine($"[DEBUG] AddRole result: {addRoleResult.IsError}");
+                        if (addRoleResult.IsError)
+                        {
+                            throw new Exception($"Failed to add role: {string.Join(", ", addRoleResult.Errors.Select(e => e.Description))}");
+                        }
+                        Console.WriteLine($"[DEBUG] Role added successfully");
+                    });
                 }
-                catch
+                catch (Exception ex)
                 {
-                    await _unitOfWork.RollbackTransactionAsync();
-                    throw;
+                    Console.WriteLine($"[DEBUG] Error creating Google user: {ex.Message}");
+                    return Error.Failure("GOOGLE_LOGIN_FAILED", "Failed to create user from Google login");
                 }
             }
+        }
+
+        // Check if user has any roles, if not add Customer role
+        var userRolesResult = await _roleRepository.FindByUserId(userEntity.Id.ToString());
+        var userRoles = userRolesResult.Value ?? [];
+        Console.WriteLine($"[DEBUG] User roles count: {userRoles.Count}");
+        if (!userRoles.Any())
+        {
+            Console.WriteLine($"[DEBUG] User has no roles, adding Customer role");
+            var addRoleResult = await _roleRepository.AddUser(userEntity.Id, [DefaultRoleIds.Customer]);
+            if (addRoleResult.IsError)
+            {
+                return addRoleResult.Errors;
+            }
+            await _unitOfWork.SaveChangeAsync();
         }
 
         var tokenResult = await _tokenManager.GenerateToken(userEntity);

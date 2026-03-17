@@ -33,7 +33,6 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
     {
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        await _context.Users.AddAsync(user);
     }
 
 

@@ -98,6 +98,8 @@ public sealed class IdentityServiceTests
         });
         _tokenManager.GenerateToken(Arg.Any<UserEntity>())
             .Returns((ValueTuple<string, string>)("access-token", "refresh-token"));
+        _unitOfWork.ExecuteTransactionAsync(Arg.Any<Func<Task>>())
+            .Returns(callInfo => ((Func<Task>)callInfo[0])());
 
         var result = await _sut.ExternalLogin(
             new ExternalLoginRequest(AuthProviders.Google, "google-key", "google@example.com", "Google User"));
@@ -110,8 +112,7 @@ public sealed class IdentityServiceTests
         await _roleRepository.Received(1).AddUser(
             Arg.Any<Guid>(),
             Arg.Is<List<int>>(roleIds => roleIds.Count == 1 && roleIds[0] == DefaultRoleIds.Customer));
-        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
-        await _unitOfWork.Received(1).CommitTransactionAsync();
+        await _unitOfWork.Received(1).ExecuteTransactionAsync(Arg.Any<Func<Task>>());
     }
 
     [Fact]
@@ -139,6 +140,5 @@ public sealed class IdentityServiceTests
         Assert.False(result.IsError);
         _userRepository.Received(1).Update(Arg.Is<UserEntity>(user => user.GoogleId == "google-key"));
         await _roleRepository.DidNotReceive().AddUser(Arg.Any<Guid>(), Arg.Any<List<int>>());
-        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
     }
 }
