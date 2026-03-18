@@ -1,0 +1,17 @@
+stages:
+  - build-and-deploy
+
+deploy-app:
+  stage: build-and-deploy
+  tags:
+    - do-an-fe
+  only:
+    - main
+  script:
+    - echo "Building Frontend..."
+    - docker build -f frontend/Dockerfile -t pathora-fe:latest ./frontend
+    # 3. Dùng Compose để cập nhật hệ thống
+    - echo "Đang cập nhật các container qua Docker Compose..."
+    - cd /home/huynqhe180309
+    - touch .env
+    - docker compose -f server_docker_compose.yml up -d
