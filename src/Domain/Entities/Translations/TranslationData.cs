@@ -56,3 +56,25 @@ public sealed class TourInstanceTranslationData
     public List<string> IncludedServices { get; set; } = [];
     public string? CancellationReason { get; set; }
 }
+
+public sealed class VisaPolicyTranslationData
+{
+    public string Region { get; set; } = string.Empty;
+    public string? Note { get; set; }
+}
+
+public sealed class DepositPolicyTranslationData
+{
+    public string? Description { get; set; }
+}
+
+public sealed class PricingPolicyTranslationData
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+}
+
+public sealed class CancellationPolicyTranslationData
+{
+    public string? Description { get; set; }
+}

@@ -35,6 +35,10 @@ public class DepositPolicyConfiguration : IEntityTypeConfiguration<DepositPolicy
         builder.Property(x => x.IsDeleted)
             .IsRequired();
 
+        // Translations as JSONB
+        builder.Property(x => x.Translations)
+            .HasColumnType("jsonb");
+
         builder.HasIndex(x => x.TourScope);
         builder.HasIndex(x => x.IsActive);
         builder.HasIndex(x => x.IsDeleted);

@@ -387,7 +387,7 @@ public sealed class AdminDashboardRepository(AppDbContext context) : IAdminDashb
         var currentMonth = StartOfCurrentMonth();
         var previousMonth = currentMonth.AddMonths(-1);
 
-        var currentRevenue = 
+        var currentRevenue =
             //await _context.CustomerPayments
             //.AsNoTracking()
             //.Where(x => x.PaidAt >= currentMonth && x.PaidAt < currentMonth.AddMonths(1))

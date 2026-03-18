@@ -47,6 +47,10 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
         builder.Property(p => p.IsDeleted)
             .HasDefaultValue(false);
 
+        // Translations as JSONB
+        builder.Property(p => p.Translations)
+            .HasColumnType("jsonb");
+
         // Composite index for efficient policy lookup
         builder.HasIndex(p => new { p.TourScope, p.MinDaysBeforeDeparture, p.MaxDaysBeforeDeparture, p.Status, p.IsDeleted });
         builder.HasIndex(p => new { p.Status, p.IsDeleted });

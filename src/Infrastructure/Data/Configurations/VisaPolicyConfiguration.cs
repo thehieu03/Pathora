@@ -31,6 +31,10 @@ public class VisaPolicyConfiguration : IEntityTypeConfiguration<VisaPolicyEntity
         builder.Property(x => x.IsDeleted)
             .IsRequired();
 
+        // Translations as JSONB
+        builder.Property(x => x.Translations)
+            .HasColumnType("jsonb");
+
         builder.HasIndex(x => x.Region);
         builder.HasIndex(x => x.IsActive);
         builder.HasIndex(x => x.IsDeleted);

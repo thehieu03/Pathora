@@ -41,6 +41,10 @@ public class PricingPolicyConfiguration : IEntityTypeConfiguration<PricingPolicy
         builder.Property(p => p.IsDeleted)
             .HasDefaultValue(false);
 
+        // Translations as JSONB
+        builder.Property(p => p.Translations)
+            .HasColumnType("jsonb");
+
         // Tiers stored as JSON
         builder.Property(p => p.Tiers)
             .HasColumnType("jsonb")

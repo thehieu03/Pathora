@@ -27,7 +27,7 @@ public class AdminOverviewRepository(AppDbContext context) : IAdminOverviewRepos
 
     private async Task<AdminDashboardStatsReport> BuildDashboardStats(CancellationToken cancellationToken)
     {
-        var totalRevenue = 
+        var totalRevenue =
             //await _context.CustomerPayments
             //.AsNoTracking()
             //.SumAsync(x => (decimal?)x.Amount, cancellationToken) ?? 
