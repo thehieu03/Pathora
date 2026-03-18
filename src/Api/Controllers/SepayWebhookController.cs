@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Mvc;
+
 using Api.Endpoint;
 using Application.Services;
 using Domain.ApiThirdPatyResponse;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
@@ -13,12 +14,14 @@ public class SepayWebhookController : ControllerBase
     private const string HealthyStatus = "healthy";
     private const string DefaultAmountLiteral = "0";
 
-    private readonly IPaymentService _paymentService;
+    private readonly IPaymentReconciliationService _paymentReconciliationService;
     private readonly ILogger<SepayWebhookController> _logger;
 
-    public SepayWebhookController(IPaymentService paymentService, ILogger<SepayWebhookController> logger)
+    public SepayWebhookController(
+        IPaymentReconciliationService paymentReconciliationService,
+        ILogger<SepayWebhookController> logger)
     {
-        _paymentService = paymentService;
+        _paymentReconciliationService = paymentReconciliationService;
         _logger = logger;
     }
 
@@ -53,7 +56,7 @@ public class SepayWebhookController : ControllerBase
                     ReferenceNumber = transaction.reference_number
                 };
 
-                var result = await _paymentService.ProcessPaymentCallbackAsync(transactionData);
+                var result = await _paymentReconciliationService.ReconcileProviderCallbackAsync(transactionData, "webhook");
 
                 if (result.IsError)
                 {
@@ -69,13 +72,14 @@ public class SepayWebhookController : ControllerBase
                 else
                 {
                     _logger.LogInformation("Successfully processed transaction {TransactionCode}, amount: {Amount}",
-                        result.Value.TransactionCode, result.Value.PaidAmount);
+                        result.Value.TransactionCode, transactionData.Amount);
                     results.Add(new
                     {
                         transactionId = transactionData.TransactionId,
                         success = true,
                         transactionCode = result.Value.TransactionCode,
-                        amount = result.Value.PaidAmount
+                        amount = transactionData.Amount,
+                        status = result.Value.NormalizedStatus
                     });
                 }
             }
