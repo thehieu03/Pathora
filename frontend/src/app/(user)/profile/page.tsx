@@ -60,12 +60,12 @@ export default function ProfilePage() {
     setPasswordSuccess("");
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError(t("auth.passwordMismatch") || "Mật khẩu xác nhận không khớp");
+      setPasswordError(t("common.auth.passwordMismatch") || "Mật khẩu xác nhận không khớp");
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      setPasswordError(t("auth.passwordMinLength") || "Mật khẩu phải có ít nhất 6 ký tự");
+      setPasswordError(t("common.auth.passwordMinLength") || "Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
@@ -75,11 +75,11 @@ export default function ProfilePage() {
         newPassword: passwordData.newPassword,
       }).unwrap();
 
-      setPasswordSuccess(t("auth.passwordChangedSuccess") || "Đổi mật khẩu thành công");
+      setPasswordSuccess(t("common.auth.passwordChangedSuccess") || "Đổi mật khẩu thành công");
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
       const apiError = handleApiError(error);
-      setPasswordError(apiError.message || t("auth.passwordChangeFailed") || "Đổi mật khẩu thất bại");
+      setPasswordError(apiError.message || t("common.auth.passwordChangeFailed") || "Đổi mật khẩu thất bại");
     }
   };
 
@@ -94,10 +94,10 @@ export default function ProfilePage() {
         address: profileData.address,
       }).unwrap();
 
-      setProfileSuccess(t("profilePage.updateSuccess") || "Cập nhật thông tin thành công");
+      setProfileSuccess(t("common.profilePage.updateSuccess") || "Cập nhật thông tin thành công");
     } catch (error) {
       const apiError = handleApiError(error);
-      setProfileError(apiError.message || t("profilePage.updateFailed") || "Cập nhật thất bại");
+      setProfileError(apiError.message || t("common.profilePage.updateFailed") || "Cập nhật thất bại");
     }
   };
 
@@ -110,6 +110,27 @@ export default function ProfilePage() {
   ];
 
   const user = userInfo ? extractResult<UserInfo>(userInfo) : null;
+
+  const headerConfig: Record<TabType, { icon: typeof FiUser; title: string; subtitle: string }> = {
+    profile: {
+      icon: FiUser,
+      title: t("common.profilePage.pageTitle") || "Tài khoản của tôi",
+      subtitle: t("common.profilePage.pageSubtitle") || "Quản lý thông tin cá nhân của bạn",
+    },
+    password: {
+      icon: FiLock,
+      title: t("common.profilePage.passwordTitle") || "Đổi mật khẩu",
+      subtitle: t("common.profilePage.passwordSubtitle") || "Cập nhật mật khẩu để bảo mật tài khoản",
+    },
+    settings: {
+      icon: FiSettings,
+      title: t("common.profilePage.settingsTitle") || "Cài đặt",
+      subtitle: t("common.profilePage.settingsSubtitle") || "Tùy chỉnh thông báo và tùy chọn cá nhân",
+    },
+  };
+
+  const currentHeader = headerConfig[activeTab];
+  const HeaderIcon = currentHeader.icon;
 
   if (isLoading) {
     return (
@@ -132,14 +153,26 @@ export default function ProfilePage() {
         </Link>
 
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-8">
-            <h1 className="text-2xl font-bold text-white">
-              {t("profilePage.pageTitle") || "Tài khoản của tôi"}
-            </h1>
-            <p className="text-orange-100 mt-1">
-              {user?.email || ""}
-            </p>
+          {/* Dynamic Header */}
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-8 transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                <HeaderIcon className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">
+                  {currentHeader.title}
+                </h1>
+                <p className="text-orange-100 mt-0.5 text-sm">
+                  {currentHeader.subtitle}
+                </p>
+              </div>
+            </div>
+            {user?.email && (
+              <p className="text-orange-200 text-xs mt-3 ml-[52px]">
+                {user.email}
+              </p>
+            )}
           </div>
 
           {/* Tabs */}
@@ -172,10 +205,18 @@ export default function ProfilePage() {
           <div className="p-6">
             {activeTab === "profile" && (
               <form onSubmit={handleProfileUpdate} className="space-y-6">
+                <div className="pb-4 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {t("common.profilePage.profileSectionTitle") || "Thông tin cá nhân"}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {t("common.profilePage.profileSectionDesc") || "Cập nhật họ tên, số điện thoại và địa chỉ của bạn"}
+                  </p>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("auth.fullName") || "Họ và tên"}
+                      {t("common.auth.fullName") || "Họ và tên"}
                     </label>
                     <input
                       type="text"
@@ -186,7 +227,7 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("auth.phoneNumber") || "Số điện thoại"}
+                      {t("common.auth.phoneNumber") || "Số điện thoại"}
                     </label>
                     <input
                       type="tel"
@@ -197,7 +238,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("auth.address") || "Địa chỉ"}
+                      {t("common.auth.address") || "Địa chỉ"}
                     </label>
                     <input
                       type="text"
@@ -241,9 +282,17 @@ export default function ProfilePage() {
 
             {activeTab === "password" && (
               <form onSubmit={handlePasswordChange} className="space-y-6 max-w-md">
+                <div className="pb-4 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {t("common.profilePage.passwordSectionTitle") || "Bảo mật tài khoản"}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {t("common.profilePage.passwordSectionDesc") || "Đổi mật khẩu thường xuyên để bảo vệ tài khoản"}
+                  </p>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("auth.currentPassword") || "Mật khẩu hiện tại"}
+                    {t("common.auth.currentPassword") || "Mật khẩu hiện tại"}
                   </label>
                   <input
                     type="password"
@@ -255,7 +304,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("auth.newPassword") || "Mật khẩu mới"}
+                    {t("common.auth.newPassword") || "Mật khẩu mới"}
                   </label>
                   <input
                     type="password"
@@ -267,7 +316,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("auth.confirmPassword") || "Xác nhận mật khẩu mới"}
+                    {t("common.auth.confirmPassword") || "Xác nhận mật khẩu mới"}
                   </label>
                   <input
                     type="password"
@@ -300,13 +349,21 @@ export default function ProfilePage() {
 
             {activeTab === "settings" && (
               <div className="space-y-6">
+                <div className="pb-4 border-b border-gray-100">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {t("common.profilePage.settingsSectionTitle") || "Tùy chọn thông báo"}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {t("common.profilePage.settingsSectionDesc") || "Chọn cách bạn muốn nhận thông báo từ chúng tôi"}
+                  </p>
+                </div>
                 <div className="flex items-center justify-between py-4 border-b border-gray-100">
                   <div>
                     <h3 className="font-medium text-gray-900">
-                      {t("settingsPage.emailNotifications") || "Thông báo qua email"}
+                      {t("common.settingsPage.emailNotifications") || "Thông báo qua email"}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {t("settingsPage.emailNotificationsDesc") || "Nhận thông báo qua email"}
+                      {t("common.settingsPage.emailNotificationsDesc") || "Nhận thông báo qua email"}
                     </p>
                   </div>
                   <button
@@ -327,10 +384,10 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between py-4 border-b border-gray-100">
                   <div>
                     <h3 className="font-medium text-gray-900">
-                      {t("settingsPage.smsNotifications") || "Thông báo qua SMS"}
+                      {t("common.settingsPage.smsNotifications") || "Thông báo qua SMS"}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {t("settingsPage.smsNotificationsDesc") || "Nhận thông báo qua SMS"}
+                      {t("common.settingsPage.smsNotificationsDesc") || "Nhận thông báo qua SMS"}
                     </p>
                   </div>
                   <button
@@ -351,10 +408,10 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between py-4 border-b border-gray-100">
                   <div>
                     <h3 className="font-medium text-gray-900">
-                      {t("settingsPage.newsletter") || "Bản tin"}
+                      {t("common.settingsPage.newsletter") || "Bản tin"}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      {t("settingsPage.newsletterDesc") || "Nhận bản tin và khuyến mãi"}
+                      {t("common.settingsPage.newsletterDesc") || "Nhận bản tin và khuyến mãi"}
                     </p>
                   </div>
                   <button

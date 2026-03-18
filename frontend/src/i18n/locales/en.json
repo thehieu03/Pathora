@@ -25,6 +25,17 @@
     },
     "profilePage": {
       "pageTitle": "My Account",
+      "pageSubtitle": "Manage your personal information",
+      "passwordTitle": "Change Password",
+      "passwordSubtitle": "Update your password to keep your account secure",
+      "settingsTitle": "Settings",
+      "settingsSubtitle": "Customize notifications and personal preferences",
+      "profileSectionTitle": "Personal Information",
+      "profileSectionDesc": "Update your name, phone number, and address",
+      "passwordSectionTitle": "Account Security",
+      "passwordSectionDesc": "Change your password regularly to protect your account",
+      "settingsSectionTitle": "Notification Preferences",
+      "settingsSectionDesc": "Choose how you want to receive notifications from us",
       "updateSuccess": "Profile updated successfully",
       "updateFailed": "Failed to update profile"
     },

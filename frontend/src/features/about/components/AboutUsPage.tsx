@@ -141,7 +141,7 @@ const VALUES = [
 const HeroBanner = () => {
   const { t } = useTranslation();
   return (
-    <section className="relative h-[500px] overflow-hidden">
+    <section className="relative h-[500px] -mt-20 overflow-hidden">
       {/* Background */}
       <Image
         src={HERO_BG}
@@ -155,7 +155,7 @@ const HeroBanner = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[#05073c]/70 via-[#05073c]/40 to-[#05073c]/80" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 pt-10">
         {/* Badge */}
         <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[1.2px] text-[#fa8b02] bg-[#fa8b02]/20 border border-[#fa8b02]/40 mb-4">
           {t("landing.aboutUs.ourStory")}
@@ -517,11 +517,11 @@ export const AboutUsPage = () => {
       id="main-content"
       tabIndex={-1}
       className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
-      {/* Header */}
-      <LandingHeader variant="solid" />
-
-      {/* Hero */}
-      <HeroBanner />
+      {/* Header + Hero (overlay like Home) */}
+      <div className="relative">
+        <LandingHeader />
+        <HeroBanner />
+      </div>
 
       {/* Stats - pass dynamic stats */}
       <StatsBar stats={stats} />

@@ -25,6 +25,17 @@
     },
     "profilePage": {
       "pageTitle": "Tài khoản của tôi",
+      "pageSubtitle": "Quản lý thông tin cá nhân của bạn",
+      "passwordTitle": "Đổi mật khẩu",
+      "passwordSubtitle": "Cập nhật mật khẩu để bảo mật tài khoản",
+      "settingsTitle": "Cài đặt",
+      "settingsSubtitle": "Tùy chỉnh thông báo và tùy chọn cá nhân",
+      "profileSectionTitle": "Thông tin cá nhân",
+      "profileSectionDesc": "Cập nhật họ tên, số điện thoại và địa chỉ của bạn",
+      "passwordSectionTitle": "Bảo mật tài khoản",
+      "passwordSectionDesc": "Đổi mật khẩu thường xuyên để bảo vệ tài khoản",
+      "settingsSectionTitle": "Tùy chọn thông báo",
+      "settingsSectionDesc": "Chọn cách bạn muốn nhận thông báo từ chúng tôi",
       "updateSuccess": "Cập nhật thông tin thành công",
       "updateFailed": "Cập nhật thất bại"
     },
