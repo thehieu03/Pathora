@@ -35,6 +35,7 @@ export enum TransactionStatusEnum {
 // Frontend-facing string types for developer convenience
 export type TransactionTypeString = "Deposit" | "FullPayment" | "Refund";
 export type PaymentMethodString = "Cash" | "BankTransfer" | "Card" | "Momo" | "VnPay";
+export type NormalizedPaymentStatus = "pending" | "paid" | "cancelled" | "expired" | "failed";
 
 // Convert string to enum integer for API
 const toTransactionType = (type: TransactionTypeString): number => TransactionTypeEnum[type as keyof typeof TransactionTypeEnum];
@@ -69,6 +70,19 @@ export interface PaymentTransaction {
   senderName?: string;
   senderAccountNumber?: string;
   beneficiaryBank?: string;
+  errorCode?: string;
+  errorMessage?: string;
+}
+
+export interface PaymentStatusSnapshot {
+  transactionCode: string;
+  normalizedStatus: NormalizedPaymentStatus;
+  rawStatus: string;
+  source: string;
+  verifiedWithProvider: boolean;
+  isTerminal: boolean;
+  checkedAt: string;
+  providerTransactionId?: string;
 }
 
 export interface CheckoutPriceResponse {
@@ -136,6 +150,36 @@ export const paymentService = {
     );
 
     return extractResult<PaymentTransaction>(response.data);
+  },
+
+  getNormalizedStatus: async (transactionCode: string) => {
+    const response = await api.get<ApiResponse<PaymentStatusSnapshot>>(
+      API_ENDPOINTS.PAYMENT.GET_TRANSACTION_STATUS(transactionCode),
+    );
+
+    return extractResult<PaymentStatusSnapshot>(response.data);
+  },
+
+  reconcileReturn: async (transactionCode: string) => {
+    const response = await api.get<ApiResponse<PaymentStatusSnapshot>>(
+      API_ENDPOINTS.PAYMENT.RECONCILE_RETURN,
+      {
+        params: { transactionCode },
+      },
+    );
+
+    return extractResult<PaymentStatusSnapshot>(response.data);
+  },
+
+  reconcileCancel: async (transactionCode: string) => {
+    const response = await api.get<ApiResponse<PaymentStatusSnapshot>>(
+      API_ENDPOINTS.PAYMENT.RECONCILE_CANCEL,
+      {
+        params: { transactionCode },
+      },
+    );
+
+    return extractResult<PaymentStatusSnapshot>(response.data);
   },
 
   expireTransaction: async (transactionCode: string) => {

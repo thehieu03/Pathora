@@ -9,9 +9,20 @@ import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { paymentService, PaymentTransaction, CheckoutPriceResponse } from "@/api/services/paymentService";
+import {
+  paymentService,
+  PaymentTransaction,
+  CheckoutPriceResponse,
+  type NormalizedPaymentStatus,
+} from "@/api/services/paymentService";
 import { handleApiError } from "@/utils/apiResponse";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  isCancelReturn,
+  mapTransactionStatusToNormalized,
+  resolveReturnTransactionCode,
+  shouldRedirectToHostedCheckout,
+} from "@/features/checkout/components/paymentFlowUtils";
 
 /* ── Sample Booking Data (would come from API/router state) ── */
 const SAMPLE_BOOKING = {
@@ -258,16 +269,16 @@ function BankAccountInfo({ t }: { t: (key: string) => string }) {
 /* ── Payment Status Panel ──────────────────────────────────── */
 function PaymentStatusPanel({
   transaction,
-  paymentConfirmed,
+  normalizedStatus,
   t,
 }: {
   transaction: PaymentTransaction;
-  paymentConfirmed: boolean;
+  normalizedStatus: NormalizedPaymentStatus;
   t: (key: string) => string;
 }) {
   const timeLeft = useCountdown(transaction.expiredAt);
 
-  if (paymentConfirmed) {
+  if (normalizedStatus === "paid") {
     return (
       <div className="flex flex-col items-center gap-4 py-6">
         <div className="size-16 rounded-full bg-green-100 flex items-center justify-center">
@@ -282,6 +293,55 @@ function PaymentStatusPanel({
         <div className="bg-green-50 rounded-xl px-4 py-3 border border-green-200 w-full text-center">
           <span className="text-xs text-gray-500">{t("landing.checkout.transactionCode")}</span>
           <p className="text-lg font-bold font-mono text-green-600 mt-1">
+            {transaction.transactionCode}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    normalizedStatus === "failed"
+    || normalizedStatus === "cancelled"
+    || normalizedStatus === "expired"
+  ) {
+    const isCancelled = normalizedStatus === "cancelled";
+    const isExpired = normalizedStatus === "expired";
+
+    const iconName = isCancelled
+      ? "heroicons:no-symbol"
+      : isExpired
+        ? "heroicons:clock"
+        : "heroicons:x-circle";
+
+    const iconStyles = isCancelled
+      ? "bg-amber-100 text-amber-600"
+      : isExpired
+        ? "bg-slate-100 text-slate-500"
+        : "bg-red-100 text-red-500";
+
+    const title = isCancelled
+      ? t("landing.checkout.paymentCancelled")
+      : isExpired
+        ? t("landing.checkout.paymentExpired")
+        : t("landing.checkout.paymentFailed");
+
+    const description = isCancelled
+      ? t("landing.checkout.paymentCancelledDesc")
+      : isExpired
+        ? t("landing.checkout.paymentExpiredDesc")
+        : t("landing.checkout.paymentFailedDesc");
+
+    return (
+      <div className="flex flex-col items-center gap-4 py-6">
+        <div className={`size-16 rounded-full flex items-center justify-center ${iconStyles}`}>
+          <Icon icon={iconName} className="size-10" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+        <p className="text-sm text-gray-500 text-center">{description}</p>
+        <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200 w-full text-center">
+          <span className="text-xs text-gray-500">{t("landing.checkout.transactionCode")}</span>
+          <p className="text-lg font-bold font-mono text-slate-900 mt-1">
             {transaction.transactionCode}
           </p>
         </div>
@@ -408,7 +468,7 @@ export function CheckoutPage() {
   const [acknowledgeInfo, setAcknowledgeInfo] = useState(false);
   const [loading, setLoading] = useState(false);
   const [transaction, setTransaction] = useState<PaymentTransaction | null>(null);
-  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [normalizedStatus, setNormalizedStatus] = useState<NormalizedPaymentStatus>("pending");
   const [checkoutPrice, setCheckoutPrice] = useState<CheckoutPriceResponse | null>(null);
   const [loadingPrice, setLoadingPrice] = useState(true);
   const [priceError, setPriceError] = useState<string | null>(null);
@@ -453,27 +513,43 @@ export function CheckoutPage() {
   const payAmount = paymentOption === "full" ? totalPrice : depositAmount;
   const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction && !!checkoutPrice;
 
+  useEffect(() => {
+    if (!transaction) {
+      setNormalizedStatus("pending");
+      return;
+    }
+
+    setNormalizedStatus(mapTransactionStatusToNormalized(transaction.status, transaction.errorCode));
+  }, [transaction]);
+
   /* ── Polling for payment status ────────────────────────── */
   const startPolling = useCallback((transactionCode: string) => {
     if (pollingRef.current) clearInterval(pollingRef.current);
 
     pollingRef.current = setInterval(async () => {
       try {
+        const statusSnapshot = await paymentService.getNormalizedStatus(transactionCode);
+        setNormalizedStatus(statusSnapshot.normalizedStatus);
+
         const updated = await paymentService.getTransaction(transactionCode);
         if (updated) {
           setTransaction(updated);
-          if (updated.status === "Completed") {
-            setPaymentConfirmed(true);
-            if (pollingRef.current) {
-              clearInterval(pollingRef.current);
-              pollingRef.current = null;
-            }
-          } else if (updated.status === "Failed" || updated.status === "Cancelled") {
-            toast.error(t("landing.checkout.paymentFailed"));
-            if (pollingRef.current) {
-              clearInterval(pollingRef.current);
-              pollingRef.current = null;
-            }
+        }
+
+        if (statusSnapshot.normalizedStatus === "paid") {
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
+          }
+        } else if (
+          statusSnapshot.normalizedStatus === "failed"
+          || statusSnapshot.normalizedStatus === "cancelled"
+          || statusSnapshot.normalizedStatus === "expired"
+        ) {
+          toast.error(t("landing.checkout.paymentFailed"));
+          if (pollingRef.current) {
+            clearInterval(pollingRef.current);
+            pollingRef.current = null;
           }
         }
       } catch {
@@ -481,6 +557,47 @@ export function CheckoutPage() {
       }
     }, 5000);
   }, [t]);
+
+  /* ── Handle redirect return/cancel from hosted payment ───── */
+  useEffect(() => {
+    const transactionCode = resolveReturnTransactionCode(searchParams);
+    if (!transactionCode) {
+      return;
+    }
+
+    const reconcilePayment = async () => {
+      try {
+        const snapshot = isCancelReturn(searchParams)
+          ? await paymentService.reconcileCancel(transactionCode)
+          : await paymentService.reconcileReturn(transactionCode);
+
+        setNormalizedStatus(snapshot.normalizedStatus);
+
+        const updatedTransaction = await paymentService.getTransaction(transactionCode);
+        if (updatedTransaction) {
+          setTransaction(updatedTransaction);
+        }
+
+        if (snapshot.normalizedStatus === "paid") {
+          toast.success(t("landing.checkout.paymentReceived"));
+          return;
+        }
+
+        if (snapshot.isTerminal) {
+          toast.error(t("landing.checkout.paymentFailed"));
+          return;
+        }
+
+        startPolling(transactionCode);
+      } catch (error: unknown) {
+        const handledError = handleApiError(error);
+        console.error("Failed to reconcile hosted payment return:", handledError.message);
+        toast.error(t("landing.checkout.transactionError"));
+      }
+    };
+
+    reconcilePayment();
+  }, [searchParams, startPolling, t]);
 
   /* ── Cleanup polling on unmount ────────────────────────── */
   useEffect(() => {
@@ -519,6 +636,12 @@ export function CheckoutPage() {
 
       if (result) {
         setTransaction(result);
+
+        if (shouldRedirectToHostedCheckout(result.qrCodeUrl)) {
+          window.location.assign(result.qrCodeUrl!);
+          return;
+        }
+
         toast.success(t("landing.checkout.transactionCreated"));
         startPolling(result.transactionCode);
       }
@@ -869,7 +992,7 @@ export function CheckoutPage() {
                   {transaction ? (
                     <PaymentStatusPanel
                       transaction={transaction}
-                      paymentConfirmed={paymentConfirmed}
+                      normalizedStatus={normalizedStatus}
                       t={t}
                     />
                   ) : (

@@ -7,3 +7,4 @@ export { orderService } from "./orderService";
 export { paymentService } from "./paymentService";
 export { reportService } from "./reportService";
 export { customTourRequestService } from "./customTourRequestService";
+export { dashboardPoliciesService } from "./dashboardPoliciesService";

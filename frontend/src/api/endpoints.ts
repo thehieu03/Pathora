@@ -99,7 +99,10 @@ export interface PaymentEndpoints {
   GET_QR: string;
   CREATE_TRANSACTION: string;
   GET_TRANSACTION: (code: string) => string;
+  GET_TRANSACTION_STATUS: (code: string) => string;
   EXPIRE_TRANSACTION: (code: string) => string;
+  RECONCILE_RETURN: string;
+  RECONCILE_CANCEL: string;
 }
 
 // Communication Service Endpoints Interface
@@ -220,9 +223,12 @@ export interface BookingEndpoints {
 
 // Site Content Endpoints Interface
 export interface SiteContentEndpoints {
-  GET_BY_PAGE: (pageKey: string) => string;
+  GET_BY_PAGE: (pageKey: string, lang?: string) => string;
   GET_BY_KEY: (pageKey: string, contentKey: string) => string;
   UPSERT: (pageKey: string, contentKey: string) => string;
+  ADMIN_LIST: (pageKey?: string, search?: string) => string;
+  ADMIN_DETAIL: (id: string) => string;
+  ADMIN_UPSERT: (id: string) => string;
 }
 
 // Pricing Policy Endpoints Interface
@@ -386,7 +392,10 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_QR: "/api/payment/getQR",
     CREATE_TRANSACTION: "/api/payment/create-transaction",
     GET_TRANSACTION: (code: string): string => `/api/payment/transaction/${code}`,
+    GET_TRANSACTION_STATUS: (code: string): string => `/api/payment/transaction/${code}/status`,
     EXPIRE_TRANSACTION: (code: string): string => `/api/payment/transaction/${code}/expire`,
+    RECONCILE_RETURN: "/api/payment/return",
+    RECONCILE_CANCEL: "/api/payment/cancel",
   },
 
   // Communication Service
@@ -533,9 +542,32 @@ export const API_ENDPOINTS: ApiEndpoints = {
 
   // Site Content
   SITE_CONTENT: {
-    GET_BY_PAGE: (pageKey: string): string => `/api/site-content?pageKey=${pageKey}`,
+    GET_BY_PAGE: (pageKey: string, lang?: string): string => {
+      const query = new URLSearchParams();
+      query.set("pageKey", pageKey);
+      if (lang) {
+        query.set("lang", lang);
+      }
+      return `/api/site-content?${query.toString()}`;
+    },
     GET_BY_KEY: (pageKey: string, contentKey: string): string => `/api/site-content/${pageKey}/${contentKey}`,
     UPSERT: (pageKey: string, contentKey: string): string => `/api/site-content/${pageKey}/${contentKey}`,
+    ADMIN_LIST: (pageKey?: string, search?: string): string => {
+      const query = new URLSearchParams();
+      if (pageKey && pageKey.trim().length > 0) {
+        query.set("pageKey", pageKey.trim());
+      }
+      if (search && search.trim().length > 0) {
+        query.set("search", search.trim());
+      }
+
+      const searchText = query.toString();
+      return searchText.length > 0
+        ? `/api/site-content/admin?${searchText}`
+        : "/api/site-content/admin";
+    },
+    ADMIN_DETAIL: (id: string): string => `/api/site-content/admin/${id}`,
+    ADMIN_UPSERT: (id: string): string => `/api/site-content/admin/${id}`,
   },
 
   // Pricing Policy
@@ -546,6 +578,42 @@ export const API_ENDPOINTS: ApiEndpoints = {
     UPDATE: "/api/pricing-policies",
     DELETE: (id: string): string => `/api/pricing-policies/${id}`,
     SET_DEFAULT: (id: string): string => `/api/pricing-policies/${id}/set-default`,
+  },
+
+  // Visa Policy
+  VISA_POLICY: {
+    GET_ALL: "/api/visa-policy",
+    GET_DETAIL: (id: string): string => `/api/visa-policy/${id}`,
+    CREATE: "/api/visa-policy",
+    UPDATE: "/api/visa-policy",
+    DELETE: (id: string): string => `/api/visa-policy/${id}`,
+  },
+
+  // Deposit Policy
+  DEPOSIT_POLICY: {
+    GET_ALL: "/api/deposit-policies",
+    GET_DETAIL: (id: string): string => `/api/deposit-policies/${id}`,
+    CREATE: "/api/deposit-policies",
+    UPDATE: "/api/deposit-policies",
+    DELETE: (id: string): string => `/api/deposit-policies/${id}`,
+  },
+
+  // Cancellation Policy
+  CANCELLATION_POLICY: {
+    GET_ALL: "/api/cancellation-policies",
+    GET_DETAIL: (id: string): string => `/api/cancellation-policies/${id}`,
+    CREATE: "/api/cancellation-policies",
+    UPDATE: "/api/cancellation-policies",
+    DELETE: (id: string): string => `/api/cancellation-policies/${id}`,
+  },
+
+  // Tax Config
+  TAX_CONFIG: {
+    GET_ALL: "/api/tax-configs",
+    GET_DETAIL: (id: string): string => `/api/tax-configs/${id}`,
+    CREATE: "/api/tax-configs",
+    UPDATE: "/api/tax-configs",
+    DELETE: (id: string): string => `/api/tax-configs/${id}`,
   },
 };
 

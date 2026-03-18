@@ -59,6 +59,7 @@ const NAV_ITEMS = [
   { label: "Insurance", icon: "heroicons:shield-check", href: "/dashboard/insurance" },
   { label: "Visa Applications", icon: "heroicons:document-check", href: "/dashboard/visa" },
   { label: "Policies", icon: "heroicons:clipboard-document-list", href: "/dashboard/policies" },
+  { label: "Site Content", icon: "heroicons:document-text", href: "/dashboard/site-content" },
   { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },
 ];
 
@@ -70,6 +71,7 @@ const QUICK_ACTIONS = [
     icon: "heroicons:eye",
     href: "/dashboard/bookings",
   },
+  { label: "Edit Site Content", icon: "heroicons:document-text", href: "/dashboard/site-content" },
   { label: "Manage Visa", icon: "heroicons:shield-check", href: "/dashboard/visa" },
 ];
 

@@ -1661,6 +1661,11 @@
       "includeTransactionCode": "Include this code in transfer description",
       "awaitingPayment": "Awaiting Payment Confirmation",
       "paymentReceived": "Payment Received",
+      "paymentCancelled": "Payment Cancelled",
+      "paymentCancelledDesc": "The payment was cancelled on the hosted payment page. You can return to checkout and create a new payment.",
+      "paymentExpired": "Payment Expired",
+      "paymentExpiredDesc": "The payment session expired before confirmation. Return to checkout to create a new payment.",
+      "paymentFailedDesc": "The payment could not be confirmed. Return to checkout and try again.",
       "transactionCode": "Transaction Code",
       "paymentPending": "Your payment is being verified. This usually takes a few minutes.",
       "copyAccountNumber": "Copy Account Number",
@@ -2248,6 +2253,102 @@
       "public": "Public",
       "active": "Active",
       "inactive": "Inactive"
+    },
+    "policies": {
+      "title": "Policies",
+      "description": "Review and manage pricing, deposit, cancellation, and visa policy rules.",
+      "searchPlaceholder": "Search by policy name, type, or scope",
+      "confirmToggle": "Are you sure you want to change the status for this policy?",
+      "types": {
+        "pricing": "Pricing",
+        "deposit": "Deposit",
+        "cancellation": "Cancellation",
+        "visa": "Visa"
+      },
+      "filters": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "table": {
+        "policy": "Policy",
+        "type": "Type",
+        "scope": "Scope",
+        "status": "Status",
+        "updated": "Last updated",
+        "destination": "Management",
+        "actions": "Actions"
+      },
+      "metrics": {
+        "total": "Total policies",
+        "active": "Active",
+        "inactive": "Inactive",
+        "categories": "Policy categories"
+      },
+      "states": {
+        "loading": "Loading policy data...",
+        "emptyTitle": "No policies found",
+        "emptyDescription": "Create your first policy to start configuring business rules.",
+        "filteredEmptyTitle": "No matching policies",
+        "filteredEmptyDescription": "Try another keyword or reset filters to see all policies."
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "create": "Create policy",
+        "view": "View",
+        "edit": "Edit",
+        "reset": "Reset",
+        "retry": "Retry",
+        "updating": "Updating..."
+      },
+      "errors": {
+        "loadFailed": "Unable to load policies.",
+        "toggleFailed": "Unable to change policy status. Please try again."
+      }
+    },
+    "siteContent": {
+      "title": "Site Content",
+      "description": "Manage page content records and edit English/Vietnamese JSON values.",
+      "searchPlaceholder": "Search by page key or content key",
+      "filters": {
+        "pageKey": "Page key",
+        "allPageKeys": "All page keys"
+      },
+      "table": {
+        "pageKey": "Page key",
+        "contentKey": "Content key",
+        "locales": "Locales",
+        "updated": "Last updated",
+        "actions": "Actions",
+        "system": "system"
+      },
+      "states": {
+        "loading": "Loading site content records...",
+        "emptyTitle": "No site content records found",
+        "emptyDescription": "Try another filter or search keyword.",
+        "loadingDetail": "Loading content detail..."
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "edit": "Edit",
+        "close": "Close",
+        "save": "Save changes",
+        "saving": "Saving..."
+      },
+      "editor": {
+        "title": "Bilingual content editor",
+        "englishLabel": "English JSON (en)",
+        "vietnameseLabel": "Vietnamese JSON (vi)"
+      },
+      "errors": {
+        "loadList": "Unable to load site content records. Please try again.",
+        "loadDetail": "Unable to load content detail. Please try again.",
+        "invalidJson": "English and Vietnamese content must be valid JSON.",
+        "saveFailed": "Unable to save content changes. Please try again."
+      },
+      "messages": {
+        "saveSuccess": "Site content updated successfully."
+      }
     }
   }
 }

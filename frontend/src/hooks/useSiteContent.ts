@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { getCurrentApiLanguage } from "@/api/languageHeader";
 import API_ENDPOINTS from "@/api/endpoints";
 import { getCookie } from "@/utils/cookie";
 
@@ -29,9 +30,11 @@ export function useSiteContent(pageKey: string): UseSiteContentResult {
 
     try {
       const token = getCookie("access_token");
-      const response = await fetch(API_ENDPOINTS.SITE_CONTENT.GET_BY_PAGE(pageKey), {
+      const language = getCurrentApiLanguage();
+      const response = await fetch(API_ENDPOINTS.SITE_CONTENT.GET_BY_PAGE(pageKey, language), {
         headers: {
           "Content-Type": "application/json",
+          "Accept-Language": language,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       });
