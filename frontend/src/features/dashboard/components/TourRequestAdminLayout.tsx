@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import { tourRequestService } from "@/api/services/tourRequestService";
-import { AdminLogoutButton } from "./AdminLogoutButton";
+import { AdminSidebar, TopBar } from "./AdminSidebar";
 
 type TourRequestAdminLayoutProps = {
   title: string;

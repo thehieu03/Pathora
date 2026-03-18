@@ -174,22 +174,10 @@ export function TourListPage() {
   const showingTo = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}>
+      <TopBar onMenuClick={() => setSidebarOpen(true)} />
 
-      {/* Backdrop */}
-      {sidebarOpen && (
-        <button
-          aria-label="Close sidebar"
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden cursor-default"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      <div className="lg:ml-64">
-        <TopBar onMenuClick={() => setSidebarOpen(true)} />
-
-        <main id="main-content" className="p-6 space-y-6">
+      <main id="main-content" className="p-6 space-y-6">
           {/* ── Page Header ────────────────────────────────── */}
           <div className="flex items-center justify-between">
             <div>
@@ -526,7 +514,6 @@ export function TourListPage() {
             </div>
           )}
         </main>
-      </div>
-    </div>
+    </AdminSidebar>
   );
 }
