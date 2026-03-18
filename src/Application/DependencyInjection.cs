@@ -38,6 +38,8 @@ public static class DependencyInjection
         services.AddScoped<IDepositPolicyService, DepositPolicyService>();
         services.AddScoped<ITaxConfigService, TaxConfigService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IPaymentReconciliationService, PaymentReconciliationService>();
+        services.AddScoped<IPayOSClient, PayOSClientImplementation>();
         services.AddScoped<IOwnershipValidator, OwnershipValidator>();
         services.AddScoped<IPricingPolicyService, PricingPolicyService>();
         services.AddScoped<ICancellationPolicyService, CancellationPolicyService>();

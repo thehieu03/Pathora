@@ -11,6 +11,7 @@ namespace Application.Services;
 public interface IPaymentService
 {
     Task<ErrorOr<string>> GetQR(string note, long amount);
+    Task<ErrorOr<string>> GetCheckoutUrlAsync(string transactionCode, string note, long amount);
     Task<ErrorOr<PaymentTransactionEntity>> CreatePaymentTransactionAsync(
         Guid bookingId,
         TransactionType type,
@@ -41,25 +42,30 @@ public class PaymentService : IPaymentService
     private readonly string _sepayAccountNumber;
     private readonly string _sepayBankCode;
     private readonly string _sepayQrBaseUrl;
+    private readonly string _frontendBaseUrl;
     private readonly IPaymentTransactionRepository _transactionRepository;
     private readonly IBookingRepository _bookingRepository;
     private readonly IOutboxRepository _outboxRepository;
+    private readonly IPayOSClient _payOSClient;
     private readonly ILogger<PaymentService> _logger;
 
     public PaymentService(
         IPaymentTransactionRepository transactionRepository,
         IBookingRepository bookingRepository,
         IOutboxRepository outboxRepository,
+        IPayOSClient payOSClient,
         ILogger<PaymentService> logger,
         IConfiguration configuration)
     {
         _transactionRepository = transactionRepository;
         _bookingRepository = bookingRepository;
         _outboxRepository = outboxRepository;
+        _payOSClient = payOSClient;
         _logger = logger;
         _sepayAccountNumber = NormalizeConfigValue(configuration["Payment:Account"]);
         _sepayBankCode = NormalizeConfigValue(configuration["Payment:Bank"]);
         _sepayQrBaseUrl = NormalizeConfigValue(configuration["Payment:QrBaseUrl"]);
+        _frontendBaseUrl = NormalizeConfigValue(configuration["AppConfig:FrontendBaseUrl"]);
     }
 
     public Task<ErrorOr<string>> GetQR(string note, long amount)
@@ -77,6 +83,34 @@ public class PaymentService : IPaymentService
         var encodedNote = Uri.EscapeDataString(note);
         var url = $"{_sepayQrBaseUrl.TrimEnd('/')}?acc={_sepayAccountNumber}&bank={_sepayBankCode}&amount={amount}&des={encodedNote}&template=TEMPLATE&download=false";
         return Task.FromResult<ErrorOr<string>>(url);
+    }
+
+    public async Task<ErrorOr<string>> GetCheckoutUrlAsync(string transactionCode, string note, long amount)
+    {
+        var returnUrl = $"{_frontendBaseUrl}/payment/{transactionCode}?status=return";
+        var cancelUrl = $"{_frontendBaseUrl}/payment/{transactionCode}?status=cancel";
+
+        // PayOS requires numeric orderCode - extract numeric part from transaction code
+        var numericPart = new string(transactionCode.Where(char.IsDigit).ToArray());
+        var orderCode = long.TryParse(numericPart.Length > 9 ? numericPart[^9..] : numericPart, out var oc) ? oc : DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        var request = new PayOSPaymentLinkRequest
+        {
+            OrderCode = orderCode,
+            Amount = amount,
+            Description = note.Length > 100 ? note[..100] : note,
+            ReturnUrl = returnUrl,
+            CancelUrl = cancelUrl
+        };
+
+        var result = await _payOSClient.CreatePaymentLinkAsync(request);
+
+        if (result.IsError)
+        {
+            return result.Errors;
+        }
+
+        return result.Value.CheckoutUrl;
     }
 
     public async Task<ErrorOr<PaymentTransactionEntity>> CreatePaymentTransactionAsync(
@@ -101,12 +135,14 @@ public class PaymentService : IPaymentService
             createdBy: createdBy,
             expiredAt: expiredAt);
 
-        var qrUrl = await GetQR(paymentNote, (long)amount);
-        if (qrUrl.IsError)
+        // Get PayOS checkout URL instead of Sepay QR
+        var checkoutUrl = await GetCheckoutUrlAsync(transactionCode, paymentNote, (long)amount);
+        if (checkoutUrl.IsError)
         {
-            return qrUrl.Errors;
+            return checkoutUrl.Errors;
         }
-        transaction.QRCodeUrl = qrUrl.Value;
+        // Reuse QRCodeUrl field to store checkout URL for backward compatibility
+        transaction.QRCodeUrl = checkoutUrl.Value;
 
         await _transactionRepository.AddAsync(transaction);
 
@@ -122,7 +158,7 @@ public class PaymentService : IPaymentService
         var outboxMessage = OutboxMessage.Create(OutboxTypePaymentCheck, outboxPayload);
         await _outboxRepository.AddAsync(outboxMessage);
 
-        _logger.LogInformation("Created outbox message {OutboxId} for payment check", outboxMessage.Id);
+        _logger.LogInformation("Created payment transaction {TransactionCode} with PayOS checkout URL", transactionCode);
 
         return transaction;
     }
