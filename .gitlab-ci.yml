@@ -8,9 +8,8 @@ deploy-app:
   only:
     - main
   script:
-    - echo "Building Frontend..."
-    - docker build -f frontend/Dockerfile -t pathora-fe:latest ./frontend
-    # 3. Dùng Compose để cập nhật hệ thống
+   - echo "Đang build Frontend..."
+    - docker build -t pathora-fe:latest ./frontend
     - echo "Đang cập nhật các container qua Docker Compose..."
     - cd /home/huynqhe180309
     - touch .env
