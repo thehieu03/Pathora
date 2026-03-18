@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "./LandingImage";
 import { Button, Icon, TextInput } from "@/components/ui";
 import { useTranslation } from "react-i18next";
+import { SOCIAL_MEDIA, APP_STORES } from "@/configs/urls";
 
 const FOOTER_BG = "/tour-placeholder.svg";
 
@@ -43,25 +44,25 @@ const socialLinks = [
   {
     name: "facebook",
     icon: "mdi:facebook",
-    href: "https://facebook.com",
+    href: SOCIAL_MEDIA.facebook,
     label: "Facebook",
   },
   {
     name: "twitter",
     icon: "mdi:twitter",
-    href: "https://twitter.com",
+    href: SOCIAL_MEDIA.twitter,
     label: "Twitter",
   },
   {
     name: "instagram",
     icon: "mdi:instagram",
-    href: "https://instagram.com",
+    href: SOCIAL_MEDIA.instagram,
     label: "Instagram",
   },
   {
     name: "youtube",
     icon: "mdi:youtube",
-    href: "https://youtube.com",
+    href: SOCIAL_MEDIA.youtube,
     label: "YouTube",
   },
 ];
@@ -206,7 +207,7 @@ export const LandingFooter = () => {
             </h4>
             <div className="flex flex-col gap-2">
               <a
-                href="https://apps.apple.com"
+                href={APP_STORES.apple}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="text-white/60 text-sm hover:text-landing-accent transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"
@@ -215,7 +216,7 @@ export const LandingFooter = () => {
                 {t("landing.footer.mobileApps.ios")}
               </a>
               <a
-                href="https://play.google.com/store"
+                href={APP_STORES.google}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="text-white/60 text-sm hover:text-landing-accent transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded-sm"

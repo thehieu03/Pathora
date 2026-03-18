@@ -9,6 +9,7 @@ import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useTranslation } from "react-i18next";
+import { SOCIAL_MEDIA } from "@/configs/urls";
 
 /* ── Types ─────────────────────────────────────────────────── */
 type BookingStatus =
@@ -490,7 +491,7 @@ export function BookingHistoryPage() {
       {/* ── Floating Social Buttons ─────────────────────── */}
       <div className="fixed right-4 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-3">
         <a
-          href="https://facebook.com"
+          href={SOCIAL_MEDIA.facebook}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Facebook"

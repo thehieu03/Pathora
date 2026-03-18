@@ -483,6 +483,8 @@ export function CheckoutPage() {
   const endDateParam = searchParams.get("endDate");
   const locationParam = searchParams.get("location");
   const depositPerPersonParam = searchParams.get("depositPerPerson");
+  const bookingTypeParam = searchParams.get("bookingType") || "InstanceJoin";
+  const instanceTypeParam = searchParams.get("instanceType") || "public";
 
   /* ── State for tour instance booking ─────────────────── */
   const [tourInstanceBooking, setTourInstanceBooking] = useState<{
@@ -492,6 +494,8 @@ export function CheckoutPage() {
     endDate: string;
     location: string;
     depositPerPerson: number;
+    bookingType: string;
+    instanceType: string;
   } | null>(null);
 
   /* ── Initialize tour instance booking from URL params ──── */
@@ -504,10 +508,12 @@ export function CheckoutPage() {
         endDate: endDateParam || "",
         location: locationParam || "",
         depositPerPerson: depositPerPersonParam ? Number(depositPerPersonParam) : 0,
+        bookingType: bookingTypeParam,
+        instanceType: instanceTypeParam,
       });
       setLoadingPrice(false);
     }
-  }, [tourInstanceIdParam, tourNameParam, startDateParam, endDateParam, locationParam, depositPerPersonParam]);
+  }, [tourInstanceIdParam, tourNameParam, startDateParam, endDateParam, locationParam, depositPerPersonParam, bookingTypeParam, instanceTypeParam]);
 
   /* ── Fetch checkout price from API ────────────────────── */
   useEffect(() => {
@@ -755,10 +761,27 @@ export function CheckoutPage() {
                   ) : tourInstanceBooking && !checkoutPrice ? (
                     /* Tour instance booking without existing booking - show info */
                     <div className="flex flex-col items-center justify-center py-8 text-center">
-                      <Icon icon="heroicons:information-circle" className="size-10 text-orange-500 mb-2" />
-                      <p className="text-sm text-gray-600 mb-4">
-                        {t("landing.checkout.bookingInProgress", "Setting up your booking...")}
-                      </p>
+                      {tourInstanceBooking.instanceType === "public" || tourInstanceBooking.instanceType === "Public" ? (
+                        <>
+                          <Icon icon="heroicons:check-circle" className="size-12 text-green-500 mb-2" />
+                          <p className="text-lg font-semibold text-green-600 mb-2">
+                            {t("landing.checkout.bookingConfirmed", "Booking Confirmed!")}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-4">
+                            {t("landing.checkout.publicInstanceMessage", "Your booking has been confirmed. Get ready for your adventure!")}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <Icon icon="heroicons:clock" className="size-12 text-blue-500 mb-2" />
+                          <p className="text-lg font-semibold text-blue-600 mb-2">
+                            {t("landing.checkout.bookingPending", "Booking Request Submitted")}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-4">
+                            {t("landing.checkout.privateInstanceMessage", "Your request is pending admin review. We'll notify you once approved.")}
+                          </p>
+                        </>
+                      )}
                       <div className="bg-gray-50 rounded-xl p-4 text-left w-full max-w-md">
                         <h4 className="font-semibold text-slate-900 mb-2">{tourInstanceBooking.tourName}</h4>
                         <p className="text-xs text-gray-500">
@@ -770,12 +793,14 @@ export function CheckoutPage() {
                         <p className="text-xs text-gray-500 mt-2 font-semibold text-orange-500">
                           💰 Deposit: {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(tourInstanceBooking.depositPerPerson)}
                         </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          📋 Type: {tourInstanceBooking.bookingType === "InstanceJoin" ? "Instance Join" : "Tour Booking"}
+                          {" | "}
+                          Visibility: {tourInstanceBooking.instanceType === "public" ? "Public" : "Private"}
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-400 mt-4">
-                        {t("landing.checkout.bookingComingSoon", "Booking system integration in progress. Please contact support or try again later.")}
-                      </p>
-                      <Link href="/tours" className="text-sm text-orange-500 hover:underline mt-4">
-                        {t("landing.checkout.backToTour")}
+                      <Link href="/bookings" className="text-sm text-orange-500 hover:underline mt-4">
+                        {t("landing.checkout.viewMyBookings", "View My Bookings")}
                       </Link>
                     </div>
                   ) : (

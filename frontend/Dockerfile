@@ -33,7 +33,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_PUBLIC_API_GATEWAY=http://localhost:8080
+ENV NEXT_PUBLIC_API_GATEWAY=http://api:8080
 ENV NEXT_PUBLIC_REMOTE_IMAGE_HOSTS=cdn3.ivivu.com
 
 RUN addgroup --system --gid 1001 nodejs && \
@@ -45,11 +45,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 3000
-ENV PORT=3000
+EXPOSE 3001
+ENV PORT=3001
 ENV HOSTNAME=0.0.0.0
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3001 || exit 1
 
 CMD ["node", "server.js"]

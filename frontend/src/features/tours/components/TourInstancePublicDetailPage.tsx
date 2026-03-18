@@ -289,18 +289,6 @@ export function TourInstancePublicDetailPage() {
               <Icon icon="heroicons:arrow-left" className="size-4" />
               {t("tourInstance.backToTour", "Back to tour")}
             </Link>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/15 transition-colors hover:bg-white/25 backdrop-blur-md">
-                <Icon icon="heroicons:heart" className="size-5 text-white" />
-              </Button>
-              <Button
-                type="button"
-                className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/15 transition-colors hover:bg-white/25 backdrop-blur-md">
-                <Icon icon="heroicons:share" className="size-5 text-white" />
-              </Button>
-            </div>
           </div>
         </div>
 
@@ -656,6 +644,11 @@ export function TourInstancePublicDetailPage() {
                         return;
                       }
                       if (data) {
+                        // Determine booking type based on instance type
+                        // Public instance = Instant confirmation (InstanceJoin)
+                        // Private instance = Admin approval required (InstanceJoin with pending)
+                        const isPublicInstance = (data.instanceType || "").toLowerCase() === "public" || data.instanceType === "Public";
+
                         // Navigate to checkout with tour instance info and guest counts
                         const params = new URLSearchParams({
                           tourInstanceId: id,
@@ -667,17 +660,29 @@ export function TourInstancePublicDetailPage() {
                           adults: String(adults),
                           children: String(children),
                           infants: String(infants),
+                          bookingType: "InstanceJoin",
+                          instanceType: isPublicInstance ? "public" : "private",
                         });
                         router.push(`/checkout?${params.toString()}`);
                       }
                     }}
-                    className="relative w-full py-4 rounded-2xl text-[15px] tracking-wide font-extrabold text-white overflow-hidden transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(249,115,22,0.3)] hover:shadow-[0_12px_24px_rgba(249,115,22,0.4)] hover:-translate-y-1 active:scale-[0.98]">
+                    className={`relative w-full py-4 rounded-2xl text-[15px] tracking-wide font-extrabold text-white overflow-hidden transition-all duration-300 flex items-center justify-center gap-2 ${
+                      (data?.instanceType || "").toLowerCase() === "public" || data?.instanceType === "Public"
+                        ? "bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(249,115,22,0.3)] hover:shadow-[0_12px_24px_rgba(249,115,22,0.4)] hover:-translate-y-1"
+                        : "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(59,130,246,0.3)] hover:shadow-[0_12px_24px_rgba(59,130,246,0.4)] hover:-translate-y-1"
+                    } active:scale-[0.98]`}>
                     {/* Glass Shine Effect */}
                     <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                       <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 -translate-x-full group-hover/book:translate-x-[150%] transition-transform duration-1000 ease-in-out" />
                     </div>
-                    <Icon icon="heroicons:paper-airplane" className="size-5 transition-transform group-hover/book:-translate-y-0.5 group-hover/book:translate-x-0.5 group-hover/book:rotate-[-10deg]" />
-                    <span className="relative z-10">{t("landing.tourDetail.requestBooking", "Request Booking")}</span>
+                    <Icon
+                      icon={((data?.instanceType || "").toLowerCase() === "public" || data?.instanceType === "Public") ? "heroicons:check-circle" : "heroicons:clock"}
+                      className="size-5 transition-transform group-hover/book:-translate-y-0.5 group-hover/book:translate-x-0.5 group-hover/book:rotate-[-10deg]" />
+                    <span className="relative z-10">
+                      {((data?.instanceType || "").toLowerCase() === "public" || data?.instanceType === "Public")
+                        ? t("landing.tourDetail.bookNow", "Book Now - Instant Confirmation")
+                        : t("landing.tourDetail.requestToJoin", "Request to Join - Admin will review")}
+                    </span>
                   </Button>
               </div>
             </div>
