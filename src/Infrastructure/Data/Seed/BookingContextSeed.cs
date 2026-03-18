@@ -52,6 +52,8 @@ public static class BookingContextSeed
         hasChanges |= SeedCustomerDeposits(context);
         hasChanges |= SeedCustomerPayments(context);
         hasChanges |= SeedReviews(context);
+        hasChanges |= SeedPricingPolicies(context);
+        hasChanges |= SeedTaxConfigs(context);
 
         hasChanges |= BackfillTourDayTranslations(context);
         hasChanges |= BackfillTourInstanceTranslations(context);
@@ -648,5 +650,35 @@ public static class BookingContextSeed
         }
 
         return null;
+    }
+
+    private static bool SeedPricingPolicies(AppDbContext context)
+    {
+        if (context.PricingPolicies.Any()) return false;
+
+        var data = SeedDataLoader.LoadData<PricingPolicy>("pricing-policy.json");
+        if (data is { Count: > 0 })
+        {
+            context.PricingPolicies.AddRange(data);
+            context.SaveChanges();
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool SeedTaxConfigs(AppDbContext context)
+    {
+        if (context.TaxConfigs.Any()) return false;
+
+        var data = SeedDataLoader.LoadData<TaxConfigEntity>("tax-config.json");
+        if (data is { Count: > 0 })
+        {
+            context.TaxConfigs.AddRange(data);
+            context.SaveChanges();
+            return true;
+        }
+
+        return false;
     }
 }

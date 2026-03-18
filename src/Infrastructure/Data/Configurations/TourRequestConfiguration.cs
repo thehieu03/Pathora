@@ -84,6 +84,8 @@ public class TourRequestConfiguration : IEntityTypeConfiguration<TourRequestEnti
         builder.HasIndex(t => t.Status);
         builder.HasIndex(t => t.UserId);
         builder.HasIndex(t => t.DepartureDate);
+        // Composite indexes for common query patterns
+        builder.HasIndex(t => new { t.Status, t.DepartureDate });
 
         // Relationships
         builder.HasOne(t => t.User)

@@ -57,6 +57,10 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
         builder.HasIndex(b => b.TourInstanceId);
         builder.HasIndex(b => b.UserId);
         builder.HasIndex(b => b.BookingDate);
+        // Composite indexes for common query patterns
+        builder.HasIndex(b => new { b.Status, b.TourInstanceId });
+        builder.HasIndex(b => new { b.Status, b.UserId });
+        builder.HasIndex(b => new { b.UserId, b.TourInstanceId });
 
         // Relationships
         builder.HasOne(b => b.TourInstance)

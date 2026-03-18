@@ -1,0 +1,35 @@
+[
+  {
+    "Id": "01960000-0000-7000-8000-000000000001",
+    "PolicyCode": "PP-DEFAULT-001",
+    "Name": "Standard Pricing Policy",
+    "TourType": 2,
+    "Status": 1,
+    "IsDefault": true,
+    "Tiers": [
+      {
+        "Label": "Adult",
+        "AgeFrom": 18,
+        "AgeTo": null,
+        "PricePercentage": 100
+      },
+      {
+        "Label": "Child",
+        "AgeFrom": 5,
+        "AgeTo": 17,
+        "PricePercentage": 75
+      },
+      {
+        "Label": "Infant",
+        "AgeFrom": 0,
+        "AgeTo": 4,
+        "PricePercentage": 30
+      }
+    ],
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-01-01T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-01-01T00:00:00Z"
+  }
+]

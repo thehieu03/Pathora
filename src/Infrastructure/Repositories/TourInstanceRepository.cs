@@ -23,7 +23,10 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
 
     public async Task<List<TourInstanceEntity>> FindAll(string? searchText, TourInstanceStatus? status, int pageNumber, int pageSize)
     {
-        var query = _context.TourInstances.AsNoTracking().Where(t => !t.IsDeleted);
+        var query = _context.TourInstances.AsNoTracking()
+            .Include(t => t.Tour)
+            .Include(t => t.Classification)
+            .Where(t => !t.IsDeleted);
 
         if (!string.IsNullOrWhiteSpace(searchText))
         {

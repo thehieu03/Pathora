@@ -12,6 +12,7 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
     public async Task<BookingEntity?> GetByIdAsync(Guid id)
     {
         return await _context.Bookings
+            .AsNoTracking()
             .Include(b => b.TourInstance)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
@@ -30,6 +31,9 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
     public async Task<List<BookingEntity>> GetByTourInstanceIdAsync(Guid tourInstanceId)
     {
         return await _context.Bookings
+            .AsNoTracking()
+            .Include(b => b.User)
+            .Include(b => b.TourInstance)
             .Where(b => b.TourInstanceId == tourInstanceId)
             .OrderByDescending(b => b.BookingDate)
             .ToListAsync();
@@ -38,6 +42,7 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
     public async Task<List<BookingEntity>> GetByUserIdAsync(Guid userId)
     {
         return await _context.Bookings
+            .AsNoTracking()
             .Include(b => b.TourInstance)
             .Where(b => b.UserId == userId)
             .OrderByDescending(b => b.BookingDate)

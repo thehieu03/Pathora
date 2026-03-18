@@ -99,5 +99,11 @@ public class PaymentTransactionConfiguration : IEntityTypeConfiguration<PaymentT
             .WithMany(x => x.PaymentTransactions)
             .HasForeignKey(x => x.BookingId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Indexes for common query patterns
+        builder.HasIndex(x => x.Status);
+        builder.HasIndex(x => x.BookingId);
+        builder.HasIndex(x => x.PaidAt);
+        builder.HasIndex(x => new { x.Status, x.PaidAt });
     }
 }
