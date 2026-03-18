@@ -42,7 +42,7 @@ public class FileManager(
             DefaultBucket,
             isPublicBucket: true,
             cancellationToken);
-        return results.FirstOrDefault()?.PublicURL ?? string.Empty;
+        return results.FirstOrDefault()?.PublicUrl ?? string.Empty;
     }
 
     public async Task<IEnumerable<FileMetadataEntity>> UploadMultipleFilesAsync(
@@ -73,7 +73,7 @@ public class FileManager(
             r.OriginalFileName ?? r.FileName ?? string.Empty,
             r.FileName ?? string.Empty,
             r.ContentType ?? "application/octet-stream",
-            r.PublicURL ?? string.Empty,
+            r.PublicUrl ?? string.Empty,
             r.FileSize,
             "system"));
     }

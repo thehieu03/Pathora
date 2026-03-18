@@ -39,7 +39,7 @@ public sealed class FileManagerTests
                     FileId = Guid.CreateVersion7().ToString(),
                     FileName = "stored-a.png",
                     OriginalFileName = "a.png",
-                    PublicURL = "https://cdn.example.com/a.png",
+                    PublicUrl = "https://cdn.example.com/a.png",
                     ContentType = "image/png",
                     FileSize = 4
                 },
@@ -48,7 +48,7 @@ public sealed class FileManagerTests
                     FileId = Guid.CreateVersion7().ToString(),
                     FileName = "stored-b.png",
                     OriginalFileName = "b.png",
-                    PublicURL = "https://cdn.example.com/b.png",
+                    PublicUrl = "https://cdn.example.com/b.png",
                     ContentType = "image/png",
                     FileSize = 4
                 }

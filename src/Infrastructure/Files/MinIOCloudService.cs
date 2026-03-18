@@ -78,7 +78,7 @@ public sealed class MinIOCloudService : IMinIOCloudService
                     FileName = objectName,
                     FileSize = f.Bytes.Length,
                     ContentType = f.ContentType,
-                    PublicURL = isPublicBucket ? $"{_publicBaseUrl}/{bucketName}/{objectName}" : string.Empty,
+                    PublicUrl = isPublicBucket ? $"{_publicBaseUrl}/{bucketName}/{objectName}" : string.Empty,
                 });
             }
             return results;

@@ -32,6 +32,8 @@ internal static class DependencyInjection
         services.AddScoped<ITourRepository, TourRepository>();
         services.AddScoped<ITourInstanceRepository, TourInstanceRepository>();
         services.AddScoped<IDynamicPricingTierRepository, DynamicPricingTierRepository>();
+        services.AddScoped<IPricingPolicyRepository, PricingPolicyRepository>();
+        services.AddScoped<ICancellationPolicyRepository, CancellationPolicyRepository>();
 
         services.AddScoped<IReviewRepository, ReviewRepository>();
 
@@ -44,6 +46,9 @@ internal static class DependencyInjection
         services.AddScoped<IPassportRepository, PassportRepository>();
         services.AddScoped<IVisaApplicationRepository, VisaApplicationRepository>();
         services.AddScoped<IVisaRepository, VisaRepository>();
+        services.AddScoped<IVisaPolicyRepository, VisaPolicyRepository>();
+        services.AddScoped<IDepositPolicyRepository, DepositPolicyRepository>();
+        services.AddScoped<ITaxConfigRepository, TaxConfigRepository>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
         services.AddScoped<ISupplierPayableRepository, SupplierPayableRepository>();
         services.AddScoped<ISupplierReceiptRepository, SupplierReceiptRepository>();

@@ -1,0 +1,47 @@
+using Api.Endpoint;
+using Application.Features.VisaPolicy.Commands;
+using Application.Features.VisaPolicy.Queries;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Controllers;
+
+[Authorize]
+[Route(VisaPolicyEndpoint.Base)]
+public class VisaPolicyController : BaseApiController
+{
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await Sender.Send(new GetAllVisaPoliciesQuery());
+        return HandleResult(result);
+    }
+
+    [HttpGet(VisaPolicyEndpoint.Id)]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        var result = await Sender.Send(new GetVisaPolicyByIdQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateVisaPolicyCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateVisaPolicyCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
+
+    [HttpDelete(VisaPolicyEndpoint.Id)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var result = await Sender.Send(new DeleteVisaPolicyCommand(id));
+        return HandleResult(result);
+    }
+}

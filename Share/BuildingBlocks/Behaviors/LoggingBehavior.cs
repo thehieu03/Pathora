@@ -10,8 +10,6 @@ public sealed class LoggingBehavior<TRequest, TResponse>
     where TRequest : notnull, IRequest<TResponse>
     where TResponse : notnull
 {
-    #region Implementations
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (logger.IsEnabled(LogLevel.Information))
@@ -19,12 +17,9 @@ public sealed class LoggingBehavior<TRequest, TResponse>
             logger.LogInformation("[START] Handle request={Request} - Response={Response} - RequestData={RequestData}",
                 typeof(TRequest).Name, typeof(TResponse).Name, request);
         }
-
         var timer = new Stopwatch();
         timer.Start();
-
         var response = await next();
-
         timer.Stop();
         var timeTaken = timer.Elapsed;
         if (timeTaken.Seconds > 3 && logger.IsEnabled(LogLevel.Warning)) // if the request is greater than 3 seconds, then log the warnings
@@ -32,13 +27,10 @@ public sealed class LoggingBehavior<TRequest, TResponse>
             logger.LogWarning("[PERFORMANCE] The request {Request} took {TimeTaken} seconds.",
                 typeof(TRequest).Name, timeTaken.Seconds);
         }
-
         if (logger.IsEnabled(LogLevel.Information))
         {
             logger.LogInformation("[END] Handled {Request} with {Response}", typeof(TRequest).Name, typeof(TResponse).Name);
         }
         return response;
     }
-
-    #endregion
 }

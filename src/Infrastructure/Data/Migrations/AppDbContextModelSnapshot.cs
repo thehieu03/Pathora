@@ -835,6 +835,58 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Departments", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.DepositPolicyEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DepositType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("DepositValue")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("MinDaysBeforeDeparture")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TourScope")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("TourScope");
+
+                    b.ToTable("DepositPolicies", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.DynamicPricingTierEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1409,6 +1461,72 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("IsDeleted");
 
                     b.ToTable("Positions", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.PricingPolicy", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("PolicyCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Tiers")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("TourType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedOnUtc");
+
+                    b.HasIndex("IsDefault");
+
+                    b.HasIndex("PolicyCode")
+                        .IsUnique();
+
+                    b.HasIndex("Status", "IsDeleted");
+
+                    b.ToTable("PricingPolicies", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.RefreshTokenEntity", b =>
@@ -2102,6 +2220,9 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<Guid?>("DepositPolicyId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -2154,15 +2275,22 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<Guid?>("VisaPolicyId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedOnUtc");
+
+                    b.HasIndex("DepositPolicyId");
 
                     b.HasIndex("IsDeleted")
                         .HasFilter("\"IsDeleted\" = false");
 
                     b.HasIndex("TourCode")
                         .IsUnique();
+
+                    b.HasIndex("VisaPolicyId");
 
                     b.HasIndex("Status", "IsDeleted");
 
@@ -2317,6 +2445,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal>("DepositPerPerson")
                         .HasColumnType("numeric");
 
+                    b.Property<Guid?>("DepositPolicyId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("DurationDays")
                         .HasColumnType("integer");
 
@@ -2391,9 +2522,14 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<Guid?>("VisaPolicyId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClassificationId");
+
+                    b.HasIndex("DepositPolicyId");
 
                     b.HasIndex("IsDeleted")
                         .HasFilter("\"IsDeleted\" = false");
@@ -2404,6 +2540,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("TourInstanceCode")
                         .IsUnique();
+
+                    b.HasIndex("VisaPolicyId");
 
                     b.HasIndex("Status", "InstanceType");
 
@@ -3072,6 +3210,55 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Visas", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.VisaPolicyEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("BufferDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("FullPaymentRequired")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProcessingDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Region");
+
+                    b.ToTable("VisaPolicies", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Mails.MailEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3471,6 +3658,14 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.TourEntity", b =>
                 {
+                    b.HasOne("Domain.Entities.DepositPolicyEntity", "DepositPolicy")
+                        .WithMany()
+                        .HasForeignKey("DepositPolicyId");
+
+                    b.HasOne("Domain.Entities.VisaPolicyEntity", "VisaPolicy")
+                        .WithMany()
+                        .HasForeignKey("VisaPolicyId");
+
                     b.OwnsOne("Domain.Entities.ImageEntity", "Thumbnail", b1 =>
                         {
                             b1.Property<Guid>("TourEntityId")
@@ -3541,10 +3736,14 @@ namespace Infrastructure.Data.Migrations
                                 .HasForeignKey("TourId");
                         });
 
+                    b.Navigation("DepositPolicy");
+
                     b.Navigation("Images");
 
                     b.Navigation("Thumbnail")
                         .IsRequired();
+
+                    b.Navigation("VisaPolicy");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourInstanceEntity", b =>
@@ -3555,11 +3754,19 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.DepositPolicyEntity", "DepositPolicy")
+                        .WithMany()
+                        .HasForeignKey("DepositPolicyId");
+
                     b.HasOne("Domain.Entities.TourEntity", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.VisaPolicyEntity", "VisaPolicy")
+                        .WithMany()
+                        .HasForeignKey("VisaPolicyId");
 
                     b.OwnsOne("Domain.Entities.ImageEntity", "Thumbnail", b1 =>
                         {
@@ -3657,6 +3864,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.Navigation("Classification");
 
+                    b.Navigation("DepositPolicy");
+
                     b.Navigation("Guide");
 
                     b.Navigation("Images");
@@ -3665,6 +3874,8 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Tour");
+
+                    b.Navigation("VisaPolicy");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourInsuranceEntity", b =>

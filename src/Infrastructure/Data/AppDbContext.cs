@@ -79,6 +79,8 @@ public class AppDbContext : DbContext
     public DbSet<PassportEntity> Passports => Set<PassportEntity>();
     public DbSet<VisaApplicationEntity> VisaApplications => Set<VisaApplicationEntity>();
     public DbSet<VisaEntity> Visas => Set<VisaEntity>();
+    public DbSet<VisaPolicyEntity> VisaPolicies => Set<VisaPolicyEntity>();
+    public DbSet<DepositPolicyEntity> DepositPolicies => Set<DepositPolicyEntity>();
     public DbSet<SupplierEntity> Suppliers => Set<SupplierEntity>();
     public DbSet<SupplierPayableEntity> SupplierPayables => Set<SupplierPayableEntity>();
     public DbSet<SupplierReceiptEntity> SupplierReceipts => Set<SupplierReceiptEntity>();
@@ -93,6 +95,9 @@ public class AppDbContext : DbContext
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
     public DbSet<PasswordResetTokenEntity> PasswordResetTokens => Set<PasswordResetTokenEntity>();
     public DbSet<SiteContentEntity> SiteContents => Set<SiteContentEntity>();
+    public DbSet<PricingPolicy> PricingPolicies => Set<PricingPolicy>();
+    public DbSet<TaxConfigEntity> TaxConfigs => Set<TaxConfigEntity>();
+    public DbSet<CancellationPolicyEntity> CancellationPolicies => Set<CancellationPolicyEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

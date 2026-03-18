@@ -6,6 +6,7 @@ using Application.Features.BookingManagement.ActivityStatus;
 using Application.Features.BookingManagement.Participant;
 using Application.Features.BookingManagement.Payable;
 using Application.Features.BookingManagement.TourGuide;
+using Application.Features.BookingManagement.Queries;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -232,6 +233,13 @@ public class BookingManagementController : BaseApiController
     public async Task<IActionResult> GetTourGuides(Guid id)
     {
         var result = await Sender.Send(new GetBookingAssignedTourGuidesQuery(id));
+        return HandleResult(result);
+    }
+
+    [HttpGet(BookingManagementEndpoint.CheckoutPrice)]
+    public async Task<IActionResult> GetCheckoutPrice(Guid id)
+    {
+        var result = await Sender.Send(new GetCheckoutPriceQuery(id));
         return HandleResult(result);
     }
 }

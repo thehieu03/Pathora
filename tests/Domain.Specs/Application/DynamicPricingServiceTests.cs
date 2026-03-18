@@ -51,18 +51,14 @@ public sealed class DynamicPricingServiceTests
             [DynamicPricingTierEntity.CreateForTourInstance(instanceId, 4, 8, 2100000m, "tester")],
             [DynamicPricingTierEntity.CreateForClassification(classificationId, 4, 8, 2600000m, "tester")],
             fallbackPrice: 3000000m);
-
         _dynamicPricingTierRepository.FindTourInstanceWithPricing(instanceId, asNoTracking: true).Returns(instance);
-
         var result = await _sut.ResolveForTourInstance(instanceId, 6);
-
         Assert.False(result.IsError);
         Assert.Equal("instance", result.Value.PricingSource);
         Assert.Equal(2100000m, result.Value.ResolvedPricePerPerson);
         Assert.Equal(4, result.Value.MinParticipants);
         Assert.Equal(8, result.Value.MaxParticipants);
     }
-
     [Fact]
     public async Task ResolveForTourInstance_WhenInstanceMissingAndClassificationMatches_ShouldUseClassificationTier()
     {
@@ -74,11 +70,8 @@ public sealed class DynamicPricingServiceTests
             [],
             [DynamicPricingTierEntity.CreateForClassification(classificationId, 7, 12, 1950000m, "tester")],
             fallbackPrice: 2800000m);
-
         _dynamicPricingTierRepository.FindTourInstanceWithPricing(instanceId, asNoTracking: true).Returns(instance);
-
         var result = await _sut.ResolveForTourInstance(instanceId, 10);
-
         Assert.False(result.IsError);
         Assert.Equal("classification", result.Value.PricingSource);
         Assert.Equal(1950000m, result.Value.ResolvedPricePerPerson);
@@ -139,13 +132,10 @@ public sealed class DynamicPricingServiceTests
             [],
             [DynamicPricingTierEntity.CreateForClassification(classificationId, 5, 10, 2300000m, "tester")],
             fallbackPrice: 3000000m);
-
         _dynamicPricingTierRepository.FindTourInstanceWithPricing(instanceId, asNoTracking: true)
             .Returns(instanceAfterClear);
-
         var clearResult = await _sut.ClearTourInstanceTiers(instanceId);
         var resolveResult = await _sut.ResolveForTourInstance(instanceId, 6);
-
         Assert.False(clearResult.IsError);
         await _dynamicPricingTierRepository.Received(1).ClearForTourInstance(instanceId);
 

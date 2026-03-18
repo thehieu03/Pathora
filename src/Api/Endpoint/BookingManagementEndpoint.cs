@@ -22,5 +22,6 @@ public static class BookingManagementEndpoint
     public const string TeamMemberConfirm = "{id:guid}/team/{userId:guid}/confirm";
     public const string TeamTourManager = "{id:guid}/team/tour-manager";
     public const string TeamTourOperators = "{id:guid}/team/tour-operators";
-    public const string TeamTourGuides = "{id:guid}/team/tour-guides";
+        public const string TeamTourGuides = "{id:guid}/team/tour-guides";
+    public const string CheckoutPrice = "{id:guid}/checkout-price";
 }

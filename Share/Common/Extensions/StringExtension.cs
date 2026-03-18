@@ -30,7 +30,7 @@ public static class StringExtension
         var sb = new StringBuilder();
         foreach (var c in input)
         {
-            sb.Append(VietnameseDiacritics.TryGetValue(c, out var normalized) ? normalized : c);
+            sb.Append(VietnameseDiacritics.GetValueOrDefault(c, c));
         }
         return sb.ToString();
     }
