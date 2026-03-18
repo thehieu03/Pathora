@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddSwaggerServices(configuration);
 
         services.AddControllers();
+        services.AddResponseCaching();
         services.AddSignalR();
         services.AddHttpContextAccessor();
         services.AddExceptionHandler<ApiExceptionHandler>();

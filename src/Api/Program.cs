@@ -40,6 +40,8 @@ app.UseExceptionHandler(_ => { });
 
 app.UseResponseCompression();
 
+app.UseResponseCaching();
+
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
 app.UseCors();
