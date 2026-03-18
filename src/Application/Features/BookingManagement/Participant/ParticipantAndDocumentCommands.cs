@@ -20,7 +20,10 @@ public sealed record CreateParticipantCommand(
     string FullName,
     DateTimeOffset? DateOfBirth,
     GenderType? Gender,
-    string? Nationality) : ICommand<ErrorOr<Guid>>;
+    string? Nationality) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CreateParticipantCommandValidator : AbstractValidator<CreateParticipantCommand>
 {
@@ -106,7 +109,10 @@ public sealed record UpdateParticipantCommand(
     DateTimeOffset? DateOfBirth,
     GenderType? Gender,
     string? Nationality,
-    ReservationStatus? Status) : ICommand<ErrorOr<Success>>;
+    ReservationStatus? Status) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateParticipantCommandValidator : AbstractValidator<UpdateParticipantCommand>
 {
@@ -200,7 +206,10 @@ public sealed record CreatePassportCommand(
     string? Nationality,
     DateTimeOffset? IssuedAt,
     DateTimeOffset? ExpiresAt,
-    string? FileUrl) : ICommand<ErrorOr<Guid>>;
+    string? FileUrl) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class PassportValidator : AbstractValidator<CreatePassportCommand>
 {
@@ -278,7 +287,10 @@ public sealed record UpdatePassportCommand(
     string? Nationality,
     DateTimeOffset? IssuedAt,
     DateTimeOffset? ExpiresAt,
-    string? FileUrl) : ICommand<ErrorOr<Success>>;
+    string? FileUrl) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdatePassportCommandValidator : AbstractValidator<UpdatePassportCommand>
 {
@@ -354,7 +366,10 @@ public sealed record CreateVisaApplicationCommand(
     Guid PassportId,
     string DestinationCountry,
     DateTimeOffset? MinReturnDate,
-    string? VisaFileUrl) : ICommand<ErrorOr<Guid>>;
+    string? VisaFileUrl) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class VisaApplicationValidator : AbstractValidator<CreateVisaApplicationCommand>
 {
@@ -414,7 +429,10 @@ public sealed record UpdateVisaApplicationCommand(
     VisaStatus? Status,
     DateTimeOffset? MinReturnDate,
     string? RefusalReason,
-    string? VisaFileUrl) : ICommand<ErrorOr<Success>>;
+    string? VisaFileUrl) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateVisaApplicationCommandValidator : AbstractValidator<UpdateVisaApplicationCommand>
 {
@@ -493,7 +511,10 @@ public sealed record CreateVisaCommand(
     VisaEntryType? EntryType,
     DateTimeOffset? IssuedAt,
     DateTimeOffset? ExpiresAt,
-    string? FileUrl) : ICommand<ErrorOr<Guid>>;
+    string? FileUrl) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CreateVisaCommandValidator : AbstractValidator<CreateVisaCommand>
 {

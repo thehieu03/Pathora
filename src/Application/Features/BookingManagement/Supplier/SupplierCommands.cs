@@ -1,3 +1,4 @@
+using Application.Common;
 using Application.Common.Constant;
 using Application.Contracts.Booking;
 using BuildingBlocks.CORS;
@@ -19,7 +20,10 @@ public sealed record CreateSupplierCommand(
     string? Phone,
     string? Email,
     string? Address,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Supplier];
+}
 
 public sealed class CreateSupplierCommandValidator : AbstractValidator<CreateSupplierCommand>
 {
@@ -80,7 +84,10 @@ public sealed record UpdateSupplierCommand(
     string? Email,
     string? Address,
     string? Note,
-    bool IsActive) : ICommand<ErrorOr<Success>>;
+    bool IsActive) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Supplier];
+}
 
 public sealed class UpdateSupplierCommandValidator : AbstractValidator<UpdateSupplierCommand>
 {
@@ -143,7 +150,10 @@ public sealed class UpdateSupplierCommandHandler(
     }
 }
 
-public sealed record DeleteSupplierCommand(Guid SupplierId) : ICommand<ErrorOr<Success>>;
+public sealed record DeleteSupplierCommand(Guid SupplierId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Supplier];
+}
 
 public sealed class DeleteSupplierCommandHandler(
     ISupplierRepository supplierRepository,

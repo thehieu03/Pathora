@@ -30,7 +30,10 @@ public sealed record CreateTourGuideCommand(
     decimal? Rating,
     bool IsAvailable,
     bool IsActive,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CreateTourGuideCommandValidator : AbstractValidator<CreateTourGuideCommand>
 {
@@ -105,7 +108,10 @@ public sealed record UpdateTourGuideCommand(
     decimal? Rating,
     bool IsAvailable,
     bool IsActive,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateTourGuideCommandValidator : AbstractValidator<UpdateTourGuideCommand>
 {
@@ -171,7 +177,10 @@ public sealed class UpdateTourGuideCommandHandler(
     }
 }
 
-public sealed record DeleteTourGuideCommand(Guid TourGuideId) : ICommand<ErrorOr<Success>>;
+public sealed record DeleteTourGuideCommand(Guid TourGuideId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class DeleteTourGuideCommandHandler(
     ITourGuideRepository tourGuideRepository,
@@ -291,7 +300,10 @@ public sealed record AssignTourGuideToBookingCommand(
     bool IsLead,
     Guid? TourGuideId,
     Guid? AssignedBy,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class AssignTourGuideToBookingCommandValidator : AbstractValidator<AssignTourGuideToBookingCommand>
 {
@@ -397,7 +409,10 @@ public sealed record UpdateTourGuideAssignmentStatusCommand(
     Guid BookingId,
     Guid UserId,
     AssignmentStatus Status,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateTourGuideAssignmentStatusCommandValidator : AbstractValidator<UpdateTourGuideAssignmentStatusCommand>
 {
@@ -636,7 +651,10 @@ public sealed record UpdateTeamMemberAssignmentCommand(
     AssignedRole AssignedRole,
     bool IsLead,
     Guid? TourGuideId,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateTeamMemberAssignmentCommandValidator : AbstractValidator<UpdateTeamMemberAssignmentCommand>
 {
@@ -718,7 +736,10 @@ public sealed class UpdateTeamMemberAssignmentCommandHandler(
     }
 }
 
-public sealed record DeleteTeamMemberAssignmentCommand(Guid BookingId, Guid UserId) : ICommand<ErrorOr<Success>>;
+public sealed record DeleteTeamMemberAssignmentCommand(Guid BookingId, Guid UserId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class DeleteTeamMemberAssignmentCommandHandler(
     IBookingTourGuideRepository bookingTourGuideRepository,
@@ -755,7 +776,10 @@ public sealed class DeleteTeamMemberAssignmentCommandHandler(
     }
 }
 
-public sealed record ConfirmTeamMemberAssignmentCommand(Guid BookingId, Guid UserId) : ICommand<ErrorOr<Success>>;
+public sealed record ConfirmTeamMemberAssignmentCommand(Guid BookingId, Guid UserId) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class ConfirmTeamMemberAssignmentCommandHandler(
     IBookingTourGuideRepository bookingTourGuideRepository,

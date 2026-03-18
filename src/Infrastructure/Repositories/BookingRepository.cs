@@ -55,4 +55,15 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
             .Where(b => b.TourInstanceId == tourInstanceId)
             .CountAsync();
     }
+
+    public async Task<List<BookingEntity>> GetRecentByUserIdAsync(Guid userId, int count)
+    {
+        return await _context.Bookings
+            .AsNoTracking()
+            .Include(b => b.TourInstance)
+            .Where(b => b.UserId == userId)
+            .OrderByDescending(b => b.BookingDate)
+            .Take(count)
+            .ToListAsync();
+    }
 }

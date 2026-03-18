@@ -12,15 +12,18 @@ using System.Text.Json;
 
 namespace Api.Services;
 
-public class OutboxWorkerService : BackgroundService
+public class OutboxWorkerService(
+    IServiceProvider serviceProvider,
+    ILogger<OutboxWorkerService> logger,
+    IOptions<OutboxWorkerOptions> options,
+    IHttpClientFactory httpClientFactory,
+    IConfiguration configuration)
+    : BackgroundService
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<OutboxWorkerService> _logger;
-    private readonly OutboxWorkerOptions _options;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly string _authenticationKey;
-    private readonly string _accountNumber;
-    private readonly string _sepayApiBaseUrl;
+    private readonly OutboxWorkerOptions _options = options.Value;
+    private readonly string _authenticationKey = NormalizeConfigValue(configuration["Payment:AuthenticationKey"]);
+    private readonly string _accountNumber = NormalizeConfigValue(configuration["Payment:Account"]);
+    private readonly string _sepayApiBaseUrl = NormalizeConfigValue(configuration["Payment:ApiBaseUrl"]);
 
     private static readonly TimeSpan[] RetryDelays =
     [
@@ -41,25 +44,9 @@ public class OutboxWorkerService : BackgroundService
         PropertyNameCaseInsensitive = true
     };
 
-    public OutboxWorkerService(
-        IServiceProvider serviceProvider,
-        ILogger<OutboxWorkerService> logger,
-        IOptions<OutboxWorkerOptions> options,
-        IHttpClientFactory httpClientFactory,
-        IConfiguration configuration)
-    {
-        _serviceProvider = serviceProvider;
-        _logger = logger;
-        _options = options.Value;
-        _httpClientFactory = httpClientFactory;
-        _authenticationKey = NormalizeConfigValue(configuration["Payment:AuthenticationKey"]);
-        _accountNumber = NormalizeConfigValue(configuration["Payment:Account"]);
-        _sepayApiBaseUrl = NormalizeConfigValue(configuration["Payment:ApiBaseUrl"]);
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Outbox Worker starting with interval {IntervalMs}ms", _options.PollingIntervalMs);
+        logger.LogInformation("Outbox Worker starting with interval {IntervalMs}ms", _options.PollingIntervalMs);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -69,18 +56,18 @@ public class OutboxWorkerService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing outbox messages");
+                logger.LogError(ex, "Error processing outbox messages");
             }
 
             await Task.Delay(_options.PollingIntervalMs, stoppingToken);
         }
 
-        _logger.LogInformation("Outbox Worker stopped");
+        logger.LogInformation("Outbox Worker stopped");
     }
 
     private async Task ProcessPendingMessagesAsync(CancellationToken cancellationToken)
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         var outboxRepository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
         var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
 
@@ -97,7 +84,7 @@ public class OutboxWorkerService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error processing outbox message {MessageId}", message.Id);
+                logger.LogError(ex, "Error processing outbox message {MessageId}", message.Id);
                 var delay = GetRetryDelay(message.RetryCount);
                 message.MarkAsFailed(ex.Message, delay);
                 await outboxRepository.UpdateAsync(message, cancellationToken);
@@ -113,7 +100,7 @@ public class OutboxWorkerService : BackgroundService
     {
         if (message.Type != "PaymentCheck")
         {
-            _logger.LogWarning("Unknown outbox message type: {Type}", message.Type);
+            logger.LogWarning("Unknown outbox message type: {Type}", message.Type);
             message.MarkAsDeadLetter("Unknown message type");
             await outboxRepository.UpdateAsync(message, cancellationToken);
             return;
@@ -131,13 +118,13 @@ public class OutboxWorkerService : BackgroundService
         message.MarkAsProcessing();
         await outboxRepository.UpdateAsync(message, cancellationToken);
 
-        _logger.LogInformation("Checking payment status for transaction {TransactionCode}, Amount: {Amount}",
+        logger.LogInformation("Checking payment status for transaction {TransactionCode}, Amount: {Amount}",
             payload.TransactionCode, payload.Amount);
 
         // Check if payment configuration is available
         if (string.IsNullOrWhiteSpace(_authenticationKey) || string.IsNullOrWhiteSpace(_accountNumber))
         {
-            _logger.LogWarning("Payment configuration missing, skipping payment check for {TransactionCode}", payload.TransactionCode);
+            logger.LogWarning("Payment configuration missing, skipping payment check for {TransactionCode}", payload.TransactionCode);
             // Don't mark as processed - will retry next interval
             message.MarkAsFailed("Payment configuration missing", TimeSpan.FromMinutes(5));
             await outboxRepository.UpdateAsync(message, cancellationToken);
@@ -167,20 +154,20 @@ public class OutboxWorkerService : BackgroundService
 
                 if (result.IsError)
                 {
-                    _logger.LogWarning("Failed to process payment for {TransactionCode}: {Errors}",
+                    logger.LogWarning("Failed to process payment for {TransactionCode}: {Errors}",
                         payload.TransactionCode, string.Join(", ", result.Errors.Select(e => e.Description)));
                     message.MarkAsFailed(string.Join(", ", result.Errors.Select(e => e.Description)), TimeSpan.FromMinutes(5));
                 }
                 else
                 {
-                    _logger.LogInformation("Successfully processed payment for {TransactionCode}, Amount: {Amount}",
+                    logger.LogInformation("Successfully processed payment for {TransactionCode}, Amount: {Amount}",
                         payload.TransactionCode, transactionData.Amount);
                     message.MarkAsProcessed();
                 }
             }
             else
             {
-                _logger.LogDebug("No payment found for transaction {TransactionCode}, amount {Amount}",
+                logger.LogDebug("No payment found for transaction {TransactionCode}, amount {Amount}",
                     payload.TransactionCode, payload.Amount);
                 
                 // Check if transaction has expired
@@ -192,7 +179,7 @@ public class OutboxWorkerService : BackgroundService
                 else if (transaction.Value.IsExpired())
                 {
                     await paymentService.ExpireTransactionAsync(payload.TransactionCode);
-                    _logger.LogInformation("Transaction {TransactionCode} has expired", payload.TransactionCode);
+                    logger.LogInformation("Transaction {TransactionCode} has expired", payload.TransactionCode);
                     message.MarkAsProcessed();
                 }
                 else
@@ -204,7 +191,7 @@ public class OutboxWorkerService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error checking payment for {TransactionCode}", payload.TransactionCode);
+            logger.LogError(ex, "Error checking payment for {TransactionCode}", payload.TransactionCode);
             message.MarkAsFailed(ex.Message, TimeSpan.FromMinutes(5));
         }
 
@@ -215,7 +202,7 @@ public class OutboxWorkerService : BackgroundService
     {
         try
         {
-            var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = httpClientFactory.CreateClient();
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _authenticationKey);
 
@@ -241,7 +228,7 @@ public class OutboxWorkerService : BackgroundService
                 // Match by transaction code in content and amount
                 if (content.Contains(transactionCode) && amount >= expectedAmount)
                 {
-                    _logger.LogInformation("Found matching SePay transaction: {TransactionId}, Amount: {Amount}",
+                    logger.LogInformation("Found matching SePay transaction: {TransactionId}, Amount: {Amount}",
                         transaction.id, amount);
                     return transaction;
                 }
@@ -251,7 +238,7 @@ public class OutboxWorkerService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error calling SePay API for transaction {TransactionCode}", payload.TransactionCode);
+            logger.LogError(ex, "Error calling SePay API for transaction {TransactionCode}", payload.TransactionCode);
             throw;
         }
     }

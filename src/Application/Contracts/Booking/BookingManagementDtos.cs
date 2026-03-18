@@ -418,3 +418,12 @@ public sealed record CheckoutPriceResponse(
     decimal DepositAmount,
     decimal RemainingBalance
 );
+
+public sealed record RecentBookingResponse(
+    Guid BookingId,
+    string TourName,
+    DateTimeOffset DepartureDate,
+    string Status,
+    decimal TotalPrice,
+    int TotalParticipants
+);

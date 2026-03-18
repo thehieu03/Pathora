@@ -13,7 +13,10 @@ using FluentValidation;
 
 namespace Application.Features.BookingManagement.ActivityStatus;
 
-public sealed record InitializeActivityStatusCommand(Guid BookingId) : ICommand<ErrorOr<int>>;
+public sealed record InitializeActivityStatusCommand(Guid BookingId) : ICommand<ErrorOr<int>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class InitializeActivityStatusCommandValidator : AbstractValidator<InitializeActivityStatusCommand>
 {
@@ -76,7 +79,10 @@ public sealed class InitializeActivityStatusCommandHandler(
 }
 
 public sealed record StartActivityCommand(Guid BookingId, Guid TourDayId, DateTimeOffset? ActualStartTime)
-    : ICommand<ErrorOr<Success>>;
+    : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class StartActivityCommandValidator : AbstractValidator<StartActivityCommand>
 {
@@ -121,7 +127,10 @@ public sealed class StartActivityCommandHandler(
 }
 
 public sealed record CompleteActivityCommand(Guid BookingId, Guid TourDayId, DateTimeOffset? ActualEndTime)
-    : ICommand<ErrorOr<Success>>;
+    : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CompleteActivityCommandValidator : AbstractValidator<CompleteActivityCommand>
 {
@@ -166,7 +175,10 @@ public sealed class CompleteActivityCommandHandler(
 }
 
 public sealed record CancelActivityCommand(Guid BookingId, Guid TourDayId, string Reason)
-    : ICommand<ErrorOr<Success>>;
+    : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CancelActivityCommandValidator : AbstractValidator<CancelActivityCommand>
 {
@@ -334,7 +346,10 @@ public sealed record AssignGuideToActivityCommand(
     GuideRole Role,
     DateTimeOffset? CheckInTime,
     DateTimeOffset? CheckOutTime,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class AssignGuideToActivityCommandValidator : AbstractValidator<AssignGuideToActivityCommand>
 {
