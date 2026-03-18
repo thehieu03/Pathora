@@ -10,6 +10,7 @@ deploy-app:
   script:
    - echo "Đang build Frontend..."
     - docker build -t pathora-fe:latest ./frontend
+    
     - echo "Đang cập nhật các container qua Docker Compose..."
     - cd /home/huynqhe180309
     - touch .env
