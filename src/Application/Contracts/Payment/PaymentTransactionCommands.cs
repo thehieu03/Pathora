@@ -1,12 +1,13 @@
-using Application.Common.Constant;
-using Application.Services;
 using BuildingBlocks.CORS;
-using Domain.Common.Repositories;
-using Domain.Entities;
-using Domain.Enums;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
+
+using Application.Common.Constant;
+using Application.Services;
+using Domain.Common.Repositories;
+using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Contracts.Payment;
 
@@ -109,5 +110,74 @@ public sealed class ExpirePaymentTransactionCommandHandler(IPaymentService payme
         CancellationToken cancellationToken)
     {
         return await paymentService.ExpireTransactionAsync(request.TransactionCode);
+    }
+}
+
+public sealed record GetNormalizedPaymentStatusQuery(string TransactionCode)
+    : IRequest<ErrorOr<PaymentStatusSnapshot>>;
+
+public class GetNormalizedPaymentStatusQueryValidator : AbstractValidator<GetNormalizedPaymentStatusQuery>
+{
+    public GetNormalizedPaymentStatusQueryValidator()
+    {
+        RuleFor(x => x.TransactionCode)
+            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+    }
+}
+
+public sealed class GetNormalizedPaymentStatusQueryHandler(IPaymentReconciliationService paymentReconciliationService)
+    : IRequestHandler<GetNormalizedPaymentStatusQuery, ErrorOr<PaymentStatusSnapshot>>
+{
+    public async Task<ErrorOr<PaymentStatusSnapshot>> Handle(
+        GetNormalizedPaymentStatusQuery request,
+        CancellationToken cancellationToken)
+    {
+        return await paymentReconciliationService.GetNormalizedStatusAsync(request.TransactionCode);
+    }
+}
+
+public sealed record ReconcilePaymentReturnCommand(string TransactionCode)
+    : IRequest<ErrorOr<PaymentStatusSnapshot>>;
+
+public class ReconcilePaymentReturnCommandValidator : AbstractValidator<ReconcilePaymentReturnCommand>
+{
+    public ReconcilePaymentReturnCommandValidator()
+    {
+        RuleFor(x => x.TransactionCode)
+            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+    }
+}
+
+public sealed class ReconcilePaymentReturnCommandHandler(IPaymentReconciliationService paymentReconciliationService)
+    : IRequestHandler<ReconcilePaymentReturnCommand, ErrorOr<PaymentStatusSnapshot>>
+{
+    public async Task<ErrorOr<PaymentStatusSnapshot>> Handle(
+        ReconcilePaymentReturnCommand request,
+        CancellationToken cancellationToken)
+    {
+        return await paymentReconciliationService.ReconcileReturnAsync(request.TransactionCode);
+    }
+}
+
+public sealed record ReconcilePaymentCancelCommand(string TransactionCode)
+    : IRequest<ErrorOr<PaymentStatusSnapshot>>;
+
+public class ReconcilePaymentCancelCommandValidator : AbstractValidator<ReconcilePaymentCancelCommand>
+{
+    public ReconcilePaymentCancelCommandValidator()
+    {
+        RuleFor(x => x.TransactionCode)
+            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+    }
+}
+
+public sealed class ReconcilePaymentCancelCommandHandler(IPaymentReconciliationService paymentReconciliationService)
+    : IRequestHandler<ReconcilePaymentCancelCommand, ErrorOr<PaymentStatusSnapshot>>
+{
+    public async Task<ErrorOr<PaymentStatusSnapshot>> Handle(
+        ReconcilePaymentCancelCommand request,
+        CancellationToken cancellationToken)
+    {
+        return await paymentReconciliationService.ReconcileCancelAsync(request.TransactionCode);
     }
 }

@@ -24,6 +24,30 @@ public class SiteContentRepository(AppDbContext context) : Repository<SiteConten
             .FirstOrDefaultAsync(sc => sc.PageKey == pageKey && sc.ContentKey == contentKey);
     }
 
+    public async Task<List<SiteContentEntity>> GetAdminListAsync(string? pageKey, string? search)
+    {
+        var query = _context.SiteContents.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(pageKey))
+        {
+            var normalizedPageKey = pageKey.Trim().ToLowerInvariant();
+            query = query.Where(sc => sc.PageKey.ToLower() == normalizedPageKey);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var normalizedSearch = search.Trim().ToLowerInvariant();
+            query = query.Where(sc =>
+                sc.PageKey.ToLower().Contains(normalizedSearch) ||
+                sc.ContentKey.ToLower().Contains(normalizedSearch));
+        }
+
+        return await query
+            .OrderBy(sc => sc.PageKey)
+            .ThenBy(sc => sc.ContentKey)
+            .ToListAsync();
+    }
+
     public async Task<ErrorOr<SiteContentEntity>> UpsertAsync(string pageKey, string contentKey, string contentValue, string modifiedBy)
     {
         var existing = await _context.SiteContents
@@ -41,5 +65,21 @@ public class SiteContentRepository(AppDbContext context) : Repository<SiteConten
         await _context.SiteContents.AddAsync(newEntity);
         await _context.SaveChangesAsync();
         return newEntity;
+    }
+
+    public async Task<ErrorOr<SiteContentEntity>> UpsertByIdAsync(Guid id, string contentValue, string modifiedBy)
+    {
+        var existing = await _context.SiteContents
+            .FirstOrDefaultAsync(sc => sc.Id == id);
+
+        if (existing is null)
+        {
+            return Error.NotFound("SiteContent.NotFound", "Content not found");
+        }
+
+        existing.Update(contentValue, modifiedBy);
+        _context.SiteContents.Update(existing);
+        await _context.SaveChangesAsync();
+        return existing;
     }
 }
