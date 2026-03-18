@@ -2,8 +2,9 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { HiOutlineMinus, HiOutlinePlus } from "react-icons/hi2";
 import { Icon } from "@/components/ui";
 import Button from "@/components/ui/Button";
 import Image from "@/features/shared/components/LandingImage";
@@ -11,6 +12,7 @@ import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { homeService } from "@/api/services/homeService";
 import { handleApiError } from "@/utils/apiResponse";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   NormalizedTourInstanceDto,
   TourInstanceStatusMap,
@@ -94,9 +96,59 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+/* ── Guest Row Component ────────────────────────────────────── */
+function GuestRow({
+  label,
+  subtitle,
+  value,
+  onDecrement,
+  onIncrement,
+  showBorder = true,
+}: {
+  label: string;
+  subtitle?: string;
+  value: number;
+  onDecrement: () => void;
+  onIncrement: () => void;
+  showBorder?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between px-4 py-3 ${showBorder ? "border-b border-gray-100" : ""}`}>
+      <div className="flex flex-col">
+        <span className="text-xs font-semibold text-[#05073c]">{label}</span>
+        {subtitle && (
+          <span className="text-[10px] text-gray-400 leading-[15px]">
+            {subtitle}
+          </span>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onDecrement}
+          className="bg-white border border-gray-200 rounded-full w-8 h-8 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50 hover:shadow-md active:scale-95 transition-all text-gray-500 shrink-0">
+          <HiOutlineMinus className="w-4 h-4" strokeWidth={2} />
+        </button>
+        <span className="text-sm font-extrabold text-[#05073c] w-8 text-center tabular-nums">
+          {value}
+        </span>
+        <button
+          type="button"
+          onClick={onIncrement}
+          className="bg-white border border-gray-200 rounded-full w-8 h-8 flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-orange-500 hover:text-orange-500 hover:bg-orange-50 hover:shadow-md active:scale-95 transition-all text-gray-500 shrink-0">
+          <HiOutlinePlus className="w-4 h-4" strokeWidth={2} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function TourInstancePublicDetailPage() {
   const { t, i18n } = useTranslation();
   const params = useParams();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const id = params.id as string;
 
   const resolveApiLanguage = useCallback((): string => {
@@ -107,6 +159,11 @@ export function TourInstancePublicDetailPage() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<NormalizedTourInstanceDto | null>(null);
   const [apiLanguage, setApiLanguage] = useState(() => resolveApiLanguage());
+
+  // Guest selection state
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [infants, setInfants] = useState(0);
 
   useEffect(() => {
     const handleLanguageChanged = (language: string): void => {
@@ -520,20 +577,56 @@ export function TourInstancePublicDetailPage() {
                 {t("tourInstance.userPricingBreakdown", "Pricing breakdown")}
               </h3>
 
+              {/* Guest Selector */}
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-bold text-[#05073c]">
+                  {t("landing.tourDetail.guestsLabel", "Guests")}
+                </label>
+                <div className="border border-gray-200 rounded-[14px] overflow-hidden">
+                  <GuestRow
+                    label={t("landing.tourDetail.adults", "Adults")}
+                    value={adults}
+                    onDecrement={() => setAdults(Math.max(1, adults - 1))}
+                    onIncrement={() => setAdults(Math.min(20, adults + 1))}
+                  />
+                  <GuestRow
+                    label={t("landing.tourDetail.children", "Children")}
+                    subtitle="< 12 years"
+                    value={children}
+                    onDecrement={() => setChildren(Math.max(0, children - 1))}
+                    onIncrement={() => setChildren(Math.min(20, children + 1))}
+                  />
+                  <GuestRow
+                    label={t("landing.tourDetail.infants", "Infants")}
+                    subtitle="< 2 years"
+                    value={infants}
+                    onDecrement={() => setInfants(Math.max(0, infants - 1))}
+                    onIncrement={() => setInfants(Math.min(20, infants + 1))}
+                    showBorder={false}
+                  />
+                </div>
+              </div>
+
               {/* Price Details */}
               <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">{t("tourInstance.adultPrice", "Adult")}</span>
-                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.basePrice, formatterLocale)}</span>
-                </div>
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">{t("tourInstance.childPrice", "Child")}</span>
-                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.sellingPrice, formatterLocale)}</span>
-                </div>
-                <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                  <span className="text-sm text-gray-500">{t("tourInstance.infantPrice", "Infant")}</span>
-                  <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.operatingCost, formatterLocale)}</span>
-                </div>
+                {adults > 0 && (
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <span className="text-sm text-gray-500">{t("landing.tourDetail.adults", "Adults")} × {adults}</span>
+                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.basePrice * adults, formatterLocale)}</span>
+                  </div>
+                )}
+                {children > 0 && (
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <span className="text-sm text-gray-500">{t("landing.tourDetail.children", "Children")} × {children}</span>
+                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.sellingPrice * children, formatterLocale)}</span>
+                  </div>
+                )}
+                {infants > 0 && (
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <span className="text-sm text-gray-500">{t("landing.tourDetail.infants", "Infants")} × {infants}</span>
+                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.operatingCost * infants, formatterLocale)}</span>
+                  </div>
+                )}
               </div>
 
               {/* Deposit Required */}
@@ -556,6 +649,28 @@ export function TourInstancePublicDetailPage() {
               <div className="relative group/book mt-2">
                  <Button
                     type="button"
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        // Redirect to login with return URL
+                        router.push(`/home?login=true&returnUrl=/tours/instances/${id}`);
+                        return;
+                      }
+                      if (data) {
+                        // Navigate to checkout with tour instance info and guest counts
+                        const params = new URLSearchParams({
+                          tourInstanceId: id,
+                          tourName: data.tourName,
+                          startDate: data.startDate || "",
+                          endDate: data.endDate || "",
+                          location: data.location || "",
+                          depositPerPerson: String(data.depositPerPerson),
+                          adults: String(adults),
+                          children: String(children),
+                          infants: String(infants),
+                        });
+                        router.push(`/checkout?${params.toString()}`);
+                      }
+                    }}
                     className="relative w-full py-4 rounded-2xl text-[15px] tracking-wide font-extrabold text-white overflow-hidden transition-all duration-300 flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(249,115,22,0.3)] hover:shadow-[0_12px_24px_rgba(249,115,22,0.4)] hover:-translate-y-1 active:scale-[0.98]">
                     {/* Glass Shine Effect */}
                     <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">

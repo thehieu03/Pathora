@@ -1954,6 +1954,13 @@
       "closeNavigationMenu": "Đóng menu điều hướng"
     }
   },
+  "booking": {
+    "recentBookings": "Tour của tôi",
+    "viewAll": "Xem tất cả",
+    "noBookings": "Bạn chưa có tour nào",
+    "browseTours": "Khám phá tour ngay",
+    "loading": "Đang tải..."
+  },
   "notification": {
     "title": "Thông báo",
     "viewAll": "Xem tất cả",

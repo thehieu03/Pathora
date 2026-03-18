@@ -54,6 +54,26 @@ const NAV_ITEMS: NavItem[] = [
     icon: "heroicons:clipboard-document-list",
     href: "/dashboard/policies",
   },
+  {
+    label: "Visa Policies",
+    icon: "heroicons:document-text",
+    href: "/visa-policies",
+  },
+  {
+    label: "Pricing Policies",
+    icon: "heroicons:currency-dollar",
+    href: "/pricing-policies",
+  },
+  {
+    label: "Deposit Policies",
+    icon: "heroicons:banknotes",
+    href: "/deposit-policies",
+  },
+  {
+    label: "Tax Config",
+    icon: "heroicons:receipt-percent",
+    href: "/tax-configs",
+  },
   { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },
 ];
 

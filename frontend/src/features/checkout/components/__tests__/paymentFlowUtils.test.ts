@@ -12,32 +12,167 @@ const buildSearchParamsReader = (params: Record<string, string | undefined>) => 
 });
 
 describe("paymentFlowUtils", () => {
-  it("maps completed transaction to paid", () => {
-    expect(mapTransactionStatusToNormalized("Completed")).toBe("paid");
-  });
-
-  it("maps failed transaction with EXPIRED error to expired", () => {
-    expect(mapTransactionStatusToNormalized("Failed", "EXPIRED")).toBe("expired");
-  });
-
-  it("resolves transaction code from callback query params", () => {
-    const reader = buildSearchParamsReader({
-      orderCode: "order-1",
-      code: "code-2",
-      transactionCode: "tx-3",
+  describe("mapTransactionStatusToNormalized", () => {
+    it("maps completed transaction to paid", () => {
+      expect(mapTransactionStatusToNormalized("Completed")).toBe("paid");
     });
 
-    expect(resolveReturnTransactionCode(reader)).toBe("tx-3");
+    it("maps cancelled transaction to cancelled", () => {
+      expect(mapTransactionStatusToNormalized("Cancelled")).toBe("cancelled");
+    });
+
+    it("maps failed transaction with EXPIRED error to expired", () => {
+      expect(mapTransactionStatusToNormalized("Failed", "EXPIRED")).toBe("expired");
+    });
+
+    it("maps failed transaction without EXPIRED error to failed", () => {
+      expect(mapTransactionStatusToNormalized("Failed")).toBe("failed");
+      expect(mapTransactionStatusToNormalized("Failed", "OTHER_ERROR")).toBe("failed");
+    });
+
+    it("maps failed transaction with lowercase expired error to expired", () => {
+      expect(mapTransactionStatusToNormalized("Failed", "expired")).toBe("expired");
+    });
+
+    it("maps undefined status to pending", () => {
+      expect(mapTransactionStatusToNormalized(undefined)).toBe("pending");
+    });
+
+    it("maps Processing status to pending", () => {
+      expect(mapTransactionStatusToNormalized("Processing")).toBe("pending");
+    });
+
+    it("maps Refunded status to pending (non-terminal in current logic)", () => {
+      expect(mapTransactionStatusToNormalized("Refunded")).toBe("pending");
+    });
   });
 
-  it("detects cancelled callback via status", () => {
-    const reader = buildSearchParamsReader({ status: "cancelled" });
+  describe("resolveReturnTransactionCode", () => {
+    it("resolves transactionCode from callback query params", () => {
+      const reader = buildSearchParamsReader({
+        transactionCode: "tx-123",
+        code: "code-456",
+        orderCode: "order-789",
+      });
 
-    expect(isCancelReturn(reader)).toBe(true);
+      expect(resolveReturnTransactionCode(reader)).toBe("tx-123");
+    });
+
+    it("falls back to code if transactionCode is null", () => {
+      const reader = buildSearchParamsReader({
+        transactionCode: null,
+        code: "code-456",
+        orderCode: "order-789",
+      });
+
+      expect(resolveReturnTransactionCode(reader)).toBe("code-456");
+    });
+
+    it("falls back to orderCode if transactionCode and code are null", () => {
+      const reader = buildSearchParamsReader({
+        transactionCode: null,
+        code: null,
+        orderCode: "order-789",
+      });
+
+      expect(resolveReturnTransactionCode(reader)).toBe("order-789");
+    });
+
+    it("returns null if all params are null", () => {
+      const reader = buildSearchParamsReader({
+        transactionCode: null,
+        code: null,
+        orderCode: null,
+      });
+
+      expect(resolveReturnTransactionCode(reader)).toBe(null);
+    });
+
+    it("trims whitespace from transaction code", () => {
+      const reader = buildSearchParamsReader({
+        transactionCode: "  tx-123  ",
+      });
+
+      expect(resolveReturnTransactionCode(reader)).toBe("tx-123");
+    });
+
+    it("returns null if transactionCode is empty string", () => {
+      const reader = buildSearchParamsReader({
+        transactionCode: "",
+        code: "code-456",
+      });
+
+      expect(resolveReturnTransactionCode(reader)).toBe("code-456");
+    });
   });
 
-  it("detects hosted payos redirect URLs", () => {
-    expect(shouldRedirectToHostedCheckout("https://my.payos.vn/login")).toBe(true);
-    expect(shouldRedirectToHostedCheckout("https://example.com/payment")).toBe(false);
+  describe("isCancelReturn", () => {
+    it("detects cancelled callback via cancel=true flag", () => {
+      const reader = buildSearchParamsReader({ cancel: "true" });
+      expect(isCancelReturn(reader)).toBe(true);
+    });
+
+    it("detects cancelled callback via cancel=TRUE (uppercase)", () => {
+      const reader = buildSearchParamsReader({ cancel: "TRUE" });
+      expect(isCancelReturn(reader)).toBe(true);
+    });
+
+    it("detects cancelled callback via status=cancel", () => {
+      const reader = buildSearchParamsReader({ status: "cancel" });
+      expect(isCancelReturn(reader)).toBe(true);
+    });
+
+    it("detects cancelled callback via status=cancelled", () => {
+      const reader = buildSearchParamsReader({ status: "cancelled" });
+      expect(isCancelReturn(reader)).toBe(true);
+    });
+
+    it("detects cancelled callback via status=canceled (US spelling)", () => {
+      const reader = buildSearchParamsReader({ status: "canceled" });
+      expect(isCancelReturn(reader)).toBe(true);
+    });
+
+    it("detects cancelled callback via paymentStatus=cancelled", () => {
+      const reader = buildSearchParamsReader({ paymentStatus: "cancelled" });
+      expect(isCancelReturn(reader)).toBe(true);
+    });
+
+    it("returns false when no cancel indicators present", () => {
+      const reader = buildSearchParamsReader({ status: "success" });
+      expect(isCancelReturn(reader)).toBe(false);
+    });
+
+    it("handles mixed case status (converted to lowercase before compare)", () => {
+      const reader = buildSearchParamsReader({ status: "CANCELLED" });
+      expect(isCancelReturn(reader)).toBe(true); // Implementation uses .toLowerCase()
+    });
+  });
+
+  describe("shouldRedirectToHostedCheckout", () => {
+    it("detects PayOS host my.payos.vn", () => {
+      expect(shouldRedirectToHostedCheckout("https://my.payos.vn/login")).toBe(true);
+      expect(shouldRedirectToHostedCheckout("https://my.payos.vn/payment/123")).toBe(true);
+    });
+
+    it("detects PayOS host payos.vn", () => {
+      expect(shouldRedirectToHostedCheckout("https://payos.vn/checkout")).toBe(true);
+    });
+
+    it("returns false for non-PayOS URLs", () => {
+      expect(shouldRedirectToHostedCheckout("https://example.com/payment")).toBe(false);
+      expect(shouldRedirectToHostedCheckout("https://vnpay.vn/pay")).toBe(false);
+    });
+
+    it("returns false for undefined input", () => {
+      expect(shouldRedirectToHostedCheckout(undefined)).toBe(false);
+    });
+
+    it("returns false for empty string", () => {
+      expect(shouldRedirectToHostedCheckout("")).toBe(false);
+    });
+
+    it("handles URLs with query parameters", () => {
+      expect(shouldRedirectToHostedCheckout("https://my.payos.vn/login?redirect=/home")).toBe(true);
+    });
   });
 });

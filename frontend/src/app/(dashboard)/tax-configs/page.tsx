@@ -1,5 +1,13 @@
 import { TaxConfigsPage } from "@/features/dashboard/components/TaxConfigsPage";
+import { TourRequestAdminLayout } from "@/features/dashboard/components/TourRequestAdminLayout";
 
 export default function TaxConfigsRoutePage() {
-  return <TaxConfigsPage />;
+  return (
+    <TourRequestAdminLayout
+      title="Tax Configuration"
+      subtitle="Manage tax rates for tour pricing"
+    >
+      <TaxConfigsPage />
+    </TourRequestAdminLayout>
+  );
 }

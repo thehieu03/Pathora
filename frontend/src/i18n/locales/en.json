@@ -1954,6 +1954,13 @@
       "closeNavigationMenu": "Close navigation menu"
     }
   },
+  "booking": {
+    "recentBookings": "My Tours",
+    "viewAll": "View all",
+    "noBookings": "You haven't booked any tours yet",
+    "browseTours": "Browse tours now",
+    "loading": "Loading..."
+  },
   "notification": {
     "title": "Notifications",
     "viewAll": "View all",
