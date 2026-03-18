@@ -108,7 +108,7 @@ public class IdentityService(
                 {
                     To = request.Email,
                     Subject = "Chào mừng đến với hệ thống",
-                    Body = JsonSerializer.Serialize(new RegisterMail("https://pathora-be.duckdns.org/swagger/index.html", request.Email, 180.ToString())),
+                    Body = JsonSerializer.Serialize(new RegisterMail(_configuration["AppConfig:SwaggerBaseUrl"] ?? "https://pathora-be.duckdns.org/swagger/index.html", request.Email, 180.ToString())),
                     Template = nameof(RegisterMail),
                 };
 

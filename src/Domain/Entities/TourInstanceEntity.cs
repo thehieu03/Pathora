@@ -60,6 +60,14 @@ public class TourInstanceEntity : Aggregate<Guid>
     // Soft delete
     public bool IsDeleted { get; set; }
 
+    // Visa policy for international tours
+    public Guid? VisaPolicyId { get; set; }
+    public virtual VisaPolicyEntity? VisaPolicy { get; set; }
+
+    // Deposit policy
+    public Guid? DepositPolicyId { get; set; }
+    public virtual DepositPolicyEntity? DepositPolicy { get; set; }
+
     // Translations (vi/en)
     public Dictionary<string, TourInstanceTranslationData> Translations { get; set; } = [];
 
@@ -97,7 +105,9 @@ public class TourInstanceEntity : Aggregate<Guid>
             List<ImageEntity>? images = null,
             DateTimeOffset? confirmationDeadline = null,
             List<string>? includedServices = null,
-            TourInstanceGuide? guide = null)
+            TourInstanceGuide? guide = null,
+            Guid? visaPolicyId = null,
+            Guid? depositPolicyId = null)
     {
         EnsureValidDateRange(startDate, endDate);
         EnsureValidParticipants(minParticipation, maxParticipation);
@@ -130,6 +140,8 @@ public class TourInstanceEntity : Aggregate<Guid>
             ConfirmationDeadline = confirmationDeadline,
             IncludedServices = includedServices ?? [],
             Guide = guide,
+            VisaPolicyId = visaPolicyId,
+            DepositPolicyId = depositPolicyId,
             IsDeleted = false,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,

@@ -362,6 +362,13 @@ public static class ErrorConstants
             new("Hủy hoạt động", "Cancel activity");
     }
 
+    public static class PricingPolicy
+    {
+        public const string NotFoundCode = "PricingPolicy.NotFound";
+        public static readonly LocalizedMessage NotFoundDescription =
+            new("Không tìm thấy chính sách giá.", "Pricing policy not found.");
+    }
+
     public static string ResolveByCode(string? code, string? lang, string fallbackDescription)
     {
         if (string.IsNullOrWhiteSpace(code))
@@ -487,6 +494,7 @@ public static class ErrorConstants
             var value when value == SupplierPayable.NotFoundCode => SupplierPayable.NotFoundDescription,
             var value when value == ActivityStatus.NotFoundCode => ActivityStatus.NotFoundDescription,
             var value when value == ActivityStatus.CancelledCode => ActivityStatus.CancelledDescription,
+            var value when value == PricingPolicy.NotFoundCode => PricingPolicy.NotFoundDescription,
             var value when value == Payment.TransactionNotFoundCode => Payment.TransactionNotFoundDescription,
             var value when value == Payment.TransactionExpiredCode => Payment.TransactionExpiredDescription,
             var value when value == Payment.TransactionAlreadyCompletedCode => Payment.TransactionAlreadyCompletedDescription,

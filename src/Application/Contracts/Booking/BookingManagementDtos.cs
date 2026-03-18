@@ -385,3 +385,36 @@ public sealed record BookingDetailResponse(
     List<BookingTourGuideDto> AssignedTourGuides,
     List<TourDayActivityStatusDto> ActivityStatuses
 );
+
+public sealed record CheckoutPriceResponse(
+    Guid BookingId,
+    Guid TourInstanceId,
+    string TourName,
+    string TourCode,
+    string? ThumbnailUrl,
+    DateTimeOffset StartDate,
+    DateTimeOffset EndDate,
+    int DurationDays,
+    string? Location,
+    int NumberAdult,
+    int NumberChild,
+    int NumberInfant,
+    // Base prices from TourInstance
+    decimal AdultPrice,
+    decimal ChildPrice,
+    decimal InfantPrice,
+    // Calculated prices with tiers
+    decimal AdultSubtotal,
+    decimal ChildSubtotal,
+    decimal InfantSubtotal,
+    decimal Subtotal,
+    // Tax
+    decimal TaxRate,
+    decimal TaxAmount,
+    // Final
+    decimal TotalPrice,
+    // Deposit info
+    decimal DepositPercentage,
+    decimal DepositAmount,
+    decimal RemainingBalance
+);

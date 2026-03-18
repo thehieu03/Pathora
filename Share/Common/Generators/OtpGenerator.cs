@@ -23,7 +23,7 @@ public class OtpGenerator
 
     private static char GetRandomDigit()
     {
-        int index = RandomNumberGenerator.GetInt32(Digits.Length);
+        var index = RandomNumberGenerator.GetInt32(Digits.Length);
         return Digits[index];
     }
 }
