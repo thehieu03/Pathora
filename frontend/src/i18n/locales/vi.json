@@ -5,6 +5,37 @@
     "signIn": "Đăng nhập",
     "signUp": "Đăng ký",
     "signOut": "Đăng xuất",
+    "profile": "Thông tin cá nhân",
+    "changePassword": "Đổi mật khẩu",
+    "settings": "Cài đặt",
+    "back": "Quay lại",
+    "save": "Lưu",
+    "loading": "Đang tải...",
+    "auth": {
+      "fullName": "Họ và tên",
+      "phoneNumber": "Số điện thoại",
+      "address": "Địa chỉ",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+      "passwordChangedSuccess": "Đổi mật khẩu thành công",
+      "passwordChangeFailed": "Đổi mật khẩu thất bại"
+    },
+    "profilePage": {
+      "pageTitle": "Tài khoản của tôi",
+      "updateSuccess": "Cập nhật thông tin thành công",
+      "updateFailed": "Cập nhật thất bại"
+    },
+    "settingsPage": {
+      "emailNotifications": "Thông báo qua email",
+      "emailNotificationsDesc": "Nhận thông báo qua email",
+      "smsNotifications": "Thông báo qua SMS",
+      "smsNotificationsDesc": "Nhận thông báo qua SMS",
+      "newsletter": "Bản tin",
+      "newsletterDesc": "Nhận bản tin và khuyến mãi"
+    },
     "email": "Email",
     "password": "Mật khẩu",
     "forgotPassword": "Quên mật khẩu?",

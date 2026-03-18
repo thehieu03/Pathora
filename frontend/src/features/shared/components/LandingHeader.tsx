@@ -36,6 +36,9 @@ import {
   FiX,
   FiCalendar,
   FiArrowRight,
+  FiUser,
+  FiSettings,
+  FiLock,
 } from "react-icons/fi";
 import { bookingService, RecentBooking } from "@/api/services/bookingService";
 
@@ -853,6 +856,36 @@ export const LandingHeader = ({
 
                     {/* Menu Items */}
                     <div className="py-2 border-t border-white/10">
+                      {/* Profile */}
+                      <Link
+                        href="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
+                      >
+                        <FiUser className="w-4 h-4" />
+                        <span>{t("common.profile") || "Thông tin cá nhân"}</span>
+                      </Link>
+
+                      {/* Change Password */}
+                      <Link
+                        href="/profile?tab=password"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
+                      >
+                        <FiLock className="w-4 h-4" />
+                        <span>{t("common.changePassword") || "Đổi mật khẩu"}</span>
+                      </Link>
+
+                      {/* Settings */}
+                      <Link
+                        href="/profile?tab=settings"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
+                      >
+                        <FiSettings className="w-4 h-4" />
+                        <span>{t("common.settings") || "Cài đặt"}</span>
+                      </Link>
+
                       <Link
                         href="/tours/my-requests"
                         onClick={() => setUserMenuOpen(false)}

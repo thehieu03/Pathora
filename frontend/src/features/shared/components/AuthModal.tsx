@@ -320,6 +320,7 @@ const LoginView = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      // Login first to get tokens and set cookies
       const loginResult = await login({
         email: form.email,
         password: form.password,
@@ -337,7 +338,12 @@ const LoginView = ({
 
       toast.success(t("landing.auth.loginSuccess"));
       onClose();
-      router.replace(destination);
+
+      // Wait for a short delay to allow Redux state to update
+      // This ensures the user info is set before navigation
+      setTimeout(() => {
+        router.replace(destination);
+      }, 100);
     } catch (err: unknown) {
       // Handle specific login errors and display in form
       const apiError = handleApiError(err);

@@ -2,11 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { AdminLogoutButton } from "./AdminLogoutButton";
+
+// Lazy load pricing and tax components
+const TaxConfigsPage = dynamic(() => import("@/features/dashboard/components/TaxConfigsPage"));
+const PricingPoliciesPage = dynamic(() => import("@/features/dashboard/components/PricingPoliciesPage"));
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -104,6 +109,8 @@ function TopBar({ onMenuClick }: { onMenuClick: () => void }) {
 
 const SETTINGS_TABS = [
   { id: "general", label: "General", icon: "heroicons:cog-6-tooth" },
+  { id: "tax-configs", label: "Tax Configs", icon: "heroicons:percent-badge" },
+  { id: "pricing-policies", label: "Pricing Policies", icon: "heroicons:currency-dollar" },
   { id: "notifications", label: "Notifications", icon: "heroicons:bell" },
   { id: "security", label: "Security", icon: "heroicons:shield-check" },
   { id: "billing", label: "Billing", icon: "heroicons:credit-card" },
@@ -221,6 +228,14 @@ export function SettingsPage() {
                     </div>
                   </Card>
                 </>
+              )}
+
+              {activeTab === "tax-configs" && (
+                <TaxConfigsPage />
+              )}
+
+              {activeTab === "pricing-policies" && (
+                <PricingPoliciesPage />
               )}
 
               {activeTab === "notifications" && (
