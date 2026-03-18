@@ -71,6 +71,39 @@ export interface PaymentTransaction {
   beneficiaryBank?: string;
 }
 
+export interface CheckoutPriceResponse {
+  bookingId: string;
+  tourInstanceId: string;
+  tourName: string;
+  tourCode: string;
+  thumbnailUrl?: string;
+  startDate: string;
+  endDate: string;
+  durationDays: number;
+  location?: string;
+  numberAdult: number;
+  numberChild: number;
+  numberInfant: number;
+  // Base prices from TourInstance
+  adultPrice: number;
+  childPrice: number;
+  infantPrice: number;
+  // Calculated prices with tiers
+  adultSubtotal: number;
+  childSubtotal: number;
+  infantSubtotal: number;
+  subtotal: number;
+  // Tax
+  taxRate: number;
+  taxAmount: number;
+  // Final
+  totalPrice: number;
+  // Deposit info
+  depositPercentage: number;
+  depositAmount: number;
+  remainingBalance: number;
+}
+
 export const paymentService = {
   getQr: async (payload: GetQrPayload) => {
     const response = await api.post<ApiResponse<string>>(
@@ -111,5 +144,13 @@ export const paymentService = {
     );
 
     return extractResult<PaymentTransaction>(response.data);
+  },
+
+  getCheckoutPrice: async (bookingId: string) => {
+    const response = await api.get<ApiResponse<CheckoutPriceResponse>>(
+      API_ENDPOINTS.BOOKING.GET_CHECKOUT_PRICE(bookingId),
+    );
+
+    return extractResult<CheckoutPriceResponse>(response.data);
   },
 };

@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  // Note: Hardcoded value detection is primarily done via code review.
+  // The project uses centralized config in src/configs/apiGateway.ts
+  // and process.env.NEXT_PUBLIC_* for environment variables.
 ]);
 
 export default eslintConfig;

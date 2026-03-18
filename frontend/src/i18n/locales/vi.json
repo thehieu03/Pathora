@@ -2225,6 +2225,29 @@
       "pricePerPerson": "Giá mỗi người",
       "currentParticipation": "Số người hiện tại",
       "cancellationReason": "Lý do hủy"
+    },
+    "pricingPolicy": {
+      "title": "Chính sách giá",
+      "addPolicy": "Thêm chính sách",
+      "editPolicy": "Sửa chính sách",
+      "createPolicy": "Tạo chính sách giá",
+      "policyName": "Tên chính sách",
+      "tourType": "Loại tour",
+      "status": "Trạng thái",
+      "default": "Mặc định",
+      "setDefault": "Đặt làm mặc định",
+      "tiers": "Các bậc giá",
+      "addTier": "Thêm bậc giá",
+      "label": "Nhãn",
+      "ageFrom": "Tuổi từ",
+      "ageTo": "Tuổi đến",
+      "pricePercentage": "Giá %",
+      "noPolicies": "Không tìm thấy chính sách giá nào. Tạo một chính sách để bắt đầu.",
+      "confirmDelete": "Bạn có chắc chắn muốn xóa chính sách giá này không?",
+      "private": "Riêng",
+      "public": "Công khai",
+      "active": "Hoạt động",
+      "inactive": "Không hoạt động"
     }
   }
 }

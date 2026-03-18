@@ -1,8 +1,8 @@
 import * as signalR from "@microsoft/signalr";
 import { getCookie } from "@/utils/cookie";
+import { API_GATEWAY_BASE_URL } from "@/configs/apiGateway";
 
-const API_GATEWAY = process.env.NEXT_PUBLIC_API_GATEWAY || "http://localhost:5182";
-const HUB_URL = `${API_GATEWAY}/hubs/notifications`;
+const HUB_URL = `${API_GATEWAY_BASE_URL}/hubs/notifications`;
 
 export interface Notification {
   id: string;

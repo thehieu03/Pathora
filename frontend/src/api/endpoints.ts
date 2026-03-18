@@ -198,6 +198,7 @@ export interface TourRequestEndpoints {
 export interface BookingEndpoints {
   GET_LIST: string;
   GET_DETAIL: EndpointWithId;
+  GET_CHECKOUT_PRICE: EndpointWithId;
   GET_ACTIVITIES: EndpointWithId;
   GET_ACTIVITY_DETAIL: (id: string, activityId: string) => string;
   GET_TRANSPORT_DETAILS: EndpointWithId;
@@ -224,6 +225,48 @@ export interface SiteContentEndpoints {
   UPSERT: (pageKey: string, contentKey: string) => string;
 }
 
+// Pricing Policy Endpoints Interface
+export interface PricingPolicyEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: string;
+  DELETE: EndpointWithId;
+  SET_DEFAULT: EndpointWithId;
+}
+
+export interface VisaPolicyEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: string;
+  DELETE: EndpointWithId;
+}
+
+export interface DepositPolicyEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: string;
+  DELETE: EndpointWithId;
+}
+
+export interface CancellationPolicyEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: string;
+  DELETE: EndpointWithId;
+}
+
+export interface TaxConfigEndpoints {
+  GET_ALL: string;
+  GET_DETAIL: EndpointWithId;
+  CREATE: string;
+  UPDATE: string;
+  DELETE: EndpointWithId;
+}
+
 // Main API Endpoints Interface
 export interface ApiEndpoints {
   CATALOG: CatalogEndpoints;
@@ -243,6 +286,11 @@ export interface ApiEndpoints {
   TOUR_REQUESTS: TourRequestEndpoints;
   BOOKING: BookingEndpoints;
   SITE_CONTENT: SiteContentEndpoints;
+  PRICING_POLICY: PricingPolicyEndpoints;
+  VISA_POLICY: VisaPolicyEndpoints;
+  DEPOSIT_POLICY: DepositPolicyEndpoints;
+  CANCELLATION_POLICY: CancellationPolicyEndpoints;
+  TAX_CONFIG: TaxConfigEndpoints;
 }
 
 export const API_ENDPOINTS: ApiEndpoints = {
@@ -451,6 +499,7 @@ export const API_ENDPOINTS: ApiEndpoints = {
   BOOKING: {
     GET_LIST: "/api/bookings",
     GET_DETAIL: (id: string): string => `/api/bookings/${id}`,
+    GET_CHECKOUT_PRICE: (id: string): string => `/api/bookings/${id}/checkout-price`,
     GET_ACTIVITIES: (id: string): string => `/api/bookings/${id}/activities`,
     GET_ACTIVITY_DETAIL: (id: string, activityId: string): string =>
       `/api/bookings/${id}/activities/${activityId}`,
@@ -487,6 +536,16 @@ export const API_ENDPOINTS: ApiEndpoints = {
     GET_BY_PAGE: (pageKey: string): string => `/api/site-content?pageKey=${pageKey}`,
     GET_BY_KEY: (pageKey: string, contentKey: string): string => `/api/site-content/${pageKey}/${contentKey}`,
     UPSERT: (pageKey: string, contentKey: string): string => `/api/site-content/${pageKey}/${contentKey}`,
+  },
+
+  // Pricing Policy
+  PRICING_POLICY: {
+    GET_ALL: "/api/pricing-policies",
+    GET_DETAIL: (id: string): string => `/api/pricing-policies/${id}`,
+    CREATE: "/api/pricing-policies",
+    UPDATE: "/api/pricing-policies",
+    DELETE: (id: string): string => `/api/pricing-policies/${id}`,
+    SET_DEFAULT: (id: string): string => `/api/pricing-policies/${id}/set-default`,
   },
 };
 

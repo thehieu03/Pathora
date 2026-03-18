@@ -9,7 +9,7 @@ import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { paymentService, PaymentTransaction } from "@/api/services/paymentService";
+import { paymentService, PaymentTransaction, CheckoutPriceResponse } from "@/api/services/paymentService";
 import { handleApiError } from "@/utils/apiResponse";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -409,16 +409,49 @@ export function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [transaction, setTransaction] = useState<PaymentTransaction | null>(null);
   const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+  const [checkoutPrice, setCheckoutPrice] = useState<CheckoutPriceResponse | null>(null);
+  const [loadingPrice, setLoadingPrice] = useState(true);
+  const [priceError, setPriceError] = useState<string | null>(null);
 
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  /* ── Get booking ID from URL ──────────────────────────── */
+  const bookingIdParam = searchParams.get("bookingId");
+
+  /* ── Fetch checkout price from API ────────────────────── */
+  useEffect(() => {
+    if (!bookingIdParam) {
+      setLoadingPrice(false);
+      return;
+    }
+
+    const fetchCheckoutPrice = async () => {
+      try {
+        setLoadingPrice(true);
+        setPriceError(null);
+        const price = await paymentService.getCheckoutPrice(bookingIdParam);
+        if (price) {
+          setCheckoutPrice(price);
+        }
+      } catch (error) {
+        const handledError = handleApiError(error);
+        console.error("Failed to fetch checkout price:", handledError.message);
+        setPriceError(handledError.message);
+      } finally {
+        setLoadingPrice(false);
+      }
+    };
+
+    fetchCheckoutPrice();
+  }, [bookingIdParam]);
+
   /* ── Derived ──────────────────────────────────────────── */
-  const bookingId = searchParams.get("bookingId") ?? SAMPLE_BOOKING.tourTitle;
-  const totalPrice = SAMPLE_BOOKING.pricePerAdult * SAMPLE_BOOKING.adults;
-  const depositAmount = Math.round(totalPrice * SAMPLE_BOOKING.depositRate);
-  const remainingBalance = totalPrice - depositAmount;
+  const bookingId = bookingIdParam ?? "";
+  const totalPrice = checkoutPrice?.totalPrice ?? 0;
+  const depositAmount = checkoutPrice?.depositAmount ?? 0;
+  const remainingBalance = checkoutPrice?.remainingBalance ?? 0;
   const payAmount = paymentOption === "full" ? totalPrice : depositAmount;
-  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction;
+  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction && !!checkoutPrice;
 
   /* ── Polling for payment status ────────────────────────── */
   const startPolling = useCallback((transactionCode: string) => {
@@ -480,7 +513,7 @@ export function CheckoutPage() {
         type: paymentOption === "full" ? "FullPayment" : "Deposit",
         amount: payAmount,
         paymentMethod: mapPaymentMethod(paymentMethod),
-        paymentNote: `Payment for ${SAMPLE_BOOKING.tourTitle} - ${paymentOption === "full" ? "Full Payment" : "Deposit 30%"}`,
+        paymentNote: `Payment for ${checkoutPrice?.tourName ?? "Tour"} - ${paymentOption === "full" ? "Full Payment" : `Deposit ${Math.round((checkoutPrice?.depositPercentage ?? 0.3) * 100)}%`}`,
         createdBy: user?.email ?? user?.username ?? "guest",
       });
 
@@ -550,90 +583,144 @@ export function CheckoutPage() {
                     {t("landing.checkout.bookingSummary")}
                   </h3>
 
-                  {/* Tour info row */}
-                  <div className="flex gap-4 mb-4">
-                    {/* Tour image */}
-                    <div className="size-24 md:size-28 rounded-xl bg-gray-200 overflow-hidden shrink-0">
-                      <img
-                        src={SAMPLE_BOOKING.tourImage}
-                        alt={SAMPLE_BOOKING.tourTitle}
-                        className="size-full object-cover"
-                      />
+                  {/* Loading/Error/Content */}
+                  {loadingPrice ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Icon icon="heroicons:arrow-path" className="size-8 animate-spin text-orange-500" />
                     </div>
-
-                    {/* Tour details */}
-                    <div className="flex flex-col gap-1.5 min-w-0">
-                      <h4 className="text-sm font-bold text-slate-900 leading-5 line-clamp-2">
-                        {SAMPLE_BOOKING.tourTitle}
-                      </h4>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <Icon
-                          icon="heroicons:map-pin"
-                          className="size-3.5 shrink-0 text-gray-400"
-                        />
-                        {SAMPLE_BOOKING.location}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <Icon
-                          icon="heroicons:clock"
-                          className="size-3.5 shrink-0 text-gray-400"
-                        />
-                        {SAMPLE_BOOKING.duration}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <Icon
-                          icon="heroicons:calendar"
-                          className="size-3.5 shrink-0 text-gray-400"
-                        />
-                        {SAMPLE_BOOKING.dateRange}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <Icon
-                          icon="heroicons:users"
-                          className="size-3.5 shrink-0 text-gray-400"
-                        />
-                        {SAMPLE_BOOKING.guests}
-                      </div>
-                      <span className="inline-flex items-center self-start px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-semibold mt-1">
-                        {SAMPLE_BOOKING.category}
-                      </span>
+                  ) : priceError || !checkoutPrice ? (
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      <Icon icon="heroicons:exclamation-circle" className="size-10 text-red-500 mb-2" />
+                      <p className="text-sm text-red-500">{priceError || "No booking found"}</p>
+                      <Link href="/tours" className="text-sm text-orange-500 hover:underline mt-2">
+                        {t("landing.checkout.backToTour")}
+                      </Link>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      {/* Tour info row */}
+                      <div className="flex gap-4 mb-4">
+                        {/* Tour image */}
+                        <div className="size-24 md:size-28 rounded-xl bg-gray-200 overflow-hidden shrink-0">
+                          <img
+                            src={checkoutPrice.thumbnailUrl || "/placeholder-tour.jpg"}
+                            alt={checkoutPrice.tourName}
+                            className="size-full object-cover"
+                          />
+                        </div>
 
-                  {/* Price Details */}
-                  <div className="border-t border-gray-100 pt-4">
-                    <h4 className="text-sm font-semibold text-slate-900 mb-3">
-                      {t("landing.checkout.priceDetails")}
-                    </h4>
+                        {/* Tour details */}
+                        <div className="flex flex-col gap-1.5 min-w-0">
+                          <h4 className="text-sm font-bold text-slate-900 leading-5 line-clamp-2">
+                            {checkoutPrice.tourName}
+                          </h4>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Icon
+                              icon="heroicons:map-pin"
+                              className="size-3.5 shrink-0 text-gray-400"
+                            />
+                            {checkoutPrice.location || "N/A"}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Icon
+                              icon="heroicons:clock"
+                              className="size-3.5 shrink-0 text-gray-400"
+                            />
+                            {checkoutPrice.durationDays} {checkoutPrice.durationDays === 1 ? "Day" : "Days"}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Icon
+                              icon="heroicons:calendar"
+                              className="size-3.5 shrink-0 text-gray-400"
+                            />
+                            {new Date(checkoutPrice.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} - {new Date(checkoutPrice.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Icon
+                              icon="heroicons:users"
+                              className="size-3.5 shrink-0 text-gray-400"
+                            />
+                            {checkoutPrice.numberAdult} Adults
+                            {checkoutPrice.numberChild > 0 && `, ${checkoutPrice.numberChild} Children`}
+                            {checkoutPrice.numberInfant > 0 && `, ${checkoutPrice.numberInfant} Infants`}
+                          </div>
+                          <span className="inline-flex items-center self-start px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-semibold mt-1">
+                            {checkoutPrice.tourCode}
+                          </span>
+                        </div>
+                      </div>
 
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">
-                          {t("landing.checkout.adults")} ×{" "}
-                          {SAMPLE_BOOKING.adults}
-                        </span>
-                        <span className="font-semibold text-slate-900">
-                          {fmt(totalPrice)}
-                        </span>
+                      {/* Price Details */}
+                      <div className="border-t border-gray-100 pt-4">
+                        <h4 className="text-sm font-semibold text-slate-900 mb-3">
+                          {t("landing.checkout.priceDetails")}
+                        </h4>
+
+                        <div className="flex flex-col gap-2">
+                          {/* Adult price breakdown */}
+                          {checkoutPrice.numberAdult > 0 && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-600">
+                                {t("landing.checkout.adults")} × {checkoutPrice.numberAdult}
+                              </span>
+                              <span className="font-semibold text-slate-900">
+                                {fmt(checkoutPrice.adultSubtotal)}
+                              </span>
+                            </div>
+                          )}
+                          {/* Child price breakdown */}
+                          {checkoutPrice.numberChild > 0 && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-600">
+                                {t("landing.checkout.children") || "Children"} × {checkoutPrice.numberChild}
+                              </span>
+                              <span className="font-semibold text-slate-900">
+                                {fmt(checkoutPrice.childSubtotal)}
+                              </span>
+                            </div>
+                          )}
+                          {/* Infant price breakdown */}
+                          {checkoutPrice.numberInfant > 0 && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-600">
+                                {t("landing.checkout.infants") || "Infants"} × {checkoutPrice.numberInfant}
+                              </span>
+                              <span className="font-semibold text-slate-900">
+                                {fmt(checkoutPrice.infantSubtotal)}
+                              </span>
+                            </div>
+                          )}
+                          {/* Tax line item */}
+                          {checkoutPrice.taxAmount > 0 && (
+                            <div className="flex items-center justify-between text-sm">
+                              <span className="text-gray-600">
+                                {t("landing.checkout.tax") || "Tax"} ({checkoutPrice.taxRate}%)
+                              </span>
+                              <span className="font-semibold text-slate-900">
+                                {fmt(checkoutPrice.taxAmount)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-600">
+                              {t("landing.checkout.serviceFee")}
+                            </span>
+                            <span className="font-semibold text-green-500">
+                              {t("landing.checkout.free")}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <span className="text-sm font-bold text-slate-900">
+                              {t("landing.checkout.total")}
+                            </span>
+                            <span className="text-xl font-bold text-orange-500">
+                              {fmt(totalPrice)}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">
-                          {t("landing.checkout.serviceFee")}
-                        </span>
-                        <span className="font-semibold text-green-500">
-                          {t("landing.checkout.free")}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <span className="text-sm font-bold text-slate-900">
-                          {t("landing.checkout.total")}
-                        </span>
-                        <span className="text-xl font-bold text-orange-500">
-                          {fmt(totalPrice)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
 
                   {/* Payment Option (Full vs Deposit) */}
                   <div className="mt-4 flex flex-col gap-3">
@@ -696,7 +783,7 @@ export function CheckoutPage() {
                         <div className="flex flex-col items-start text-left">
                           <span className="text-sm font-semibold text-slate-900">
                             {t("landing.checkout.deposit")} (
-                            {Math.round(SAMPLE_BOOKING.depositRate * 100)}%)
+                            {Math.round((checkoutPrice?.depositPercentage ?? 0.3) * 100)}%)
                           </span>
                           <span className="text-[10px] text-gray-400 font-medium">
                             {t("landing.checkout.depositDesc")}
