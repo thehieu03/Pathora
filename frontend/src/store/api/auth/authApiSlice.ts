@@ -183,6 +183,31 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+
+    /**
+     * PUT /api/user/change-password
+     * Change user password.
+     */
+    changePassword: builder.mutation<ApiSharedResponse<void>, { currentPassword: string; newPassword: string }>({
+      query: (body) => ({
+        url: "/api/user/change-password",
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    /**
+     * PUT /api/user
+     * Update user profile.
+     */
+    updateUser: builder.mutation<ApiSharedResponse<void>, { fullName?: string; phoneNumber?: string; address?: string }>({
+      query: (body) => ({
+        url: "/api/user",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -193,4 +218,6 @@ export const {
   useGetUserInfoQuery,
   useRefreshTokenMutation,
   useLogoutMutation,
+  useChangePasswordMutation,
+  useUpdateUserMutation,
 } = authApiSlice;

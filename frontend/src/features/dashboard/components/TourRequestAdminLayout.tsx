@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import { tourRequestService } from "@/api/services/tourRequestService";
-import { AdminLogoutButton } from "./AdminLogoutButton";
+import { AdminSidebar, TopBar } from "./AdminSidebar";
 
 type TourRequestAdminLayoutProps = {
   title: string;
@@ -53,6 +53,26 @@ const NAV_ITEMS: NavItem[] = [
     label: "Policies",
     icon: "heroicons:clipboard-document-list",
     href: "/dashboard/policies",
+  },
+  {
+    label: "Visa Policies",
+    icon: "heroicons:document-text",
+    href: "/visa-policies",
+  },
+  {
+    label: "Pricing Policies",
+    icon: "heroicons:currency-dollar",
+    href: "/pricing-policies",
+  },
+  {
+    label: "Deposit Policies",
+    icon: "heroicons:currency-dollar",
+    href: "/deposit-policies",
+  },
+  {
+    label: "Tax Config",
+    icon: "heroicons:wallet",
+    href: "/tax-configs",
   },
   { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },
 ];

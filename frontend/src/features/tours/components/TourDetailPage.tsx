@@ -8,7 +8,7 @@ import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { tourService } from "@/api/services/tourService";
 import { homeService } from "@/api/services/homeService";
 import { normalizeLanguageForApi } from "@/api/languageHeader";
@@ -612,6 +612,7 @@ function ScheduledDeparturesSection({
 export function TourDetailPage() {
   const { t, i18n } = useTranslation();
   const params = useParams();
+  const router = useRouter();
   const tourId = params?.id as string;
   const [apiLanguage, setApiLanguage] = useState(() =>
     normalizeLanguageForApi(i18n.resolvedLanguage || i18n.language),
@@ -1324,6 +1325,12 @@ export function TourDetailPage() {
                   <Button
                     type="button"
                     disabled={!canBook}
+                    onClick={() => {
+                      if (tourId && canBook) {
+                        // Navigate to tour instances page to select departure date
+                        router.push(`/tours/instances/${tourId}`);
+                      }
+                    }}
                     className={`relative w-full py-4 rounded-2xl text-[15px] tracking-wide font-extrabold text-white overflow-hidden transition-all duration-300 flex items-center justify-center gap-2 ${
                       canBook
                         ? "bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 bg-[length:200%_auto] hover:bg-[center_right_1rem] shadow-[0_8px_20px_rgba(249,115,22,0.3)] hover:shadow-[0_12px_24px_rgba(249,115,22,0.4)] hover:-translate-y-1 active:scale-[0.98]"

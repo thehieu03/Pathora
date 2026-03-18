@@ -475,8 +475,45 @@ export function CheckoutPage() {
 
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  /* ── Get booking ID from URL ──────────────────────────── */
+  /* ── Get booking ID or tour instance info from URL ───── */
   const bookingIdParam = searchParams.get("bookingId");
+  const tourInstanceIdParam = searchParams.get("tourInstanceId");
+  const tourNameParam = searchParams.get("tourName");
+  const startDateParam = searchParams.get("startDate");
+  const endDateParam = searchParams.get("endDate");
+  const locationParam = searchParams.get("location");
+  const depositPerPersonParam = searchParams.get("depositPerPerson");
+  const bookingTypeParam = searchParams.get("bookingType") || "InstanceJoin";
+  const instanceTypeParam = searchParams.get("instanceType") || "public";
+
+  /* ── State for tour instance booking ─────────────────── */
+  const [tourInstanceBooking, setTourInstanceBooking] = useState<{
+    tourInstanceId: string;
+    tourName: string;
+    startDate: string;
+    endDate: string;
+    location: string;
+    depositPerPerson: number;
+    bookingType: string;
+    instanceType: string;
+  } | null>(null);
+
+  /* ── Initialize tour instance booking from URL params ──── */
+  useEffect(() => {
+    if (tourInstanceIdParam && tourNameParam) {
+      setTourInstanceBooking({
+        tourInstanceId: tourInstanceIdParam,
+        tourName: tourNameParam,
+        startDate: startDateParam || "",
+        endDate: endDateParam || "",
+        location: locationParam || "",
+        depositPerPerson: depositPerPersonParam ? Number(depositPerPersonParam) : 0,
+        bookingType: bookingTypeParam,
+        instanceType: instanceTypeParam,
+      });
+      setLoadingPrice(false);
+    }
+  }, [tourInstanceIdParam, tourNameParam, startDateParam, endDateParam, locationParam, depositPerPersonParam, bookingTypeParam, instanceTypeParam]);
 
   /* ── Fetch checkout price from API ────────────────────── */
   useEffect(() => {
@@ -507,11 +544,13 @@ export function CheckoutPage() {
 
   /* ── Derived ──────────────────────────────────────────── */
   const bookingId = bookingIdParam ?? "";
-  const totalPrice = checkoutPrice?.totalPrice ?? 0;
-  const depositAmount = checkoutPrice?.depositAmount ?? 0;
+  const hasCheckoutPrice = !!checkoutPrice;
+  const hasTourInstanceBooking = !!tourInstanceBooking;
+  const totalPrice = checkoutPrice?.totalPrice ?? (tourInstanceBooking?.depositPerPerson ?? 0);
+  const depositAmount = checkoutPrice?.depositAmount ?? (tourInstanceBooking?.depositPerPerson ?? 0);
   const remainingBalance = checkoutPrice?.remainingBalance ?? 0;
   const payAmount = paymentOption === "full" ? totalPrice : depositAmount;
-  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction && !!checkoutPrice;
+  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction && (hasCheckoutPrice || hasTourInstanceBooking);
 
   useEffect(() => {
     if (!transaction) {
@@ -711,12 +750,57 @@ export function CheckoutPage() {
                     <div className="flex items-center justify-center py-8">
                       <Icon icon="heroicons:arrow-path" className="size-8 animate-spin text-orange-500" />
                     </div>
-                  ) : priceError || !checkoutPrice ? (
+                  ) : priceError || (!checkoutPrice && !tourInstanceBooking) ? (
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <Icon icon="heroicons:exclamation-circle" className="size-10 text-red-500 mb-2" />
                       <p className="text-sm text-red-500">{priceError || "No booking found"}</p>
                       <Link href="/tours" className="text-sm text-orange-500 hover:underline mt-2">
                         {t("landing.checkout.backToTour")}
+                      </Link>
+                    </div>
+                  ) : tourInstanceBooking && !checkoutPrice ? (
+                    /* Tour instance booking without existing booking - show info */
+                    <div className="flex flex-col items-center justify-center py-8 text-center">
+                      {tourInstanceBooking.instanceType === "public" || tourInstanceBooking.instanceType === "Public" ? (
+                        <>
+                          <Icon icon="heroicons:check-circle" className="size-12 text-green-500 mb-2" />
+                          <p className="text-lg font-semibold text-green-600 mb-2">
+                            {t("landing.checkout.bookingConfirmed", "Booking Confirmed!")}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-4">
+                            {t("landing.checkout.publicInstanceMessage", "Your booking has been confirmed. Get ready for your adventure!")}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <Icon icon="heroicons:clock" className="size-12 text-blue-500 mb-2" />
+                          <p className="text-lg font-semibold text-blue-600 mb-2">
+                            {t("landing.checkout.bookingPending", "Booking Request Submitted")}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-4">
+                            {t("landing.checkout.privateInstanceMessage", "Your request is pending admin review. We'll notify you once approved.")}
+                          </p>
+                        </>
+                      )}
+                      <div className="bg-gray-50 rounded-xl p-4 text-left w-full max-w-md">
+                        <h4 className="font-semibold text-slate-900 mb-2">{tourInstanceBooking.tourName}</h4>
+                        <p className="text-xs text-gray-500">
+                          📍 {tourInstanceBooking.location || "N/A"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          📅 {tourInstanceBooking.startDate} - {tourInstanceBooking.endDate}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2 font-semibold text-orange-500">
+                          💰 Deposit: {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(tourInstanceBooking.depositPerPerson)}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          📋 Type: {tourInstanceBooking.bookingType === "InstanceJoin" ? "Instance Join" : "Tour Booking"}
+                          {" | "}
+                          Visibility: {tourInstanceBooking.instanceType === "public" ? "Public" : "Private"}
+                        </p>
+                      </div>
+                      <Link href="/bookings" className="text-sm text-orange-500 hover:underline mt-4">
+                        {t("landing.checkout.viewMyBookings", "View My Bookings")}
                       </Link>
                     </div>
                   ) : (

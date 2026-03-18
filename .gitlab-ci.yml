@@ -1,0 +1,16 @@
+stages:
+  - build-and-deploy
+
+deploy-app:
+  stage: build-and-deploy
+  tags:
+    - do-an-fe
+  only:
+    - main
+  script:
+    - echo "Đang build Frontend..."
+    - docker build --build-arg NEXT_PUBLIC_API_GATEWAY=https://pathora-api.duckdns.org -t pathora-fe:latest ./frontend
+    - echo "Đang cập nhật các container qua Docker Compose..."
+    - cd /home/huynqhe180309
+    - touch .env
+    - docker compose -f server_docker_compose.yml up -d

@@ -5,6 +5,37 @@
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",
+    "profile": "Profile",
+    "changePassword": "Change Password",
+    "settings": "Settings",
+    "back": "Back",
+    "save": "Save",
+    "loading": "Loading...",
+    "auth": {
+      "fullName": "Full Name",
+      "phoneNumber": "Phone Number",
+      "address": "Address",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordChangedSuccess": "Password changed successfully",
+      "passwordChangeFailed": "Failed to change password"
+    },
+    "profilePage": {
+      "pageTitle": "My Account",
+      "updateSuccess": "Profile updated successfully",
+      "updateFailed": "Failed to update profile"
+    },
+    "settingsPage": {
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Receive notifications via email",
+      "smsNotifications": "SMS Notifications",
+      "smsNotificationsDesc": "Receive notifications via SMS",
+      "newsletter": "Newsletter",
+      "newsletterDesc": "Receive newsletters and promotions"
+    },
     "email": "Email",
     "password": "Password",
     "forgotPassword": "Forgot Password?",
@@ -1953,6 +1984,13 @@
       "changeLanguage": "Change language",
       "closeNavigationMenu": "Close navigation menu"
     }
+  },
+  "booking": {
+    "recentBookings": "My Tours",
+    "viewAll": "View all",
+    "noBookings": "You haven't booked any tours yet",
+    "browseTours": "Browse tours now",
+    "loading": "Loading..."
   },
   "notification": {
     "title": "Notifications",

@@ -1,5 +1,13 @@
 import { PricingPoliciesPage } from "@/features/dashboard/components/PricingPoliciesPage";
+import { TourRequestAdminLayout } from "@/features/dashboard/components/TourRequestAdminLayout";
 
 export default function PricingPoliciesRoutePage() {
-  return <PricingPoliciesPage />;
+  return (
+    <TourRequestAdminLayout
+      title="Pricing Policies"
+      subtitle="Manage age-based pricing rules for tours"
+    >
+      <PricingPoliciesPage />
+    </TourRequestAdminLayout>
+  );
 }
