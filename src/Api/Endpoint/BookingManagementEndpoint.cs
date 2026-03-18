@@ -6,6 +6,8 @@ public static class BookingManagementEndpoint
     public const string BookingId = "{id:guid}";
     public const string ActivityId = "{activityId:guid}";
 
+    public const string MyRecent = "my-recent";
+
     public const string Activities = "{id:guid}/activities";
     public const string ActivityDetail = "{id:guid}/activities/{activityId:guid}";
     public const string TransportDetails = "{id:guid}/transport-details";

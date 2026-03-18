@@ -18,7 +18,10 @@ public sealed record CreateSupplierPayableCommand(
     Guid SupplierId,
     decimal ExpectedAmount,
     DateTimeOffset? DueAt,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CreateSupplierPayableCommandValidator : AbstractValidator<CreateSupplierPayableCommand>
 {
@@ -77,7 +80,10 @@ public sealed record UpdateSupplierPayableCommand(
     decimal ExpectedAmount,
     decimal PaidAmount,
     DateTimeOffset? DueAt,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class SupplierPayableValidator : AbstractValidator<UpdateSupplierPayableCommand>
 {
@@ -129,7 +135,10 @@ public sealed record RecordSupplierPaymentCommand(
     DateTimeOffset PaidAt,
     PaymentMethod PaymentMethod,
     string? TransactionRef,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class RecordSupplierPaymentCommandValidator : AbstractValidator<RecordSupplierPaymentCommand>
 {
