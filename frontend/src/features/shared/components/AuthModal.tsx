@@ -337,13 +337,14 @@ const LoginView = ({
       });
 
       toast.success(t("landing.auth.loginSuccess"));
-      onClose();
 
-      // Wait for a short delay to allow Redux state to update
-      // This ensures the user info is set before navigation
+      // Close modal and navigate - wait for Redux state to fully sync
+      // The auth cookies are set synchronously, but Redux state update is async
+      // Using a short delay ensures the state is updated before navigation
       setTimeout(() => {
+        onClose();
         router.replace(destination);
-      }, 100);
+      }, 300);
     } catch (err: unknown) {
       // Handle specific login errors and display in form
       const apiError = handleApiError(err);

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
@@ -9,9 +10,19 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { AdminLogoutButton } from "./AdminLogoutButton";
 
-// Lazy load pricing and tax components
-const TaxConfigsPage = dynamic(() => import("@/features/dashboard/components/TaxConfigsPage"));
-const PricingPoliciesPage = dynamic(() => import("@/features/dashboard/components/PricingPoliciesPage"));
+// Lazy load pricing, tax, and policy components
+const TaxConfigsPage = dynamic(
+  () => import("@/features/dashboard/components/TaxConfigsPage"),
+  { ssr: false },
+);
+const PricingPoliciesPage = dynamic(
+  () => import("@/features/dashboard/components/PricingPoliciesPage"),
+  { ssr: false },
+);
+const DashboardPoliciesPage = dynamic(
+  () => import("@/features/dashboard/components/DashboardPoliciesPage"),
+  { ssr: false },
+);
 
 /* ══════════════════════════════════════════════════════════════
    Sidebar Navigation
@@ -34,11 +45,14 @@ const NAV_ITEMS = [
   { label: "Customers", icon: "heroicons:user-group", href: "/dashboard/customers" },
   { label: "Insurance", icon: "heroicons:shield-check", href: "/dashboard/insurance" },
   { label: "Visa Applications", icon: "heroicons:document-check", href: "/dashboard/visa" },
-  { label: "Policies", icon: "heroicons:clipboard-document-list", href: "/dashboard/policies" },
   { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings", active: true },
 ];
 
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const pathname = usePathname();
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
@@ -61,7 +75,7 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             key={item.label}
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              item.active ? "bg-orange-500 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+              isActive(item.href) ? "bg-orange-500 text-white" : "text-slate-300 hover:bg-slate-800 hover:text-white"
             }`}>
             <Icon icon={item.icon} className="size-5" />
             <span>{item.label}</span>
@@ -111,6 +125,7 @@ const SETTINGS_TABS = [
   { id: "general", label: "General", icon: "heroicons:cog-6-tooth" },
   { id: "tax-configs", label: "Tax Configs", icon: "heroicons:percent-badge" },
   { id: "pricing-policies", label: "Pricing Policies", icon: "heroicons:currency-dollar" },
+  { id: "policies", label: "Policies", icon: "heroicons:clipboard-document-list" },
   { id: "notifications", label: "Notifications", icon: "heroicons:bell" },
   { id: "security", label: "Security", icon: "heroicons:shield-check" },
   { id: "billing", label: "Billing", icon: "heroicons:credit-card" },
@@ -124,6 +139,19 @@ const TEAM_MEMBERS = [
   { id: "4", name: "Content Writer", email: "content@pathora.com", role: "Viewer", status: "pending" },
 ];
 
+function TabUrlSync({ onTabChange }: { onTabChange: (tab: string) => void }) {
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab");
+
+  useEffect(() => {
+    if (tab && SETTINGS_TABS.some((t) => t.id === tab)) {
+      onTabChange(tab);
+    }
+  }, [tab, onTabChange]);
+
+  return null;
+}
+
 export function SettingsPage() {
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -131,15 +159,18 @@ export function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      {sidebarOpen && (
-        <button aria-label="Close sidebar" className="fixed inset-0 bg-black/30 z-40 lg:hidden cursor-default" onClick={() => setSidebarOpen(false)} />
-      )}
-      <div className="lg:pl-64">
-        <TopBar onMenuClick={() => setSidebarOpen(true)} />
-        <main id="main-content" className="p-6 space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
+      <Suspense fallback={null}>
+        <TabUrlSync onTabChange={setActiveTab} />
+      </Suspense>
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        {sidebarOpen && (
+          <button aria-label="Close sidebar" className="fixed inset-0 bg-black/30 z-40 lg:hidden cursor-default" onClick={() => setSidebarOpen(false)} />
+        )}
+        <div className="lg:pl-64">
+          <TopBar onMenuClick={() => setSidebarOpen(true)} />
+          <main id="main-content" className="p-6 space-y-6">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
             <p className="text-sm text-slate-500 mt-0.5">Manage your workspace and preferences</p>
           </div>
 
@@ -236,6 +267,10 @@ export function SettingsPage() {
 
               {activeTab === "pricing-policies" && (
                 <PricingPoliciesPage />
+              )}
+
+              {activeTab === "policies" && (
+                <DashboardPoliciesPage />
               )}
 
               {activeTab === "notifications" && (

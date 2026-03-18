@@ -66,12 +66,12 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     label: "Deposit Policies",
-    icon: "heroicons:banknotes",
+    icon: "heroicons:currency-dollar",
     href: "/deposit-policies",
   },
   {
     label: "Tax Config",
-    icon: "heroicons:receipt-percent",
+    icon: "heroicons:wallet",
     href: "/tax-configs",
   },
   { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },

@@ -11,6 +11,8 @@ export const ADMIN_ROUTE_PREFIXES = [
   "/tour-requests",
   "/tour-management",
   "/tour-instances",
+  "/pricing-policies",
+  "/tax-configs",
 ] as const;
 
 type RoleLike = Pick<UserRoleVm, "type">;

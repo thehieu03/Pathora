@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import { useGetUserInfoQuery, useChangePasswordMutation, useUpdateUserMutation } from "@/store/api/auth/authApiSlice";
+import type { UserInfo } from "@/store/domain/auth";
 import { Button } from "@/components/ui";
 import { extractResult } from "@/utils/apiResponse";
 import { handleApiError } from "@/utils/apiResponse";
@@ -42,7 +43,7 @@ export default function ProfilePage() {
 
   React.useEffect(() => {
     if (userInfo) {
-      const user = extractResult(userInfo);
+      const user = extractResult<UserInfo>(userInfo);
       if (user) {
         setProfileData({
           fullName: user.fullName || "",
@@ -108,7 +109,7 @@ export default function ProfilePage() {
     { id: "settings" as TabType, label: t("common.settings") || "Cài đặt", icon: FiSettings },
   ];
 
-  const user = userInfo ? extractResult(userInfo) : null;
+  const user = userInfo ? extractResult<UserInfo>(userInfo) : null;
 
   if (isLoading) {
     return (
