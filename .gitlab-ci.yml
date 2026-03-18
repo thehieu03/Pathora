@@ -9,7 +9,7 @@ deploy-app:
     - main
   script:
     - echo "Đang build Frontend..."
-    - docker build -t pathora-fe:latest ./frontend
+    - docker build --build-arg NEXT_PUBLIC_API_GATEWAY=https://pathora-api.duckdns.org -t pathora-fe:latest ./frontend
     - echo "Đang cập nhật các container qua Docker Compose..."
     - cd /home/huynqhe180309
     - touch .env
