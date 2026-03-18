@@ -24,7 +24,10 @@ public sealed record CreateBookingActivityReservationCommand(
     DateTimeOffset? EndTime,
     decimal TotalServicePrice,
     decimal TotalServicePriceAfterTax,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class CreateBookingActivityReservationCommandValidator : AbstractValidator<CreateBookingActivityReservationCommand>
 {
@@ -93,7 +96,10 @@ public sealed record UpdateBookingActivityReservationCommand(
     decimal? TotalServicePrice,
     decimal? TotalServicePriceAfterTax,
     ReservationStatus? Status,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateBookingActivityReservationCommandValidator : AbstractValidator<UpdateBookingActivityReservationCommand>
 {

@@ -2,7 +2,7 @@ namespace Domain.Entities;
 
 using Domain.Enums;
 using Domain.ValueObjects;
-
+// Policy xet gia khi nao
 public class PricingPolicy : Aggregate<Guid>
 {
     private static int _policyCodeSequence = Random.Shared.Next(0, 1000);

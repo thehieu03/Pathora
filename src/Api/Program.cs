@@ -25,7 +25,18 @@ builder.Services.AddHostedService<OutboxWorkerService>();
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
     .AddCheck<DatabaseHealthCheck>("database");
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultCorsPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins ?? Array.Empty<string>())
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
 var app = builder.Build();
 
 await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAsync();
@@ -33,7 +44,7 @@ await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAs
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
-    app.UseHttpsRedirection();
+//    app.UseHttpsRedirection();
 }
 
 app.UseExceptionHandler(_ => { });
@@ -44,7 +55,7 @@ app.UseResponseCaching();
 
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
-app.UseCors();
+app.UseCors("DefaultCorsPolicy");
 app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();

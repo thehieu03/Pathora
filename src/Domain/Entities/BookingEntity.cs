@@ -25,6 +25,9 @@ public class BookingEntity : Aggregate<Guid>
     public PaymentMethod PaymentMethod { get; set; }
     public bool IsFullPay { get; set; }
 
+    // Booking type
+    public BookingType BookingType { get; set; } = BookingType.InstanceJoin;
+
     // Status & dates
     public BookingStatus Status { get; set; } = BookingStatus.Pending;
     public DateTimeOffset BookingDate { get; set; }

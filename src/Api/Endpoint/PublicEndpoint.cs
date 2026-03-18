@@ -6,6 +6,7 @@ public static class PublicEndpoint
     public const string Tours = "tours";
     public const string TourInstances = "tour-instances";
     public const string TourRequests = "tour-requests";
+    public const string Bookings = "bookings";
     public const string Available = "available";
     public const string My = "my";
     public const string Destinations = "destinations";

@@ -31,7 +31,10 @@ public sealed record CreateTransportDetailCommand(
     bool IsTaxable,
     string? FileUrl,
     string? SpecialRequest,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class TransportDetailValidator : AbstractValidator<CreateTransportDetailCommand>
 {
@@ -127,7 +130,10 @@ public sealed record UpdateTransportDetailCommand(
     string? FileUrl,
     string? SpecialRequest,
     ReservationStatus? Status,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateTransportDetailCommandValidator : AbstractValidator<UpdateTransportDetailCommand>
 {

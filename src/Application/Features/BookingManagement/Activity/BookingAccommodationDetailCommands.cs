@@ -31,7 +31,10 @@ public sealed record CreateAccommodationDetailCommand(
     string? ConfirmationCode,
     string? FileUrl,
     string? SpecialRequest,
-    string? Note) : ICommand<ErrorOr<Guid>>;
+    string? Note) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class AccommodationDetailValidator : AbstractValidator<CreateAccommodationDetailCommand>
 {
@@ -126,7 +129,10 @@ public sealed record UpdateAccommodationDetailCommand(
     string? FileUrl,
     string? SpecialRequest,
     ReservationStatus? Status,
-    string? Note) : ICommand<ErrorOr<Success>>;
+    string? Note) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Booking];
+}
 
 public sealed class UpdateAccommodationDetailCommandValidator : AbstractValidator<UpdateAccommodationDetailCommand>
 {
