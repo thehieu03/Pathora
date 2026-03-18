@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/api/axiosInstance";
+import { getCurrentApiLanguage } from "@/api/languageHeader";
 import API_ENDPOINTS from "@/api/endpoints";
-
+import { getCookie } from "@/utils/cookie";
 export interface SiteContent {
   [key: string]: unknown;
 }
@@ -28,9 +28,22 @@ export function useSiteContent(pageKey: string): UseSiteContentResult {
     setError(null);
 
     try {
-      const response = await api.get(API_ENDPOINTS.SITE_CONTENT.GET_BY_PAGE(pageKey));
+      const token = getCookie("access_token");
+      const language = getCurrentApiLanguage();
+      const response = await fetch(API_ENDPOINTS.SITE_CONTENT.GET_BY_PAGE(pageKey, language), {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": language,
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
 
-      const data = response.data;
+      if (!response.ok) {
+        throw new Error(`Failed to fetch content: ${response.status}`);
+      }
+
+      const data = await response.json();
+
       if (data.result?.items) {
         setContent(data.result.items);
       } else if (data.items) {

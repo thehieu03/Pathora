@@ -18,6 +18,7 @@ import DashboardInsurancePage from "../(dashboard)/dashboard/insurance/page";
 import DashboardPaymentsPage from "../(dashboard)/dashboard/payments/page";
 import DashboardSettingsPage from "../(dashboard)/dashboard/settings/page";
 import DashboardPoliciesPage from "../(dashboard)/dashboard/policies/page";
+import DashboardSiteContentPage from "../(dashboard)/dashboard/site-content/page";
 
 describe("dashboard nested routes", () => {
   beforeEach(() => {
@@ -67,6 +68,11 @@ describe("dashboard nested routes", () => {
 
   it("renders policies dashboard page component", () => {
     const element = DashboardPoliciesPage();
+    expect(React.isValidElement(element)).toBe(true);
+  });
+
+  it("renders site content dashboard page component", () => {
+    const element = DashboardSiteContentPage();
     expect(React.isValidElement(element)).toBe(true);
   });
 });

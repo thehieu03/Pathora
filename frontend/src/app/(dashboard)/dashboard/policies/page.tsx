@@ -1,10 +1,5 @@
-import DashboardSectionPlaceholder from "../../../../features/dashboard/components/DashboardSectionPlaceholder";
+import { DashboardPoliciesPage as DashboardPoliciesPageView } from "@/features/dashboard/components/DashboardPoliciesPage";
 
-export default function DashboardPoliciesPage() {
-  return (
-    <DashboardSectionPlaceholder
-      title="Policies"
-      description="Policy templates, approval workflows, and compliance configuration will be managed here."
-    />
-  );
+export default function DashboardPoliciesRoutePage() {
+  return <DashboardPoliciesPageView />;
 }

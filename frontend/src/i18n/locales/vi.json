@@ -1661,6 +1661,11 @@
       "includeTransactionCode": "Ghi mã này trong nội dung chuyển khoản",
       "awaitingPayment": "Đang chờ xác nhận thanh toán",
       "paymentReceived": "Đã nhận thanh toán",
+      "paymentCancelled": "Thanh toán đã bị hủy",
+      "paymentCancelledDesc": "Thanh toán đã bị hủy trên trang thanh toán được lưu trữ. Bạn có thể quay lại trang checkout để tạo giao dịch mới.",
+      "paymentExpired": "Thanh toán đã hết hạn",
+      "paymentExpiredDesc": "Phiên thanh toán đã hết hạn trước khi xác nhận. Vui lòng quay lại checkout để tạo giao dịch mới.",
+      "paymentFailedDesc": "Không thể xác nhận thanh toán. Vui lòng quay lại checkout và thử lại.",
       "transactionCode": "Mã giao dịch",
       "paymentPending": "Thanh toán của bạn đang được xác minh. Quá trình này thường mất vài phút.",
       "copyAccountNumber": "Sao chép số tài khoản",
@@ -2248,6 +2253,102 @@
       "public": "Công khai",
       "active": "Hoạt động",
       "inactive": "Không hoạt động"
+    },
+    "policies": {
+      "title": "Chính sách",
+      "description": "Xem và quản lý các quy định về giá, đặt cọc, hủy và visa.",
+      "searchPlaceholder": "Tìm theo tên chính sách, loại hoặc phạm vi",
+      "confirmToggle": "Bạn có chắc muốn thay đổi trạng thái của chính sách này không?",
+      "types": {
+        "pricing": "Giá",
+        "deposit": "Đặt cọc",
+        "cancellation": "Hủy",
+        "visa": "Visa"
+      },
+      "filters": {
+        "all": "Tất cả",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động"
+      },
+      "table": {
+        "policy": "Chính sách",
+        "type": "Loại",
+        "scope": "Phạm vi",
+        "status": "Trạng thái",
+        "updated": "Cập nhật gần nhất",
+        "destination": "Trang quản lý",
+        "actions": "Thao tác"
+      },
+      "metrics": {
+        "total": "Tổng số chính sách",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "categories": "Nhóm chính sách"
+      },
+      "states": {
+        "loading": "Đang tải dữ liệu chính sách...",
+        "emptyTitle": "Chưa có chính sách",
+        "emptyDescription": "Tạo chính sách đầu tiên để bắt đầu cấu hình quy tắc nghiệp vụ.",
+        "filteredEmptyTitle": "Không có chính sách phù hợp",
+        "filteredEmptyDescription": "Thử từ khóa khác hoặc đặt lại bộ lọc để xem tất cả chính sách."
+      },
+      "actions": {
+        "refresh": "Làm mới",
+        "create": "Tạo chính sách",
+        "view": "Xem",
+        "edit": "Sửa",
+        "reset": "Đặt lại",
+        "retry": "Thử lại",
+        "updating": "Đang cập nhật..."
+      },
+      "errors": {
+        "loadFailed": "Không thể tải danh sách chính sách.",
+        "toggleFailed": "Không thể thay đổi trạng thái chính sách. Vui lòng thử lại."
+      }
+    },
+    "siteContent": {
+      "title": "Nội dung trang",
+      "description": "Quản lý bản ghi nội dung và chỉnh sửa JSON tiếng Anh/tiếng Việt.",
+      "searchPlaceholder": "Tìm theo page key hoặc content key",
+      "filters": {
+        "pageKey": "Page key",
+        "allPageKeys": "Tất cả page key"
+      },
+      "table": {
+        "pageKey": "Page key",
+        "contentKey": "Content key",
+        "locales": "Ngôn ngữ",
+        "updated": "Cập nhật gần nhất",
+        "actions": "Thao tác",
+        "system": "hệ thống"
+      },
+      "states": {
+        "loading": "Đang tải dữ liệu nội dung trang...",
+        "emptyTitle": "Không có bản ghi nội dung trang",
+        "emptyDescription": "Hãy thử bộ lọc hoặc từ khóa khác.",
+        "loadingDetail": "Đang tải chi tiết nội dung..."
+      },
+      "actions": {
+        "refresh": "Làm mới",
+        "edit": "Sửa",
+        "close": "Đóng",
+        "save": "Lưu thay đổi",
+        "saving": "Đang lưu..."
+      },
+      "editor": {
+        "title": "Trình chỉnh sửa nội dung song ngữ",
+        "englishLabel": "JSON tiếng Anh (en)",
+        "vietnameseLabel": "JSON tiếng Việt (vi)"
+      },
+      "errors": {
+        "loadList": "Không thể tải danh sách nội dung trang. Vui lòng thử lại.",
+        "loadDetail": "Không thể tải chi tiết nội dung. Vui lòng thử lại.",
+        "invalidJson": "Nội dung tiếng Anh và tiếng Việt phải là JSON hợp lệ.",
+        "saveFailed": "Không thể lưu thay đổi nội dung. Vui lòng thử lại."
+      },
+      "messages": {
+        "saveSuccess": "Đã cập nhật nội dung trang thành công."
+      }
     }
   }
 }
