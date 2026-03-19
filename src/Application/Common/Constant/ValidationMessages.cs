@@ -50,6 +50,16 @@ public static class ValidationMessages
     public const string TourCodeRequired = "Tour code is required.";
     public const string TourNameRequired = "Tour name is required.";
     public const string TourNameMaxLength500 = "Tour name must not exceed 500 characters.";
+    public const string ShortDescriptionRequired = "Short description is required.";
+    public const string ShortDescriptionMaxLength250 = "Short description must not exceed 250 characters.";
+    public const string LongDescriptionRequired = "Long description is required.";
+    public const string LongDescriptionMaxLength5000 = "Long description must not exceed 5000 characters.";
+    public const string SEOTitleMaxLength70 = "SEO title must not exceed 70 characters.";
+    public const string SEODescriptionMaxLength320 = "SEO description must not exceed 320 characters.";
+    public const string TourStatusInvalid = "Invalid tour status.";
+    public const string ThumbnailRequired = "Thumbnail image is required.";
+    public const string ImagesRequired = "Tour images are required.";
+    public const string ImagesAtLeastOne = "Tour must have at least one image.";
 
     // ── TourInstance ────────────────────────────────────────────────────
     public const string TourInstanceTourIdRequired = "Tour ID is required.";

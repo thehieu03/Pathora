@@ -1,5 +1,6 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
 using Domain.Enums;
 using Domain.ValueObjects;
 // Policy xet gia khi nao
@@ -15,6 +16,9 @@ public class PricingPolicy : Aggregate<Guid>
     public List<PricingPolicyTier> Tiers { get; set; } = [];
     public bool IsDeleted { get; set; }
 
+    // Translations (en, vi)
+    public Dictionary<string, PricingPolicyTranslationData> Translations { get; set; } = [];
+
     public static string GeneratePolicyCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
@@ -27,7 +31,8 @@ public class PricingPolicy : Aggregate<Guid>
         TourType tourType,
         List<PricingPolicyTier> tiers,
         bool isDefault = false,
-        string performedBy = "system")
+        string performedBy = "system",
+        Dictionary<string, PricingPolicyTranslationData>? translations = null)
     {
         return new PricingPolicy
         {
@@ -39,6 +44,7 @@ public class PricingPolicy : Aggregate<Guid>
             IsDefault = isDefault,
             Tiers = tiers,
             IsDeleted = false,
+            Translations = translations ?? [],
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,

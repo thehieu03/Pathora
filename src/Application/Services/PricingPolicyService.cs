@@ -47,7 +47,9 @@ public class PricingPolicyService(
             request.Name,
             request.TourType,
             request.Tiers,
-            request.IsDefault);
+            request.IsDefault,
+            "system",
+            request.Translations);
 
         if (request.IsDefault)
         {
@@ -66,6 +68,13 @@ public class PricingPolicyService(
             return Error.NotFound(ErrorConstants.PricingPolicy.NotFoundCode, ErrorConstants.PricingPolicy.NotFoundDescription);
 
         policy.Update(request.Name, request.TourType, request.Tiers, "system");
+
+        // Update translations if provided
+        if (request.Translations != null)
+        {
+            policy.Translations = request.Translations;
+        }
+
         await _pricingPolicyRepository.UpdateAsync(policy);
         await _unitOfWork.SaveChangeAsync();
         return Result.Success;
@@ -107,6 +116,7 @@ public class PricingPolicyService(
             policy.Status.ToString(),
             policy.IsDefault,
             policy.Tiers,
+            policy.Translations ?? [],
             policy.CreatedOnUtc,
             policy.LastModifiedOnUtc);
     }

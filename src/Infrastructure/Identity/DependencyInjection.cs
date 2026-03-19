@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using Application.Common;
 using Application.Common.Interfaces;
 using Common.Authentication;
 using Contracts.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,6 +92,16 @@ internal static class DependencyInjection
                         if (!string.IsNullOrEmpty(value))
                         {
                             context.Fail("Token is blacklisted");
+                        }
+                    },
+                    OnAuthenticationFailed = async context =>
+                    {
+                        if (context.Exception is SecurityTokenExpiredException)
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+                            await context.Response.WriteAsync(
+                                """{"code":"TOKEN_EXPIRED","message":"Token has expired. Please login again.","statusCode":401}""");
                         }
                     }
                 };

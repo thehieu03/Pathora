@@ -1,12 +1,15 @@
+using System.Text.Json.Serialization;
 using Application.Contracts.CancellationPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
+using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
 using FluentValidation;
 
 namespace Application.Features.CancellationPolicy.Commands;
 
+// Note: translations will be supported in a future update
 public sealed record CreateCancellationPolicyCommand(
     TourScope TourScope,
     int MinDaysBeforeDeparture,

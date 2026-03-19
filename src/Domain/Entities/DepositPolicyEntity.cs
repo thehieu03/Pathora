@@ -1,5 +1,6 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
 using Domain.Enums;
 
 public class DepositPolicyEntity : Aggregate<Guid>
@@ -11,12 +12,16 @@ public class DepositPolicyEntity : Aggregate<Guid>
     public bool IsActive { get; set; } = true;
     public bool IsDeleted { get; set; }
 
+    // Translations (en, vi)
+    public Dictionary<string, DepositPolicyTranslationData> Translations { get; set; } = [];
+
     public static DepositPolicyEntity Create(
         TourScope tourScope,
         DepositType depositType,
         decimal depositValue,
         int minDaysBeforeDeparture,
-        string performedBy)
+        string performedBy,
+        Dictionary<string, DepositPolicyTranslationData>? translations = null)
     {
         if (depositValue <= 0)
             throw new ArgumentOutOfRangeException(nameof(depositValue), "Deposit value must be greater than 0.");
@@ -34,6 +39,7 @@ public class DepositPolicyEntity : Aggregate<Guid>
             MinDaysBeforeDeparture = minDaysBeforeDeparture,
             IsActive = true,
             IsDeleted = false,
+            Translations = translations ?? [],
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,

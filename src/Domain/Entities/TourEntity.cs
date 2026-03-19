@@ -29,6 +29,14 @@ public class TourEntity : Aggregate<Guid>
     public Guid? DepositPolicyId { get; set; }
     public virtual DepositPolicyEntity? DepositPolicy { get; set; }
 
+    // Pricing policy
+    public Guid? PricingPolicyId { get; set; }
+    public virtual PricingPolicy? PricingPolicy { get; set; }
+
+    // Cancellation policy
+    public Guid? CancellationPolicyId { get; set; }
+    public virtual CancellationPolicyEntity? CancellationPolicy { get; set; }
+
     public static string GenerateTourCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
@@ -36,7 +44,7 @@ public class TourEntity : Aggregate<Guid>
         return $"TOUR-{datePart}-{sequence:00000}";
     }
 
-    public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, TourScope tourScope = TourScope.Domestic, CustomerSegment customerSegment = CustomerSegment.Group, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null, Guid? visaPolicyId = null, Guid? depositPolicyId = null)
+    public static TourEntity Create(string tourName, string shortDescription, string longDescription, string performedBy, TourStatus status = TourStatus.Pending, TourScope tourScope = TourScope.Domestic, CustomerSegment customerSegment = CustomerSegment.Group, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null, Guid? visaPolicyId = null, Guid? depositPolicyId = null, Guid? pricingPolicyId = null, Guid? cancellationPolicyId = null)
     {
         return new TourEntity
         {
@@ -54,6 +62,8 @@ public class TourEntity : Aggregate<Guid>
             Images = images ?? [],
             VisaPolicyId = visaPolicyId,
             DepositPolicyId = depositPolicyId,
+            PricingPolicyId = pricingPolicyId,
+            CancellationPolicyId = cancellationPolicyId,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,
@@ -61,7 +71,7 @@ public class TourEntity : Aggregate<Guid>
         };
     }
 
-    public void Update(string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, TourScope tourScope = TourScope.Domestic, CustomerSegment customerSegment = CustomerSegment.Group, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null, Guid? visaPolicyId = null, Guid? depositPolicyId = null)
+    public void Update(string tourName, string shortDescription, string longDescription, TourStatus status, string performedBy, TourScope tourScope = TourScope.Domestic, CustomerSegment customerSegment = CustomerSegment.Group, string? seoTitle = null, string? seoDescription = null, ImageEntity? thumbnail = null, List<ImageEntity>? images = null, Guid? visaPolicyId = null, Guid? depositPolicyId = null, Guid? pricingPolicyId = null, Guid? cancellationPolicyId = null)
     {
         TourName = tourName;
         ShortDescription = shortDescription;
@@ -86,6 +96,8 @@ public class TourEntity : Aggregate<Guid>
         }
         VisaPolicyId = visaPolicyId;
         DepositPolicyId = depositPolicyId;
+        PricingPolicyId = pricingPolicyId;
+        CancellationPolicyId = cancellationPolicyId;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }

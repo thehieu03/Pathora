@@ -45,13 +45,21 @@ public class CancellationPolicyService(
             return Error.Conflict("OVERLAPPING_POLICY", "A policy with overlapping day range already exists for this tour scope");
         }
 
+        // Debug: log translations
+        Console.WriteLine($"[DEBUG] Translations received: {System.Text.Json.JsonSerializer.Serialize(request.Translations)}");
+
         var entity = CancellationPolicyEntity.Create(
             request.TourScope,
             request.MinDaysBeforeDeparture,
             request.MaxDaysBeforeDeparture,
             request.PenaltyPercentage,
-            request.ApplyOn
+            request.ApplyOn,
+            CancellationPolicyStatus.Active,
+            "system",
+            request.Translations
         );
+
+        Console.WriteLine($"[DEBUG] Entity Translations after create: {System.Text.Json.JsonSerializer.Serialize(entity.Translations)}");
 
         await _repository.Create(entity);
         await _unitOfWork.SaveChangeAsync();
@@ -94,6 +102,12 @@ public class CancellationPolicyService(
             request.Status,
             "system"
         );
+
+        // Update translations if provided
+        if (request.Translations != null)
+        {
+            entity.Translations = request.Translations;
+        }
 
         await _repository.UpdateAsync(entity);
         await _unitOfWork.SaveChangeAsync();
@@ -172,6 +186,7 @@ public class CancellationPolicyService(
             entity.ApplyOn,
             entity.Status,
             entity.Status.ToString(),
+            entity.Translations ?? [],
             entity.CreatedOnUtc,
             entity.LastModifiedOnUtc
         );

@@ -66,4 +66,9 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
             .Take(count)
             .ToListAsync();
     }
+
+    public async Task AddAsync(BookingEntity booking)
+    {
+        await _context.Bookings.AddAsync(booking);
+    }
 }

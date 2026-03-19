@@ -1,4 +1,7 @@
 namespace Domain.Entities;
+
+using Domain.Entities.Translations;
+
 // nó liên quan đến thoiwf gian xử lý
 public class VisaPolicyEntity : Aggregate<Guid>
 {
@@ -9,12 +12,16 @@ public class VisaPolicyEntity : Aggregate<Guid>
     public bool IsDeleted { get; set; }
     public bool IsActive { get; set; } = true;
 
+    // Translations (en, vi)
+    public Dictionary<string, VisaPolicyTranslationData> Translations { get; set; } = [];
+
     public static VisaPolicyEntity Create(
         string region,
         int processingDays,
         int bufferDays,
         bool fullPaymentRequired,
-        string performedBy)
+        string performedBy,
+        Dictionary<string, VisaPolicyTranslationData>? translations = null)
     {
         if (string.IsNullOrWhiteSpace(region))
             throw new ArgumentException("Region is required.", nameof(region));
@@ -32,6 +39,7 @@ public class VisaPolicyEntity : Aggregate<Guid>
             FullPaymentRequired = fullPaymentRequired,
             IsDeleted = false,
             IsActive = true,
+            Translations = translations ?? [],
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,

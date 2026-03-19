@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Threading.RateLimiting;
 using Api.Configuration;
 using Api.Infrastructure;
@@ -32,7 +33,12 @@ public static class DependencyInjection
     {
         services.AddSwaggerServices(configuration);
 
-        services.AddControllers();
+        // Add case-insensitive JSON deserialization
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            });
         services.AddSignalR();
         services.AddHttpContextAccessor();
         services.AddExceptionHandler<ApiExceptionHandler>();

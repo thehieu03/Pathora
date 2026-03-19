@@ -19,7 +19,11 @@ public sealed record UpdateTourCommand(
     TourStatus Status,
     ImageInputDto? Thumbnail = null,
     List<ImageInputDto>? Images = null,
-    Dictionary<string, TourTranslationData>? Translations = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+    Dictionary<string, TourTranslationData>? Translations = null,
+    Guid? VisaPolicyId = null,
+    Guid? DepositPolicyId = null,
+    Guid? PricingPolicyId = null,
+    Guid? CancellationPolicyId = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
 }
