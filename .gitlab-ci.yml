@@ -12,4 +12,4 @@ deploy-app:
     - echo "Đang cập nhật các container qua Docker Compose..."
     - cd /home/huynqhe180309
     - touch .env
-    - docker compose -f server_docker_compose.yml up -d
+    - docker compose up -d
