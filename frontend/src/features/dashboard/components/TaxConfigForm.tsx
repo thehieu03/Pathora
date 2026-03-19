@@ -18,12 +18,14 @@ export function TaxConfigForm({ config, onSuccess, onCancel }: TaxConfigFormProp
     taxRate: number;
     description: string;
     effectiveDate: string;
+    isActive: boolean;
   }>({
     defaultValues: {
       taxName: config?.taxName || "",
       taxRate: config?.taxRate || 10,
       description: config?.description || "",
       effectiveDate: config?.effectiveDate ? config.effectiveDate.split('T')[0] : new Date().toISOString().split('T')[0],
+      isActive: config?.isActive ?? true,
     },
   });
 
@@ -34,11 +36,12 @@ export function TaxConfigForm({ config, onSuccess, onCancel }: TaxConfigFormProp
         taxRate: config.taxRate,
         description: config.description || "",
         effectiveDate: config.effectiveDate ? config.effectiveDate.split('T')[0] : "",
+        isActive: config.isActive ?? true,
       });
     }
   }, [config, reset]);
 
-  const onSubmit = async (data: { taxName: string; taxRate: number; description: string; effectiveDate: string }) => {
+  const onSubmit = async (data: { taxName: string; taxRate: number; description: string; effectiveDate: string; isActive: boolean }) => {
     setLoading(true);
     try {
       let response;
@@ -48,7 +51,8 @@ export function TaxConfigForm({ config, onSuccess, onCancel }: TaxConfigFormProp
           taxName: data.taxName,
           taxRate: data.taxRate,
           description: data.description || undefined,
-          effectiveDate: data.effectiveDate,
+          effectiveDate: new Date(data.effectiveDate + "T00:00:00Z").toISOString(),
+          isActive: data.isActive,
         };
         response = await taxConfigService.update(payload);
       } else {
@@ -56,15 +60,15 @@ export function TaxConfigForm({ config, onSuccess, onCancel }: TaxConfigFormProp
           taxName: data.taxName,
           taxRate: data.taxRate,
           description: data.description || undefined,
-          effectiveDate: data.effectiveDate,
+          effectiveDate: new Date(data.effectiveDate + "T00:00:00Z").toISOString(),
         };
         response = await taxConfigService.create(payload);
       }
 
-      if (response.isSuccess) {
+      if (response.success) {
         onSuccess();
       } else {
-        alert(response.errors?.[0]?.message || "Failed to save tax configuration");
+        alert(response.error?.[0]?.message || "Failed to save tax configuration");
       }
     } catch (err) {
       alert("An error occurred while saving the tax configuration");
@@ -124,6 +128,18 @@ export function TaxConfigForm({ config, onSuccess, onCancel }: TaxConfigFormProp
         />
       </div>
 
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="isActive"
+          {...register("isActive")}
+          className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+        />
+        <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
+          Active
+        </label>
+      </div>
+
       <div className="flex justify-end gap-3">
         <button
           type="button"
@@ -143,3 +159,5 @@ export function TaxConfigForm({ config, onSuccess, onCancel }: TaxConfigFormProp
     </form>
   );
 }
+
+

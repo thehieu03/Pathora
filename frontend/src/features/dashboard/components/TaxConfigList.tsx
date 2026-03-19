@@ -24,10 +24,10 @@ export function TaxConfigList({ onEdit, onDelete, refreshKey: _refreshKey }: Tax
       setLoading(true);
       setError(null);
       const response = await taxConfigService.getAll();
-      if (response.isSuccess && response.data) {
+      if (response.success && response.data) {
         setConfigs(response.data);
       } else {
-        setError(response.errors?.[0]?.message || "Failed to load tax configurations");
+        setError(response.error?.[0]?.message || "Failed to load tax configurations");
       }
     } catch (err) {
       setError("An error occurred while loading tax configurations");
@@ -138,3 +138,5 @@ export function TaxConfigList({ onEdit, onDelete, refreshKey: _refreshKey }: Tax
     </div>
   );
 }
+
+

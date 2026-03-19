@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { customTourRequestService } from "@/services/customTourRequestService";
+import { customTourRequestService } from "@/api/services/customTourRequestService";
 import type { CustomTourRequest } from "@/types/customTourRequest";
 
 import { AdminReviewPanel } from "./AdminReviewPanel";
@@ -244,8 +244,8 @@ export function AdminCustomTourRequestDetailPage() {
               <AdminReviewPanel
                 requestId={request.id}
                 currentStatus={request.status}
-                onReviewSuccess={(updated) => {
-                  setRequest(updated);
+                onReviewSuccess={() => {
+                  loadRequest();
                 }}
               />
             </div>

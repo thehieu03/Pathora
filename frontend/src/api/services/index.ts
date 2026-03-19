@@ -1,5 +1,6 @@
 export { catalogService } from "./catalogService";
 export { adminService } from "./adminService";
+export { bookingService } from "./bookingService";
 export { discountService } from "./discountService";
 export { inventoryService } from "./inventoryService";
 export { notificationService } from "./notificationService";

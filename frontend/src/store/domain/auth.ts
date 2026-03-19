@@ -23,6 +23,8 @@ export interface UserInfo {
   departments: UserDepartmentVm[];
   portal: string | null;
   defaultPath: string | null;
+  phoneNumber?: string | null;
+  address?: string | null;
 }
 
 /** @deprecated Use UserInfo instead */

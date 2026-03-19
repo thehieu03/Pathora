@@ -7,10 +7,11 @@ import type { VisaPolicy } from "@/types/visaPolicy";
 interface VisaPolicyListProps {
   onEdit: (policy: VisaPolicy) => void;
   onDelete: (id: string) => void;
+  onToggleActive: (policy: VisaPolicy) => void;
   refreshKey?: number;
 }
 
-export function VisaPolicyList({ onEdit, onDelete, refreshKey = 0 }: VisaPolicyListProps) {
+export function VisaPolicyList({ onEdit, onDelete, onToggleActive, refreshKey = 0 }: VisaPolicyListProps) {
   const [policies, setPolicies] = useState<VisaPolicy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -24,10 +25,10 @@ export function VisaPolicyList({ onEdit, onDelete, refreshKey = 0 }: VisaPolicyL
       setLoading(true);
       setError(null);
       const response = await visaPolicyService.getAll();
-      if (response.isSuccess && response.data) {
+      if (response.success && response.data) {
         setPolicies(response.data);
       } else {
-        setError(response.errors?.[0]?.message || "Failed to load visa policies");
+        setError(response.error?.[0]?.message || "Failed to load visa policies");
       }
     } catch (err) {
       setError("An error occurred while loading visa policies");
@@ -109,15 +110,18 @@ export function VisaPolicyList({ onEdit, onDelete, refreshKey = 0 }: VisaPolicyL
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    policy.isActive
-                      ? "bg-green-100 text-green-800"
-                      : "bg-gray-100 text-gray-800"
+                <button
+                  onClick={() => onToggleActive(policy)}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                    policy.isActive ? "bg-green-600" : "bg-slate-200"
                   }`}
                 >
-                  {policy.isActive ? "Active" : "Inactive"}
-                </span>
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      policy.isActive ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
@@ -140,3 +144,5 @@ export function VisaPolicyList({ onEdit, onDelete, refreshKey = 0 }: VisaPolicyL
     </div>
   );
 }
+
+

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 import Icon from "@/components/ui/Icon";
-import { LandingFooter } from "@/components/partials/shared/LandingFooter";
-import { LandingHeader } from "@/components/partials/shared/LandingHeader";
+import { LandingFooter } from "@/features/shared/components/LandingFooter";
+import { LandingHeader } from "@/features/shared/components/LandingHeader";
 
 import { CustomTourRequestForm } from "./CustomTourRequestForm";
 

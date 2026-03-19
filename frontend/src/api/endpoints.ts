@@ -197,6 +197,11 @@ export interface TourRequestEndpoints {
   REVIEW: EndpointWithId;
 }
 
+// Public Booking Endpoints Interface
+export interface PublicBookingEndpoints {
+  CREATE: string;
+}
+
 // Booking Management Endpoints Interface
 export interface BookingEndpoints {
   GET_LIST: string;
@@ -219,6 +224,7 @@ export interface BookingEndpoints {
   SET_TOUR_MANAGER: EndpointWithId;
   SET_TOUR_OPERATORS: EndpointWithId;
   SET_TOUR_GUIDES: EndpointWithId;
+  GET_MY_RECENT: string;
 }
 
 // Site Content Endpoints Interface
@@ -290,6 +296,7 @@ export interface ApiEndpoints {
   PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints;
   ADMIN: AdminEndpoints;
   TOUR_REQUESTS: TourRequestEndpoints;
+  PUBLIC_BOOKING: PublicBookingEndpoints;
   BOOKING: BookingEndpoints;
   SITE_CONTENT: SiteContentEndpoints;
   PRICING_POLICY: PricingPolicyEndpoints;
@@ -505,6 +512,9 @@ export const API_ENDPOINTS: ApiEndpoints = {
   },
 
   // Booking Management
+  PUBLIC_BOOKING: {
+    CREATE: "/api/public/bookings",
+  },
   BOOKING: {
     GET_LIST: "/api/bookings",
     GET_MY_RECENT: "/api/bookings/my-recent",

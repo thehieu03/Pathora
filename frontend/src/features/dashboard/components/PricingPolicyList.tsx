@@ -1,9 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { pricingPolicyService } from "@/api/services/pricingPolicyService";
 import type { PricingPolicy } from "@/types/pricingPolicy";
 import { PricingPolicyStatusMap, TourTypeMap } from "@/types/pricingPolicy";
+
+// Helper to get translated name
+function getDisplayName(policy: PricingPolicy, language: string): string {
+  if (policy.translations?.[language]?.name) {
+    return policy.translations[language].name!;
+  }
+  // Fallback to default name
+  return policy.name;
+}
 
 interface PricingPolicyListProps {
   onEdit: (policy: PricingPolicy) => void;
@@ -16,6 +26,8 @@ export function PricingPolicyList({ onEdit, onDelete, onSetDefault, refreshKey }
   const [policies, setPolicies] = useState<PricingPolicy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language || "en";
 
   useEffect(() => {
     loadPolicies();
@@ -26,10 +38,10 @@ export function PricingPolicyList({ onEdit, onDelete, onSetDefault, refreshKey }
       setLoading(true);
       setError(null);
       const response = await pricingPolicyService.getAll();
-      if (response.isSuccess && response.data) {
+      if (response.success && response.data) {
         setPolicies(response.data);
       } else {
-        setError(response.errors?.[0]?.message || "Failed to load pricing policies");
+        setError(response.error?.[0]?.message || "Failed to load pricing policies");
       }
     } catch (err) {
       setError("An error occurred while loading pricing policies");
@@ -97,7 +109,7 @@ export function PricingPolicyList({ onEdit, onDelete, onSetDefault, refreshKey }
                 {policy.policyCode}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {policy.name}
+                {getDisplayName(policy, currentLanguage)}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {TourTypeMap[policy.tourType] || policy.tourTypeName}
@@ -152,3 +164,5 @@ export function PricingPolicyList({ onEdit, onDelete, onSetDefault, refreshKey }
     </div>
   );
 }
+
+

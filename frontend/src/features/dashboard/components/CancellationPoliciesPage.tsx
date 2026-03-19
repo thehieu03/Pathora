@@ -27,10 +27,10 @@ export function CancellationPoliciesPage() {
     }
 
     const response = await cancellationPolicyService.delete(id);
-    if (response.isSuccess) {
+    if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.errors?.[0]?.message || "Failed to delete cancellation policy");
+      alert(response.error?.[0]?.message || "Failed to delete cancellation policy");
     }
   };
 
@@ -87,3 +87,5 @@ export function CancellationPoliciesPage() {
     </div>
   );
 }
+
+

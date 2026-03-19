@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { customTourRequestService } from "@/services/customTourRequestService";
+import { customTourRequestService } from "@/api/services/customTourRequestService";
 import type {
   CustomTourRequest,
   CustomTourRequestStatus,

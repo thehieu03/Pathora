@@ -27,10 +27,28 @@ export function VisaPoliciesPage() {
     }
 
     const response = await visaPolicyService.delete(id);
-    if (response.isSuccess) {
+    if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.errors?.[0]?.message || "Failed to delete visa policy");
+      alert(response.error?.[0]?.message || "Failed to delete visa policy");
+    }
+  };
+
+  const handleToggleActive = async (policy: VisaPolicy) => {
+    const updateData = {
+      id: policy.id,
+      region: policy.region,
+      processingDays: policy.processingDays,
+      bufferDays: policy.bufferDays,
+      fullPaymentRequired: policy.fullPaymentRequired,
+      isActive: !policy.isActive,
+    };
+
+    const response = await visaPolicyService.update(updateData as any);
+    if (response.success) {
+      setRefreshKey((k) => k + 1);
+    } else {
+      alert(response.error?.[0]?.message || "Failed to update visa policy");
     }
   };
 
@@ -69,6 +87,7 @@ export function VisaPoliciesPage() {
           <VisaPolicyList
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onToggleActive={handleToggleActive}
             refreshKey={refreshKey}
           />
         </div>
@@ -87,3 +106,5 @@ export function VisaPoliciesPage() {
     </div>
   );
 }
+
+

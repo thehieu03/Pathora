@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { visaPolicyService } from "@/api/services/visaPolicyService";
-import type { VisaPolicy, CreateVisaPolicyRequest, UpdateVisaPolicyRequest } from "@/types/visaPolicy";
+import type { VisaPolicy, CreateVisaPolicyRequest, UpdateVisaPolicyRequest, VisaPolicyTranslations } from "@/types/visaPolicy";
+import { TranslationTabForm } from "./TranslationTabForm";
 
 interface VisaPolicyFormProps {
   policy?: VisaPolicy | null;
@@ -13,6 +14,7 @@ interface VisaPolicyFormProps {
 
 export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormProps) {
   const [loading, setLoading] = useState(false);
+  const [translations, setTranslations] = useState<VisaPolicyTranslations>(policy?.translations || {});
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     region: string;
     processingDays: number;
@@ -35,6 +37,7 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
         bufferDays: policy.bufferDays,
         fullPaymentRequired: policy.fullPaymentRequired,
       });
+      setTranslations(policy.translations || {});
     }
   }, [policy, reset]);
 
@@ -46,17 +49,21 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
         const payload: UpdateVisaPolicyRequest = {
           id: policy.id,
           ...data,
+          translations,
         };
         response = await visaPolicyService.update(payload);
       } else {
-        const payload: CreateVisaPolicyRequest = data;
+        const payload: CreateVisaPolicyRequest = {
+          ...data,
+          translations,
+        };
         response = await visaPolicyService.create(payload);
       }
 
-      if (response.isSuccess) {
+      if (response.success) {
         onSuccess();
       } else {
-        alert(response.errors?.[0]?.message || "Failed to save visa policy");
+        alert(response.error?.[0]?.message || "Failed to save visa policy");
       }
     } catch (err) {
       alert("An error occurred while saving the visa policy");
@@ -120,6 +127,12 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
         </label>
       </div>
 
+      {/* Translation Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
+        <TranslationTabForm translations={translations} onChange={setTranslations} />
+      </div>
+
       <div className="flex justify-end gap-3">
         <button
           type="button"
@@ -139,3 +152,5 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
     </form>
   );
 }
+
+

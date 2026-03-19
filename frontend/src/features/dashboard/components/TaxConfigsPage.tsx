@@ -27,10 +27,10 @@ export function TaxConfigsPage() {
     }
 
     const response = await taxConfigService.delete(id);
-    if (response.isSuccess) {
+    if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.errors?.[0]?.message || "Failed to delete tax configuration");
+      alert(response.error?.[0]?.message || "Failed to delete tax configuration");
     }
   };
 
@@ -87,3 +87,5 @@ export function TaxConfigsPage() {
     </div>
   );
 }
+
+

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import { tourRequestService } from "@/api/services/tourRequestService";
-import { AdminSidebar, TopBar } from "./AdminSidebar";
+import { AdminLogoutButton } from "./AdminLogoutButton";
 
 type TourRequestAdminLayoutProps = {
   title: string;
@@ -216,3 +216,5 @@ export function TourRequestAdminLayout({
     </div>
   );
 }
+
+
