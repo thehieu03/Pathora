@@ -5,8 +5,8 @@ deploy-app:
   stage: build-and-deploy
   tags:
     - do-an-fe
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
     - echo "Đang build Frontend..."
     - docker build --build-arg NEXT_PUBLIC_API_GATEWAY=https://pathora-api.duckdns.org -t pathora-fe:latest ./frontend
