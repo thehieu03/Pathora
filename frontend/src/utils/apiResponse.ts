@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 
-import type { ApiError, ApiResponse } from "../types/api";
+import type { ApiError, ServiceResponse } from "../types/api";
 
 export const extractItems = <T>(payload: unknown): T[] => {
   if (Array.isArray(payload)) {
@@ -75,7 +75,7 @@ export const extractData = <T>(payload: unknown): T | null => {
   }
 
   if (typeof payload === "object" && "success" in payload) {
-    const response = payload as ApiResponse<T>;
+    const response = payload as ServiceResponse<T>;
     if (!response.success) {
       return null;
     }

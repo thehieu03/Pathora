@@ -48,11 +48,6 @@ export const NAV_ITEMS = [
     href: "/dashboard/visa",
   },
   {
-    label: "Policies",
-    icon: "heroicons:clipboard-document-list",
-    href: "/dashboard/policies",
-  },
-  {
     label: "Settings",
     icon: "heroicons:cog-6-tooth",
     href: "/dashboard/settings",
