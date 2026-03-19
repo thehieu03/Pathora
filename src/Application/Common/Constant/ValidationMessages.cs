@@ -57,6 +57,9 @@ public static class ValidationMessages
     public const string SEOTitleMaxLength70 = "SEO title must not exceed 70 characters.";
     public const string SEODescriptionMaxLength320 = "SEO description must not exceed 320 characters.";
     public const string TourStatusInvalid = "Invalid tour status.";
+    public const string ThumbnailRequired = "Thumbnail image is required.";
+    public const string ImagesRequired = "Tour images are required.";
+    public const string ImagesAtLeastOne = "Tour must have at least one image.";
 
     // ── TourInstance ────────────────────────────────────────────────────
     public const string TourInstanceTourIdRequired = "Tour ID is required.";

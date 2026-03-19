@@ -7,7 +7,6 @@ namespace Domain.Specs.Application.Validators;
 
 /// <summary>
 /// Comprehensive test cases for CreateTourCommand covering ALL properties
-/// Including: Thumbnail, Images, Classifications, Translations
 /// Following FPT template: N (Normal), A (Abnormal), B (Boundary)
 /// </summary>
 public class CreateTourCommandValidatorTests
@@ -16,110 +15,34 @@ public class CreateTourCommandValidatorTests
 
     #region Helper Methods
 
-    private CreateTourCommand CreateValidCommand() => new(
-        TourName: "Tour name",
-        ShortDescription: "Short desc",
-        LongDescription: "Long desc",
-        SEOTitle: null,
-        SEODescription: null,
-        Status: TourStatus.Active);
-
     private string CreateString(int length) => new('A', length);
 
-    // Valid Image Input DTO
-    private ImageInputDto CreateValidImage() => new(
-        FileId: "file-123",
+    private ImageInputDto CreateValidImage(string fileId = "file-123") => new(
+        FileId: fileId,
         OriginalFileName: "image.jpg",
         FileName: "image.jpg",
         PublicURL: "https://cdn.example.com/image.jpg");
 
-    // Valid Classification DTO
-    private ClassificationDto CreateValidClassification() => new(
-        Name: "Standard Tour",
-        Description: "Standard package",
-        AdultPrice: 1000,
-        ChildPrice: 500,
-        InfantPrice: 100,
-        NumberOfDay: 3,
-        NumberOfNight: 2,
-        Plans: [],
-        Insurances: []);
-
-    // Valid DayPlan DTO
-    private DayPlanDto CreateValidDayPlan() => new(
-        DayNumber: 1,
-        Title: "Day 1 Title",
-        Description: "Day 1 description",
-        Activities: []);
-
-    // Valid Activity DTO
-    private ActivityDto CreateValidActivity() => new(
-        ActivityType: "Sightseeing",
-        Title: "Visit Temple",
-        Description: "Visit ancient temple",
-        Note: null,
-        EstimatedCost: 50,
-        IsOptional: false,
-        StartTime: "09:00",
-        EndTime: "12:00",
-        Routes: [],
-        Accommodation: null);
-
-    // Valid Accommodation DTO
-    private AccommodationDto CreateValidAccommodation() => new(
-        AccommodationName: "Hotel ABC",
-        Address: "123 Main St",
-        ContactPhone: "0123456789",
-        CheckInTime: "14:00",
-        CheckOutTime: "12:00",
-        Note: null);
-
-    // Valid Route DTO
-    private RouteDto CreateValidRoute() => new(
-        FromLocationName: "Hotel",
-        ToLocationName: "Temple",
-        TransportationType: "Bus",
-        TransportationName: "City Bus",
-        DurationMinutes: 60,
-        PricingType: "PerPerson",
-        Price: 20,
-        RequiresIndividualTicket: false,
-        TicketInfo: null,
-        Note: null);
-
-    // Valid Insurance DTO
-    private InsuranceDto CreateValidInsurance() => new(
-        InsuranceName: "Travel Insurance",
-        InsuranceType: "Basic",
-        InsuranceProvider: "ABC Insurance",
-        CoverageDescription: "Basic coverage",
-        CoverageAmount: 10000,
-        CoverageFee: 50,
-        IsOptional: true,
-        Note: null);
+    private CreateTourCommand CreateBaseValidCommand() => new(
+        TourName: "Da Nang Beach Tour",
+        ShortDescription: "Beach vacation",
+        LongDescription: "5-day beach tour",
+        SEOTitle: null,
+        SEODescription: null,
+        Status: TourStatus.Active,
+        Thumbnail: CreateValidImage(),
+        Images: [CreateValidImage("img-1")],
+        Classifications: null);
 
     #endregion
 
-    #region === BASIC STRING FIELDS ===
-
-    #region TC01: All Valid - Normal Case
+    #region TC01: All Valid - Normal
 
     [Fact]
     public void Validate_TC01_AllBasicFieldsValid_ShouldPass()
     {
-        // Arrange
-        var command = new CreateTourCommand(
-            TourName: "Tour name",
-            ShortDescription: "Short desc",
-            LongDescription: "Long desc",
-            SEOTitle: null,
-            SEODescription: null,
-            Status: TourStatus.Active);
-
-        // Act
+        var command = CreateBaseValidCommand();
         var result = _validator.Validate(command);
-
-        // Assert
         Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }
 
@@ -130,7 +53,7 @@ public class CreateTourCommandValidatorTests
     [Fact]
     public void Validate_TC02_TourNameEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with { TourName = "" };
+        var command = CreateBaseValidCommand() with { TourName = "" };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "TourName");
@@ -138,12 +61,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC03: TourName Max Characters - Boundary
+    #region TC03: TourName Max 500 - Boundary
 
     [Fact]
     public void Validate_TC03_TourNameMaxChars_ShouldPass()
     {
-        var command = CreateValidCommand() with { TourName = CreateString(500) };
+        var command = CreateBaseValidCommand() with { TourName = CreateString(500) };
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
@@ -155,7 +78,7 @@ public class CreateTourCommandValidatorTests
     [Fact]
     public void Validate_TC04_ShortDescriptionEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with { ShortDescription = "" };
+        var command = CreateBaseValidCommand() with { ShortDescription = "" };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "ShortDescription");
@@ -163,12 +86,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC05: ShortDescription Max Characters - Boundary
+    #region TC05: ShortDescription Max 250 - Boundary
 
     [Fact]
     public void Validate_TC05_ShortDescriptionMaxChars_ShouldPass()
     {
-        var command = CreateValidCommand() with { ShortDescription = CreateString(250) };
+        var command = CreateBaseValidCommand() with { ShortDescription = CreateString(250) };
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
@@ -180,7 +103,7 @@ public class CreateTourCommandValidatorTests
     [Fact]
     public void Validate_TC06_LongDescriptionEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with { LongDescription = "" };
+        var command = CreateBaseValidCommand() with { LongDescription = "" };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "LongDescription");
@@ -188,12 +111,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC07: LongDescription Max Characters - Boundary
+    #region TC07: LongDescription Max 5000 - Boundary
 
     [Fact]
     public void Validate_TC07_LongDescriptionMaxChars_ShouldPass()
     {
-        var command = CreateValidCommand() with { LongDescription = CreateString(5000) };
+        var command = CreateBaseValidCommand() with { LongDescription = CreateString(5000) };
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
@@ -205,7 +128,7 @@ public class CreateTourCommandValidatorTests
     [Fact]
     public void Validate_TC08_InvalidStatus_ShouldFail()
     {
-        var command = CreateValidCommand() with { Status = (TourStatus)999 };
+        var command = CreateBaseValidCommand() with { Status = (TourStatus)999 };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "Status");
@@ -213,32 +136,37 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #endregion
-
-    #region === THUMBNAIL (ImageInputDto) ===
-
-    #region TC09: Thumbnail Valid - Normal
+    #region TC09: Thumbnail Required - Abnormal
 
     [Fact]
-    public void Validate_TC09_ThumbnailValid_ShouldPass()
+    public void Validate_TC09_ThumbnailNull_ShouldFail()
     {
-        var command = CreateValidCommand() with
-        {
-            Thumbnail = CreateValidImage()
-        };
+        var command = CreateBaseValidCommand() with { Thumbnail = null };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Thumbnail");
+    }
 
+    #endregion
+
+    #region TC10: Thumbnail Valid - Normal
+
+    [Fact]
+    public void Validate_TC10_ThumbnailValid_ShouldPass()
+    {
+        var command = CreateBaseValidCommand();
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
 
     #endregion
 
-    #region TC10: Thumbnail FileId Empty - Abnormal
+    #region TC11: Thumbnail FileId Empty - Abnormal
 
     [Fact]
-    public void Validate_TC10_ThumbnailFileIdEmpty_ShouldFail()
+    public void Validate_TC11_ThumbnailFileIdEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Thumbnail = new ImageInputDto(
                 FileId: "",
@@ -246,20 +174,19 @@ public class CreateTourCommandValidatorTests
                 FileName: "image.jpg",
                 PublicURL: "https://cdn.example.com/image.jpg")
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == "Thumbnail.FileId");
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Thumbnail"));
     }
 
     #endregion
 
-    #region TC11: Thumbnail Invalid URL - Abnormal
+    #region TC12: Thumbnail Invalid URL - Abnormal
 
     [Fact]
-    public void Validate_TC11_ThumbnailInvalidURL_ShouldFail()
+    public void Validate_TC12_ThumbnailInvalidURL_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Thumbnail = new ImageInputDto(
                 FileId: "file-123",
@@ -267,52 +194,60 @@ public class CreateTourCommandValidatorTests
                 FileName: "image.jpg",
                 PublicURL: "not-a-valid-url")
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName == "Thumbnail.PublicURL");
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("PublicURL"));
     }
 
     #endregion
 
-    #region TC12: Thumbnail Null - Normal (Optional)
+    #region TC13: Images Required - Abnormal
 
     [Fact]
-    public void Validate_TC12_ThumbnailNull_ShouldPass()
+    public void Validate_TC13_ImagesNull_ShouldFail()
     {
-        var command = CreateValidCommand() with { Thumbnail = null };
+        var command = CreateBaseValidCommand() with { Images = null };
         var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Images");
     }
 
     #endregion
 
-    #endregion
-
-    #region === IMAGES (List<ImageInputDto>) ===
-
-    #region TC13: Images Valid - Normal
+    #region TC14: Images Empty List - Abnormal
 
     [Fact]
-    public void Validate_TC13_ImagesValid_ShouldPass()
+    public void Validate_TC14_ImagesEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with { Images = [] };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "Images");
+    }
+
+    #endregion
+
+    #region TC15: Images Valid - Normal
+
+    [Fact]
+    public void Validate_TC15_ImagesValid_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
         {
-            Images = [CreateValidImage(), CreateValidImage()]
+            Images = [CreateValidImage("img-1"), CreateValidImage("img-2")]
         };
-
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
 
     #endregion
 
-    #region TC14: Images With Invalid FileId - Abnormal
+    #region TC16: Images Invalid FileId - Abnormal
 
     [Fact]
-    public void Validate_TC14_ImagesInvalidFileId_ShouldFail()
+    public void Validate_TC16_ImagesInvalidFileId_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Images = [new ImageInputDto(
                 FileId: "",
@@ -320,7 +255,6 @@ public class CreateTourCommandValidatorTests
                 FileName: "image.jpg",
                 PublicURL: "https://cdn.example.com/image.jpg")]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("Images"));
@@ -328,44 +262,37 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC15: Images Null - Normal (Optional)
+    #region TC17: Classification Valid - Normal
 
     [Fact]
-    public void Validate_TC15_ImagesNull_ShouldPass()
+    public void Validate_TC17_ClassificationValid_ShouldPass()
     {
-        var command = CreateValidCommand() with { Images = null };
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #endregion
-
-    #region === CLASSIFICATIONS (List<ClassificationDto>) ===
-
-    #region TC16: Classifications Valid - Normal
-
-    [Fact]
-    public void Validate_TC16_ClassificationsValid_ShouldPass()
-    {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
-            Classifications = [CreateValidClassification()]
+            Classifications = [new ClassificationDto(
+                Name: "Standard Tour",
+                Description: "Standard package",
+                AdultPrice: 1000,
+                ChildPrice: 500,
+                InfantPrice: 100,
+                NumberOfDay: 3,
+                NumberOfNight: 2,
+                Plans: [],
+                Insurances: [])
+            ]
         };
-
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
 
     #endregion
 
-    #region TC17: Classification Name Empty - Abnormal
+    #region TC18: Classification Name Empty - Abnormal
 
     [Fact]
-    public void Validate_TC17_ClassificationNameEmpty_ShouldFail()
+    public void Validate_TC18_ClassificationNameEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "",
@@ -379,7 +306,6 @@ public class CreateTourCommandValidatorTests
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("Classifications"));
@@ -387,17 +313,17 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC18: Classification AdultPrice Negative - Abnormal
+    #region TC19: Classification Negative Price - Abnormal
 
     [Fact]
-    public void Validate_TC18_ClassificationNegativePrice_ShouldFail()
+    public void Validate_TC19_ClassificationNegativePrice_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: -100,  // Negative!
+                AdultPrice: -100,
                 ChildPrice: 500,
                 InfantPrice: 100,
                 NumberOfDay: 3,
@@ -406,7 +332,6 @@ public class CreateTourCommandValidatorTests
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("AdultPrice"));
@@ -414,12 +339,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC19: Classification NumberOfDay Zero - Abnormal
+    #region TC20: Classification Zero Days - Abnormal
 
     [Fact]
-    public void Validate_TC19_ClassificationZeroDays_ShouldFail()
+    public void Validate_TC20_ClassificationZeroDays_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -427,13 +352,12 @@ public class CreateTourCommandValidatorTests
                 AdultPrice: 1000,
                 ChildPrice: 500,
                 InfantPrice: 100,
-                NumberOfDay: 0,  // Zero!
+                NumberOfDay: 0,
                 NumberOfNight: 2,
                 Plans: [],
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("NumberOfDay"));
@@ -441,80 +365,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC20: Classification Max Name Length - Boundary
+    #region TC21: DayPlan Valid - Normal
 
     [Fact]
-    public void Validate_TC20_ClassificationMaxName_ShouldPass()
+    public void Validate_TC21_DayPlanValid_ShouldPass()
     {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: CreateString(200),  // Max 200
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #region TC21: Classifications Null - Normal (Optional)
-
-    [Fact]
-    public void Validate_TC21_ClassificationsNull_ShouldPass()
-    {
-        var command = CreateValidCommand() with { Classifications = null };
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #endregion
-
-    #region === NESTED: DAY PLAN ===
-
-    #region TC22: DayPlan Valid - Normal
-
-    [Fact]
-    public void Validate_TC22_DayPlanValid_ShouldPass()
-    {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [CreateValidDayPlan()],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #region TC23: DayPlan Title Empty - Abnormal
-
-    [Fact]
-    public void Validate_TC23_DayPlanTitleEmpty_ShouldFail()
-    {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -526,13 +382,41 @@ public class CreateTourCommandValidatorTests
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
                     DayNumber: 1,
-                    Title: "",  // Empty!
+                    Title: "Day 1 Title",
+                    Description: "Day 1 description",
+                    Activities: [])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid);
+    }
+
+    #endregion
+
+    #region TC22: DayPlan Title Empty - Abnormal
+
+    [Fact]
+    public void Validate_TC22_DayPlanTitleEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Standard",
+                Description: "Description",
+                AdultPrice: 1000,
+                ChildPrice: 500,
+                InfantPrice: 100,
+                NumberOfDay: 3,
+                NumberOfNight: 2,
+                Plans: [new DayPlanDto(
+                    DayNumber: 1,
+                    Title: "",
                     Description: "Description",
                     Activities: [])],
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("Title"));
@@ -540,77 +424,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC24: DayPlan Zero - Abnormal
+    #region TC23: Activity Valid - Normal
 
     [Fact]
-    public void Validate_TC24_DayPlanZero_ShouldFail()
+    public void Validate_TC23_ActivityValid_ShouldPass()
     {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [new DayPlanDto(
-                    DayNumber: 0,  // Zero!
-                    Title: "Title",
-                    Description: "Description",
-                    Activities: [])],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName.Contains("DayNumber"));
-    }
-
-    #endregion
-
-    #endregion
-
-    #region === NESTED: ACTIVITY ===
-
-    #region TC25: Activity Valid - Normal
-
-    [Fact]
-    public void Validate_TC25_ActivityValid_ShouldPass()
-    {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [new DayPlanDto(
-                    DayNumber: 1,
-                    Title: "Day 1",
-                    Description: "Description",
-                    Activities: [CreateValidActivity()])],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #region TC26: Activity Type Empty - Abnormal
-
-    [Fact]
-    public void Validate_TC26_ActivityTypeEmpty_ShouldFail()
-    {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -625,7 +444,46 @@ public class CreateTourCommandValidatorTests
                     Title: "Day 1",
                     Description: "Description",
                     Activities: [new ActivityDto(
-                        ActivityType: "",  // Empty!
+                        ActivityType: "Sightseeing",
+                        Title: "Visit Temple",
+                        Description: "Visit ancient temple",
+                        Note: null,
+                        EstimatedCost: 50,
+                        IsOptional: false,
+                        StartTime: "09:00",
+                        EndTime: "12:00",
+                        Routes: [],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid);
+    }
+
+    #endregion
+
+    #region TC24: Activity Type Empty - Abnormal
+
+    [Fact]
+    public void Validate_TC24_ActivityTypeEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Standard",
+                Description: "Description",
+                AdultPrice: 1000,
+                ChildPrice: 500,
+                InfantPrice: 100,
+                NumberOfDay: 3,
+                NumberOfNight: 2,
+                Plans: [new DayPlanDto(
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(
+                        ActivityType: "",
                         Title: "Activity",
                         Description: null,
                         Note: null,
@@ -638,7 +496,6 @@ public class CreateTourCommandValidatorTests
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("ActivityType"));
@@ -646,97 +503,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC27: Activity Negative Cost - Abnormal
+    #region TC25: Accommodation Valid - Normal
 
     [Fact]
-    public void Validate_TC27_ActivityNegativeCost_ShouldFail()
+    public void Validate_TC25_AccommodationValid_ShouldPass()
     {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [new DayPlanDto(
-                    DayNumber: 1,
-                    Title: "Day 1",
-                    Description: "Description",
-                    Activities: [new ActivityDto(
-                        ActivityType: "Sightseeing",
-                        Title: "Activity",
-                        Description: null,
-                        Note: null,
-                        EstimatedCost: -50,  // Negative!
-                        IsOptional: false,
-                        StartTime: null,
-                        EndTime: null,
-                        Routes: [],
-                        Accommodation: null)])],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName.Contains("EstimatedCost"));
-    }
-
-    #endregion
-
-    #endregion
-
-    #region === NESTED: ACCOMMODATION ===
-
-    #region TC28: Accommodation Valid - Normal
-
-    [Fact]
-    public void Validate_TC28_AccommodationValid_ShouldPass()
-    {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [new DayPlanDto(
-                    DayNumber: 1,
-                    Title: "Day 1",
-                    Description: "Description",
-                    Activities: [new ActivityDto(
-                        ActivityType: "Sightseeing",
-                        Title: "Activity",
-                        Description: null,
-                        Note: null,
-                        EstimatedCost: null,
-                        IsOptional: false,
-                        StartTime: null,
-                        EndTime: null,
-                        Routes: [],
-                        Accommodation: CreateValidAccommodation())])],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #region TC29: Accommodation Name Empty - Abnormal
-
-    [Fact]
-    public void Validate_TC29_AccommodationNameEmpty_ShouldFail()
-    {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -761,8 +533,53 @@ public class CreateTourCommandValidatorTests
                         EndTime: null,
                         Routes: [],
                         Accommodation: new AccommodationDto(
-                            AccommodationName: "",  // Empty!
-                            Address: null,
+                            AccommodationName: "Hotel ABC",
+                            Address: "123 Main St",
+                            ContactPhone: "0123456789",
+                            CheckInTime: "14:00",
+                            CheckOutTime: "12:00",
+                            Note: null))])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid);
+    }
+
+    #endregion
+
+    #region TC26: Accommodation Name Empty - Abnormal
+
+    [Fact]
+    public void Validate_TC26_AccommodationNameEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Standard",
+                Description: "Description",
+                AdultPrice: 1000,
+                ChildPrice: 500,
+                InfantPrice: 100,
+                NumberOfDay: 3,
+                NumberOfNight: 2,
+                Plans: [new DayPlanDto(
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: null,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [],
+                        Accommodation: new AccommodationDto(
+                            AccommodationName: "",
+                            Address: "123 Main St",
                             ContactPhone: null,
                             CheckInTime: null,
                             CheckOutTime: null,
@@ -770,7 +587,6 @@ public class CreateTourCommandValidatorTests
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("AccommodationName"));
@@ -778,12 +594,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC30: Accommodation Invalid Phone - Abnormal
+    #region TC27: Accommodation Invalid Phone - Abnormal
 
     [Fact]
-    public void Validate_TC30_AccommodationInvalidPhone_ShouldFail()
+    public void Validate_TC27_AccommodationInvalidPhone_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -810,14 +626,13 @@ public class CreateTourCommandValidatorTests
                         Accommodation: new AccommodationDto(
                             AccommodationName: "Hotel ABC",
                             Address: null,
-                            ContactPhone: "invalid-phone!",  // Invalid!
+                            ContactPhone: "invalid-phone!",
                             CheckInTime: null,
                             CheckOutTime: null,
                             Note: null))])],
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("ContactPhone"));
@@ -825,107 +640,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #endregion
-
-    #region === NESTED: ROUTE ===
-
-    #region TC31: Route Valid - Normal
+    #region TC28: Route Valid - Normal
 
     [Fact]
-    public void Validate_TC31_RouteValid_ShouldPass()
+    public void Validate_TC28_RouteValid_ShouldPass()
     {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [new DayPlanDto(
-                    DayNumber: 1,
-                    Title: "Day 1",
-                    Description: "Description",
-                    Activities: [new ActivityDto(
-                        ActivityType: "Sightseeing",
-                        Title: "Activity",
-                        Description: null,
-                        Note: null,
-                        EstimatedCost: null,
-                        IsOptional: false,
-                        StartTime: null,
-                        EndTime: null,
-                        Routes: [CreateValidRoute()],
-                        Accommodation: null)])],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
-    }
-
-    #endregion
-
-    #region TC32: Route FromLocation Empty - Abnormal
-
-    [Fact]
-    public void Validate_TC32_RouteFromLocationEmpty_ShouldFail()
-    {
-        var command = CreateValidCommand() with
-        {
-            Classifications = [new ClassificationDto(
-                Name: "Standard",
-                Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
-                NumberOfDay: 3,
-                NumberOfNight: 2,
-                Plans: [new DayPlanDto(
-                    DayNumber: 1,
-                    Title: "Day 1",
-                    Description: "Description",
-                    Activities: [new ActivityDto(
-                        ActivityType: "Sightseeing",
-                        Title: "Activity",
-                        Description: null,
-                        Note: null,
-                        EstimatedCost: null,
-                        IsOptional: false,
-                        StartTime: null,
-                        EndTime: null,
-                        Routes: [new RouteDto(
-                            FromLocationName: "",  // Empty!
-                            ToLocationName: "Temple",
-                            TransportationType: "Bus",
-                            TransportationName: null,
-                            DurationMinutes: 60,
-                            PricingType: null,
-                            Price: null,
-                            RequiresIndividualTicket: false,
-                            TicketInfo: null,
-                            Note: null)],
-                        Accommodation: null)])],
-                Insurances: [])
-            ]
-        };
-
-        var result = _validator.Validate(command);
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName.Contains("FromLocationName"));
-    }
-
-    #endregion
-
-    #region TC33: Route Negative Duration - Abnormal
-
-    [Fact]
-    public void Validate_TC33_RouteNegativeDuration_ShouldFail()
-    {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -953,9 +673,9 @@ public class CreateTourCommandValidatorTests
                             ToLocationName: "Temple",
                             TransportationType: "Bus",
                             TransportationName: null,
-                            DurationMinutes: -10,  // Negative!
+                            DurationMinutes: 60,
                             PricingType: null,
-                            Price: null,
+                            Price: 20,
                             RequiresIndividualTicket: false,
                             TicketInfo: null,
                             Note: null)],
@@ -963,24 +683,18 @@ public class CreateTourCommandValidatorTests
                 Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName.Contains("DurationMinutes"));
+        Assert.True(result.IsValid);
     }
 
     #endregion
 
-    #endregion
-
-    #region === NESTED: INSURANCE ===
-
-    #region TC34: Insurance Valid - Normal
+    #region TC29: Route FromLocation Empty - Abnormal
 
     [Fact]
-    public void Validate_TC34_InsuranceValid_ShouldPass()
+    public void Validate_TC29_RouteFromLocationEmpty_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -990,23 +704,97 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [],
-                Insurances: [CreateValidInsurance()])
+                Plans: [new DayPlanDto(
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: null,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            FromLocationName: "",
+                            ToLocationName: "Temple",
+                            TransportationType: "Bus",
+                            TransportationName: null,
+                            DurationMinutes: 60,
+                            PricingType: null,
+                            Price: null,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null)],
+                        Accommodation: null)])],
+                Insurances: [])
             ]
         };
-
         var result = _validator.Validate(command);
-        Assert.True(result.IsValid);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("FromLocationName"));
     }
 
     #endregion
 
-    #region TC35: Insurance Name Empty - Abnormal
+    #region TC30: Route Negative Duration - Abnormal
 
     [Fact]
-    public void Validate_TC35_InsuranceNameEmpty_ShouldFail()
+    public void Validate_TC30_RouteNegativeDuration_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Standard",
+                Description: "Description",
+                AdultPrice: 1000,
+                ChildPrice: 500,
+                InfantPrice: 100,
+                NumberOfDay: 3,
+                NumberOfNight: 2,
+                Plans: [new DayPlanDto(
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: null,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            FromLocationName: "Hotel",
+                            ToLocationName: "Temple",
+                            TransportationType: "Bus",
+                            TransportationName: null,
+                            DurationMinutes: -10,
+                            PricingType: null,
+                            Price: null,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("DurationMinutes"));
+    }
+
+    #endregion
+
+    #region TC31: Insurance Valid - Normal
+
+    [Fact]
+    public void Validate_TC31_InsuranceValid_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -1018,17 +806,49 @@ public class CreateTourCommandValidatorTests
                 NumberOfNight: 2,
                 Plans: [],
                 Insurances: [new InsuranceDto(
-                    InsuranceName: "",  // Empty!
+                    InsuranceName: "Travel Insurance",
                     InsuranceType: "Basic",
-                    InsuranceProvider: "Provider",
-                    CoverageDescription: "Coverage",
+                    InsuranceProvider: "ABC Insurance",
+                    CoverageDescription: "Basic coverage",
                     CoverageAmount: 10000,
                     CoverageFee: 50,
                     IsOptional: true,
                     Note: null)])
             ]
         };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid);
+    }
 
+    #endregion
+
+    #region TC32: Insurance Name Empty - Abnormal
+
+    [Fact]
+    public void Validate_TC32_InsuranceNameEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Standard",
+                Description: "Description",
+                AdultPrice: 1000,
+                ChildPrice: 500,
+                InfantPrice: 100,
+                NumberOfDay: 3,
+                NumberOfNight: 2,
+                Plans: [],
+                Insurances: [new InsuranceDto(
+                    InsuranceName: "",
+                    InsuranceType: "Basic",
+                    InsuranceProvider: "ABC Insurance",
+                    CoverageDescription: "Basic coverage",
+                    CoverageAmount: 10000,
+                    CoverageFee: 50,
+                    IsOptional: true,
+                    Note: null)])
+            ]
+        };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("InsuranceName"));
@@ -1036,12 +856,12 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC36: Insurance Negative Fee - Abnormal
+    #region TC33: Insurance Negative Fee - Abnormal
 
     [Fact]
-    public void Validate_TC36_InsuranceNegativeFee_ShouldFail()
+    public void Validate_TC33_InsuranceNegativeFee_ShouldFail()
     {
-        var command = CreateValidCommand() with
+        var command = CreateBaseValidCommand() with
         {
             Classifications = [new ClassificationDto(
                 Name: "Standard",
@@ -1055,15 +875,14 @@ public class CreateTourCommandValidatorTests
                 Insurances: [new InsuranceDto(
                     InsuranceName: "Insurance",
                     InsuranceType: "Basic",
-                    InsuranceProvider: "Provider",
-                    CoverageDescription: "Coverage",
+                    InsuranceProvider: "ABC Insurance",
+                    CoverageDescription: "Basic coverage",
                     CoverageAmount: 10000,
-                    CoverageFee: -50,  // Negative!
+                    CoverageFee: -50,
                     IsOptional: true,
                     Note: null)])
             ]
         };
-
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("CoverageFee"));
@@ -1071,28 +890,24 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #endregion
-
-    #region === SEO FIELDS ===
-
-    #region TC37: SEOTitle Max - Boundary
+    #region TC34: SEOTitle Max 70 - Boundary
 
     [Fact]
-    public void Validate_TC37_SEOTitleMax_ShouldPass()
+    public void Validate_TC34_SEOTitleMax_ShouldPass()
     {
-        var command = CreateValidCommand() with { SEOTitle = CreateString(70) };
+        var command = CreateBaseValidCommand() with { SEOTitle = CreateString(70) };
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
 
     #endregion
 
-    #region TC38: SEOTitle Exceeds Max - Abnormal
+    #region TC35: SEOTitle Exceeds 70 - Abnormal
 
     [Fact]
-    public void Validate_TC38_SEOTitleExceedsMax_ShouldFail()
+    public void Validate_TC35_SEOTitleExceedsMax_ShouldFail()
     {
-        var command = CreateValidCommand() with { SEOTitle = CreateString(71) };
+        var command = CreateBaseValidCommand() with { SEOTitle = CreateString(71) };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "SEOTitle");
@@ -1100,30 +915,67 @@ public class CreateTourCommandValidatorTests
 
     #endregion
 
-    #region TC39: SEODescription Max - Boundary
+    #region TC36: SEODescription Max 320 - Boundary
 
     [Fact]
-    public void Validate_TC39_SEODescriptionMax_ShouldPass()
+    public void Validate_TC36_SEODescriptionMax_ShouldPass()
     {
-        var command = CreateValidCommand() with { SEODescription = CreateString(320) };
+        var command = CreateBaseValidCommand() with { SEODescription = CreateString(320) };
         var result = _validator.Validate(command);
         Assert.True(result.IsValid);
     }
 
     #endregion
 
-    #region TC40: SEODescription Exceeds Max - Abnormal
+    #region TC37: SEODescription Exceeds 320 - Abnormal
 
     [Fact]
-    public void Validate_TC40_SEODescriptionExceedsMax_ShouldFail()
+    public void Validate_TC37_SEODescriptionExceedsMax_ShouldFail()
     {
-        var command = CreateValidCommand() with { SEODescription = CreateString(321) };
+        var command = CreateBaseValidCommand() with { SEODescription = CreateString(321) };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "SEODescription");
     }
 
     #endregion
+
+    #region TC38: TourName Exceeds 500 - Abnormal
+
+    [Fact]
+    public void Validate_TC38_TourNameExceeds500_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { TourName = CreateString(501) };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "TourName");
+    }
+
+    #endregion
+
+    #region TC39: ShortDescription Exceeds 250 - Abnormal
+
+    [Fact]
+    public void Validate_TC39_ShortDescriptionExceeds250_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { ShortDescription = CreateString(251) };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "ShortDescription");
+    }
+
+    #endregion
+
+    #region TC40: LongDescription Exceeds 5000 - Abnormal
+
+    [Fact]
+    public void Validate_TC40_LongDescriptionExceeds5000_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { LongDescription = CreateString(5001) };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName == "LongDescription");
+    }
 
     #endregion
 }

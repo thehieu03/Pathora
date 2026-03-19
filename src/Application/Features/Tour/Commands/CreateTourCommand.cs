@@ -22,7 +22,11 @@ public sealed record CreateTourCommand(
     ImageInputDto? Thumbnail = null,
     List<ImageInputDto>? Images = null,
     Dictionary<string, TourTranslationData>? Translations = null,
-    List<ClassificationDto>? Classifications = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+    List<ClassificationDto>? Classifications = null,
+    Guid? VisaPolicyId = null,
+    Guid? DepositPolicyId = null,
+    Guid? PricingPolicyId = null,
+    Guid? CancellationPolicyId = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
 }
@@ -60,15 +64,20 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage(ValidationMessages.TourStatusInvalid);
 
-        // Thumbnail - Optional but FileId required if provided
+        // Thumbnail - Required
         RuleFor(x => x.Thumbnail)
-            .SetValidator(new ImageInputDtoValidator()!)
-            .When(x => x.Thumbnail != null);
+            .NotNull().WithMessage(ValidationMessages.ThumbnailRequired)
+            .SetValidator(new ImageInputDtoValidator()!);
 
-        // Images - Optional but each image must be valid
+        // Images - Required, at least 1 image
+        RuleFor(x => x.Images)
+            .NotNull().WithMessage(ValidationMessages.ImagesRequired)
+            .Must(images => images != null && images.Count > 0)
+            .WithMessage(ValidationMessages.ImagesAtLeastOne);
+
         RuleForEach(x => x.Images)
-            .SetValidator(new ImageInputDtoValidator())
-            .When(x => x.Images != null && x.Images.Any());
+            .SetValidator(new ImageInputDtoValidator()!)
+            .When(x => x.Images != null);
 
         // Classifications - Optional but must be valid
         RuleForEach(x => x.Classifications)
