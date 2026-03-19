@@ -47,7 +47,7 @@ export const DEV_URLS = {
 } as const;
 
 // API Gateway (re-export for convenience)
-export { default as API_BASE_URL } from "./apiGateway";
+export { API_GATEWAY_BASE_URL as API_BASE_URL } from "./apiGateway";
 
 // Default values for external references
 export const EXTERNAL_LINKS = {

@@ -27,10 +27,28 @@ export function DepositPoliciesPage() {
     }
 
     const response = await depositPolicyService.delete(id);
-    if (response.isSuccess) {
+    if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.errors?.[0]?.message || "Failed to delete deposit policy");
+      alert(response.error?.[0]?.message || "Failed to delete deposit policy");
+    }
+  };
+
+  const handleToggleActive = async (policy: DepositPolicy) => {
+    const updateData = {
+      id: policy.id,
+      tourScope: policy.tourScope,
+      depositType: policy.depositType,
+      depositValue: policy.depositValue,
+      minDaysBeforeDeparture: policy.minDaysBeforeDeparture,
+      isActive: !policy.isActive,
+    };
+
+    const response = await depositPolicyService.update(updateData);
+    if (response.success) {
+      setRefreshKey((k) => k + 1);
+    } else {
+      alert(response.error?.[0]?.message || "Failed to update deposit policy");
     }
   };
 
@@ -69,6 +87,7 @@ export function DepositPoliciesPage() {
           <DepositPolicyList
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onToggleActive={handleToggleActive}
             refreshKey={refreshKey}
           />
         </div>
@@ -87,3 +106,5 @@ export function DepositPoliciesPage() {
     </div>
   );
 }
+
+

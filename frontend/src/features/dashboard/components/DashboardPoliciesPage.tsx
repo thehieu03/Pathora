@@ -46,8 +46,8 @@ const isApiSuccess = (response: unknown): boolean => {
     return response.success;
   }
 
-  if ("isSuccess" in response && typeof response.isSuccess === "boolean") {
-    return response.isSuccess;
+  if ("isSuccess" in response && typeof (response as Record<string, unknown>).isSuccess === "boolean") {
+    return (response as Record<string, unknown>).isSuccess as boolean;
   }
 
   return false;
@@ -483,3 +483,5 @@ export function DashboardPoliciesPage() {
     </div>
   );
 }
+
+

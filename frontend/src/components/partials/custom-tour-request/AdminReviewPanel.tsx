@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { customTourRequestService } from "@/services/customTourRequestService";
+import { customTourRequestService } from "@/api/services/customTourRequestService";
 import type {
   CustomTourRequest,
   CustomTourRequestStatus,
@@ -13,7 +13,7 @@ import type {
 interface AdminReviewPanelProps {
   requestId: string;
   currentStatus: CustomTourRequestStatus;
-  onReviewSuccess: (request: CustomTourRequest) => void;
+  onReviewSuccess: () => void;
 }
 
 export function AdminReviewPanel({
@@ -47,7 +47,7 @@ export function AdminReviewPanel({
       adminNote: adminNote.trim() || null,
     });
 
-    if (!response.success || !response.data) {
+    if (!response.success) {
       setErrorMessage(
         t(
           "customTourRequest.admin.review.actionError",
@@ -64,7 +64,7 @@ export function AdminReviewPanel({
         "Request status has been updated.",
       ),
     );
-    onReviewSuccess(response.data);
+    onReviewSuccess();
     setLoadingDecision(null);
   };
 

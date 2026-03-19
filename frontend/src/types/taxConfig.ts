@@ -27,4 +27,5 @@ export interface UpdateTaxConfigRequest {
   taxRate: number;
   description?: string;
   effectiveDate: string;
+  isActive: boolean;
 }

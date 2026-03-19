@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { pricingPolicyService } from "@/api/services/pricingPolicyService";
-import type { PricingPolicy } from "@/types/pricingPolicy";
-import { PricingPolicyList } from "./PricingPolicyList";
-import { PricingPolicyForm } from "./PricingPolicyForm";
+import { depositPolicyService } from "@/api/services/depositPolicyService";
+import type { DepositPolicy } from "@/types/depositPolicy";
+import { DepositPolicyList } from "./DepositPolicyList";
+import { DepositPolicyForm } from "./DepositPolicyForm";
 
-export function PricingPoliciesPage() {
+export function DepositPoliciesSettings() {
   const [view, setView] = useState<"list" | "form">("list");
-  const [editingPolicy, setEditingPolicy] = useState<PricingPolicy | null>(null);
+  const [editingPolicy, setEditingPolicy] = useState<DepositPolicy | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleCreate = () => {
@@ -16,30 +16,39 @@ export function PricingPoliciesPage() {
     setView("form");
   };
 
-  const handleEdit = (policy: PricingPolicy) => {
+  const handleEdit = (policy: DepositPolicy) => {
     setEditingPolicy(policy);
     setView("form");
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this pricing policy?")) {
+    if (!confirm("Are you sure you want to delete this deposit policy?")) {
       return;
     }
 
-    const response = await pricingPolicyService.delete(id);
+    const response = await depositPolicyService.delete(id);
     if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.error?.[0]?.message || "Failed to delete pricing policy");
+      alert(response.error?.[0]?.message || "Failed to delete deposit policy");
     }
   };
 
-  const handleSetDefault = async (id: string) => {
-    const response = await pricingPolicyService.setAsDefault(id);
+  const handleToggleActive = async (policy: DepositPolicy) => {
+    const updateData = {
+      id: policy.id,
+      tourScope: policy.tourScope,
+      depositType: policy.depositType,
+      depositValue: policy.depositValue,
+      minDaysBeforeDeparture: policy.minDaysBeforeDeparture,
+      isActive: !policy.isActive,
+    };
+
+    const response = await depositPolicyService.update(updateData);
     if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.error?.[0]?.message || "Failed to set as default");
+      alert(response.error?.[0]?.message || "Failed to update deposit policy");
     }
   };
 
@@ -58,9 +67,9 @@ export function PricingPoliciesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pricing Policies</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Deposit Policies</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Manage age-based pricing rules for tours
+            Manage deposit requirements for tours (percentage or fixed amount)
           </p>
         </div>
         {view === "list" && (
@@ -75,19 +84,19 @@ export function PricingPoliciesPage() {
 
       {view === "list" ? (
         <div className="bg-white shadow rounded-lg overflow-hidden">
-          <PricingPolicyList
+          <DepositPolicyList
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onSetDefault={handleSetDefault}
+            onToggleActive={handleToggleActive}
             refreshKey={refreshKey}
           />
         </div>
       ) : (
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-medium text-gray-900 mb-4">
-            {editingPolicy ? "Edit Pricing Policy" : "Create Pricing Policy"}
+            {editingPolicy ? "Edit Deposit Policy" : "Create Deposit Policy"}
           </h2>
-          <PricingPolicyForm
+          <DepositPolicyForm
             policy={editingPolicy}
             onSuccess={handleFormSuccess}
             onCancel={handleFormCancel}
@@ -97,5 +106,3 @@ export function PricingPoliciesPage() {
     </div>
   );
 }
-
-

@@ -122,3 +122,4 @@ describe("PricingTierEditor validation", () => {
     expect(validateTiers(tiers)).toBeNull();
   });
 });
+

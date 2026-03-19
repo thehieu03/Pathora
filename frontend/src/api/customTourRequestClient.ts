@@ -37,26 +37,30 @@ const buildAdminFiltersQuery = (filters?: CustomTourRequestListFilters): string 
 
 export const customTourRequestClient = {
   createPublic: (payload: CustomTourRequestPayload): Promise<AxiosResponse<unknown>> => {
-    return api.post(API_ENDPOINTS.PUBLIC_TOUR_REQUEST.CREATE, payload);
+    return api.post(API_ENDPOINTS.TOUR_REQUESTS.CREATE, payload);
   },
 
   getMy: (): Promise<AxiosResponse<unknown>> => {
-    return api.get(API_ENDPOINTS.PUBLIC_TOUR_REQUEST.GET_MY);
+    return api.get(API_ENDPOINTS.TOUR_REQUESTS.MY);
   },
 
   getPublicDetail: (id: string): Promise<AxiosResponse<unknown>> => {
-    return api.get(API_ENDPOINTS.PUBLIC_TOUR_REQUEST.GET_DETAIL(id));
+    return api.get(API_ENDPOINTS.TOUR_REQUESTS.DETAIL(id));
   },
 
   getAdminList: (filters?: CustomTourRequestListFilters): Promise<AxiosResponse<unknown>> => {
     const query = buildAdminFiltersQuery(filters);
-    return api.get(`${API_ENDPOINTS.TOUR_REQUEST.GET_ALL}${query}`);
+    return api.get(`${API_ENDPOINTS.TOUR_REQUESTS.ADMIN_LIST}${query}`);
+  },
+
+  getAdminDetail: (id: string): Promise<AxiosResponse<unknown>> => {
+    return api.get(API_ENDPOINTS.TOUR_REQUESTS.ADMIN_DETAIL(id));
   },
 
   review: (
     id: string,
     payload: CustomTourRequestReviewPayload,
   ): Promise<AxiosResponse<unknown>> => {
-    return api.patch(API_ENDPOINTS.TOUR_REQUEST.REVIEW(id), payload);
+    return api.patch(API_ENDPOINTS.TOUR_REQUESTS.REVIEW(id), payload);
   },
 };

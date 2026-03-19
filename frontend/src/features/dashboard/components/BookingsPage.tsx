@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 
-const STATUS_BADGE = "confirmed" | "pending" | "cancelled";
+type BookingStatus = "confirmed" | "pending" | "cancelled";
 
 interface BookingRow {
   id: string;
@@ -172,3 +172,5 @@ export default function BookingsPage() {
     </AdminSidebar>
   );
 }
+
+

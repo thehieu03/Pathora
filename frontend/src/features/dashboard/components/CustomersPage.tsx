@@ -7,7 +7,7 @@ import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { AdminCustomer } from "@/types/admin";
-import { AdminSidebar, TopBar } from "./AdminSidebar";
+import { AdminSidebar } from "./AdminSidebar";
 
 import {
   calculateCustomerMetrics,
@@ -459,3 +459,5 @@ export function CustomersPage() {
 }
 
 export default CustomersPage;
+
+

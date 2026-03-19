@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
@@ -7,6 +7,14 @@ import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
 import FileInput from "@/components/ui/FileInput";
 import { tourService } from "@/api/services/tourService";
+import { pricingPolicyService } from "@/api/services/pricingPolicyService";
+import { depositPolicyService } from "@/api/services/depositPolicyService";
+import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
+import { visaPolicyService } from "@/api/services/visaPolicyService";
+import type { PricingPolicy } from "@/types/pricingPolicy";
+import type { DepositPolicy } from "@/types/depositPolicy";
+import type { CancellationPolicy } from "@/types/cancellationPolicy";
+import type { VisaPolicy } from "@/types/visaPolicy";
 import { handleApiError } from "@/utils/apiResponse";
 
 /* ── Types ──────────────────────────────────────────────────── */
@@ -386,8 +394,39 @@ export default function CreateTourPage() {
     emptyTransportation(),
   ]);
 
+  /* ── Policies ──────────────────────────────────────────── */
+  const [pricingPolicies, setPricingPolicies] = useState<PricingPolicy[]>([]);
+  const [depositPolicies, setDepositPolicies] = useState<DepositPolicy[]>([]);
+  const [cancellationPolicies, setCancellationPolicies] = useState<CancellationPolicy[]>([]);
+  const [visaPolicies, setVisaPolicies] = useState<VisaPolicy[]>([]);
+  const [selectedPricingPolicyId, setSelectedPricingPolicyId] = useState<string>("");
+  const [selectedDepositPolicyId, setSelectedDepositPolicyId] = useState<string>("");
+  const [selectedCancellationPolicyId, setSelectedCancellationPolicyId] = useState<string>("");
+  const [selectedVisaPolicyId, setSelectedVisaPolicyId] = useState<string>("");
+
   /* ── Validation ───────────────────────────────────────────── */
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  /* ── Fetch Policies ──────────────────────────────────────────── */
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      try {
+        const [ppRes, dpRes, cpRes, vpRes] = await Promise.all([
+          pricingPolicyService.getAll(),
+          depositPolicyService.getAll(),
+          cancellationPolicyService.getAll(),
+          visaPolicyService.getAll(),
+        ]);
+        if (ppRes.success && ppRes.data) setPricingPolicies(ppRes.data);
+        if (dpRes.success && dpRes.data) setDepositPolicies(dpRes.data);
+        if (cpRes.success && cpRes.data) setCancellationPolicies(cpRes.data);
+        if (vpRes.success && vpRes.data) setVisaPolicies(vpRes.data);
+      } catch (err) {
+        console.error("Failed to fetch policies:", err);
+      }
+    };
+    fetchPolicies();
+  }, []);
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
@@ -770,6 +809,12 @@ export default function CreateTourPage() {
       formData.append("status", basicInfo.status);
       if (thumbnail) formData.append("thumbnail", thumbnail);
       images.forEach((img) => formData.append("images", img));
+
+      // Policy IDs
+      if (selectedPricingPolicyId) formData.append("pricingPolicyId", selectedPricingPolicyId);
+      if (selectedDepositPolicyId) formData.append("depositPolicyId", selectedDepositPolicyId);
+      if (selectedCancellationPolicyId) formData.append("cancellationPolicyId", selectedCancellationPolicyId);
+      if (selectedVisaPolicyId) formData.append("visaPolicyId", selectedVisaPolicyId);
 
       const translationPayload: Record<
         string,
@@ -1202,6 +1247,73 @@ export default function CreateTourPage() {
                       </p>
                     )}
                   </div>
+                </div>
+              </div>
+
+              {/* ── Policy Selectors ──────────────────────────── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200 mt-4">
+                {/* Pricing Policy */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    Pricing Policy
+                  </label>
+                  <select
+                    value={selectedPricingPolicyId}
+                    onChange={(e) => setSelectedPricingPolicyId(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
+                    <option value="">-- Select Pricing Policy --</option>
+                    {pricingPolicies.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Deposit Policy */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    Deposit Policy
+                  </label>
+                  <select
+                    value={selectedDepositPolicyId}
+                    onChange={(e) => setSelectedDepositPolicyId(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
+                    <option value="">-- Select Deposit Policy --</option>
+                    {depositPolicies.map((p) => (
+                      <option key={p.id} value={p.id}>{p.tourScopeName} - {p.depositTypeName} {p.depositValue}{p.depositType === 2 ? "%" : ""}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Cancellation Policy */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    Cancellation Policy
+                  </label>
+                  <select
+                    value={selectedCancellationPolicyId}
+                    onChange={(e) => setSelectedCancellationPolicyId(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
+                    <option value="">-- Select Cancellation Policy --</option>
+                    {cancellationPolicies.map((p) => (
+                      <option key={p.id} value={p.id}>{p.policyCode} ({p.tourScopeName}, {p.penaltyPercentage}% penalty)</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Visa Policy */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    Visa Policy
+                  </label>
+                  <select
+                    value={selectedVisaPolicyId}
+                    onChange={(e) => setSelectedVisaPolicyId(e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
+                    <option value="">-- Select Visa Policy --</option>
+                    {visaPolicies.map((p) => (
+                      <option key={p.id} value={p.id}>{p.region} ({p.processingDays} days processing)</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
