@@ -2,6 +2,7 @@ using Application.Common;
 using Application.Contracts.VisaPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
+using Domain.Entities.Translations;
 using ErrorOr;
 using FluentValidation;
 
@@ -11,7 +12,8 @@ public sealed record CreateVisaPolicyCommand(
     string Region,
     int ProcessingDays,
     int BufferDays,
-    bool FullPaymentRequired
+    bool FullPaymentRequired,
+    Dictionary<string, VisaPolicyTranslationData>? Translations = null
 ) : ICommand<ErrorOr<Guid>>;
 
 public sealed class CreateVisaPolicyCommandValidator : AbstractValidator<CreateVisaPolicyCommand>
@@ -39,7 +41,8 @@ public sealed class CreateVisaPolicyCommandHandler(IVisaPolicyService visaPolicy
             request.Region,
             request.ProcessingDays,
             request.BufferDays,
-            request.FullPaymentRequired
+            request.FullPaymentRequired,
+            request.Translations
         ));
     }
 }
@@ -50,7 +53,8 @@ public sealed record UpdateVisaPolicyCommand(
     int ProcessingDays,
     int BufferDays,
     bool FullPaymentRequired,
-    bool IsActive
+    bool IsActive,
+    Dictionary<string, VisaPolicyTranslationData>? Translations = null
 ) : ICommand<ErrorOr<Success>>;
 
 public sealed class UpdateVisaPolicyCommandValidator : AbstractValidator<UpdateVisaPolicyCommand>
@@ -82,7 +86,8 @@ public sealed class UpdateVisaPolicyCommandHandler(IVisaPolicyService visaPolicy
             request.ProcessingDays,
             request.BufferDays,
             request.FullPaymentRequired,
-            request.IsActive
+            request.IsActive,
+            request.Translations
         ));
     }
 }

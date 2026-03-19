@@ -9,13 +9,13 @@ using FluentValidation;
 
 namespace Application.Features.CancellationPolicy.Commands;
 
+// Note: translations will be supported in a future update
 public sealed record CreateCancellationPolicyCommand(
     TourScope TourScope,
     int MinDaysBeforeDeparture,
     int MaxDaysBeforeDeparture,
     decimal PenaltyPercentage,
-    string ApplyOn,
-    Dictionary<string, CancellationPolicyTranslationData>? Translations
+    string ApplyOn = "FullAmount"
 ) : ICommand<ErrorOr<CancellationPolicyResponse>>;
 
 public sealed class CreateCancellationPolicyCommandValidator : AbstractValidator<CreateCancellationPolicyCommand>
@@ -53,8 +53,7 @@ public sealed class CreateCancellationPolicyCommandHandler(ICancellationPolicySe
             request.MinDaysBeforeDeparture,
             request.MaxDaysBeforeDeparture,
             request.PenaltyPercentage,
-            request.ApplyOn,
-            request.Translations
+            request.ApplyOn
         );
 
         return await service.Create(createRequest);
