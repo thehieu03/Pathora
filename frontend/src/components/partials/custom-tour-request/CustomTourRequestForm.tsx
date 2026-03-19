@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { customTourRequestService } from "@/services/customTourRequestService";
+import { customTourRequestService } from "@/api/services/customTourRequestService";
 import type { CustomTourInterest, CustomTourRequest } from "@/types/customTourRequest";
 import type { Status } from "@/types";
 
@@ -50,7 +50,7 @@ export function CustomTourRequestForm() {
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({});
   const [submitStatus, setSubmitStatus] = useState<Status>("idle");
   const [submitErrorMessage, setSubmitErrorMessage] = useState<string>("");
-  const [submittedRequest, setSubmittedRequest] = useState<CustomTourRequest | null>(null);
+  const [submittedRequestCode, setSubmittedRequestCode] = useState<string | null>(null);
 
   const validateAndUpdateErrors = (nextValues: CustomTourRequestFormValues) => {
     const nextErrors = validateCustomTourRequestForm(nextValues);
@@ -120,12 +120,7 @@ export function CustomTourRequestForm() {
 
   const isSubmitting = submitStatus === "loading";
 
-  const successStatus = useMemo(() => {
-    if (submittedRequest?.status) {
-      return submittedRequest.status;
-    }
-    return "pending";
-  }, [submittedRequest]);
+  const successStatus = "pending" as const;
 
   const resetForm = () => {
     setValues(createEmptyCustomTourRequestFormValues());
@@ -134,7 +129,7 @@ export function CustomTourRequestForm() {
     setErrors({});
     setSubmitStatus("idle");
     setSubmitErrorMessage("");
-    setSubmittedRequest(null);
+    setSubmittedRequestCode(null);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -153,7 +148,7 @@ export function CustomTourRequestForm() {
       mapFormValuesToPayload(values),
     );
 
-    if (!response.success || !response.data) {
+    if (!response.success) {
       setSubmitStatus("error");
       setSubmitErrorMessage(
         t(
@@ -168,11 +163,11 @@ export function CustomTourRequestForm() {
       return;
     }
 
-    setSubmittedRequest(response.data);
+    setSubmittedRequestCode(response.data);
     setSubmitStatus("success");
   };
 
-  if (submitStatus === "success" && submittedRequest) {
+  if (submitStatus === "success" && submittedRequestCode) {
     return (
       <div className="bg-white border border-emerald-200 rounded-2xl p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-3">
@@ -201,7 +196,7 @@ export function CustomTourRequestForm() {
               {t("customTourRequest.labels.requestCode", "Request Code")}
             </p>
             <p className="text-base font-semibold text-slate-900 mt-0.5">
-              {submittedRequest.requestCode}
+              {submittedRequestCode}
             </p>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">

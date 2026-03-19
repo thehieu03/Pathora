@@ -183,3 +183,5 @@ export function TopBar({ onMenuClick, title, subtitle }: TopBarProps) {
     </header>
   );
 }
+
+

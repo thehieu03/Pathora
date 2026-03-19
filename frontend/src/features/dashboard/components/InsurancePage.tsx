@@ -9,29 +9,6 @@ import { adminService } from "@/api/services/adminService";
 import type { AdminInsurance, AdminOverview } from "@/types/admin";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 
-/* ══════════════════════════════════════════════════════════════ */
-        <input
-          id="insurance-search"
-          type="text"
-          placeholder={t("placeholder.searchInsurance", "Search insurance...")}
-          className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-        />
-      </div>
-      <div className="ml-auto relative">
-        <button
-          aria-label="Notifications - 3 unread"
-          className="relative p-2 text-slate-500 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
-        >
-          <Icon icon="heroicons:bell" className="size-5" />
-          <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
-            3
-          </span>
-        </button>
-      </div>
-    </header>
-  );
-}
-
 interface StatCardProps {
   label: string;
   value: string;
@@ -404,3 +381,5 @@ export function InsurancePage() {
 }
 
 export default InsurancePage;
+
+

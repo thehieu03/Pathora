@@ -7,6 +7,13 @@ export interface PricingPolicyTier {
   pricePercentage: number;
 }
 
+export interface PricingPolicyTranslation {
+  name?: string;
+  description?: string;
+}
+
+export type PricingPolicyTranslations = Record<string, PricingPolicyTranslation>;
+
 export interface PricingPolicy {
   id: string;
   policyCode: string;
@@ -17,6 +24,7 @@ export interface PricingPolicy {
   statusName: string;
   isDefault: boolean;
   tiers: PricingPolicyTier[];
+  translations?: PricingPolicyTranslations;
   createdOnUtc: string;
   lastModifiedOnUtc: string | null;
 }
@@ -26,6 +34,7 @@ export interface CreatePricingPolicyRequest {
   tourType: number;
   tiers: PricingPolicyTier[];
   isDefault?: boolean;
+  translations?: PricingPolicyTranslations;
 }
 
 export interface UpdatePricingPolicyRequest {
@@ -33,6 +42,7 @@ export interface UpdatePricingPolicyRequest {
   name: string;
   tourType: number;
   tiers: PricingPolicyTier[];
+  translations?: PricingPolicyTranslations;
 }
 
 export const PricingPolicyStatusMap: Record<number, string> = {

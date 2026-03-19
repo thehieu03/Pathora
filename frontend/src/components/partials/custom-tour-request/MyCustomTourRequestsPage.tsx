@@ -5,9 +5,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Icon from "@/components/ui/Icon";
-import { LandingFooter } from "@/components/partials/shared/LandingFooter";
-import { LandingHeader } from "@/components/partials/shared/LandingHeader";
-import { customTourRequestService } from "@/services/customTourRequestService";
+import { LandingFooter } from "@/features/shared/components/LandingFooter";
+import { LandingHeader } from "@/features/shared/components/LandingHeader";
+import { customTourRequestService } from "@/api/services/customTourRequestService";
 import type { CustomTourRequest } from "@/types/customTourRequest";
 
 import { CustomTourRequestStatusBadge } from "./CustomTourRequestStatusBadge";

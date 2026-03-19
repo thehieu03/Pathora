@@ -1,5 +1,11 @@
 // Cancellation Policy Types
 
+export interface CancellationPolicyTranslation {
+  description?: string;
+}
+
+export type CancellationPolicyTranslations = Record<string, CancellationPolicyTranslation>;
+
 export interface CancellationPolicy {
   id: string;
   policyCode: string;
@@ -11,6 +17,7 @@ export interface CancellationPolicy {
   applyOn: string;
   status: number;
   statusName: string;
+  translations?: CancellationPolicyTranslations;
   createdBy?: string;
   lastModifiedBy?: string;
   createdOnUtc: string;
@@ -23,6 +30,7 @@ export interface CreateCancellationPolicyRequest {
   maxDaysBeforeDeparture: number;
   penaltyPercentage: number;
   applyOn?: string;
+  translations?: CancellationPolicyTranslations;
 }
 
 export interface UpdateCancellationPolicyRequest {
@@ -33,6 +41,7 @@ export interface UpdateCancellationPolicyRequest {
   penaltyPercentage: number;
   applyOn?: string;
   status?: number;
+  translations?: CancellationPolicyTranslations;
 }
 
 export const TourScopeMap: Record<number, string> = {

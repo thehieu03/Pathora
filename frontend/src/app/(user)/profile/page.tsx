@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import { useGetUserInfoQuery, useChangePasswordMutation, useUpdateUserMutation } from "@/store/api/auth/authApiSlice";
@@ -12,7 +12,7 @@ import Link from "next/link";
 
 type TabType = "profile" | "password" | "settings";
 
-export default function ProfilePage() {
+function ProfileContent() {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
   const initialTab = (searchParams.get("tab") as TabType) || "profile";
@@ -434,5 +434,21 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProfileLoading() {
+  return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+    </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileLoading />}>
+      <ProfileContent />
+    </Suspense>
   );
 }

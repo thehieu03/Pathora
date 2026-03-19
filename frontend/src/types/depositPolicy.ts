@@ -1,5 +1,11 @@
 // Deposit Policy Types
 
+export interface DepositPolicyTranslation {
+  description?: string;
+}
+
+export type DepositPolicyTranslations = Record<string, DepositPolicyTranslation>;
+
 export interface DepositPolicy {
   id: string;
   tourScope: number;
@@ -9,6 +15,7 @@ export interface DepositPolicy {
   depositValue: number;
   minDaysBeforeDeparture: number;
   isActive: boolean;
+  translations?: DepositPolicyTranslations;
   createdBy?: string;
   lastModifiedBy?: string;
   createdOnUtc: string;
@@ -20,6 +27,7 @@ export interface CreateDepositPolicyRequest {
   depositType: number;
   depositValue: number;
   minDaysBeforeDeparture: number;
+  translations?: DepositPolicyTranslations;
 }
 
 export interface UpdateDepositPolicyRequest {
@@ -28,6 +36,8 @@ export interface UpdateDepositPolicyRequest {
   depositType: number;
   depositValue: number;
   minDaysBeforeDeparture: number;
+  isActive: boolean;
+  translations?: DepositPolicyTranslations;
 }
 
 export const TourScopeMap: Record<number, string> = {

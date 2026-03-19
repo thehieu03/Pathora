@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { pricingPolicyService } from "@/api/services/pricingPolicyService";
-import type { PricingPolicy, PricingPolicyTier, CreatePricingPolicyRequest, UpdatePricingPolicyRequest } from "@/types/pricingPolicy";
+import type { PricingPolicy, PricingPolicyTier, CreatePricingPolicyRequest, UpdatePricingPolicyRequest, PricingPolicyTranslations } from "@/types/pricingPolicy";
 import { PricingTierInput } from "./PricingTierInput";
+import { TranslationTabForm } from "./TranslationTabForm";
 
 interface PricingPolicyFormProps {
   policy?: PricingPolicy | null;
@@ -15,6 +16,10 @@ interface PricingPolicyFormProps {
 export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicyFormProps) {
   const [loading, setLoading] = useState(false);
   const [tiers, setTiers] = useState<PricingPolicyTier[]>(policy?.tiers || []);
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<PricingPolicyTranslations>(
+    policy?.translations || { vi: { name: "", description: "" }, en: { name: "", description: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     name: string;
     tourType: number;
@@ -35,6 +40,12 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
         isDefault: policy.isDefault,
       });
       setTiers(policy.tiers);
+      // Ensure both languages exist for edit mode
+      const existingTranslations = policy.translations || {};
+      setTranslations({
+        vi: existingTranslations.vi || { name: "", description: "" },
+        en: existingTranslations.en || { name: "", description: "" },
+      });
     }
   }, [policy, reset]);
 
@@ -53,6 +64,7 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
           name: data.name,
           tourType: data.tourType,
           tiers,
+          translations,
         };
         response = await pricingPolicyService.update(payload);
       } else {
@@ -61,14 +73,15 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
           tourType: data.tourType,
           tiers,
           isDefault: data.isDefault,
+          translations,
         };
         response = await pricingPolicyService.create(payload);
       }
 
-      if (response.isSuccess) {
+      if (response.success) {
         onSuccess();
       } else {
-        alert(response.errors?.[0]?.message || "Failed to save pricing policy");
+        alert(response.error?.[0]?.message || "Failed to save pricing policy");
       }
     } catch (err) {
       alert("An error occurred while saving the pricing policy");
@@ -118,6 +131,12 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
         <PricingTierInput tiers={tiers} onChange={setTiers} />
       </div>
 
+      {/* Translation Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
+        <TranslationTabForm translations={translations} onChange={setTranslations} />
+      </div>
+
       <div className="flex justify-end gap-3">
         <button
           type="button"
@@ -137,3 +156,5 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
     </form>
   );
 }
+
+

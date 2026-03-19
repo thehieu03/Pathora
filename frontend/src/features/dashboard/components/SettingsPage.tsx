@@ -12,15 +12,23 @@ import { AdminSidebar, TopBar } from "./AdminSidebar";
 
 // Lazy load pricing, tax, and policy components
 const TaxConfigsPage = dynamic(
-  () => import("@/features/dashboard/components/TaxConfigsPage"),
+  () => import("@/features/dashboard/components/TaxConfigsPage").then((mod) => mod.TaxConfigsPage),
   { ssr: false },
 );
 const PricingPoliciesPage = dynamic(
-  () => import("@/features/dashboard/components/PricingPoliciesPage"),
+  () => import("@/features/dashboard/components/PricingPoliciesPage").then((mod) => mod.PricingPoliciesPage),
   { ssr: false },
 );
 const DashboardPoliciesPage = dynamic(
-  () => import("@/features/dashboard/components/DashboardPoliciesPage"),
+  () => import("@/features/dashboard/components/DashboardPoliciesPage").then((mod) => mod.DashboardPoliciesPage),
+  { ssr: false },
+);
+const VisaPoliciesPage = dynamic(
+  () => import("@/features/dashboard/components/VisaPoliciesPage").then((mod) => mod.VisaPoliciesPage),
+  { ssr: false },
+);
+const DepositPoliciesSettings = dynamic(
+  () => import("@/features/dashboard/components/DepositPoliciesSettings").then((mod) => mod.DepositPoliciesSettings),
   { ssr: false },
 );
 
@@ -29,6 +37,8 @@ const SETTINGS_TABS = [
   { id: "tax-configs", label: "Tax Configs", icon: "heroicons:percent-badge" },
   { id: "pricing-policies", label: "Pricing Policies", icon: "heroicons:currency-dollar" },
   { id: "policies", label: "Policies", icon: "heroicons:clipboard-document-list" },
+  { id: "visa-policies", label: "Visa Policies", icon: "heroicons:document-text" },
+  { id: "deposit-policies", label: "Deposit Policies", icon: "heroicons:banknotes" },
   { id: "notifications", label: "Notifications", icon: "heroicons:bell" },
   { id: "security", label: "Security", icon: "heroicons:shield-check" },
   { id: "billing", label: "Billing", icon: "heroicons:credit-card" },
@@ -171,6 +181,14 @@ export function SettingsPage() {
                 <DashboardPoliciesPage />
               )}
 
+              {activeTab === "visa-policies" && (
+                <VisaPoliciesPage />
+              )}
+
+              {activeTab === "deposit-policies" && (
+                <DepositPoliciesSettings />
+              )}
+
               {activeTab === "notifications" && (
                 <Card bodyClass="p-6">
                   <h3 className="text-lg font-semibold text-slate-900 mb-4">Notification Preferences</h3>
@@ -297,3 +315,5 @@ export function SettingsPage() {
 }
 
 export default SettingsPage;
+
+

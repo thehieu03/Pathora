@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { depositPolicyService } from "@/api/services/depositPolicyService";
-import type { DepositPolicy, CreateDepositPolicyRequest, UpdateDepositPolicyRequest } from "@/types/depositPolicy";
+import type { DepositPolicy, CreateDepositPolicyRequest, UpdateDepositPolicyRequest, DepositPolicyTranslations } from "@/types/depositPolicy";
 import { TourScopeMap, DepositTypeMap } from "@/types/depositPolicy";
+import { TranslationTabForm } from "./TranslationTabForm";
 
 interface DepositPolicyFormProps {
   policy?: DepositPolicy | null;
@@ -14,6 +15,10 @@ interface DepositPolicyFormProps {
 
 export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicyFormProps) {
   const [loading, setLoading] = useState(false);
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<DepositPolicyTranslations>(
+    policy?.translations || { vi: { description: "" }, en: { description: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     tourScope: number;
     depositType: number;
@@ -36,6 +41,7 @@ export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicy
         depositValue: policy.depositValue,
         minDaysBeforeDeparture: policy.minDaysBeforeDeparture,
       });
+      setTranslations(policy.translations || {});
     }
   }, [policy, reset]);
 
@@ -47,17 +53,22 @@ export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicy
         const payload: UpdateDepositPolicyRequest = {
           id: policy.id,
           ...data,
+          isActive: policy.isActive,
+          translations,
         };
         response = await depositPolicyService.update(payload);
       } else {
-        const payload: CreateDepositPolicyRequest = data;
+        const payload: CreateDepositPolicyRequest = {
+          ...data,
+          translations,
+        };
         response = await depositPolicyService.create(payload);
       }
 
-      if (response.isSuccess) {
+      if (response.success) {
         onSuccess();
       } else {
-        alert(response.errors?.[0]?.message || "Failed to save deposit policy");
+        alert(response.error?.[0]?.message || "Failed to save deposit policy");
       }
     } catch (err) {
       alert("An error occurred while saving the deposit policy");
@@ -125,6 +136,12 @@ export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicy
         </div>
       </div>
 
+      {/* Translation Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
+        <TranslationTabForm translations={translations} onChange={setTranslations} />
+      </div>
+
       <div className="flex justify-end gap-3">
         <button
           type="button"
@@ -144,3 +161,5 @@ export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicy
     </form>
   );
 }
+
+

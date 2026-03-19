@@ -15,6 +15,7 @@ import {
   CheckoutPriceResponse,
   type NormalizedPaymentStatus,
 } from "@/api/services/paymentService";
+import { bookingService, type CreateBookingPayload } from "@/api/services/bookingService";
 import { handleApiError } from "@/utils/apiResponse";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -23,22 +24,6 @@ import {
   resolveReturnTransactionCode,
   shouldRedirectToHostedCheckout,
 } from "@/features/checkout/components/paymentFlowUtils";
-
-/* ── Sample Booking Data (would come from API/router state) ── */
-const SAMPLE_BOOKING = {
-  tourImage:
-    "https://www.figma.com/api/mcp/asset/ffacfc3b-cdaf-4f2c-9e83-2b7c1e8e7c00",
-  tourTitle: "Floating Market & Temple Day Tour by Long-Tail Boat",
-  location: "Bangkok, Thailand",
-  duration: "1 Day",
-  dateRange: "Mar 18, 2026 - Mar 19",
-  guests: "2 Adults",
-  category: "Budget Tour",
-  pricePerAdult: 950000,
-  adults: 2,
-  serviceFee: 0,
-  depositRate: 0.3,
-};
 
 /* ── Helpers ───────────────────────────────────────────────── */
 const fmt = (n: number) => "$" + n.toLocaleString("en-US");
@@ -473,6 +458,11 @@ export function CheckoutPage() {
   const [loadingPrice, setLoadingPrice] = useState(true);
   const [priceError, setPriceError] = useState<string | null>(null);
 
+  // Customer info for booking creation
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   /* ── Get booking ID or tour instance info from URL ───── */
@@ -543,14 +533,18 @@ export function CheckoutPage() {
   }, [bookingIdParam]);
 
   /* ── Derived ──────────────────────────────────────────── */
-  const bookingId = bookingIdParam ?? "";
+  const bookingId = checkoutPrice?.bookingId ?? bookingIdParam ?? "";
   const hasCheckoutPrice = !!checkoutPrice;
   const hasTourInstanceBooking = !!tourInstanceBooking;
+  const needsBookingCreation = !bookingIdParam && tourInstanceIdParam;
+  const hasCustomerInfo = customerName.trim() && customerPhone.trim();
   const totalPrice = checkoutPrice?.totalPrice ?? (tourInstanceBooking?.depositPerPerson ?? 0);
   const depositAmount = checkoutPrice?.depositAmount ?? (tourInstanceBooking?.depositPerPerson ?? 0);
   const remainingBalance = checkoutPrice?.remainingBalance ?? 0;
   const payAmount = paymentOption === "full" ? totalPrice : depositAmount;
-  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction && (hasCheckoutPrice || hasTourInstanceBooking);
+  const canConfirm = agreeTerms && acknowledgeInfo && !loading && !transaction
+    && (hasCheckoutPrice || hasTourInstanceBooking)
+    && (!needsBookingCreation || hasCustomerInfo);
 
   useEffect(() => {
     if (!transaction) {
@@ -655,20 +649,50 @@ export function CheckoutPage() {
     const mapPaymentMethod = (method: "qr" | "cash" | "bank_transfer") => {
       switch (method) {
         case "qr":
-          return "BankTransfer" as const;
+          return 2; // BankTransfer
         case "bank_transfer":
-          return "BankTransfer" as const;
+          return 2; // BankTransfer
         case "cash":
-          return "Cash" as const;
+          return 1; // Cash
       }
     };
 
     try {
+      let currentBookingId = bookingId;
+
+      // Step 1: Create booking if needed (when coming from tour detail page)
+      if (needsBookingCreation && tourInstanceBooking) {
+        const adultsParam = searchParams.get("adults") || "1";
+        const childrenParam = searchParams.get("children") || "0";
+        const infantsParam = searchParams.get("infants") || "0";
+
+        const bookingPayload: CreateBookingPayload = {
+          tourInstanceId: tourInstanceBooking.tourInstanceId,
+          customerName: customerName.trim(),
+          customerPhone: customerPhone.trim(),
+          customerEmail: customerEmail.trim() || undefined,
+          numberAdult: parseInt(adultsParam, 10) || 1,
+          numberChild: parseInt(childrenParam, 10) || 0,
+          numberInfant: parseInt(infantsParam, 10) || 0,
+          paymentMethod: mapPaymentMethod(paymentMethod),
+          isFullPay: paymentOption === "full",
+        };
+
+        const bookingResult = await bookingService.createBooking(bookingPayload);
+        if (bookingResult && bookingResult.bookingId) {
+          setCheckoutPrice(bookingResult);
+          currentBookingId = bookingResult.bookingId;
+        } else {
+          throw new Error("Failed to create booking");
+        }
+      }
+
+      // Step 2: Create payment transaction
       const result = await paymentService.createTransaction({
-        bookingId,
+        bookingId: currentBookingId,
         type: paymentOption === "full" ? "FullPayment" : "Deposit",
         amount: payAmount,
-        paymentMethod: mapPaymentMethod(paymentMethod),
+        paymentMethod: (paymentMethod === "cash" ? "Cash" : "BankTransfer") as "Cash" | "BankTransfer",
         paymentNote: `Payment for ${checkoutPrice?.tourName ?? "Tour"} - ${paymentOption === "full" ? "Full Payment" : `Deposit ${Math.round((checkoutPrice?.depositPercentage ?? 0.3) * 100)}%`}`,
         createdBy: user?.email ?? user?.username ?? "guest",
       });

@@ -25,10 +25,10 @@ export function CancellationPolicyList({ onEdit, onDelete, refreshKey: _refreshK
       setLoading(true);
       setError(null);
       const response = await cancellationPolicyService.getAll();
-      if (response.isSuccess && response.data) {
+      if (response.success && response.data) {
         setPolicies(response.data);
       } else {
-        setError(response.errors?.[0]?.message || "Failed to load cancellation policies");
+        setError(response.error?.[0]?.message || "Failed to load cancellation policies");
       }
     } catch (err) {
       setError("An error occurred while loading cancellation policies");
@@ -145,3 +145,5 @@ export function CancellationPolicyList({ onEdit, onDelete, refreshKey: _refreshK
     </div>
   );
 }
+
+

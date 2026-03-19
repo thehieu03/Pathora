@@ -1086,3 +1086,5 @@ export default function TourInstanceDetailPage() {
     </main>
   );
 }
+
+

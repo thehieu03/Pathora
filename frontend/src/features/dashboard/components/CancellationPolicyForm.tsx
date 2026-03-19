@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
-import type { CancellationPolicy, CreateCancellationPolicyRequest, UpdateCancellationPolicyRequest } from "@/types/cancellationPolicy";
+import type { CancellationPolicy, CreateCancellationPolicyRequest, UpdateCancellationPolicyRequest, CancellationPolicyTranslations } from "@/types/cancellationPolicy";
 import { TourScopeMap, CancellationPolicyStatusMap } from "@/types/cancellationPolicy";
+import { TranslationTabForm } from "./TranslationTabForm";
 
 interface CancellationPolicyFormProps {
   policy?: CancellationPolicy | null;
@@ -14,6 +15,10 @@ interface CancellationPolicyFormProps {
 
 export function CancellationPolicyForm({ policy, onSuccess, onCancel }: CancellationPolicyFormProps) {
   const [loading, setLoading] = useState(false);
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<CancellationPolicyTranslations>(
+    policy?.translations || { vi: { description: "" }, en: { description: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     tourScope: number;
     minDaysBeforeDeparture: number;
@@ -39,6 +44,7 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
         penaltyPercentage: policy.penaltyPercentage,
         applyOn: policy.applyOn,
       });
+      setTranslations(policy.translations || {});
     }
   }, [policy, reset]);
 
@@ -55,17 +61,21 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
         const payload: UpdateCancellationPolicyRequest = {
           id: policy.id,
           ...data,
+          translations,
         };
         response = await cancellationPolicyService.update(payload);
       } else {
-        const payload: CreateCancellationPolicyRequest = data;
+        const payload: CreateCancellationPolicyRequest = {
+          ...data,
+          translations,
+        };
         response = await cancellationPolicyService.create(payload);
       }
 
-      if (response.isSuccess) {
+      if (response.success) {
         onSuccess();
       } else {
-        alert(response.errors?.[0]?.message || "Failed to save cancellation policy");
+        alert(response.error?.[0]?.message || "Failed to save cancellation policy");
       }
     } catch (err) {
       alert("An error occurred while saving the cancellation policy");
@@ -147,6 +157,12 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
         </div>
       </div>
 
+      {/* Translation Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
+        <TranslationTabForm translations={translations} onChange={setTranslations} />
+      </div>
+
       <div className="flex justify-end gap-3">
         <button
           type="button"
@@ -166,3 +182,5 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
     </form>
   );
 }
+
+
