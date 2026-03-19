@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { depositPolicyService } from "@/api/services/depositPolicyService";
 import type { DepositPolicy, CreateDepositPolicyRequest, UpdateDepositPolicyRequest, DepositPolicyTranslations } from "@/types/depositPolicy";
 import { TourScopeMap, DepositTypeMap } from "@/types/depositPolicy";
-import { TranslationTabForm } from "./TranslationTabForm";
+import { TranslationTabForm, TranslationField } from "./TranslationTabForm";
 
 interface DepositPolicyFormProps {
   policy?: DepositPolicy | null;
@@ -13,9 +13,21 @@ interface DepositPolicyFormProps {
   onCancel: () => void;
 }
 
+/** Fields cho DepositPolicy translation — khớp với backend DepositPolicyTranslationData (description) */
+const depositPolicyTranslationFields: TranslationField[] = [
+  {
+    key: "description",
+    label: "Description",
+    placeholder: {
+      vi: "Nhập mô tả chính sách đặt cọc",
+      en: "Enter deposit policy description",
+    },
+    type: "textarea",
+  },
+];
+
 export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicyFormProps) {
   const [loading, setLoading] = useState(false);
-  // Initialize with both languages to ensure both are saved
   const [translations, setTranslations] = useState<DepositPolicyTranslations>(
     policy?.translations || { vi: { description: "" }, en: { description: "" } }
   );
@@ -136,10 +148,14 @@ export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicy
         </div>
       </div>
 
-      {/* Translation Section */}
+      {/* Translation Section — truyền đúng fields cho DepositPolicy (description only) */}
       <div className="border-t border-gray-200 pt-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
-        <TranslationTabForm translations={translations} onChange={setTranslations} />
+        <TranslationTabForm
+          translations={translations}
+          onChange={setTranslations}
+          fields={depositPolicyTranslationFields}
+        />
       </div>
 
       <div className="flex justify-end gap-3">
@@ -161,5 +177,3 @@ export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicy
     </form>
   );
 }
-
-

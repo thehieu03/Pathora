@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { pricingPolicyService } from "@/api/services/pricingPolicyService";
 import type { PricingPolicy, PricingPolicyTier, CreatePricingPolicyRequest, UpdatePricingPolicyRequest, PricingPolicyTranslations } from "@/types/pricingPolicy";
 import { PricingTierInput } from "./PricingTierInput";
-import { TranslationTabForm } from "./TranslationTabForm";
+import { TranslationTabForm, TranslationField } from "./TranslationTabForm";
 
 interface PricingPolicyFormProps {
   policy?: PricingPolicy | null;
@@ -13,10 +13,31 @@ interface PricingPolicyFormProps {
   onCancel: () => void;
 }
 
+/** Fields cho PricingPolicy translation — khớp với backend PricingPolicyTranslationData (name, description) */
+const pricingPolicyTranslationFields: TranslationField[] = [
+  {
+    key: "name",
+    label: "Name",
+    placeholder: {
+      vi: "Nhập tên chính sách giá",
+      en: "Enter pricing policy name",
+    },
+    type: "text",
+  },
+  {
+    key: "description",
+    label: "Description",
+    placeholder: {
+      vi: "Nhập mô tả chính sách giá",
+      en: "Enter pricing policy description",
+    },
+    type: "textarea",
+  },
+];
+
 export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicyFormProps) {
   const [loading, setLoading] = useState(false);
   const [tiers, setTiers] = useState<PricingPolicyTier[]>(policy?.tiers || []);
-  // Initialize with both languages to ensure both are saved
   const [translations, setTranslations] = useState<PricingPolicyTranslations>(
     policy?.translations || { vi: { name: "", description: "" }, en: { name: "", description: "" } }
   );
@@ -40,11 +61,10 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
         isDefault: policy.isDefault,
       });
       setTiers(policy.tiers);
-      // Ensure both languages exist for edit mode
       const existingTranslations = policy.translations || {};
       setTranslations({
-        vi: existingTranslations.vi || { name: "", description: "" },
-        en: existingTranslations.en || { name: "", description: "" },
+        vi: { name: "", description: "", ...existingTranslations.vi },
+        en: { name: "", description: "", ...existingTranslations.en },
       });
     }
   }, [policy, reset]);
@@ -131,10 +151,14 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
         <PricingTierInput tiers={tiers} onChange={setTiers} />
       </div>
 
-      {/* Translation Section */}
+      {/* Translation Section — truyền đúng fields cho PricingPolicy (name + description) */}
       <div className="border-t border-gray-200 pt-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
-        <TranslationTabForm translations={translations} onChange={setTranslations} />
+        <TranslationTabForm
+          translations={translations}
+          onChange={setTranslations}
+          fields={pricingPolicyTranslationFields}
+        />
       </div>
 
       <div className="flex justify-end gap-3">
@@ -156,5 +180,3 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
     </form>
   );
 }
-
-

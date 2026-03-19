@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { visaPolicyService } from "@/api/services/visaPolicyService";
 import type { VisaPolicy, CreateVisaPolicyRequest, UpdateVisaPolicyRequest, VisaPolicyTranslations } from "@/types/visaPolicy";
-import { TranslationTabForm } from "./TranslationTabForm";
+import { TranslationTabForm, TranslationField } from "./TranslationTabForm";
 
 interface VisaPolicyFormProps {
   policy?: VisaPolicy | null;
@@ -12,9 +12,30 @@ interface VisaPolicyFormProps {
   onCancel: () => void;
 }
 
+/** Fields cho VisaPolicy translation — khớp với backend VisaPolicyTranslationData (region, note) */
+const visaPolicyTranslationFields: TranslationField[] = [
+  {
+    key: "region",
+    label: "Region",
+    placeholder: {
+      vi: "Nhập tên khu vực/vùng",
+      en: "Enter region name",
+    },
+    type: "text",
+  },
+  {
+    key: "note",
+    label: "Note",
+    placeholder: {
+      vi: "Nhập ghi chú về chính sách visa",
+      en: "Enter visa policy notes",
+    },
+    type: "textarea",
+  },
+];
+
 export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormProps) {
   const [loading, setLoading] = useState(false);
-  // Initialize with both languages to ensure both are saved
   const [translations, setTranslations] = useState<VisaPolicyTranslations>(
     policy?.translations || { vi: { region: "", note: "" }, en: { region: "", note: "" } }
   );
@@ -23,12 +44,14 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
     processingDays: number;
     bufferDays: number;
     fullPaymentRequired: boolean;
+    isActive: boolean;
   }>({
     defaultValues: {
       region: policy?.region || "",
       processingDays: policy?.processingDays || 30,
       bufferDays: policy?.bufferDays || 7,
       fullPaymentRequired: policy?.fullPaymentRequired || false,
+      isActive: policy?.isActive ?? true,
     },
   });
 
@@ -39,25 +62,38 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
         processingDays: policy.processingDays,
         bufferDays: policy.bufferDays,
         fullPaymentRequired: policy.fullPaymentRequired,
+        isActive: policy.isActive,
       });
-      setTranslations(policy.translations || {});
+      // Ensure both languages exist with correct field names
+      const existingTranslations = policy.translations || {};
+      setTranslations({
+        vi: { region: "", note: "", ...existingTranslations.vi },
+        en: { region: "", note: "", ...existingTranslations.en },
+      });
     }
   }, [policy, reset]);
 
-  const onSubmit = async (data: { region: string; processingDays: number; bufferDays: number; fullPaymentRequired: boolean }) => {
+  const onSubmit = async (data: { region: string; processingDays: number; bufferDays: number; fullPaymentRequired: boolean; isActive: boolean }) => {
     setLoading(true);
     try {
       let response;
       if (policy) {
         const payload: UpdateVisaPolicyRequest = {
           id: policy.id,
-          ...data,
+          region: data.region,
+          processingDays: data.processingDays,
+          bufferDays: data.bufferDays,
+          fullPaymentRequired: data.fullPaymentRequired,
+          isActive: data.isActive,
           translations,
         };
         response = await visaPolicyService.update(payload);
       } else {
         const payload: CreateVisaPolicyRequest = {
-          ...data,
+          region: data.region,
+          processingDays: data.processingDays,
+          bufferDays: data.bufferDays,
+          fullPaymentRequired: data.fullPaymentRequired,
           translations,
         };
         response = await visaPolicyService.create(payload);
@@ -130,10 +166,28 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
         </label>
       </div>
 
-      {/* Translation Section */}
+      {policy && (
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            {...register("isActive")}
+            id="isActive"
+            className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+          />
+          <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">
+            Active
+          </label>
+        </div>
+      )}
+
+      {/* Translation Section — truyền đúng fields cho VisaPolicy (region + note) */}
       <div className="border-t border-gray-200 pt-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
-        <TranslationTabForm translations={translations} onChange={setTranslations} />
+        <TranslationTabForm
+          translations={translations}
+          onChange={setTranslations}
+          fields={visaPolicyTranslationFields}
+        />
       </div>
 
       <div className="flex justify-end gap-3">
@@ -155,5 +209,3 @@ export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormPr
     </form>
   );
 }
-
-

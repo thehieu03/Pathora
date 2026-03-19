@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
 import type { CancellationPolicy, CreateCancellationPolicyRequest, UpdateCancellationPolicyRequest, CancellationPolicyTranslations } from "@/types/cancellationPolicy";
 import { TourScopeMap, CancellationPolicyStatusMap } from "@/types/cancellationPolicy";
-import { TranslationTabForm } from "./TranslationTabForm";
+import { TranslationTabForm, TranslationField } from "./TranslationTabForm";
 
 interface CancellationPolicyFormProps {
   policy?: CancellationPolicy | null;
@@ -13,9 +13,21 @@ interface CancellationPolicyFormProps {
   onCancel: () => void;
 }
 
+/** Fields cho CancellationPolicy translation — khớp với backend CancellationPolicyTranslationData (description) */
+const cancellationPolicyTranslationFields: TranslationField[] = [
+  {
+    key: "description",
+    label: "Description",
+    placeholder: {
+      vi: "Nhập mô tả chính sách hủy tour",
+      en: "Enter cancellation policy description",
+    },
+    type: "textarea",
+  },
+];
+
 export function CancellationPolicyForm({ policy, onSuccess, onCancel }: CancellationPolicyFormProps) {
   const [loading, setLoading] = useState(false);
-  // Initialize with both languages to ensure both are saved
   const [translations, setTranslations] = useState<CancellationPolicyTranslations>(
     policy?.translations || { vi: { description: "" }, en: { description: "" } }
   );
@@ -157,10 +169,14 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
         </div>
       </div>
 
-      {/* Translation Section */}
+      {/* Translation Section — truyền đúng fields cho CancellationPolicy (description only) */}
       <div className="border-t border-gray-200 pt-6">
         <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
-        <TranslationTabForm translations={translations} onChange={setTranslations} />
+        <TranslationTabForm
+          translations={translations}
+          onChange={setTranslations}
+          fields={cancellationPolicyTranslationFields}
+        />
       </div>
 
       <div className="flex justify-end gap-3">
@@ -182,5 +198,3 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
     </form>
   );
 }
-
-

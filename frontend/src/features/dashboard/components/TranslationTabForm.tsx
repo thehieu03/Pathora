@@ -7,9 +7,22 @@ export type Language = "vi" | "en";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TranslationRecord = Record<string, any>;
 
-export interface TranslationTabFormProps {
+export interface TranslationField {
+  /** Tên field gửi lên API (phải khớp với backend DTO) */
+  key: string;
+  /** Nhãn hiển thị */
+  label: string;
+  /** Placeholder theo ngôn ngữ: { vi: "...", en: "..." } */
+  placeholder: Record<Language, string>;
+  /** Loại input: text hoặc textarea */
+  type?: "text" | "textarea";
+}
+
+export interface translationTabFormProps {
   translations?: TranslationRecord;
   onChange?: (translations: TranslationRecord) => void;
+  /** Danh sách fields cần hiển thị. Mỗi field config riêng cho từng policy. */
+  fields?: TranslationField[];
 }
 
 const languageLabels: Record<Language, string> = {
@@ -17,7 +30,36 @@ const languageLabels: Record<Language, string> = {
   en: "English",
 };
 
-export function TranslationTabForm({ translations = {}, onChange }: TranslationTabFormProps) {
+/**
+ * Default fields — dùng cho PricingPolicy (name + description).
+ * Giữ lại để tương thích ngược với các form chưa truyền fields prop.
+ */
+const defaultFields: TranslationField[] = [
+  {
+    key: "name",
+    label: "Name",
+    placeholder: {
+      vi: "Nhập tên chính sách",
+      en: "Enter policy name",
+    },
+    type: "text",
+  },
+  {
+    key: "description",
+    label: "Description",
+    placeholder: {
+      vi: "Nhập mô tả",
+      en: "Enter description",
+    },
+    type: "textarea",
+  },
+];
+
+export function TranslationTabForm({
+  translations = {},
+  onChange,
+  fields = defaultFields,
+}: translationTabFormProps) {
   const [activeTab, setActiveTab] = useState<Language>("vi");
 
   const handleChange = (field: string, value: string) => {
@@ -56,33 +98,32 @@ export function TranslationTabForm({ translations = {}, onChange }: TranslationT
         </nav>
       </div>
 
-      {/* Translation Fields */}
+      {/* Translation Fields — render động theo cấu hình fields */}
       <div className="space-y-4 pt-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Name ({languageLabels[activeTab]})
-          </label>
-          <input
-            type="text"
-            value={currentFields.name || ""}
-            onChange={(e) => handleChange("name", e.target.value)}
-            placeholder={activeTab === "vi" ? "Nhập tên chính sách" : "Enter policy name"}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Description ({languageLabels[activeTab]})
-          </label>
-          <textarea
-            value={currentFields.description || ""}
-            onChange={(e) => handleChange("description", e.target.value)}
-            placeholder={activeTab === "vi" ? "Nhập mô tả" : "Enter description"}
-            rows={3}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
+        {fields.map((field) => (
+          <div key={field.key}>
+            <label className="block text-sm font-medium text-gray-700">
+              {field.label} ({languageLabels[activeTab]})
+            </label>
+            {field.type === "textarea" ? (
+              <textarea
+                value={currentFields[field.key] || ""}
+                onChange={(e) => handleChange(field.key, e.target.value)}
+                placeholder={field.placeholder[activeTab]}
+                rows={3}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            ) : (
+              <input
+                type="text"
+                value={currentFields[field.key] || ""}
+                onChange={(e) => handleChange(field.key, e.target.value)}
+                placeholder={field.placeholder[activeTab]}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
