@@ -14,7 +14,10 @@ interface VisaPolicyFormProps {
 
 export function VisaPolicyForm({ policy, onSuccess, onCancel }: VisaPolicyFormProps) {
   const [loading, setLoading] = useState(false);
-  const [translations, setTranslations] = useState<VisaPolicyTranslations>(policy?.translations || {});
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<VisaPolicyTranslations>(
+    policy?.translations || { vi: { region: "", note: "" }, en: { region: "", note: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     region: string;
     processingDays: number;

@@ -15,7 +15,10 @@ interface DepositPolicyFormProps {
 
 export function DepositPolicyForm({ policy, onSuccess, onCancel }: DepositPolicyFormProps) {
   const [loading, setLoading] = useState(false);
-  const [translations, setTranslations] = useState<DepositPolicyTranslations>(policy?.translations || {});
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<DepositPolicyTranslations>(
+    policy?.translations || { vi: { description: "" }, en: { description: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     tourScope: number;
     depositType: number;

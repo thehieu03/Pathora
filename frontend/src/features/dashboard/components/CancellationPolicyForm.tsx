@@ -15,7 +15,10 @@ interface CancellationPolicyFormProps {
 
 export function CancellationPolicyForm({ policy, onSuccess, onCancel }: CancellationPolicyFormProps) {
   const [loading, setLoading] = useState(false);
-  const [translations, setTranslations] = useState<CancellationPolicyTranslations>(policy?.translations || {});
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<CancellationPolicyTranslations>(
+    policy?.translations || { vi: { description: "" }, en: { description: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     tourScope: number;
     minDaysBeforeDeparture: number;

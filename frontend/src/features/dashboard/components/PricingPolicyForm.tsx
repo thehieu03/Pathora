@@ -16,7 +16,10 @@ interface PricingPolicyFormProps {
 export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicyFormProps) {
   const [loading, setLoading] = useState(false);
   const [tiers, setTiers] = useState<PricingPolicyTier[]>(policy?.tiers || []);
-  const [translations, setTranslations] = useState<PricingPolicyTranslations>(policy?.translations || {});
+  // Initialize with both languages to ensure both are saved
+  const [translations, setTranslations] = useState<PricingPolicyTranslations>(
+    policy?.translations || { vi: { name: "", description: "" }, en: { name: "", description: "" } }
+  );
   const { register, handleSubmit, formState: { errors }, reset } = useForm<{
     name: string;
     tourType: number;
@@ -37,7 +40,12 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
         isDefault: policy.isDefault,
       });
       setTiers(policy.tiers);
-      setTranslations(policy.translations || {});
+      // Ensure both languages exist for edit mode
+      const existingTranslations = policy.translations || {};
+      setTranslations({
+        vi: existingTranslations.vi || { name: "", description: "" },
+        en: existingTranslations.en || { name: "", description: "" },
+      });
     }
   }, [policy, reset]);
 
