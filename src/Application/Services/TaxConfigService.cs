@@ -91,11 +91,13 @@ public class TaxConfigService(
     private static TaxConfigResponse MapToResponse(TaxConfigEntity entity) => new(
         entity.Id,
         entity.TaxName,
-        null,
+        TaxConfigEntity.GenerateTaxCode(),
         entity.TaxRate,
         entity.Description,
         entity.IsActive,
         entity.EffectiveDate,
+        entity.CreatedBy,
+        entity.LastModifiedBy,
         entity.CreatedOnUtc,
         entity.LastModifiedOnUtc
     );

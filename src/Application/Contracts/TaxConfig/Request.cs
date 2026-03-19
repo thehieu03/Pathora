@@ -10,6 +10,8 @@ public sealed record TaxConfigResponse(
     string? Description,
     bool IsActive,
     DateTimeOffset EffectiveDate,
+    string? CreatedBy,
+    string? LastModifiedBy,
     DateTimeOffset CreatedOnUtc,
     DateTimeOffset? LastModifiedOnUtc
 );

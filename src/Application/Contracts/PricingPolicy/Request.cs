@@ -1,3 +1,4 @@
+using Domain.Entities.Translations;
 using Domain.Enums;
 using Domain.ValueObjects;
 
@@ -7,14 +8,16 @@ public sealed record CreatePricingPolicyRequest(
     string Name,
     TourType TourType,
     List<PricingPolicyTier> Tiers,
-    bool IsDefault = false
+    bool IsDefault = false,
+    Dictionary<string, PricingPolicyTranslationData>? Translations = null
 );
 
 public sealed record UpdatePricingPolicyRequest(
     Guid Id,
     string Name,
     TourType TourType,
-    List<PricingPolicyTier> Tiers
+    List<PricingPolicyTier> Tiers,
+    Dictionary<string, PricingPolicyTranslationData>? Translations = null
 );
 
 public sealed record PricingPolicyResponse(
@@ -27,6 +30,7 @@ public sealed record PricingPolicyResponse(
     string StatusName,
     bool IsDefault,
     List<PricingPolicyTier> Tiers,
+    Dictionary<string, PricingPolicyTranslationData> Translations,
     DateTimeOffset CreatedOnUtc,
     DateTimeOffset? LastModifiedOnUtc
 );

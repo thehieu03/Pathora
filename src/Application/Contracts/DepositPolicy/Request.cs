@@ -1,4 +1,5 @@
 using BuildingBlocks.CORS;
+using Domain.Entities.Translations;
 
 namespace Application.Contracts.DepositPolicy;
 
@@ -11,6 +12,7 @@ public sealed record DepositPolicyResponse(
     decimal DepositValue,
     int MinDaysBeforeDeparture,
     bool IsActive,
+    Dictionary<string, DepositPolicyTranslationData> Translations,
     DateTimeOffset CreatedOnUtc,
     DateTimeOffset? LastModifiedOnUtc
 );
@@ -19,7 +21,8 @@ public sealed record CreateDepositPolicyRequest(
     int TourScope,
     int DepositType,
     decimal DepositValue,
-    int MinDaysBeforeDeparture
+    int MinDaysBeforeDeparture,
+    Dictionary<string, DepositPolicyTranslationData>? Translations = null
 );
 
 public sealed record UpdateDepositPolicyRequest(
@@ -28,5 +31,6 @@ public sealed record UpdateDepositPolicyRequest(
     int DepositType,
     decimal DepositValue,
     int MinDaysBeforeDeparture,
-    bool IsActive
+    bool IsActive,
+    Dictionary<string, DepositPolicyTranslationData>? Translations = null
 );

@@ -44,7 +44,8 @@ public class DepositPolicyService(
             (DepositType)request.DepositType,
             request.DepositValue,
             request.MinDaysBeforeDeparture,
-            "system"
+            "system",
+            request.Translations
         );
 
         await _repository.AddAsync(policy);
@@ -68,6 +69,12 @@ public class DepositPolicyService(
             "system"
         );
         policy.SetActive(request.IsActive, "system");
+
+        // Update translations if provided
+        if (request.Translations != null)
+        {
+            policy.Translations = request.Translations;
+        }
 
         _repository.Update(policy);
         await _unitOfWork.SaveChangeAsync();
@@ -102,6 +109,7 @@ public class DepositPolicyService(
             entity.DepositValue,
             entity.MinDaysBeforeDeparture,
             entity.IsActive,
+            entity.Translations ?? [],
             entity.CreatedOnUtc,
             entity.LastModifiedOnUtc
         );

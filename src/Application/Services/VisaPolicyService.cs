@@ -48,7 +48,8 @@ public class VisaPolicyService(
             request.ProcessingDays,
             request.BufferDays,
             request.FullPaymentRequired,
-            "system"
+            "system",
+            request.Translations
         );
 
         await _repository.AddAsync(policy);
@@ -72,6 +73,12 @@ public class VisaPolicyService(
             "system"
         );
         policy.SetActive(request.IsActive, "system");
+
+        // Update translations if provided
+        if (request.Translations != null)
+        {
+            policy.Translations = request.Translations;
+        }
 
         _repository.Update(policy);
         await _unitOfWork.SaveChangeAsync();
@@ -100,6 +107,7 @@ public class VisaPolicyService(
         entity.FullPaymentRequired,
         entity.IsActive,
         entity.IsDeleted,
+        entity.Translations ?? [],
         entity.CreatedOnUtc,
         entity.LastModifiedOnUtc
     );

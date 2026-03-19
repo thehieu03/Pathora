@@ -40,12 +40,12 @@ public sealed class TourControllerTranslationTests
         var translationsJson = """
                                {
                                  "vi": {
-                                   "tourName": "Tour tiếng Việt",
+                                   "description": "Tour tiếng Việt",
                                    "shortDescription": "Mô tả vi",
                                    "longDescription": "Mô tả dài vi"
                                  },
                                  "en": {
-                                   "tourName": "English tour",
+                                   "description": "English tour",
                                    "shortDescription": "English short",
                                    "longDescription": "English long"
                                  }
@@ -81,7 +81,7 @@ public sealed class TourControllerTranslationTests
         var translationsJson = """
                                {
                                  "en": {
-                                   "tourName": "English updated",
+                                   "description": "English updated",
                                    "shortDescription": "English short updated",
                                    "longDescription": "English long updated"
                                  }

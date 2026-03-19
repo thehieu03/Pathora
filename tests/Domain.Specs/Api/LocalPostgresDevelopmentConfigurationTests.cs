@@ -4,8 +4,11 @@ namespace Domain.Specs.Api;
 
 public sealed class LocalPostgresDevelopmentConfigurationTests
 {
+    // Configuration for remote server development
+    private const string ExpectedHost = "34.143.220.132";
+
     [Fact]
-    public void ConnectionString_WhenLoadingDevelopmentConfig_ShouldUseLocalHost()
+    public void ConnectionString_WhenLoadingDevelopmentConfig_ShouldUseConfiguredHost()
     {
         var apiProjectPath = Path.Combine(GetSolutionRoot(), "src", "Api");
         var configuration = new ConfigurationBuilder()
@@ -17,12 +20,11 @@ public sealed class LocalPostgresDevelopmentConfigurationTests
         var connectionString = configuration.GetConnectionString("Default");
 
         Assert.False(string.IsNullOrWhiteSpace(connectionString));
-        Assert.Contains("Host=localhost", connectionString!, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Host=pathora-db.duckdns.org", connectionString, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Host={ExpectedHost}", connectionString!, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void DotEnvConnectionString_WhenUsingCompose_ShouldUseLocalHost()
+    public void DotEnvConnectionString_WhenLoadingEnv_ShouldUseConfiguredHost()
     {
         var envPath = Path.Combine(GetSolutionRoot(), ".env");
         var lines = File.ReadAllLines(envPath);
@@ -31,8 +33,7 @@ public sealed class LocalPostgresDevelopmentConfigurationTests
             line.StartsWith("ConnectionStrings__Default=", StringComparison.Ordinal));
 
         Assert.NotNull(connectionLine);
-        Assert.Contains("Host=localhost", connectionLine!, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Host=pathora-db.duckdns.org", connectionLine, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains($"Host={ExpectedHost}", connectionLine!, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

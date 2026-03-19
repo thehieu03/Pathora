@@ -41,9 +41,16 @@ public class PricingPolicyConfiguration : IEntityTypeConfiguration<PricingPolicy
         builder.Property(p => p.IsDeleted)
             .HasDefaultValue(false);
 
-        // Translations as JSONB
+        // Translations as JSONB with explicit conversion
         builder.Property(p => p.Translations)
-            .HasColumnType("jsonb");
+            .HasColumnType("jsonb")
+            .HasConversion(
+                value => JsonSerializer.Serialize(value, (JsonSerializerOptions?)null),
+                value => JsonSerializer.Deserialize<Dictionary<string, Domain.Entities.Translations.PricingPolicyTranslationData>>(value, (JsonSerializerOptions?)null) ?? new Dictionary<string, Domain.Entities.Translations.PricingPolicyTranslationData>(),
+                new ValueComparer<Dictionary<string, Domain.Entities.Translations.PricingPolicyTranslationData>>(
+                    (left, right) => JsonSerializer.Serialize(left) == JsonSerializer.Serialize(right),
+                    value => JsonSerializer.Serialize(value).GetHashCode(),
+                    value => JsonSerializer.Deserialize<Dictionary<string, Domain.Entities.Translations.PricingPolicyTranslationData>>(JsonSerializer.Serialize(value)) ?? new Dictionary<string, Domain.Entities.Translations.PricingPolicyTranslationData>()));
 
         // Tiers stored as JSON
         builder.Property(p => p.Tiers)
