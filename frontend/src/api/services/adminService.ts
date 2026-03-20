@@ -4,6 +4,18 @@ import type { ApiResponse } from "@/types/home";
 import type { AdminDashboard, AdminOverview } from "@/types/admin";
 import { extractResult } from "@/utils/apiResponse";
 
+export interface AdminBooking {
+  id: string | number;
+  customerName?: string;
+  customer?: string;
+  tourName?: string;
+  tour?: string;
+  departureDate?: string;
+  departure?: string;
+  amount?: number;
+  status: string;
+}
+
 export const adminService = {
   getOverview: async () => {
     const response = await api.get<ApiResponse<AdminOverview>>(
@@ -19,5 +31,11 @@ export const adminService = {
     );
 
     return extractResult<AdminDashboard>(response.data);
+  },
+
+  getBookings: async (): Promise<AdminBooking[]> => {
+    const response = await api.get(API_ENDPOINTS.BOOKING.GET_LIST);
+    const items = (response.data as { items?: AdminBooking[] }).items;
+    return Array.isArray(items) ? items : [];
   },
 };

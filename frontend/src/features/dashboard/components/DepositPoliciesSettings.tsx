@@ -1,12 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { depositPolicyService } from "@/api/services/depositPolicyService";
 import type { DepositPolicy } from "@/types/depositPolicy";
 import { DepositPolicyList } from "./DepositPolicyList";
 import { DepositPolicyForm } from "./DepositPolicyForm";
+import { Icon } from "@/components/ui";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
+};
 
 export function DepositPoliciesSettings() {
+  const { t } = useTranslation();
   const [view, setView] = useState<"list" | "form">("list");
   const [editingPolicy, setEditingPolicy] = useState<DepositPolicy | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -22,7 +39,7 @@ export function DepositPoliciesSettings() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this deposit policy?")) {
+    if (!confirm(t("depositPolicy.confirmDelete", "Are you sure you want to delete this deposit policy?"))) {
       return;
     }
 
@@ -30,7 +47,7 @@ export function DepositPoliciesSettings() {
     if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.error?.[0]?.message || "Failed to delete deposit policy");
+      alert(response.error?.[0]?.message || t("depositPolicy.deleteFailed", "Failed to delete deposit policy"));
     }
   };
 
@@ -48,7 +65,7 @@ export function DepositPoliciesSettings() {
     if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.error?.[0]?.message || "Failed to update deposit policy");
+      alert(response.error?.[0]?.message || t("depositPolicy.updateFailed", "Failed to update deposit policy"));
     }
   };
 
@@ -64,45 +81,79 @@ export function DepositPoliciesSettings() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Deposit Policies</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage deposit requirements for tours (percentage or fixed amount)
+    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8"
+      >
+        <motion.div variants={itemVariants} className="space-y-1">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center">
+              <Icon icon="heroicons:banknotes" className="w-5 h-5 text-amber-500" />
+            </div>
+            <h1 className="text-3xl lg:text-4xl font-bold text-stone-900 tracking-tight">
+              {t("depositPolicy.pageTitle", "Deposit Policies")}
+            </h1>
+          </div>
+          <p className="text-sm text-stone-500 max-w-xl pl-[3.5rem]">
+            {t("depositPolicy.pageSubtitle", "Manage deposit requirements for tours — percentage or fixed amount")}
           </p>
-        </div>
-        {view === "list" && (
-          <button
-            onClick={handleCreate}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            + Add Policy
-          </button>
-        )}
-      </div>
+        </motion.div>
 
-      {view === "list" ? (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <DepositPolicyList
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleActive={handleToggleActive}
-            refreshKey={refreshKey}
-          />
-        </div>
-      ) : (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
-            {editingPolicy ? "Edit Deposit Policy" : "Create Deposit Policy"}
-          </h2>
-          <DepositPolicyForm
-            policy={editingPolicy}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        </div>
-      )}
+        <AnimatePresence mode="wait">
+          {view === "list" && (
+            <motion.button
+              key="add-btn"
+              variants={itemVariants}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              onClick={handleCreate}
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-transparent rounded-2xl shadow-sm text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-2 focus:ring-amber-500/30 active:scale-[0.98] transition-all duration-200 whitespace-nowrap"
+            >
+              <Icon icon="heroicons:plus" className="w-4 h-4" />
+              {t("depositPolicy.addPolicy", "Add Policy")}
+            </motion.button>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      <AnimatePresence mode="wait">
+        {view === "list" ? (
+          <motion.div
+            key="list-view"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="bg-white rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 overflow-hidden"
+          >
+            <DepositPolicyList
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleActive={handleToggleActive}
+              refreshKey={refreshKey}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="form-view"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="bg-white rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 p-6 lg:p-8"
+          >
+            <DepositPolicyForm
+              policy={editingPolicy}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormCancel}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

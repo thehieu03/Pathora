@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Icon } from "@/components/ui";
+import { motion, AnimatePresence } from "framer-motion";
 import { DynamicPricingDto } from "@/types/tour";
+import { Plus, Trash, StarHalf } from "@phosphor-icons/react";
 
 interface PricingTierEditorProps {
   title: string;
@@ -102,120 +103,198 @@ export function PricingTierEditor({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6">
-      <div className="flex items-start justify-between gap-4 mb-4">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
+      className="rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 bg-white p-6 lg:p-8"
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-6">
         <div>
-          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-          {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+          <h3 className="text-lg font-bold text-stone-900 tracking-tight">{title}</h3>
+          {subtitle && (
+            <p className="text-sm text-stone-500 mt-0.5">{subtitle}</p>
+          )}
         </div>
-        <button
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.03, y: -1 }}
+          whileTap={{ scale: 0.97 }}
           onClick={addTier}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors">
-          <Icon icon="heroicons:plus" className="size-4" />
+          className="inline-flex items-center gap-2 px-4 py-2 bg-stone-100 hover:bg-amber-50 text-stone-600 hover:text-amber-600 text-sm font-semibold rounded-2xl border border-stone-200 hover:border-amber-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 shrink-0"
+        >
+          <Plus className="w-4 h-4" weight="bold" />
           Add tier
-        </button>
+        </motion.button>
       </div>
 
+      {/* Info message */}
       {infoMessage && (
-        <div className="mb-4 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 text-sm text-blue-700">
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-5 px-4 py-3 rounded-2xl border border-blue-200/60 bg-blue-50/50 text-sm text-blue-700 flex items-start gap-2.5"
+        >
+          <svg className="shrink-0 w-4 h-4 mt-0.5" viewBox="0 0 16 16" fill="none">
+            <path d="M8 7.25V11M8 4.25H8.01M14 8A6 6 0 1 1 2 8a6 6 0 0 1 12 0Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+          </svg>
           {infoMessage}
-        </div>
+        </motion.div>
       )}
 
+      {/* Tier list */}
       {tiers.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-slate-300 p-5 text-sm text-slate-500 text-center">
-          No pricing tiers configured.
+        <div className="rounded-3xl border-2 border-dashed border-stone-200 bg-stone-50/50 p-10 text-center">
+          <div className="w-12 h-12 rounded-3xl bg-stone-100 flex items-center justify-center mx-auto mb-3">
+            <StarHalf className="w-6 h-6 text-stone-400" weight="duotone" />
+          </div>
+          <p className="text-sm text-stone-500 font-medium">No pricing tiers configured</p>
+          <p className="text-xs text-stone-400 mt-1">Add a tier to define pricing by group size</p>
         </div>
       ) : (
         <div className="space-y-3">
-          {tiers.map((tier, index) => (
-            <div
-              key={`${tier.minParticipants}-${tier.maxParticipants}-${index}`}
-              className="grid grid-cols-12 gap-3 items-end rounded-lg border border-slate-200 p-3">
-              <label className="col-span-3">
-                <span className="text-xs font-semibold text-slate-500 uppercase">Min</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={tier.minParticipants}
-                  onChange={(event) =>
-                    updateTier(index, "minParticipants", Number(event.target.value || 0))
-                  }
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                />
-              </label>
+          <AnimatePresence>
+            {tiers.map((tier, index) => (
+              <motion.div
+                key={`${tier.minParticipants}-${tier.maxParticipants}-${index}`}
+                initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
+                className="rounded-3xl border border-stone-200/60 bg-stone-50/60 p-4 lg:p-5"
+              >
+                <div className="flex items-start gap-4">
+                  {/* Tier badge */}
+                  <div className="shrink-0 mt-1">
+                    <div className="w-8 h-8 rounded-2xl bg-amber-100 flex items-center justify-center">
+                      <span className="text-xs font-bold text-amber-700">{index + 1}</span>
+                    </div>
+                  </div>
 
-              <label className="col-span-3">
-                <span className="text-xs font-semibold text-slate-500 uppercase">Max</span>
-                <input
-                  type="number"
-                  min={1}
-                  value={tier.maxParticipants}
-                  onChange={(event) =>
-                    updateTier(index, "maxParticipants", Number(event.target.value || 0))
-                  }
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                />
-              </label>
+                  {/* Inputs */}
+                  <div className="flex-1 grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                        Min
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={tier.minParticipants}
+                        onChange={(event) =>
+                          updateTier(index, "minParticipants", Number(event.target.value || 0))
+                        }
+                        className="w-full px-3 py-2 border border-stone-200 rounded-2xl text-sm text-stone-700 font-mono focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
+                      />
+                    </div>
 
-              <label className="col-span-5">
-                <span className="text-xs font-semibold text-slate-500 uppercase">
-                  Price per person (VND)
-                </span>
-                <input
-                  type="number"
-                  min={0}
-                  value={tier.pricePerPerson}
-                  onChange={(event) =>
-                    updateTier(index, "pricePerPerson", Number(event.target.value || 0))
-                  }
-                  className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm"
-                />
-                <p className="text-xs text-slate-400 mt-1">
-                  Preview: {currencyFormatter.format(tier.pricePerPerson)} VND
-                </p>
-              </label>
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                        Max
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        value={tier.maxParticipants}
+                        onChange={(event) =>
+                          updateTier(index, "maxParticipants", Number(event.target.value || 0))
+                        }
+                        className="w-full px-3 py-2 border border-stone-200 rounded-2xl text-sm text-stone-700 font-mono focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
+                      />
+                    </div>
 
-              <button
-                type="button"
-                onClick={() => removeTier(index)}
-                className="col-span-1 mb-2 inline-flex justify-center text-red-500 hover:text-red-600"
-                aria-label="Remove pricing tier">
-                <Icon icon="heroicons:trash" className="size-5" />
-              </button>
-            </div>
-          ))}
+                    <div>
+                      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                        Price (VND)
+                      </label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={tier.pricePerPerson}
+                        onChange={(event) =>
+                          updateTier(index, "pricePerPerson", Number(event.target.value || 0))
+                        }
+                        className="w-full px-3 py-2 border border-stone-200 rounded-2xl text-sm text-stone-700 font-mono focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Preview + Delete */}
+                  <div className="flex items-start gap-2 shrink-0">
+                    <div className="hidden sm:block text-right pt-1">
+                      <p className="text-xs font-mono text-stone-500">
+                        {currencyFormatter.format(tier.pricePerPerson)}
+                      </p>
+                      <p className="text-xs text-stone-400">VND</p>
+                    </div>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => removeTier(index)}
+                      className="w-8 h-8 rounded-2xl flex items-center justify-center text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-red-500/20 mt-1"
+                      aria-label="Remove pricing tier"
+                    >
+                      <Trash className="w-4 h-4" weight="regular" />
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
 
+      {/* Validation error */}
       {validationError && (
-        <p className="text-sm text-red-600 mt-4">{validationError}</p>
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-sm text-red-600 mt-4 px-3 py-2 rounded-xl bg-red-50 border border-red-200/60"
+        >
+          {validationError}
+        </motion.p>
       )}
 
-      <div className="mt-5 flex items-center gap-3">
-        <button
+      {/* Action buttons */}
+      <div className="mt-6 flex items-center gap-3">
+        <motion.button
           type="button"
           onClick={onSave}
           disabled={saving || Boolean(validationError)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors">
-          {saving && <Icon icon="heroicons:arrow-path" className="size-4 animate-spin" />}
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-2xl shadow-[0_4px_16px_-4px_rgba(245,158,11,0.4)] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+        >
+          {saving && (
+            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+          )}
           {saveLabel}
-        </button>
+        </motion.button>
 
         {allowClear && onClear && (
-          <button
+          <motion.button
             type="button"
             onClick={onClear}
             disabled={clearing}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-slate-300 text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed text-sm font-semibold rounded-lg transition-colors">
-            {clearing && <Icon icon="heroicons:arrow-path" className="size-4 animate-spin" />}
+            whileHover={{ scale: 1.02, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-200 hover:border-stone-300 text-stone-600 hover:text-stone-800 hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold rounded-2xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-stone-500/20"
+          >
+            {clearing && (
+              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            )}
             {clearLabel}
-          </button>
+          </motion.button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
-
-

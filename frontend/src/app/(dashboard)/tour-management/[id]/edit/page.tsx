@@ -615,7 +615,7 @@ export default function EditTourPage() {
       <div className="flex items-center justify-center py-20">
         <Icon
           icon="heroicons:arrow-path"
-          className="size-8 animate-spin text-slate-400"
+          className="size-8 animate-spin text-stone-400"
         />
       </div>
     );
@@ -633,7 +633,7 @@ export default function EditTourPage() {
             <React.Fragment key={step.key}>
               {i > 0 && (
                 <div
-                  className={`h-px w-8 ${i <= currentStep ? "bg-slate-900 dark:bg-slate-400" : "bg-slate-200 dark:bg-slate-700"}`}
+                  className={`h-px w-8 ${i <= currentStep ? "bg-stone-900 dark:bg-stone-400" : "bg-stone-200 dark:bg-stone-700"}`}
                 />
               )}
               <Button
@@ -643,10 +643,10 @@ export default function EditTourPage() {
                 }}
                 className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                   i === currentStep
-                    ? "bg-slate-900 text-white dark:bg-slate-600"
+                    ? "bg-stone-900 text-white dark:bg-stone-600"
                     : i < currentStep
-                      ? "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300 hover:bg-slate-300"
-                      : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
+                      ? "bg-stone-200 text-stone-700 dark:bg-stone-700 dark:text-stone-300 hover:bg-stone-300"
+                      : "bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-500"
                 }`}>
                 <Icon icon={step.icon} className="size-4" />
                 <span className="hidden sm:inline">
@@ -671,7 +671,7 @@ export default function EditTourPage() {
                   activeLanguage={activeLang}
                   onChange={setActiveLang}
                 />
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-stone-400 mt-2">
                   {t(
                     "tourAdmin.langTabs.translationHint",
                     "Vietnamese is required. English translation is optional.",
@@ -850,10 +850,10 @@ export default function EditTourPage() {
             <Card title={t("tourAdmin.media", "Media")} className="mb-5">
               {existingThumbnail && (
                 <div className="mb-3">
-                  <p className="text-xs text-slate-500 mb-1">
+                  <p className="text-xs text-stone-500 mb-1">
                     {t("tourAdmin.currentThumbnail", "Current thumbnail")}
                   </p>
-                  <div className="h-24 w-full rounded-md overflow-hidden bg-slate-100">
+                  <div className="h-24 w-full rounded-md overflow-hidden bg-stone-100">
                     <img
                       src={existingThumbnail}
                       alt="Thumbnail"
@@ -863,19 +863,19 @@ export default function EditTourPage() {
                 </div>
               )}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-stone-600 dark:text-stone-300 mb-2">
                   {t("tourAdmin.newThumbnail", "New Thumbnail")}
                 </label>
                 <FileInput name="thumbnail" selectedFile={thumbnail} onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)} />
               </div>
               {existingImageCount > 0 && (
-                <p className="text-xs text-slate-500 mb-2">
+                <p className="text-xs text-stone-500 mb-2">
                   {t("tourAdmin.existingImages", "Existing images")}:{" "}
                   {existingImageCount}
                 </p>
               )}
               <div>
-                <label className="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-stone-600 dark:text-stone-300 mb-2">
                   {t("tourAdmin.newImages", "New Gallery Images")}
                 </label>
                 <FileInput name="images" multiple selectedFiles={images} onChange={(e) => setImages(Array.from(e.target.files ?? []))} />
@@ -902,7 +902,7 @@ export default function EditTourPage() {
             {classifications.map((cls, ci) => (
               <div
                 key={ci}
-                className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
+                className="border border-stone-200 dark:border-stone-700 rounded-lg p-4 relative">
                 {classifications.length > 1 && (
                   <Button
                     type="button"
@@ -911,7 +911,7 @@ export default function EditTourPage() {
                     <Icon icon="heroicons:x-mark" className="size-5" />
                   </Button>
                 )}
-                <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                <h5 className="text-sm font-semibold text-stone-700 dark:text-stone-300 mb-3">
                   {t("tourAdmin.classification", "Classification")} #{ci + 1}
                 </h5>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -1001,7 +1001,7 @@ export default function EditTourPage() {
                 </Button>
               }>
               {(dayPlans[ci] ?? []).length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-4">
+                <p className="text-sm text-stone-400 text-center py-4">
                   {t("tourAdmin.noDayPlans", "No day plans yet.")}
                 </p>
               ) : (
@@ -1009,7 +1009,7 @@ export default function EditTourPage() {
                   {(dayPlans[ci] ?? []).map((day, di) => (
                     <div
                       key={di}
-                      className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      className="border border-stone-200 dark:border-stone-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h6 className="text-sm font-semibold">
                           {t("tourAdmin.day", "Day")} {day.dayNumber}
@@ -1046,9 +1046,9 @@ export default function EditTourPage() {
                         />
                       </div>
                       {/* Activities */}
-                      <div className="ml-4 border-l-2 border-slate-200 dark:border-slate-700 pl-4">
+                      <div className="ml-4 border-l-2 border-stone-200 dark:border-stone-700 pl-4">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+                          <span className="text-xs font-medium text-stone-500 uppercase tracking-wide">
                             {t("tourAdmin.activities", "Activities")}
                           </span>
                           <Button
@@ -1060,14 +1060,14 @@ export default function EditTourPage() {
                           </Button>
                         </div>
                         {day.activities.length === 0 && (
-                          <p className="text-xs text-slate-400 py-2">
+                          <p className="text-xs text-stone-400 py-2">
                             {t("tourAdmin.noActivities", "No activities")}
                           </p>
                         )}
                         {day.activities.map((act, ai) => (
                           <div
                             key={ai}
-                            className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 mb-2 relative">
+                            className="bg-stone-50 dark:bg-stone-900 rounded-lg p-3 mb-2 relative">
                             <Button
                               type="button"
                               className="absolute top-2 right-2 text-danger-500"
@@ -1210,7 +1210,7 @@ export default function EditTourPage() {
                 </Button>
               }>
               {(insurances[ci] ?? []).length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-4">
+                <p className="text-sm text-stone-400 text-center py-4">
                   {t("tourAdmin.noInsurance", "No insurance options.")}
                 </p>
               ) : (
@@ -1218,7 +1218,7 @@ export default function EditTourPage() {
                   {(insurances[ci] ?? []).map((ins, ii) => (
                     <div
                       key={ii}
-                      className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 relative">
+                      className="border border-stone-200 dark:border-stone-700 rounded-lg p-4 relative">
                       <Button
                         type="button"
                         className="absolute top-3 right-3 text-danger-500"
@@ -1311,7 +1311,7 @@ export default function EditTourPage() {
                             )
                           }
                         />
-                        <label className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300 self-end pb-2">
+                        <label className="flex items-center gap-1.5 text-sm text-stone-600 dark:text-stone-300 self-end pb-2">
                           <input
                             type="checkbox"
                             checked={ins.isOptional}
@@ -1323,7 +1323,7 @@ export default function EditTourPage() {
                                 e.target.checked,
                               )
                             }
-                            className="rounded border-slate-300"
+                            className="rounded border-stone-300"
                           />
                           {t("tourAdmin.optional", "Optional")}
                         </label>

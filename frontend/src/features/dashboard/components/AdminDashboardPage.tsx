@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { motion, useInView } from "framer-motion";
 import type { ApexOptions } from "apexcharts";
 import { useTranslation } from "react-i18next";
 
@@ -18,211 +19,263 @@ import type {
 } from "@/types/admin";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 
-// Design tokens from globals.css --primary, --success, --warning, --info, --destructive
-const COLORS = {
-  primary: "#2563eb",
-  secondary: "#6366f1",
-  success: "#10b981",
-  warning: "#f59e0b",
-  danger: "#ef4444",
-  info: "#0ea5e9",
-  purple: "#8b5cf6",
-  slate: "#64748b",
-};
+// ─── Design Tokens ───────────────────────────────────────────────
+// Soft-skill accent — warm amber, desaturated
+const ACCENT = "#C9873A";
 
-const CHART_COLORS = [
-  COLORS.primary,
-  COLORS.secondary,
-  COLORS.success,
-  COLORS.warning,
-  COLORS.info,
-  COLORS.purple,
-  COLORS.slate,
-];
-
-const NAV_ITEMS = [
-  { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
-  { label: "Tours", icon: "heroicons:globe-alt", href: "/tour-management" },
-  { label: "Tour Instances", icon: "heroicons:calendar-days", href: "/tour-instances" },
-  {
-    label: "Tour Requests",
-    icon: "heroicons:clipboard-document-list",
-    href: "/dashboard/tour-requests",
-  },
-  {
-    label: "Bookings",
-    icon: "heroicons:ticket",
-    href: "/dashboard/bookings",
-  },
-  { label: "Payments", icon: "heroicons:credit-card", href: "/dashboard/payments" },
-  { label: "Customers", icon: "heroicons:user-group", href: "/dashboard/customers" },
-  { label: "Insurance", icon: "heroicons:shield-check", href: "/dashboard/insurance" },
-  { label: "Visa Applications", icon: "heroicons:document-check", href: "/dashboard/visa" },
-  { label: "Policies", icon: "heroicons:clipboard-document-list", href: "/dashboard/policies" },
-  { label: "Site Content", icon: "heroicons:document-text", href: "/dashboard/site-content" },
-  { label: "Settings", icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },
-];
+// Spring physics — taste-skill perpetual motion
+const SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
+const EASE_BENTO = [0.32, 0.72, 0, 1] as [number, number, number, number];
 
 const QUICK_ACTIONS = [
-  { label: "Create Tour", icon: "heroicons:plus", href: "/tour-management/create" },
-  { label: "Schedule Tour", icon: "heroicons:calendar", href: "/tour-instances/create" },
-  {
-    label: "View Bookings",
-    icon: "heroicons:eye",
-    href: "/dashboard/bookings",
-  },
-  { label: "Edit Site Content", icon: "heroicons:document-text", href: "/dashboard/site-content" },
-  { label: "Manage Visa", icon: "heroicons:shield-check", href: "/dashboard/visa" },
+  { labelKey: "adminDashboard.quickActionCreateTour",   icon: "heroicons:plus",           href: "/tour-management/create" },
+  { labelKey: "adminDashboard.quickActionScheduleTour",  icon: "heroicons:calendar",        href: "/tour-instances/create" },
+  { labelKey: "adminDashboard.quickActionViewBookings", icon: "heroicons:eye",             href: "/dashboard/bookings" },
+  { labelKey: "adminDashboard.quickActionEditSiteContent", icon: "heroicons:document-text", href: "/dashboard/site-content" },
+  { labelKey: "adminDashboard.quickActionManageVisa",  icon: "heroicons:shield-check",    href: "/dashboard/visa" },
 ];
 
 type SeverityStyle = {
-  icon: string;
-  textClass: string;
-  bgClass: string;
+  icon: string; textColor: string; bgColor: string; borderColor: string;
 };
 
 const SEVERITY_STYLES: Record<string, SeverityStyle> = {
-  info: {
-    icon: "heroicons:information-circle",
-    textClass: "text-blue-700",
-    bgClass: "bg-blue-50 border-blue-200",
-  },
-  warning: {
-    icon: "heroicons:exclamation-triangle",
-    textClass: "text-amber-700",
-    bgClass: "bg-amber-50 border-amber-200",
-  },
-  danger: {
-    icon: "heroicons:exclamation-circle",
-    textClass: "text-red-700",
-    bgClass: "bg-red-50 border-red-200",
-  },
-  success: {
-    icon: "heroicons:check-circle",
-    textClass: "text-green-700",
-    bgClass: "bg-green-50 border-green-200",
-  },
+  info:    { icon: "heroicons:information-circle",   textColor: "var(--info)",    bgColor: "var(--info-muted)",    borderColor: "var(--info-border)" },
+  warning: { icon: "heroicons:exclamation-triangle", textColor: "var(--warning)", bgColor: "var(--warning-muted)", borderColor: "var(--warning-border)" },
+  danger:  { icon: "heroicons:exclamation-circle",   textColor: "var(--danger)", bgColor: "var(--danger-muted)",  borderColor: "var(--danger-border)" },
+  success: { icon: "heroicons:check-circle",         textColor: "var(--success)", bgColor: "var(--success-muted)", borderColor: "var(--success-border)" },
 };
 
 function normalizeCategoryData(items: AdminDashboardCategoryMetric[]): AdminDashboardCategoryMetric[] {
-  if (items.length > 0) {
-    return items;
-  }
-
-  return [{ label: "No Data", value: 0 }];
+  return items.length > 0 ? items : [{ label: "adminDashboard.noDataChart", value: 0 }];
 }
-
 function normalizePointData(items: AdminDashboardMetricPoint[]): AdminDashboardMetricPoint[] {
-  if (items.length > 0) {
-    return items;
-  }
-
-  return [{ label: "No Data", value: 0 }];
+  return items.length > 0 ? items : [{ label: "adminDashboard.noDataChart", value: 0 }];
 }
-
-function createLineOptions(categories: string[], yFormatter: (value: number) => string): ApexOptions {
-  return {
-    chart: { type: "line", toolbar: { show: false }, fontFamily: "inherit" },
-    stroke: { curve: "smooth", width: 3 },
-    colors: [COLORS.primary],
-    xaxis: {
-      categories,
-      labels: { style: { colors: "#94a3b8", fontSize: "12px" } },
-      axisBorder: { show: false },
-      axisTicks: { show: false },
-    },
-    yaxis: {
-      labels: {
-        formatter: yFormatter,
-        style: { colors: "#94a3b8", fontSize: "12px" },
-      },
-    },
-    grid: { borderColor: "#e2e8f0", strokeDashArray: 4 },
-    markers: {
-      size: 4,
-      colors: [COLORS.primary],
-      strokeWidth: 2,
-      strokeColors: "#fff",
-    },
-    tooltip: { y: { formatter: yFormatter } },
-  };
-}
-
-function createAreaOptions(categories: string[]): ApexOptions {
-  return {
-    chart: { type: "area", toolbar: { show: false }, fontFamily: "inherit" },
-    stroke: { curve: "smooth", width: 2 },
-    colors: [COLORS.secondary],
-    fill: {
-      type: "gradient",
-      gradient: { opacityFrom: 0.35, opacityTo: 0.05, stops: [0, 100] },
-    },
-    xaxis: {
-      categories,
-      labels: { style: { colors: "#94a3b8", fontSize: "12px" } },
-      axisBorder: { show: false },
-      axisTicks: { show: false },
-    },
-    yaxis: {
-      labels: { style: { colors: "#94a3b8", fontSize: "12px" } },
-    },
-    grid: { borderColor: "#e2e8f0", strokeDashArray: 4 },
-    tooltip: { shared: true },
-    legend: { show: false },
-  };
-}
-
-function createBarOptions(categories: string[], color: string): ApexOptions {
-  return {
-    chart: { type: "bar", toolbar: { show: false }, fontFamily: "inherit" },
-    colors: [color],
-    plotOptions: {
-      bar: { borderRadius: 4, columnWidth: "60%" },
-    },
-    xaxis: {
-      categories,
-      labels: { style: { colors: "#94a3b8", fontSize: "12px" } },
-      axisBorder: { show: false },
-      axisTicks: { show: false },
-    },
-    yaxis: {
-      labels: { style: { colors: "#94a3b8", fontSize: "12px" } },
-    },
-    grid: { borderColor: "#e2e8f0", strokeDashArray: 4 },
-    dataLabels: { enabled: false },
-  };
-}
-
-function createDonutOptions(labels: string[], colors: string[]): ApexOptions {
-  return {
-    chart: { type: "donut", fontFamily: "inherit" },
-    colors,
-    labels,
-    legend: { show: false },
-    dataLabels: { enabled: false },
-    plotOptions: { pie: { donut: { size: "65%" } } },
-    stroke: { width: 2, colors: ["#fff"] },
-  };
-}
-
 function formatMoney(value: number): string {
   return `$${Math.round(value).toLocaleString()}`;
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// TASTE-SKILL: Perpetual Motion Components (isolated, memoized)
+// ═══════════════════════════════════════════════════════════════════
 
-function MetricLegend({ items }: { items: AdminDashboardCategoryMetric[] }) {
+// 1. Breathing status dot — infinite pulse on live indicators
+const BreathingDot = React.memo(function BreathingDot({ color }: { color: string }) {
   return (
-    <div className="space-y-2">
+    <span className="relative inline-flex shrink-0">
+      <motion.span
+        className="absolute inset-0 rounded-full"
+        style={{ backgroundColor: color, opacity: 0.4 }}
+        animate={{ scale: [1, 1.8, 1], opacity: [0.4, 0, 0.4] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <span className="relative w-2.5 h-2.5 rounded-full block" style={{ backgroundColor: color }} />
+    </span>
+  );
+});
+
+// 2. Shimmer skeleton — replaces generic spinner
+const ShimmerSkeleton = React.memo(function ShimmerSkeleton({ height = 200 }: { height?: number }) {
+  return (
+    <div
+      className="w-full rounded-xl overflow-hidden"
+      style={{ height }}
+    >
+      <motion.div
+        className="w-full h-full"
+        style={{
+          background: "linear-gradient(90deg, var(--surface-raised) 25%, var(--surface) 50%, var(--surface-raised) 75%)",
+          backgroundSize: "200% 100%",
+        }}
+        animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: "linear" }}
+      />
+    </div>
+  );
+});
+
+// 3. Float animation — gentle continuous float on key icons
+const FloatIcon = React.memo(function FloatIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      animate={{ y: [0, -3, 0] }}
+      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+});
+
+// 4. Spring table row — spring physics on hover
+const SpringTableRow = React.memo(function SpringTableRow({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) {
+  return (
+    <motion.tr
+      className="border-t cursor-default"
+      style={{ borderColor: "var(--border-subtle)" }}
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ ...SPRING, delay: delay * 0.04 }}
+      whileHover={{ x: 3 }}
+    >
+      {children}
+    </motion.tr>
+  );
+});
+
+// 5. Card float-on-hover — subtle lift with spring physics
+const SpringCard = React.memo(function SpringCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      whileHover={{ y: -3, boxShadow: "var(--shadow-card-hover)" }}
+      transition={SPRING}
+    >
+      {children}
+    </motion.div>
+  );
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// SOFT-SKILL: Double-Bezel Shell
+// ═══════════════════════════════════════════════════════════════════
+
+// Bento 2.0 — very large radius per taste-skill + diffusion shadow
+function CardShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div
+      className={`relative rounded-[1.5rem] ${className}`}
+      style={{
+        background: "linear-gradient(145deg, rgba(0,0,0,0.025) 0%, rgba(0,0,0,0.008) 100%)",
+        boxShadow: "0 20px 50px -12px rgba(0,0,0,0.055), 0 4px 12px rgba(0,0,0,0.03)",
+      }}
+    >
+      {/* Outer hairline ring */}
+      <div
+        className="absolute inset-0 rounded-[1.5rem] pointer-events-none"
+        style={{ border: "1px solid rgba(0,0,0,0.04)" }}
+      />
+      {/* Inner core */}
+      <div
+        className="relative rounded-[1.25rem] bg-[var(--surface)] h-full overflow-hidden"
+        style={{ boxShadow: "var(--shadow-card-inner)" }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Eyebrow tag — pill micro-badge above section headers
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-block text-[9px] font-semibold uppercase tracking-[0.2em] px-2.5 py-1 rounded-full mb-3"
+      style={{ color: ACCENT, backgroundColor: `${ACCENT}10`, border: `1px solid ${ACCENT}18` }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Scroll-driven reveal — blur-fade with stagger
+function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px 0px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, filter: "blur(6px)", y: 16 }}
+      animate={isInView ? { opacity: 1, filter: "blur(0px)", y: 0 } : {}}
+      transition={{ duration: 0.7, ease: EASE_BENTO, delay: delay * 0.07 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CHART FACTORIES
+// ═══════════════════════════════════════════════════════════════════
+
+function createLineOptions(categories: string[], yFormatter: (v: number) => string): ApexOptions {
+  return {
+    chart: { type: "line", toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
+    stroke: { curve: "smooth", width: 2.5 },
+    colors: [ACCENT],
+    xaxis: { categories, labels: { style: { colors: "#A8A29E", fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { formatter: yFormatter, style: { colors: "#A8A29E", fontSize: "12px" } } },
+    grid: { borderColor: "#F0F0EE", strokeDashArray: 5 },
+    markers: { size: 4, colors: [ACCENT], strokeWidth: 2, strokeColors: "#FFFFFF" },
+    tooltip: { y: { formatter: yFormatter } },
+    theme: { mode: "light" },
+  };
+}
+function createAreaOptions(categories: string[]): ApexOptions {
+  return {
+    chart: { type: "area", toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
+    stroke: { curve: "smooth", width: 2 },
+    colors: [ACCENT],
+    fill: { type: "gradient", gradient: { opacityFrom: 0.1, opacityTo: 0.008, stops: [0, 100] } },
+    xaxis: { categories, labels: { style: { colors: "#A8A29E", fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { style: { colors: "#A8A29E", fontSize: "12px" } } },
+    grid: { borderColor: "#F0F0EE", strokeDashArray: 5 },
+    tooltip: { shared: true }, legend: { show: false },
+    theme: { mode: "light" },
+  };
+}
+function createBarOptions(categories: string[], color: string): ApexOptions {
+  return {
+    chart: { type: "bar", toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
+    colors: [color],
+    plotOptions: { bar: { borderRadius: 8, columnWidth: "50%" } },
+    xaxis: { categories, labels: { style: { colors: "#A8A29E", fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { style: { colors: "#A8A29E", fontSize: "12px" } } },
+    grid: { borderColor: "#F0F0EE", strokeDashArray: 5 },
+    dataLabels: { enabled: false },
+    theme: { mode: "light" },
+  };
+}
+function createDonutOptions(labels: string[], colors: string[]): ApexOptions {
+  return {
+    chart: { type: "donut", fontFamily: "inherit", background: "transparent" },
+    colors, labels, legend: { show: false }, dataLabels: { enabled: false },
+    plotOptions: { pie: { donut: { size: "68%" } } },
+    stroke: { width: 2, colors: ["#FFFFFF"] },
+    theme: { mode: "light" },
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SHARED COMPONENTS
+// ═══════════════════════════════════════════════════════════════════
+
+function MetricLegend({ items, colors }: { items: AdminDashboardCategoryMetric[]; colors: string[] }) {
+  return (
+    <div className="space-y-2.5">
       {items.map((item, index) => (
         <div key={`${item.label}-${index}`} className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
-            <span
-              className="w-3 h-3 rounded-full shrink-0"
-              style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}
-            />
-            <span className="text-slate-600">{item.label}</span>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: colors[index % colors.length] }} />
+            <span style={{ color: "var(--text-secondary)" }}>{item.label}</span>
           </div>
-          <span className="font-medium text-slate-700">{Math.round(item.value).toLocaleString()}</span>
+          <span className="font-medium data-value" style={{ color: "var(--text-primary)" }}>
+            {Math.round(item.value).toLocaleString()}
+          </span>
         </div>
       ))}
     </div>
@@ -230,20 +283,18 @@ function MetricLegend({ items }: { items: AdminDashboardCategoryMetric[] }) {
 }
 
 function VisaStatusBadge({ status }: { status: AdminDashboardVisaStatus }) {
-  const normalized = status.label.toLowerCase();
-  const style =
-    normalized === "approved"
-      ? "bg-green-100 text-green-700"
-      : normalized === "rejected"
-        ? "bg-red-100 text-red-700"
-        : normalized === "under review"
-          ? "bg-blue-100 text-blue-700"
-          : "bg-amber-100 text-amber-700";
+  const n = status.label.toLowerCase();
+  const isA = n === "approved", isR = n === "rejected", isV = n === "under review";
+  const bg = isA ? "var(--success-muted)" : isR ? "var(--danger-muted)" : isV ? "var(--info-muted)" : "var(--warning-muted)";
+  const text = isA ? "var(--success)" : isR ? "var(--danger)" : isV ? "var(--info)" : "var(--warning)";
+  const border = isA ? "var(--success-border)" : isR ? "var(--danger-border)" : isV ? "var(--info-border)" : "var(--warning-border)";
 
   return (
-    <div className="bg-slate-50 rounded-lg p-4 text-center">
-      <p className="text-2xl font-bold text-slate-900">{status.count.toLocaleString()}</p>
-      <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${style}`}>
+    <div className="rounded-2xl p-4 text-center border" style={{ backgroundColor: bg, borderColor: border }}>
+      <p className="text-2xl font-bold tracking-tight data-value" style={{ color: "var(--text-primary)" }}>
+        {status.count.toLocaleString()}
+      </p>
+      <span className="inline-block mt-2 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ color: text, backgroundColor: "rgba(255,255,255,0.55)" }}>
         {status.label}
       </span>
     </div>
@@ -251,15 +302,145 @@ function VisaStatusBadge({ status }: { status: AdminDashboardVisaStatus }) {
 }
 
 function AlertItem({ alert }: { alert: AdminDashboardAlert }) {
-  const style = SEVERITY_STYLES[alert.severity.toLowerCase()] ?? SEVERITY_STYLES.info;
-
+  const s = SEVERITY_STYLES[alert.severity.toLowerCase()] ?? SEVERITY_STYLES.info;
   return (
-    <div className={`flex items-center gap-3 p-3 rounded-lg border ${style.bgClass}`}>
-      <Icon icon={style.icon} className={`size-5 shrink-0 ${style.textClass}`} />
-      <p className={`text-sm ${style.textClass}`}>{alert.text}</p>
-    </div>
+    <motion.div
+      className="flex items-center gap-3 p-3.5 rounded-2xl border"
+      style={{ backgroundColor: s.bgColor, borderColor: s.borderColor }}
+      initial={{ opacity: 0, x: -6 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={SPRING}
+    >
+      <Icon icon={s.icon} className="size-4 shrink-0" style={{ color: s.textColor }} />
+      <p className="text-sm" style={{ color: s.textColor }}>{alert.text}</p>
+    </motion.div>
   );
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// BENTO 2.0: Stat Card (gallery-style, label outside)
+// ═══════════════════════════════════════════════════════════════════
+
+interface StatCardProps {
+  labelKey: string; value: string; icon: string; accent: string;
+  eyebrow?: string; subtext?: string; delay?: number;
+}
+
+function StatCard({ labelKey, value, icon, accent, eyebrow, subtext, delay = 0 }: StatCardProps) {
+  return (
+    <Reveal delay={delay}>
+      <SpringCard className="h-full">
+        <CardShell className="p-[1px] h-full">
+          <Card bodyClass="p-7 h-full border-0 shadow-none" className="border-0 shadow-none">
+            <div className="flex items-start justify-between mb-5">
+              <div className="flex-1 min-w-0">
+                {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+                {/* Bento 2.0: label BELOW the card — gallery style */}
+                <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>{labelKey}</p>
+              </div>
+              <motion.div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ml-3"
+                style={{ backgroundColor: `${accent}12` }}
+                whileHover={{ scale: 1.08 }}
+                transition={SPRING}
+              >
+                <Icon icon={icon} className="size-5" style={{ color: accent }} />
+              </motion.div>
+            </div>
+            <p className="text-[2rem] font-bold tracking-tight data-value leading-none" style={{ color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+              {value}
+            </p>
+            {subtext && <p className="text-xs mt-3" style={{ color: "var(--text-muted)" }}>{subtext}</p>}
+          </Card>
+        </CardShell>
+      </SpringCard>
+    </Reveal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CHART CARD (gallery-style label)
+// ═══════════════════════════════════════════════════════════════════
+
+interface ChartCardProps {
+  title: string; eyebrow?: string; period?: string;
+  children: React.ReactNode; delay?: number; className?: string;
+}
+
+function ChartCard({ title, eyebrow, period, children, delay = 0, className = "" }: ChartCardProps) {
+  return (
+    <Reveal delay={delay}>
+      <SpringCard className={className}>
+        <CardShell className={`p-[1px] ${className}`}>
+          <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex-1 min-w-0">
+                {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
+                {/* Bento 2.0: title BELOW the eyebrow, above chart */}
+                <h3 className="text-sm font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>{title}</h3>
+              </div>
+              {period && (
+                <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0 ml-3" style={{ color: "var(--text-muted)", backgroundColor: "var(--surface-raised)" }}>
+                  {period}
+                </span>
+              )}
+            </div>
+            {children}
+          </Card>
+        </CardShell>
+      </SpringCard>
+    </Reveal>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// QUICK ACTION (spring physics + magnetic hover)
+// ═══════════════════════════════════════════════════════════════════
+
+function QuickActionLink({ icon, labelKey, href }: { icon: string; labelKey: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center gap-3 py-3.5 px-4 rounded-2xl border transition-all duration-700"
+      style={{
+        borderColor: "var(--border)",
+        color: "var(--text-secondary)",
+        backgroundColor: "var(--surface)",
+        transform: "translateX(0)",
+        transitionProperty: "border-color, background-color, transform, box-shadow",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.borderColor = `${ACCENT}35`;
+        el.style.backgroundColor = `${ACCENT}05`;
+        el.style.transform = "translateX(3px)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.borderColor = "var(--border)";
+        el.style.backgroundColor = "var(--surface)";
+        el.style.transform = "translateX(0)";
+      }}
+    >
+      <span
+        className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-700 group-hover:scale-105"
+        style={{ backgroundColor: "var(--surface-raised)" }}
+      >
+        <Icon icon={icon} className="size-4" style={{ color: "var(--text-muted)" }} />
+      </span>
+      <span className="text-xs font-medium leading-tight">{labelKey}</span>
+      <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ color: "var(--text-muted)" }}>
+          <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </span>
+    </Link>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MAIN PAGE
+// ═══════════════════════════════════════════════════════════════════
 
 export function AdminDashboardPage() {
   const { t } = useTranslation();
@@ -271,462 +452,407 @@ export function AdminDashboardPage() {
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
     setErrorMessage(null);
-
     try {
       const result = await adminService.getDashboard();
       setDashboard(result);
     } catch {
       setDashboard(null);
-      setErrorMessage("Unable to load dashboard data from backend. Please try again.");
+      setErrorMessage("error");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  useEffect(() => {
-    void loadDashboard();
-  }, [loadDashboard]);
+  useEffect(() => { void loadDashboard(); }, [loadDashboard]);
 
-  const revenueOverTime = normalizePointData(dashboard?.revenueOverTime ?? []);
-  const revenueByTourType = normalizeCategoryData(dashboard?.revenueByTourType ?? []);
-  const revenueByRegion = normalizeCategoryData(dashboard?.revenueByRegion ?? []);
-  const bookingStatusDistribution = normalizeCategoryData(dashboard?.bookingStatusDistribution ?? []);
-  const bookingTrend = normalizePointData(dashboard?.bookingTrend ?? []);
-  const topDestinations = normalizeCategoryData(dashboard?.topDestinations ?? []);
-  const customerGrowth = normalizePointData(dashboard?.customerGrowth ?? []);
+  const revenueOverTime       = normalizePointData(dashboard?.revenueOverTime ?? []);
+  const revenueByTourType    = normalizeCategoryData(dashboard?.revenueByTourType ?? []);
+  const revenueByRegion      = normalizeCategoryData(dashboard?.revenueByRegion ?? []);
+  const bookingStatusDist    = normalizeCategoryData(dashboard?.bookingStatusDistribution ?? []);
+  const bookingTrend         = normalizePointData(dashboard?.bookingTrend ?? []);
+  const topDestinations      = normalizeCategoryData(dashboard?.topDestinations ?? []);
+  const customerGrowth       = normalizePointData(dashboard?.customerGrowth ?? []);
   const customerNationalities = normalizeCategoryData(dashboard?.customerNationalities ?? []);
 
-  const revenueOverTimeOptions = useMemo(
-    () => createLineOptions(revenueOverTime.map((item) => item.label), (value) => formatMoney(value)),
-    [revenueOverTime],
-  );
+  const chartPalette = useMemo(() => [ACCENT, "#346538", "#9F2F2D", "#1F6C9F", "#78716C", "#956400"], []);
 
-  const revenueOverTimeSeries = useMemo(
-    () => [{ name: "Revenue", data: revenueOverTime.map((item) => Number(item.value)) }],
-    [revenueOverTime],
-  );
+  // Memoized chart options
+  const revenueOverTimeOptions   = useMemo(() => createLineOptions(revenueOverTime.map(i => i.label), formatMoney), [revenueOverTime]);
+  const revenueOverTimeSeries    = useMemo(() => [{ name: "Revenue", data: revenueOverTime.map(i => Number(i.value)) }], [revenueOverTime]);
+  const revenueByTourTypeOptions  = useMemo(() => createDonutOptions(revenueByTourType.map(i => i.label), chartPalette), [revenueByTourType, chartPalette]);
+  const revenueByTourTypeSeries   = useMemo(() => revenueByTourType.map(i => Number(i.value)), [revenueByTourType]);
+  const revenueByRegionOptions    = useMemo(() => createDonutOptions(revenueByRegion.map(i => i.label), chartPalette), [revenueByRegion, chartPalette]);
+  const revenueByRegionSeries     = useMemo(() => revenueByRegion.map(i => Number(i.value)), [revenueByRegion]);
+  const bookingStatusOptions      = useMemo(() => createDonutOptions(bookingStatusDist.map(i => i.label), chartPalette), [bookingStatusDist, chartPalette]);
+  const bookingStatusSeries       = useMemo(() => bookingStatusDist.map(i => Number(i.value)), [bookingStatusDist]);
+  const bookingTrendOptions       = useMemo(() => createAreaOptions(bookingTrend.map(i => i.label)), [bookingTrend]);
+  const bookingTrendSeries        = useMemo(() => [{ name: "Bookings", data: bookingTrend.map(i => Number(i.value)) }], [bookingTrend]);
+  const topDestinationsOptions    = useMemo(() => createBarOptions(topDestinations.map(i => i.label), ACCENT), [topDestinations]);
+  const topDestinationsSeries     = useMemo(() => [{ name: "Bookings", data: topDestinations.map(i => Number(i.value)) }], [topDestinations]);
+  const customerGrowthOptions     = useMemo(() => createBarOptions(customerGrowth.map(i => i.label), "#346538"), [customerGrowth]);
+  const customerGrowthSeries      = useMemo(() => [{ name: "New Customers", data: customerGrowth.map(i => Number(i.value)) }], [customerGrowth]);
 
-  const revenueByTourTypeOptions = useMemo(
-    () =>
-      createDonutOptions(
-        revenueByTourType.map((item) => item.label),
-        CHART_COLORS,
-      ),
-    [revenueByTourType],
-  );
-
-  const revenueByTourTypeSeries = useMemo(
-    () => revenueByTourType.map((item) => Number(item.value)),
-    [revenueByTourType],
-  );
-
-  const revenueByRegionOptions = useMemo(
-    () =>
-      createDonutOptions(
-        revenueByRegion.map((item) => item.label),
-        CHART_COLORS,
-      ),
-    [revenueByRegion],
-  );
-
-  const revenueByRegionSeries = useMemo(
-    () => revenueByRegion.map((item) => Number(item.value)),
-    [revenueByRegion],
-  );
-
-  const bookingStatusOptions = useMemo(
-    () =>
-      createDonutOptions(
-        bookingStatusDistribution.map((item) => item.label),
-        CHART_COLORS,
-      ),
-    [bookingStatusDistribution],
-  );
-
-  const bookingStatusSeries = useMemo(
-    () => bookingStatusDistribution.map((item) => Number(item.value)),
-    [bookingStatusDistribution],
-  );
-
-  const bookingTrendOptions = useMemo(
-    () => createAreaOptions(bookingTrend.map((item) => item.label)),
-    [bookingTrend],
-  );
-
-  const bookingTrendSeries = useMemo(
-    () => [{ name: "Bookings", data: bookingTrend.map((item) => Number(item.value)) }],
-    [bookingTrend],
-  );
-
-  const topDestinationsOptions = useMemo(
-    () => createBarOptions(topDestinations.map((item) => item.label), COLORS.primary),
-    [topDestinations],
-  );
-
-  const topDestinationsSeries = useMemo(
-    () => [{ name: "Bookings", data: topDestinations.map((item) => Number(item.value)) }],
-    [topDestinations],
-  );
-
-  const customerGrowthOptions = useMemo(
-    () => createBarOptions(customerGrowth.map((item) => item.label), COLORS.secondary),
-    [customerGrowth],
-  );
-
-  const customerGrowthSeries = useMemo(
-    () => [{ name: "New Customers", data: customerGrowth.map((item) => Number(item.value)) }],
-    [customerGrowth],
-  );
-
-  const statCards = useMemo(
-    () => [
-      {
-        label: "Total Revenue",
-        value: formatMoney(dashboard?.stats.totalRevenue ?? 0),
-        icon: "heroicons:banknotes",
-        iconBg: "bg-green-100",
-        iconColor: "text-green-600",
-      },
-      {
-        label: "Total Bookings",
-        value: (dashboard?.stats.totalBookings ?? 0).toLocaleString(),
-        icon: "heroicons:clipboard-document-list",
-        iconBg: "bg-blue-100",
-        iconColor: "text-blue-600",
-      },
-      {
-        label: "Active Tours",
-        value: (dashboard?.stats.activeTours ?? 0).toLocaleString(),
-        icon: "heroicons:globe-alt",
-        iconBg: "bg-orange-100",
-        iconColor: "text-orange-600",
-      },
-      {
-        label: "Total Customers",
-        value: (dashboard?.stats.totalCustomers ?? 0).toLocaleString(),
-        icon: "heroicons:user-group",
-        iconBg: "bg-purple-100",
-        iconColor: "text-purple-600",
-      },
-      {
-        label: "Cancellation Rate",
-        value: `${(dashboard?.stats.cancellationRate ?? 0).toFixed(1)}%`,
-        icon: "heroicons:x-circle",
-        iconBg: "bg-red-100",
-        iconColor: "text-red-600",
-      },
-      {
-        label: "Visa Approval",
-        value: `${(dashboard?.stats.visaApprovalRate ?? 0).toFixed(1)}%`,
-        icon: "heroicons:shield-check",
-        iconBg: "bg-cyan-100",
-        iconColor: "text-cyan-600",
-      },
-    ],
-    [dashboard],
-  );
+  const statCards = useMemo(() => [
+    { labelKey: "adminDashboard.statTotalRevenue",     value: formatMoney(dashboard?.stats.totalRevenue ?? 0),        icon: "heroicons:currency-dollar",    accent: ACCENT,       eyebrow: "Overview",     subtext: t("adminDashboard.statRevenueSubtext"), delay: 0 },
+    { labelKey: "adminDashboard.statTotalBookings",     value: (dashboard?.stats.totalBookings ?? 0).toLocaleString(), icon: "heroicons:clipboard-document", accent: "#346538",    eyebrow: "Bookings",     delay: 1 },
+    { labelKey: "adminDashboard.statActiveTours",      value: (dashboard?.stats.activeTours ?? 0).toLocaleString(),  icon: "heroicons:globe-alt",         accent: "#1F6C9F",    eyebrow: "Tours",        delay: 2 },
+    { labelKey: "adminDashboard.statTotalCustomers",   value: (dashboard?.stats.totalCustomers ?? 0).toLocaleString(), icon: "heroicons:user-group",         accent: "#78716C",    eyebrow: "Customers",    delay: 3 },
+    { labelKey: "adminDashboard.statCancellationRate", value: `${(dashboard?.stats.cancellationRate ?? 0).toFixed(1)}%`, icon: "heroicons:x-circle",         accent: "#9F2F2D",    eyebrow: "Cancellation", delay: 4 },
+    { labelKey: "adminDashboard.statVisaApproval",      value: `${(dashboard?.stats.visaApprovalRate ?? 0).toFixed(1)}%`, icon: "heroicons:shield-check",    accent: ACCENT,       eyebrow: "Visa",         delay: 5 },
+  ], [dashboard, t]);
 
   return (
     <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}>
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
 
-      <main id="main-content" className="p-6 space-y-6">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Icon icon="heroicons:chart-bar" className="size-5 text-orange-600" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-                <p className="text-sm text-slate-500">Backend-synced analytics for admin operations</p>
-              </div>
+      <main id="main-content" className="p-8 lg:p-10 max-w-[1440px] mx-auto">
+
+        {/* ── Page Header ─────────────────────────────────────── */}
+        <Reveal delay={0}>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
+            <div>
+              <Eyebrow>Analytics Dashboard</Eyebrow>
+              <h1 style={{ color: "var(--text-primary)", fontSize: "2.125rem", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1.05 }}>
+                {t("adminDashboard.pageTitle")}
+              </h1>
+              <p className="text-sm mt-2.5" style={{ color: "var(--text-muted)" }}>
+                {t("adminDashboard.pageSubtitle")}
+              </p>
             </div>
-            <button
+            <motion.button
               onClick={() => void loadDashboard()}
-              className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-lg text-sm bg-white hover:bg-slate-50 transition-colors">
-              <Icon icon="heroicons:arrow-path" className="size-4 text-slate-500" />
-              <span>Refresh</span>
-            </button>
+              disabled={isLoading}
+              className="self-start sm:self-auto flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-medium border transition-all duration-700 active:scale-[0.97]"
+              style={{ borderColor: "var(--border)", color: "var(--text-secondary)", backgroundColor: "var(--surface)" }}
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              transition={SPRING}
+            >
+              <Icon icon="heroicons:arrow-path" className={`size-4 ${isLoading ? "animate-spin" : ""}`} />
+              <span>{t("adminDashboard.refresh")}</span>
+            </motion.button>
           </div>
+        </Reveal>
 
-          {isLoading && (
-            <Card bodyClass="p-8">
-              <div className="flex items-center gap-3 text-slate-600">
-                <Icon icon="heroicons:arrow-path" className="size-5 animate-spin" />
-                <span>{t("common.loadingDashboard", "Loading dashboard data from backend...")}</span>
-              </div>
-            </Card>
-          )}
+        {/* ── Loading State (shimmer skeleton) ──────────────── */}
+        {isLoading && (
+          <Reveal>
+            <CardShell className="p-[1px]">
+              <Card bodyClass="p-12 border-0 shadow-none flex items-center justify-center" className="border-0 shadow-none">
+                <ShimmerSkeleton height={320} />
+              </Card>
+            </CardShell>
+          </Reveal>
+        )}
 
-          {!isLoading && errorMessage && (
-            <Card bodyClass="p-8">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-3 text-red-700">
-                  <Icon icon="heroicons:exclamation-triangle" className="size-5" />
-                  <span>{errorMessage}</span>
-                </div>
-                <div>
-                  <button
+        {/* ── Error State ─────────────────────────────────────── */}
+        {!isLoading && errorMessage && (
+          <Reveal>
+            <CardShell className="p-[1px]">
+              <Card bodyClass="p-12 border-0 shadow-none" className="border-0 shadow-none">
+                <div className="flex flex-col items-center gap-5 text-center">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "var(--danger-muted)" }}>
+                    <Icon icon="heroicons:exclamation-triangle" className="size-6" style={{ color: "var(--danger)" }} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{t("adminDashboard.noData")}</p>
+                    <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Connection failed. Please try again.</p>
+                  </div>
+                  <motion.button
                     onClick={() => void loadDashboard()}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500 text-white text-sm hover:bg-orange-600 transition-colors">
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-medium"
+                    style={{ backgroundColor: "#111111", color: "#FFFFFF" }}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={SPRING}
+                  >
                     <Icon icon="heroicons:arrow-path" className="size-4" />
-                    Retry
-                  </button>
+                    {t("adminDashboard.refresh")}
+                  </motion.button>
                 </div>
-              </div>
-            </Card>
-          )}
+              </Card>
+            </CardShell>
+          </Reveal>
+        )}
 
-          {!isLoading && !errorMessage && !dashboard && (
-            <Card bodyClass="p-8">
-              <div className="flex items-center gap-3 text-slate-600">
-                <Icon icon="heroicons:information-circle" className="size-5" />
-                <span>No dashboard data is available.</span>
-              </div>
-            </Card>
-          )}
-
-          {!isLoading && !errorMessage && dashboard && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {statCards.map((stat) => (
-                  <Card key={stat.label} className="!p-0" bodyClass="p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm text-slate-500">{stat.label}</p>
-                      <div className={`w-10 h-10 rounded-lg ${stat.iconBg} flex items-center justify-center`}>
-                        <Icon icon={stat.icon} className={`size-5 ${stat.iconColor}`} />
-                      </div>
-                    </div>
-                    <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
-                  </Card>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <Card className="lg:col-span-3" bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Revenue Over Time</h3>
-                  <p className="text-sm text-slate-500 mb-4">Monthly revenue trend</p>
-                  <Chart options={revenueOverTimeOptions} series={revenueOverTimeSeries} type="line" height={300} />
-                </Card>
-                <Card className="lg:col-span-2" bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Revenue By Tour Type</h3>
-                  <p className="text-sm text-slate-500 mb-4">Distribution by instance type</p>
-                  <div className="flex justify-center">
-                    <Chart
-                      options={revenueByTourTypeOptions}
-                      series={revenueByTourTypeSeries}
-                      type="donut"
-                      height={200}
-                      width={200}
-                    />
+        {/* ── Empty State ─────────────────────────────────────── */}
+        {!isLoading && !errorMessage && !dashboard && (
+          <Reveal>
+            <CardShell className="p-[1px]">
+              <Card bodyClass="p-12 flex items-center justify-center border-0 shadow-none" className="border-0 shadow-none">
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "var(--surface-raised)" }}>
+                    <Icon icon="heroicons:chart-bar" className="size-6" style={{ color: "var(--text-muted)" }} />
                   </div>
-                  <div className="mt-6">
-                    <MetricLegend items={revenueByTourType} />
+                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{t("adminDashboard.noData")}</p>
+                </div>
+              </Card>
+            </CardShell>
+          </Reveal>
+        )}
+
+        {/* ── Dashboard Content ─────────────────────────────── */}
+        {!isLoading && !errorMessage && dashboard && (
+          <>
+            {/* ── Stat Cards: 3-col bento ─────────────────────── */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+              {statCards.map((stat) => (
+                <StatCard key={stat.labelKey} {...stat} />
+              ))}
+            </div>
+
+            {/* ── Revenue + Tour Type: 7/5 ─────────────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-10">
+              <ChartCard title={t("adminDashboard.chartRevenueOverTime")} period={t("adminDashboard.chartPeriodMonthly")} delay={0} className="lg:col-span-7">
+                <Chart options={revenueOverTimeOptions} series={revenueOverTimeSeries} type="line" height={260} />
+              </ChartCard>
+              <ChartCard title={t("adminDashboard.chartByTourType")} delay={1} className="lg:col-span-5">
+                <div className="flex justify-center mt-2">
+                  <Chart options={revenueByTourTypeOptions} series={revenueByTourTypeSeries} type="donut" height={180} width={180} />
+                </div>
+                <div className="mt-6">
+                  <MetricLegend items={revenueByTourType} colors={chartPalette} />
+                </div>
+              </ChartCard>
+            </div>
+
+            {/* ── Region + Booking Status: 3/2 ───────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 mb-10">
+              <ChartCard title={t("adminDashboard.chartByRegion")} delay={2} className="lg:col-span-3">
+                <div className="flex items-center gap-8 mt-4">
+                  <div className="shrink-0">
+                    <Chart options={revenueByRegionOptions} series={revenueByRegionSeries} type="donut" height={180} width={180} />
                   </div>
-                </Card>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Revenue By Region</h3>
-                  <p className="text-sm text-slate-500 mb-4">Regional revenue split</p>
-                  <div className="flex items-center gap-8">
-                    <div className="shrink-0">
-                      <Chart
-                        options={revenueByRegionOptions}
-                        series={revenueByRegionSeries}
-                        type="donut"
-                        height={200}
-                        width={200}
-                      />
-                    </div>
-                    <MetricLegend items={revenueByRegion} />
+                  <MetricLegend items={revenueByRegion} colors={chartPalette} />
+                </div>
+              </ChartCard>
+              <ChartCard title={t("adminDashboard.chartBookingStatus")} delay={3} className="lg:col-span-2">
+                <div className="flex items-center gap-5 mt-4">
+                  <div className="shrink-0">
+                    <Chart options={bookingStatusOptions} series={bookingStatusSeries} type="donut" height={160} width={160} />
                   </div>
-                </Card>
+                  <MetricLegend items={bookingStatusDist} colors={chartPalette} />
+                </div>
+              </ChartCard>
+            </div>
 
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Booking Status Distribution</h3>
-                  <p className="text-sm text-slate-500 mb-4">Current booking state mix</p>
-                  <div className="flex items-center gap-8">
-                    <div className="shrink-0">
-                      <Chart
-                        options={bookingStatusOptions}
-                        series={bookingStatusSeries}
-                        type="donut"
-                        height={200}
-                        width={200}
-                      />
-                    </div>
-                    <MetricLegend items={bookingStatusDistribution} />
-                  </div>
-                </Card>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Booking Trend</h3>
-                  <p className="text-sm text-slate-500 mb-4">Bookings per month</p>
-                  <Chart options={bookingTrendOptions} series={bookingTrendSeries} type="area" height={240} />
-                </Card>
-
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Top Selling Tours</h3>
-                  <p className="text-sm text-slate-500 mb-4">Ranked by revenue</p>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-slate-200">
-                          <th className="text-left py-3 px-0 font-medium text-slate-500">Tour</th>
-                          <th className="text-right py-3 px-0 font-medium text-slate-500">Bookings</th>
-                          <th className="text-right py-3 px-0 font-medium text-slate-500">Revenue</th>
+            {/* ── Booking Trend + Top Tours: 7/5 ─────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-10">
+              <ChartCard title={t("adminDashboard.chartBookingTrend")} period={t("adminDashboard.chartPeriodMonthly")} delay={4} className="lg:col-span-7">
+                <Chart options={bookingTrendOptions} series={bookingTrendSeries} type="area" height={220} />
+              </ChartCard>
+              <ChartCard title={t("adminDashboard.chartTopSellingTours")} delay={5} className="lg:col-span-5">
+                <div className="mt-4">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr>
+                        <th className="text-left py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{t("adminDashboard.tableTour")}</th>
+                        <th className="text-right py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{t("adminDashboard.tableBookings")}</th>
+                        <th className="text-right py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{t("adminDashboard.tableRevenue")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dashboard.topTours.length === 0 ? (
+                        <tr>
+                          <td colSpan={3} className="py-10 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                            {t("adminDashboard.noTopTourData")}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {dashboard.topTours.length === 0 ? (
-                          <tr>
-                            <td colSpan={3} className="py-4 text-slate-500">
-                              No top tour data available.
-                            </td>
-                          </tr>
+                      ) : (
+                        dashboard.topTours.map((tour, index) => (
+                          <SpringTableRow key={`${tour.name}-${index}`} delay={index}>
+                            <td className="py-3.5 text-sm" style={{ color: "var(--text-secondary)" }}>{tour.name}</td>
+                            <td className="py-3.5 text-right text-sm data-value" style={{ color: "var(--text-muted)" }}>{tour.bookings.toLocaleString()}</td>
+                            <td className="py-3.5 text-right text-sm font-semibold data-value" style={{ color: "var(--success)" }}>{formatMoney(tour.revenue)}</td>
+                          </SpringTableRow>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </ChartCard>
+            </div>
+
+            {/* ── Destinations + Customer Growth: 2/3 ───────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 mb-10">
+              <ChartCard title={t("adminDashboard.chartTopDestinations")} delay={6} className="lg:col-span-2">
+                <Chart options={topDestinationsOptions} series={topDestinationsSeries} type="bar" height={200} />
+              </ChartCard>
+              <ChartCard title={t("adminDashboard.chartCustomerGrowth")} period={t("adminDashboard.chartPeriodMonthly")} delay={7} className="lg:col-span-3">
+                <Chart options={customerGrowthOptions} series={customerGrowthSeries} type="bar" height={200} />
+              </ChartCard>
+            </div>
+
+            {/* ── Visa Processing + Side Panel: 7/5 ────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-10">
+              {/* Visa Processing */}
+              <Reveal delay={8} className="lg:col-span-7">
+                <SpringCard className="lg:col-span-7">
+                  <CardShell className="p-[1px]">
+                    <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
+                      <Eyebrow>Visa Processing</Eyebrow>
+                      <h3 className="text-sm font-semibold tracking-tight mb-1" style={{ color: "var(--text-primary)" }}>
+                        {t("adminDashboard.chartVisaProcessing")}
+                      </h3>
+                      {/* Status row with live breathing dot */}
+                      <div className="flex items-center gap-2 mt-1 mb-6">
+                        <BreathingDot color={ACCENT} />
+                        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Live</span>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {dashboard.visaStatuses.map((status, index) => (
+                          <VisaStatusBadge key={`${status.label}-${index}`} status={status} />
+                        ))}
+                      </div>
+                      <h4 className="text-[9px] font-semibold uppercase tracking-widest mt-8 mb-4" style={{ color: "var(--text-muted)" }}>
+                        {t("adminDashboard.upcomingDeadlines")}
+                      </h4>
+                      <div className="space-y-1">
+                        {dashboard.upcomingVisaDeadlines.length === 0 ? (
+                          <div className="py-5 px-4 rounded-2xl text-xs text-center border" style={{ color: "var(--text-muted)", borderColor: "var(--border)", backgroundColor: "var(--surface-raised)" }}>
+                            {t("adminDashboard.noUpcomingDeadlines")}
+                          </div>
                         ) : (
-                          dashboard.topTours.map((tour, index) => (
-                            <tr key={`${tour.name}-${index}`} className="border-b border-slate-100 last:border-0">
-                              <td className="py-3 text-slate-700">{tour.name}</td>
-                              <td className="py-3 text-right text-slate-600">{tour.bookings.toLocaleString()}</td>
-                              <td className="py-3 text-right font-medium text-green-600">
-                                {formatMoney(tour.revenue)}
-                              </td>
-                            </tr>
+                          dashboard.upcomingVisaDeadlines.map((deadline) => (
+                            <motion.div
+                              key={`${deadline.tour}-${deadline.date}`}
+                              className="flex items-center justify-between py-3.5 px-4 rounded-2xl transition-colors duration-150 cursor-default"
+                              style={{ backgroundColor: "var(--surface-raised)" }}
+                              whileHover={{ x: 2 }}
+                              transition={SPRING}
+                            >
+                              <span className="text-sm truncate mr-4" style={{ color: "var(--text-secondary)" }}>{deadline.tour}</span>
+                              <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0" style={{ color: "var(--warning)", backgroundColor: "var(--warning-muted)" }}>
+                                {deadline.date}
+                              </span>
+                            </motion.div>
                           ))
                         )}
-                      </tbody>
-                    </table>
-                  </div>
-                </Card>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Top Destinations</h3>
-                  <p className="text-sm text-slate-500 mb-4">Most booked destinations</p>
-                  <Chart options={topDestinationsOptions} series={topDestinationsSeries} type="bar" height={240} />
-                </Card>
-
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Customer Growth</h3>
-                  <p className="text-sm text-slate-500 mb-4">New customers by month</p>
-                  <Chart options={customerGrowthOptions} series={customerGrowthSeries} type="bar" height={240} />
-                </Card>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <Card className="lg:col-span-3" bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Visa Processing Status</h3>
-                  <p className="text-sm text-slate-500 mb-6">Current visa application pipeline</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                    {dashboard.visaStatuses.map((status, index) => (
-                      <VisaStatusBadge key={`${status.label}-${index}`} status={status} />
-                    ))}
-                  </div>
-
-                  <h4 className="text-base font-semibold text-slate-900 mb-3">Upcoming Visa Deadlines</h4>
-                  <div className="space-y-2">
-                    {dashboard.upcomingVisaDeadlines.length === 0 ? (
-                      <div className="py-3 px-3 bg-slate-50 rounded-lg text-sm text-slate-500">
-                        No upcoming visa deadlines.
                       </div>
-                    ) : (
-                      dashboard.upcomingVisaDeadlines.map((deadline) => (
-                        <div
-                          key={`${deadline.tour}-${deadline.date}`}
-                          className="flex items-center justify-between py-3 px-3 bg-slate-50 rounded-lg">
-                          <span className="text-sm text-slate-700">{deadline.tour}</span>
-                          <span className="text-xs font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
-                            {deadline.date}
-                          </span>
+                    </Card>
+                  </CardShell>
+                </SpringCard>
+              </Reveal>
+
+              {/* Side Panel */}
+              <div className="lg:col-span-5 space-y-5">
+                {/* Visa Summary */}
+                <Reveal delay={9}>
+                  <SpringCard>
+                    <CardShell className="p-[1px]">
+                      <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
+                        <div className="flex items-center gap-4 mb-5">
+                          <motion.div
+                            className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                            style={{ backgroundColor: `${ACCENT}12` }}
+                            whileHover={{ scale: 1.06 }}
+                            transition={SPRING}
+                          >
+                            <FloatIcon>
+                              <Icon icon="heroicons:shield-check" className="size-6" style={{ color: ACCENT }} />
+                            </FloatIcon>
+                          </motion.div>
+                          <div>
+                            <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+                              {t("adminDashboard.visaSuccessRate")}
+                            </p>
+                            <p className="text-[2rem] font-bold tracking-tight data-value leading-none" style={{ color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+                              {dashboard.visaSummary.approvalRate.toFixed(1)}%
+                            </p>
+                          </div>
                         </div>
-                      ))
-                    )}
-                  </div>
-                </Card>
+                        <div className="space-y-0">
+                          {[
+                            { label: t("adminDashboard.visaTotal"),    value: dashboard.visaSummary.totalApplications.toLocaleString(), color: "var(--text-secondary)" },
+                            { label: t("adminDashboard.visaApproved"), value: dashboard.visaSummary.approved.toLocaleString(),           color: "var(--success)" },
+                            { label: t("adminDashboard.visaRejected"), value: dashboard.visaSummary.rejected.toLocaleString(),            color: "var(--danger)" },
+                          ].map((row) => (
+                            <motion.div
+                              key={row.label}
+                              className="flex items-center justify-between py-3 border-t"
+                              style={{ borderColor: "var(--border-subtle)" }}
+                              whileHover={{ x: 2 }}
+                              transition={SPRING}
+                            >
+                              <span className="text-sm" style={{ color: "var(--text-muted)" }}>{row.label}</span>
+                              <span className="font-semibold data-value" style={{ color: row.color }}>{row.value}</span>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </Card>
+                    </CardShell>
+                  </SpringCard>
+                </Reveal>
 
-                <div className="lg:col-span-2 space-y-6">
-                  <Card className="bg-orange-500 !text-white border-none" bodyClass="p-6">
-                    <div className="flex items-center gap-4 mb-2">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <Icon icon="heroicons:shield-check" className="size-7 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-orange-100">Visa Success Rate</p>
-                        <p className="text-3xl font-bold">{dashboard.visaSummary.approvalRate.toFixed(1)}%</p>
-                      </div>
+                {/* Customer Nationalities */}
+                <Reveal delay={10}>
+                  <SpringCard>
+                    <CardShell className="p-[1px]">
+                      <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
+                        <h3 className="text-[9px] font-semibold uppercase tracking-widest mb-5" style={{ color: "var(--text-muted)" }}>
+                          {t("adminDashboard.customerNationality")}
+                        </h3>
+                        <MetricLegend items={customerNationalities} colors={chartPalette} />
+                      </Card>
+                    </CardShell>
+                  </SpringCard>
+                </Reveal>
+
+                {/* Quick Actions */}
+                <Reveal delay={11}>
+                  <SpringCard>
+                    <CardShell className="p-[1px]">
+                      <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
+                        <h3 className="text-[9px] font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>
+                          {t("adminDashboard.quickActions")}
+                        </h3>
+                        <div className="space-y-1.5">
+                          {QUICK_ACTIONS.map((action) => (
+                            <QuickActionLink key={action.labelKey} icon={action.icon} labelKey={t(action.labelKey)} href={action.href} />
+                          ))}
+                        </div>
+                      </Card>
+                    </CardShell>
+                  </SpringCard>
+                </Reveal>
+              </div>
+            </div>
+
+            {/* ── Operational Alerts ────────────────────────────── */}
+            <Reveal delay={12}>
+              <SpringCard>
+                <CardShell className="p-[1px]">
+                  <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
+                    <div className="flex items-center gap-3 mb-1">
+                      <Eyebrow>Live Feed</Eyebrow>
+                      <span className="flex items-center gap-1.5 mb-3">
+                        <BreathingDot color="#22c55e" />
+                        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: "#22c55e" }}>Active</span>
+                      </span>
                     </div>
-                    <p className="text-sm text-orange-100 mb-6">Approval rate across finalized applications</p>
-
-                    <div className="bg-white/10 rounded-lg p-3 space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-orange-100">Total Applications</span>
-                        <span className="font-medium">{dashboard.visaSummary.totalApplications.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-orange-100">Approved</span>
-                        <span className="font-medium">{dashboard.visaSummary.approved.toLocaleString()}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-orange-100">Rejected</span>
-                        <span className="font-medium">{dashboard.visaSummary.rejected.toLocaleString()}</span>
-                      </div>
+                    <h3 className="text-sm font-semibold tracking-tight mb-4" style={{ color: "var(--text-primary)" }}>
+                      {t("adminDashboard.operationalAlerts")}
+                    </h3>
+                    <div className="space-y-2">
+                      {dashboard.alerts.length === 0 ? (
+                        <div className="py-5 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                          {t("adminDashboard.noAlerts")}
+                        </div>
+                      ) : (
+                        dashboard.alerts.map((alert, index) => (
+                          <AlertItem key={`${alert.text}-${index}`} alert={alert} />
+                        ))
+                      )}
                     </div>
                   </Card>
-
-                  <Card bodyClass="p-5">
-                    <h3 className="text-base font-semibold text-slate-900 mb-4">Customer Nationality</h3>
-                    <MetricLegend items={customerNationalities} />
-                  </Card>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Operational Alerts</h3>
-                  <p className="text-sm text-slate-500 mb-4">Backend-generated operational signals</p>
-                  <div className="space-y-3">
-                    {dashboard.alerts.length === 0 ? (
-                      <div className="text-sm text-slate-500">No alerts returned by backend.</div>
-                    ) : (
-                      dashboard.alerts.map((alert, index) => (
-                        <AlertItem key={`${alert.text}-${index}`} alert={alert} />
-                      ))
-                    )}
-                  </div>
-                </Card>
-
-                <Card bodyClass="p-6">
-                  <h3 className="text-lg font-semibold text-slate-900">Quick Actions</h3>
-                  <p className="text-sm text-slate-500 mb-4">Frequently used actions</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {QUICK_ACTIONS.map((action) => (
-                      <Link
-                        key={action.label}
-                        href={action.href}
-                        className="flex items-center gap-3 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-orange-200 transition-colors group">
-                        <Icon
-                          icon={action.icon}
-                          className="size-5 text-slate-400 group-hover:text-orange-500 transition-colors"
-                        />
-                        <p className="text-sm font-medium text-slate-700">{action.label}</p>
-                      </Link>
-                    ))}
-                  </div>
-                </Card>
-              </div>
-            </>
-          )}
-        </main>
+                </CardShell>
+              </SpringCard>
+            </Reveal>
+          </>
+        )}
+      </main>
     </AdminSidebar>
   );
 }
 
 export default AdminDashboardPage;
-
-
