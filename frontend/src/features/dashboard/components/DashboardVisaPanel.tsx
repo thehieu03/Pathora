@@ -46,7 +46,7 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
           </div>
         </div>
         <h3 className="text-lg font-semibold" style={{ color: "#111827" }}>
-          {t("adminDashboard.visaProcessingTitle") ?? "Visa Application Overview"}
+          {t("adminDashboard.chartVisaProcessing")}
         </h3>
 
         {/* Status badges */}
@@ -58,7 +58,7 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
 
         {/* Upcoming deadlines */}
         <h4 className="text-[10px] font-semibold uppercase tracking-widest mt-7 mb-3" style={{ color: "#9CA3AF" }}>
-          {t("adminDashboard.upcomingVisaDeadlines") ?? "Upcoming Deadlines"}
+          {t("adminDashboard.upcomingDeadlines")}
         </h4>
 
         {upcomingVisaDeadlines.length === 0 ? (
@@ -66,7 +66,7 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
             className="py-5 px-4 rounded-xl text-xs text-center border"
             style={{ color: "#9CA3AF", borderColor: "#E5E7EB", backgroundColor: "#F3F4F6" }}
           >
-            {t("adminDashboard.noUpcomingVisaDeadlines") ?? "No upcoming deadlines"}
+            {t("adminDashboard.noUpcomingDeadlines")}
           </div>
         ) : (
           <div className="flex flex-col gap-2">
@@ -106,7 +106,7 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
             </div>
             <div>
               <p className="text-xs font-medium" style={{ color: "#6B7280" }}>
-                {t("adminDashboard.visaSuccessRate") ?? "Visa Success Rate"}
+                {t("adminDashboard.visaSuccessRate")}
               </p>
               <p className="text-2xl font-bold" style={{ color: "#111827" }}>
                 {visaSummary.approvalRate.toFixed(1)}%
@@ -116,19 +116,19 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
 
           <div className="mt-4 border-t border-[#E5E7EB] pt-3 space-y-2">
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: "#9CA3AF" }}>{t("adminDashboard.totalApplications") ?? "Total"}</span>
+              <span style={{ color: "#9CA3AF" }}>{t("adminDashboard.visaTotal")}</span>
               <span className="font-medium tabular-nums" style={{ color: "#111827" }}>
                 {visaSummary.totalApplications.toLocaleString()}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: "#9CA3AF" }}>{t("adminDashboard.approved") ?? "Approved"}</span>
+              <span style={{ color: "#9CA3AF" }}>{t("adminDashboard.visaApproved")}</span>
               <span className="font-medium tabular-nums" style={{ color: "#10B981" }}>
                 {visaSummary.approved.toLocaleString()}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span style={{ color: "#9CA3AF" }}>{t("adminDashboard.rejected") ?? "Rejected"}</span>
+              <span style={{ color: "#9CA3AF" }}>{t("adminDashboard.visaRejected")}</span>
               <span className="font-medium tabular-nums" style={{ color: "#EF4444" }}>
                 {visaSummary.rejected.toLocaleString()}
               </span>
@@ -141,7 +141,7 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
           className="bg-white rounded-xl border border-[#E5E7EB] p-6 min-h-[130px]"
         >
           <p className="text-[10px] font-semibold uppercase tracking-widest mb-5" style={{ color: "#9CA3AF" }}>
-            {t("adminDashboard.customerNationalities") ?? "Customer Nationalities"}
+            {t("adminDashboard.customerNationality")}
           </p>
           <MetricLegend items={nationalities} colors={PALETTE} />
         </div>
