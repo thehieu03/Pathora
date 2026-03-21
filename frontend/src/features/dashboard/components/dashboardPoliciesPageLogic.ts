@@ -137,7 +137,7 @@ const mapCancellationPolicy = (policy: CancellationPolicy): DashboardPolicyListI
     type: "cancellation",
     typeLabel: POLICY_TYPE_LABEL.cancellation,
     title: policy.policyCode,
-    subtitle: `${policy.penaltyPercentage}% penalty`,
+    subtitle: `${policy.tiers.length} tier${policy.tiers.length !== 1 ? "s" : ""}`,
     scope: policy.tourScopeName || "N/A",
     status: normalized.status,
     statusLabel: normalized.statusLabel,
@@ -151,10 +151,7 @@ const mapCancellationPolicy = (policy: CancellationPolicy): DashboardPolicyListI
     togglePayload: {
       id: policy.id,
       tourScope: policy.tourScope,
-      minDaysBeforeDeparture: policy.minDaysBeforeDeparture,
-      maxDaysBeforeDeparture: policy.maxDaysBeforeDeparture,
-      penaltyPercentage: policy.penaltyPercentage,
-      applyOn: policy.applyOn,
+      tiers: policy.tiers,
       status: nextStatus,
     },
   };

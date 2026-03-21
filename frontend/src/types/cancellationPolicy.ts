@@ -1,5 +1,11 @@
 // Cancellation Policy Types
 
+export interface CancellationPolicyTier {
+  minDaysBeforeDeparture: number;
+  maxDaysBeforeDeparture: number;
+  penaltyPercentage: number;
+}
+
 export interface CancellationPolicyTranslation {
   description?: string;
 }
@@ -11,10 +17,7 @@ export interface CancellationPolicy {
   policyCode: string;
   tourScope: number;
   tourScopeName: string;
-  minDaysBeforeDeparture: number;
-  maxDaysBeforeDeparture: number;
-  penaltyPercentage: number;
-  applyOn: string;
+  tiers: CancellationPolicyTier[];
   status: number;
   statusName: string;
   translations?: CancellationPolicyTranslations;
@@ -26,20 +29,14 @@ export interface CancellationPolicy {
 
 export interface CreateCancellationPolicyRequest {
   tourScope: number;
-  minDaysBeforeDeparture: number;
-  maxDaysBeforeDeparture: number;
-  penaltyPercentage: number;
-  applyOn?: string;
+  tiers: CancellationPolicyTier[];
   translations?: CancellationPolicyTranslations;
 }
 
 export interface UpdateCancellationPolicyRequest {
   id: string;
   tourScope: number;
-  minDaysBeforeDeparture: number;
-  maxDaysBeforeDeparture: number;
-  penaltyPercentage: number;
-  applyOn?: string;
+  tiers: CancellationPolicyTier[];
   status?: number;
   translations?: CancellationPolicyTranslations;
 }
@@ -52,9 +49,4 @@ export const TourScopeMap: Record<number, string> = {
 export const CancellationPolicyStatusMap: Record<number, string> = {
   1: "Active",
   2: "Inactive",
-};
-
-export const ApplyOnMap: Record<string, string> = {
-  "FullAmount": "Full Amount",
-  "DepositOnly": "Deposit Only",
 };

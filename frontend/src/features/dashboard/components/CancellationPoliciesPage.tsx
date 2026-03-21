@@ -55,10 +55,7 @@ export function CancellationPoliciesPage() {
     const updateData = {
       id: policy.id,
       tourScope: policy.tourScope,
-      minDaysBeforeDeparture: policy.minDaysBeforeDeparture,
-      maxDaysBeforeDeparture: policy.maxDaysBeforeDeparture,
-      penaltyPercentage: policy.penaltyPercentage,
-      applyOn: policy.applyOn,
+      tiers: policy.tiers,
       status: policy.status === 1 ? 2 : 1,
       translations: policy.translations,
     };

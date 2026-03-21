@@ -66,7 +66,7 @@ export const extractResult = <T>(payload: unknown): T | null => {
     return data.value as T;
   }
 
-  return payload as T;
+  return null;
 };
 
 export const extractData = <T>(payload: unknown): T | null => {

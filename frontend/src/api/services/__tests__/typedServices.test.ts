@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { api } from "../@/api/axiosInstance";
+import { api } from "@/api/axiosInstance";
 import { catalogService } from "../catalogService";
 import { discountService } from "../discountService";
 import { inventoryService } from "../inventoryService";
@@ -8,7 +8,7 @@ import { notificationService } from "../notificationService";
 import { orderService } from "../orderService";
 import { reportService } from "../reportService";
 
-vi.mock("../@/api/axiosInstance", () => {
+vi.mock("@/api/axiosInstance", () => {
   return {
     api: {
       get: vi.fn(),

@@ -25,14 +25,42 @@ const rowVariants = {
   }),
 };
 
-export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refreshKey: _refreshKey }: CancellationPolicyListProps) {
+function TierBadge({
+  minDays,
+  maxDays,
+  penalty,
+}: {
+  minDays: number;
+  maxDays: number;
+  penalty: number;
+}) {
+  const { t } = useTranslation();
+  const isUnlimited = maxDays >= 2147483647;
+  return (
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-xs font-medium text-amber-700 whitespace-nowrap">
+      <span>
+        {minDays === 0 ? "0" : minDays}–{isUnlimited ? "∞" : maxDays}{" "}
+        {t("cancellationPolicy.unit.days", "days")}
+      </span>
+      <span className="text-amber-400">·</span>
+      <span className="font-semibold">{penalty}%</span>
+    </div>
+  );
+}
+
+export function CancellationPolicyList({
+  onEdit,
+  onDelete,
+  onToggleActive,
+  refreshKey: _refreshKey,
+}: CancellationPolicyListProps) {
   const { t } = useTranslation();
   const [policies, setPolicies] = useState<CancellationPolicy[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadPolicies();
+    void loadPolicies();
   }, [_refreshKey]);
 
   const loadPolicies = async () => {
@@ -43,10 +71,18 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
       if (response.success && response.data) {
         setPolicies(response.data);
       } else {
-        setError(response.error?.[0]?.message || t("cancellationPolicy.error.loadFailed", "Failed to load cancellation policies"));
+        setError(
+          response.error?.[0]?.message ||
+            t("cancellationPolicy.error.loadFailed", "Failed to load cancellation policies"),
+        );
       }
     } catch {
-      setError(t("cancellationPolicy.error.loadFailed", "An error occurred while loading cancellation policies"));
+      setError(
+        t(
+          "cancellationPolicy.error.loadFailed",
+          "An error occurred while loading cancellation policies",
+        ),
+      );
     } finally {
       setLoading(false);
     }
@@ -59,7 +95,7 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
   if (loading) {
     return (
       <div className="p-6">
-        <SkeletonTable rows={5} columns={8} />
+        <SkeletonTable rows={5} columns={6} />
       </div>
     );
   }
@@ -81,9 +117,7 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
               <h2 className="text-sm font-semibold text-red-800">
                 {t("cancellationPolicy.error.title", "Could not load policies")}
               </h2>
-              <p className="text-sm text-red-700 mt-0.5">
-                {error}
-              </p>
+              <p className="text-sm text-red-700 mt-0.5">{error}</p>
             </div>
           </div>
           <button
@@ -106,16 +140,16 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
         transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
       >
         <span className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-stone-50 border border-stone-200 mb-4">
-          <Icon
-            icon="heroicons:clipboard-document"
-            className="size-7 text-stone-300"
-          />
+          <Icon icon="heroicons:clipboard-document" className="size-7 text-stone-300" />
         </span>
         <h2 className="text-lg font-bold text-stone-800 tracking-tight">
           {t("cancellationPolicy.empty.title", "No cancellation policies found")}
         </h2>
         <p className="text-sm text-stone-500 mt-1.5 max-w-[40ch] mx-auto leading-relaxed">
-          {t("cancellationPolicy.empty.description", "Create your first policy to start managing refunds.")}
+          {t(
+            "cancellationPolicy.empty.description",
+            "Create your first policy to start managing refunds.",
+          )}
         </p>
       </motion.div>
     );
@@ -132,17 +166,8 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
             <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
               {t("cancellationPolicy.column.tourScope", "Tour Scope")}
             </th>
-            <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
-              {t("cancellationPolicy.column.minDays", "Min Days")}
-            </th>
-            <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
-              {t("cancellationPolicy.column.maxDays", "Max Days")}
-            </th>
-            <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
-              {t("cancellationPolicy.column.penalty", "Penalty %")}
-            </th>
-            <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
-              {t("cancellationPolicy.column.applyOn", "Apply On")}
+            <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide min-w-[280px]">
+              {t("cancellationPolicy.column.tiers", "Tiers")}
             </th>
             <th className="px-5 py-3 text-left text-[11px] font-semibold text-stone-500 uppercase tracking-wide">
               {t("cancellationPolicy.column.status", "Status")}
@@ -168,19 +193,17 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
               <td className="px-5 py-4 whitespace-nowrap text-sm text-stone-600">
                 {TourScopeMap[policy.tourScope] || policy.tourScopeName}
               </td>
-              <td className="px-5 py-4 whitespace-nowrap text-sm text-stone-500 data-value">
-                {policy.minDaysBeforeDeparture} {t("cancellationPolicy.unit.days", "days")}
-              </td>
-              <td className="px-5 py-4 whitespace-nowrap text-sm text-stone-500 data-value">
-                {policy.maxDaysBeforeDeparture} {t("cancellationPolicy.unit.days", "days")}
-              </td>
-              <td className="px-5 py-4 whitespace-nowrap">
-                <span className="inline-flex items-center justify-center min-w-[3rem] px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-sm font-semibold text-amber-700 data-value">
-                  {policy.penaltyPercentage}%
-                </span>
-              </td>
-              <td className="px-5 py-4 whitespace-nowrap text-sm text-stone-600">
-                {t(`cancellationPolicy.applyOn.${policy.applyOn}`, policy.applyOn)}
+              <td className="px-5 py-4">
+                <div className="flex flex-wrap gap-2">
+                  {policy.tiers.map((tier, idx) => (
+                    <TierBadge
+                      key={idx}
+                      minDays={tier.minDaysBeforeDeparture}
+                      maxDays={tier.maxDaysBeforeDeparture}
+                      penalty={tier.penaltyPercentage}
+                    />
+                  ))}
+                </div>
               </td>
               <td className="px-5 py-4 whitespace-nowrap">
                 <div className="flex items-center gap-2">
@@ -196,8 +219,14 @@ export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refre
                       }`}
                     />
                   </button>
-                  <span className={`text-xs font-semibold ${policy.status === 1 ? "text-emerald-600" : "text-stone-400"}`}>
-                    {policy.status === 1 ? t("common.on", "On") : t("common.off", "Off")}
+                  <span
+                    className={`text-xs font-semibold ${
+                      policy.status === 1 ? "text-emerald-600" : "text-stone-400"
+                    }`}
+                  >
+                    {policy.status === 1
+                      ? t("common.on", "On")
+                      : t("common.off", "Off")}
                   </span>
                 </div>
               </td>

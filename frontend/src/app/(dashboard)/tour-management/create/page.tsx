@@ -1295,7 +1295,7 @@ export default function CreateTourPage() {
                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
                     <option value="">-- Select Cancellation Policy --</option>
                     {cancellationPolicies.map((p) => (
-                      <option key={p.id} value={p.id}>{p.policyCode} ({p.tourScopeName}, {p.penaltyPercentage}% penalty)</option>
+                      <option key={p.id} value={p.id}>{p.policyCode} ({p.tourScopeName}, {p.tiers.length} tier{p.tiers.length !== 1 ? "s" : ""})</option>
                     ))}
                   </select>
                 </div>

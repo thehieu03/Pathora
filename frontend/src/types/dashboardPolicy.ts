@@ -41,10 +41,7 @@ export interface DashboardPolicyListItem {
     | {
         id: string;
         tourScope: number;
-        minDaysBeforeDeparture: number;
-        maxDaysBeforeDeparture: number;
-        penaltyPercentage: number;
-        applyOn?: string;
+        tiers: { minDaysBeforeDeparture: number; maxDaysBeforeDeparture: number; penaltyPercentage: number }[];
         status: number;
       }
     | null;

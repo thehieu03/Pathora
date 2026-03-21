@@ -25,6 +25,12 @@
 - Constants: `UPPER_SNAKE_CASE`; route segment folders should stay lowercase.
 - Keep Tailwind utility usage consistent with existing patterns.
 
+## Frontend Design Skill Policy
+- When implementing or refactoring frontend UI/UX, use available skills from `D:\DoAn\pathora\skills` to guide design decisions.
+- Prioritize these local design skills when relevant: `design-taste-frontend`, `high-end-visual-design`, `minimalist-ui`, `redesign-existing-projects`, `stitch-design-taste`, `industrial-brutalist-ui`.
+- Apply those skills to improve layout hierarchy, typography, spacing, visual consistency, and responsive behavior while preserving existing product patterns.
+- Keep design changes practical and compatible with current architecture (`src/app`, `src/components`, `src/styles`) and avoid cosmetic-only churn.
+
 ## Testing Guidelines
 - There is currently no dedicated `npm test` script in this repository.
 - Minimum validation for each change: `npm run lint` and `npm run build`.
@@ -34,6 +40,8 @@
 ## Commit & Pull Request Guidelines
 - Follow concise, imperative commit subjects (examples in history: `Internationalize landing and header components`, `Standardize Tailwind utility classes`).
 - Keep commits scoped to one logical change.
+- Never auto-commit code changes. Commit only when the user explicitly requests a commit.
+- Never auto-push to remote. Push only when the user explicitly requests a push.
 - PRs should include:
   - what changed and why
   - linked issue/task ID
