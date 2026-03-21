@@ -2,6 +2,7 @@ namespace Domain.Entities;
 
 using Domain.Entities.Translations;
 using Domain.Enums;
+using Domain.ValueObjects;
 
 public class CancellationPolicyEntity : Aggregate<Guid>
 {
@@ -9,15 +10,13 @@ public class CancellationPolicyEntity : Aggregate<Guid>
 
     public string PolicyCode { get; set; } = null!;
     public TourScope TourScope { get; set; }
-    public int MinDaysBeforeDeparture { get; set; }
-    public int MaxDaysBeforeDeparture { get; set; }
-    public decimal PenaltyPercentage { get; set; }
-    public string ApplyOn { get; set; } = "FullAmount";
     public CancellationPolicyStatus Status { get; set; } = CancellationPolicyStatus.Active;
     public bool IsDeleted { get; set; }
 
     // Translations (en, vi)
     public Dictionary<string, CancellationPolicyTranslationData> Translations { get; set; } = [];
+
+    public List<CancellationPolicyTier> Tiers { get; set; } = [];
 
     public static string GeneratePolicyCode()
     {
@@ -28,11 +27,7 @@ public class CancellationPolicyEntity : Aggregate<Guid>
 
     public static CancellationPolicyEntity Create(
         TourScope tourScope,
-        int minDaysBeforeDeparture,
-        int maxDaysBeforeDeparture,
-        decimal penaltyPercentage,
-        string applyOn = "FullAmount",
-        CancellationPolicyStatus status = CancellationPolicyStatus.Active,
+        List<CancellationPolicyTier> tiers,
         string performedBy = "system",
         Dictionary<string, CancellationPolicyTranslationData>? translations = null)
     {
@@ -41,11 +36,8 @@ public class CancellationPolicyEntity : Aggregate<Guid>
             Id = Guid.CreateVersion7(),
             PolicyCode = GeneratePolicyCode(),
             TourScope = tourScope,
-            MinDaysBeforeDeparture = minDaysBeforeDeparture,
-            MaxDaysBeforeDeparture = maxDaysBeforeDeparture,
-            PenaltyPercentage = penaltyPercentage,
-            ApplyOn = applyOn,
-            Status = status,
+            Tiers = tiers ?? [],
+            Status = CancellationPolicyStatus.Active,
             IsDeleted = false,
             Translations = translations ?? [],
             CreatedBy = performedBy,
@@ -57,18 +49,12 @@ public class CancellationPolicyEntity : Aggregate<Guid>
 
     public void Update(
         TourScope tourScope,
-        int minDaysBeforeDeparture,
-        int maxDaysBeforeDeparture,
-        decimal penaltyPercentage,
-        string applyOn,
+        List<CancellationPolicyTier> tiers,
         CancellationPolicyStatus status,
         string performedBy)
     {
         TourScope = tourScope;
-        MinDaysBeforeDeparture = minDaysBeforeDeparture;
-        MaxDaysBeforeDeparture = maxDaysBeforeDeparture;
-        PenaltyPercentage = penaltyPercentage;
-        ApplyOn = applyOn;
+        Tiers = tiers;
         Status = status;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
@@ -95,9 +81,10 @@ public class CancellationPolicyEntity : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 
-    public decimal CalculateRefund(decimal paidAmount)
+    public CancellationPolicyTier? FindMatchingTier(int daysBeforeDeparture)
     {
-        var penaltyAmount = paidAmount * PenaltyPercentage / 100;
-        return paidAmount - penaltyAmount;
+        return Tiers
+            .OrderByDescending(t => t.MinDaysBeforeDeparture)
+            .FirstOrDefault(t => t.MinDaysBeforeDeparture <= daysBeforeDeparture && t.MaxDaysBeforeDeparture >= daysBeforeDeparture);
     }
 }
