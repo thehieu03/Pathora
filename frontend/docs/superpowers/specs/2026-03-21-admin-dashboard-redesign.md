@@ -50,7 +50,7 @@ Use CSS Grid 12-col consistently:
 | 1 | [3] [3] [3] [3] | 4 stat cards (equal width) |
 | 2 | [6] [6] | 2 KPI cards (Cancellation, Visa) |
 | 3 | [8] [4] | Revenue line chart + Tour Type donut |
-| 4 | [4] [4] [4] | Region donut + Booking donut + Quick Actions |
+| 4 | [5] [3] [4] | Region donut + Booking donut + Quick Actions |
 | 5 | [7] [5] | Booking trend area + Top Tours table |
 | 6 | [4] [8] | Top Destinations bar + Customer Growth bar |
 | 7 | [8] [4] | Visa Processing panel + (Visa Summary + Nationalities stacked) |
@@ -124,11 +124,67 @@ Extract to `useDashboardData.ts` hook:
 
 Keep existing translation keys unchanged. No changes needed.
 
+## Out of Scope
+
+- No new API endpoints
+- No new backend types or models
+- No new i18n translation keys
+- No changes to `AdminSidebar.tsx` or `TopBar.tsx` layout
+- No new chart types — reuse existing ApexCharts
+
+## Loading Skeleton
+
+During `isLoading`, show a simple pulse skeleton that matches the grid layout:
+- Same grid structure as the actual dashboard
+- Each card slot has `animate-pulse bg-gray-100 rounded-xl min-h-[130px]` (stats) or `min-h-[300px]` (charts)
+- Single unified skeleton in `DashboardSkeleton.tsx` — not per-section
+
+## Responsive Collapse
+
+Grid uses `grid-cols-1 md:grid-cols-2 lg:grid-cols-12`.
+On tablet (md), 12-col grid becomes 6-col effective:
+- `[5] [3] [4]` → tablet collapses to stacked (each full width)
+- `[8] [4]` → tablet: stacked (8 on top, 4 below)
+- Charts always get `min-h-[300px]` regardless of viewport
+
+## Hover Shadow
+
+Default: `shadow-[0_1px_3px_rgba(0,0,0,0.05)]`
+Hover: `hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]`
+Transition: `transition-shadow duration-200`
+
+## Fade-in Pattern
+
+Use Tailwind's `animate-in fade-in` via the `@tailwindcss/animate` plugin if available, otherwise:
+
+```css
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-card {
+  animation: fadeIn 300ms ease-out forwards;
+  opacity: 0;
+}
+```
+
+Stagger via inline `style={{ animationDelay: '${index * 50}ms' }}` or `--index` CSS var.
+
+## Chart Utilities
+
+Move chart factory functions to `src/features/dashboard/utils/chartOptions.ts`:
+- `createLineOptions(categories, formatter)` → ApexOptions
+- `createAreaOptions(categories)` → ApexOptions
+- `createBarOptions(categories, color)` → ApexOptions
+- `createDonutOptions(labels, colors)` → ApexOptions
+
+Import from the new file in `DashboardCharts.tsx`.
+
 ## Implementation Notes
 
 - Tailwind v4 is in use — use standard utility classes
 - ApexCharts already installed for charts
-- Framer Motion already installed but will be used minimally (only for hover)
-- Do NOT use CSS variables for colors — use Tailwind arbitrary values or theme config
-- All chart options factory functions can stay as utility functions
+- ApexCharts is used without Framer Motion for hover (CSS-only)
+- Do NOT use CSS variables for colors — use Tailwind arbitrary values
 - Responsive: grid collapses to 1-col on mobile, 2-col on tablet
+- `AdminDashboardPage` stays as a child of `<AdminSidebar>` — no structural change
