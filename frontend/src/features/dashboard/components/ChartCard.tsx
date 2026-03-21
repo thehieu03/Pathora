@@ -29,10 +29,11 @@ export default function ChartCard({
         <div className="flex items-center gap-2">
           {eyebrow && (
             <span
-              className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full"
+              className="text-[10px] font-semibold uppercase tracking-[0.2em] px-2.5 py-1 rounded-full"
               style={{
                 color: ACCENT,
-                backgroundColor: `${ACCENT}15`,
+                backgroundColor: `${ACCENT}10`,
+                border: `1px solid ${ACCENT}18`,
               }}
             >
               {eyebrow}
