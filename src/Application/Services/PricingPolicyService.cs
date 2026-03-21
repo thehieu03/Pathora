@@ -69,6 +69,12 @@ public class PricingPolicyService(
 
         policy.Update(request.Name, request.TourType, request.Tiers, "system");
 
+        // Update status if provided
+        if (request.Status.HasValue)
+        {
+            policy.SetStatus(request.Status.Value, "system");
+        }
+
         // Update translations if provided
         if (request.Translations != null)
         {

@@ -79,6 +79,13 @@ public class PricingPolicy : Aggregate<Guid>
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 
+    public void SetStatus(PricingPolicyStatus status, string performedBy)
+    {
+        Status = status;
+        LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
     public void SetAsDefault(string performedBy)
     {
         IsDefault = true;
