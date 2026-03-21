@@ -16,6 +16,14 @@ public class VisaPolicyRepository(AppDbContext context) : Repository<VisaPolicyE
             .ToListAsync();
     }
 
+    public async Task<IReadOnlyList<VisaPolicyEntity>> GetAllPoliciesAsync()
+    {
+        return await _dbSet
+            .Where(x => !x.IsDeleted)
+            .OrderBy(x => x.Region)
+            .ToListAsync();
+    }
+
     public async Task<VisaPolicyEntity?> GetByRegionAsync(string region)
     {
         return await _dbSet

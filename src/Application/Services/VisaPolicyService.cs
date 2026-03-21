@@ -28,7 +28,7 @@ public class VisaPolicyService(
 
     public async Task<ErrorOr<IReadOnlyList<VisaPolicyResponse>>> GetAllAsync()
     {
-        var policies = await _repository.GetActivePoliciesAsync();
+        var policies = await _repository.GetAllPoliciesAsync();
         return policies.Select(p => _mapper.Map<VisaPolicyResponse>(p)).ToList();
     }
 

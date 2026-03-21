@@ -12,6 +12,7 @@ public sealed record UpdatePricingPolicyCommand(
     string Name,
     Domain.Enums.TourType TourType,
     List<Domain.ValueObjects.PricingPolicyTier> Tiers,
+    Domain.Enums.PricingPolicyStatus? Status = null,
     Dictionary<string, PricingPolicyTranslationData>? Translations = null) : ICommand<ErrorOr<Success>>;
 
 public sealed class UpdatePricingPolicyCommandHandler(IPricingPolicyService pricingPolicyService)
@@ -24,6 +25,7 @@ public sealed class UpdatePricingPolicyCommandHandler(IPricingPolicyService pric
             request.Name,
             request.TourType,
             request.Tiers,
+            request.Status,
             request.Translations));
     }
 }

@@ -17,6 +17,7 @@ public sealed record UpdatePricingPolicyRequest(
     string Name,
     TourType TourType,
     List<PricingPolicyTier> Tiers,
+    PricingPolicyStatus? Status = null,
     Dictionary<string, PricingPolicyTranslationData>? Translations = null
 );
 

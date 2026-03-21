@@ -69,6 +69,14 @@ public class PricingPolicyService(
 
         policy.Update(request.Name, request.TourType, request.Tiers, "system");
 
+        if (request.Status.HasValue)
+        {
+            if (request.Status == Domain.Enums.PricingPolicyStatus.Active)
+                policy.Activate("system");
+            else
+                policy.Deactivate("system");
+        }
+
         // Update translations if provided
         if (request.Translations != null)
         {
