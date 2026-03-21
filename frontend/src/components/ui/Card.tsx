@@ -1,5 +1,4 @@
 import React from "react";
-import useSkin from "@/hooks/useSkin";
 
 type CardProps = React.HTMLAttributes<HTMLDivElement> & {
   children?: React.ReactNode;
@@ -23,16 +22,10 @@ const Card = ({
   titleClass = "text-foreground",
   ...props
 }: CardProps) => {
-  const [skin] = useSkin();
-
   return (
     <div
       {...props}
-      className={`card rounded-xl bg-card text-card-foreground transition-all duration-200 hover:shadow-lg hover:-translate-y-1 ${
-        skin === "bordered"
-          ? "border border-border"
-          : "shadow-md"
-      } ${className}`}
+      className={`rounded-xl bg-[var(--surface)] text-[var(--text-primary)] transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:shadow-card ${className}`}
     >
       {(title || subtitle) && (
         <header className={`card-header ${noBorder ? "no-border" : ""}`}>

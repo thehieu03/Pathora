@@ -12,7 +12,7 @@ import {
 } from "@/api/services/tourInstanceService";
 import { tourService } from "@/api/services/tourService";
 import { handleApiError } from "@/utils/apiResponse";
-import { DynamicPricingDto, ImageDto, SearchTourVm, TourDto, TourVm } from "@/types/tour";
+import { DynamicPricingDto, ImageDto, SearchTourVm, TourDto } from "@/types/tour";
 
 type DynamicTierForm = {
   minParticipants: string;
@@ -204,11 +204,13 @@ export function CreateTourInstancePage() {
   const [tourDetail, setTourDetail] = useState<TourDto | null>(null);
   const [loadingTour, setLoadingTour] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [reloadToken, setReloadToken] = useState(0);
 
   const selectedTour = useMemo(
     () => tours.find((tour) => tour.id === form.tourId) ?? null,
@@ -226,20 +228,21 @@ export function CreateTourInstancePage() {
   const fetchTours = useCallback(async () => {
     try {
       setLoading(true);
+      setLoadError(null);
       const result = await tourService.getAllTours(undefined, 1, 100);
       setTours(result?.data ?? []);
     } catch (error: unknown) {
       const handledError = handleApiError(error);
       console.error("Failed to fetch tours:", handledError.message);
-      toast.error(t("tourInstance.fetchError", "Failed to load tour instances"));
+      setLoadError(handledError.message);
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetchTours();
-  }, [fetchTours]);
+  }, [fetchTours, reloadToken]);
 
   useEffect(() => {
     if (!form.tourId) {
@@ -484,17 +487,17 @@ export function CreateTourInstancePage() {
   };
 
   const inputClassName =
-    "w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20";
+    "w-full rounded-xl border border-stone-200 px-3 py-2 text-sm text-stone-900 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20";
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 md:p-8">
+    <main className="min-h-screen bg-stone-50 p-6 md:p-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <header className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 md:p-5">
+        <header className="flex flex-wrap items-center justify-between gap-3 rounded-[2.5rem] border border-stone-200 bg-white p-4 md:p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
           <div>
-            <h1 className="text-xl font-bold text-slate-900">
+            <h1 className="text-xl font-bold text-stone-900">
               {t("tourInstance.createTitle", "Create Tour Instance")}
             </h1>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-stone-500">
               {t(
                 "tourInstance.createSubtitle",
                 "Create a scheduled tour from a package template",
@@ -505,14 +508,14 @@ export function CreateTourInstancePage() {
             <button
               type="button"
               onClick={() => router.push("/tour-instances")}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+              className="rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-100 active:scale-[0.98] transition-all">
               {t("tourInstance.cancel", "Cancel")}
             </button>
             <button
               type="button"
               onClick={handleSubmit}
               disabled={submitting || loading}
-              className="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60">
+              className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98] transition-all">
               <Icon icon="heroicons:check" className="size-4" />
               {submitting
                 ? t("tourInstance.creating", "Creating...")
@@ -521,26 +524,54 @@ export function CreateTourInstancePage() {
           </div>
         </header>
 
-        <section className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+        <section className="rounded-[2.5rem] border border-orange-200 bg-orange-50 p-4 text-sm text-orange-800 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
           {t(
             "tourInstance.createInfo",
             "A Tour Instance is a scheduled occurrence with specific dates, capacity, and pricing.",
           )}
         </section>
 
+        {loadError && (
+          <div className="bg-white border border-red-200/50 rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-sm font-semibold text-red-800">
+                  {t("tourInstance.form.error.title", "Could not load tours")}
+                </h2>
+                <p className="text-sm text-red-700 mt-1">
+                  {loadError}
+                </p>
+              </div>
+              <button
+                onClick={() => setReloadToken((v) => v + 1)}
+                className="px-3 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] transition-colors"
+              >
+                {t("common.retry", "Retry")}
+              </button>
+            </div>
+          </div>
+        )}
+
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-5">
-            <h2 className="text-base font-bold text-slate-900">
+          <div className="space-y-6 rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+            <h2 className="text-base font-bold text-stone-900">
               {t("tourInstance.form.basicInfo", "Basic information")}
             </h2>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.packageTour", "Package Tour")} *
               </label>
+              {loading && !loadError ? (
+                <div className="space-y-2">
+                  <div className="skeleton h-10 w-full rounded-xl" />
+                  <div className="skeleton h-10 w-full rounded-xl" />
+                </div>
+              ) : (
               <select
                 className={inputClassName}
                 value={form.tourId}
+                disabled={!!loadError}
                 onChange={(event) => updateField("tourId", event.target.value)}>
                 <option value="">{t("tourInstance.selectPackageTour", "Select a package tour...")}</option>
                 {tours.map((tour) => (
@@ -549,11 +580,12 @@ export function CreateTourInstancePage() {
                   </option>
                 ))}
               </select>
+              )}
               {errors.tourId && <p className="text-xs text-red-600">{errors.tourId}</p>}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.packageClassification", "Package Classification")} *
               </label>
               <select
@@ -576,7 +608,7 @@ export function CreateTourInstancePage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.form.title", "Title")} *
               </label>
               <input
@@ -592,7 +624,7 @@ export function CreateTourInstancePage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.instanceType", "Tour Instance Type")} *
               </label>
               <select
@@ -608,14 +640,14 @@ export function CreateTourInstancePage() {
             </div>
           </div>
 
-          <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-5">
-            <h2 className="text-base font-bold text-slate-900">
+          <div className="space-y-6 rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+            <h2 className="text-base font-bold text-stone-900">
               {t("tourInstance.form.scheduleAndCapacity", "Schedule and capacity")}
             </h2>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.startDate", "Start Date")} *
                 </label>
                 <input
@@ -629,7 +661,7 @@ export function CreateTourInstancePage() {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.endDate", "End Date")} *
                 </label>
                 <input
@@ -644,7 +676,7 @@ export function CreateTourInstancePage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.form.minParticipation", "Minimum participants")} *
                 </label>
                 <input
@@ -661,7 +693,7 @@ export function CreateTourInstancePage() {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.maxParticipants", "Maximum Participants")} *
                 </label>
                 <input
@@ -681,7 +713,7 @@ export function CreateTourInstancePage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.basePrice", "Base Price")} *
                 </label>
                 <input
@@ -696,7 +728,7 @@ export function CreateTourInstancePage() {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.form.sellingPrice", "Selling price")} *
                 </label>
                 <input
@@ -714,7 +746,7 @@ export function CreateTourInstancePage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.form.operatingCost", "Operating cost")} *
                 </label>
                 <input
@@ -731,7 +763,7 @@ export function CreateTourInstancePage() {
                 )}
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.form.depositPerPerson", "Deposit per person")} *
                 </label>
                 <input
@@ -751,7 +783,7 @@ export function CreateTourInstancePage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.location", "Location")}
                 </label>
                 <input
@@ -762,7 +794,7 @@ export function CreateTourInstancePage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-stone-700">
                   {t("tourInstance.confirmationDeadline", "Confirmation Deadline")}
                 </label>
                 <input
@@ -778,8 +810,8 @@ export function CreateTourInstancePage() {
           </div>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-base font-bold text-slate-900">
+        <section className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+          <h2 className="text-base font-bold text-stone-900">
             {t("tourInstance.includedServices", "Included Services")}
           </h2>
           <div className="mt-4 space-y-2">
@@ -799,7 +831,7 @@ export function CreateTourInstancePage() {
                 <button
                   type="button"
                   onClick={() => removeListItem("includedServices", index)}
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  className="rounded-xl border border-stone-200 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 active:scale-[0.98] transition-all">
                   {t("common.remove", "Remove")}
                 </button>
               </div>
@@ -807,14 +839,14 @@ export function CreateTourInstancePage() {
             <button
               type="button"
               onClick={() => appendListItem("includedServices")}
-              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              className="rounded-xl border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 active:scale-[0.98] transition-all">
               + {t("tourInstance.form.addService", "Add service")}
             </button>
           </div>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-base font-bold text-slate-900">
+        <section className="rounded-xl border border-stone-200 bg-white p-5">
+          <h2 className="text-base font-bold text-stone-900">
             {t("tourInstance.guide", "Guide")}
           </h2>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -854,7 +886,7 @@ export function CreateTourInstancePage() {
                 <button
                   type="button"
                   onClick={() => removeListItem("guideLanguages", index)}
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  className="rounded-xl border border-stone-200 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 active:scale-[0.98] transition-all">
                   {t("common.remove", "Remove")}
                 </button>
               </div>
@@ -862,19 +894,19 @@ export function CreateTourInstancePage() {
             <button
               type="button"
               onClick={() => appendListItem("guideLanguages")}
-              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              className="rounded-xl border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 active:scale-[0.98] transition-all">
               + {t("tourInstance.form.addLanguage", "Add language")}
             </button>
           </div>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-base font-bold text-slate-900">
+        <section className="rounded-xl border border-stone-200 bg-white p-5">
+          <h2 className="text-base font-bold text-stone-900">
             {t("tourInstance.form.media", "Media")}
           </h2>
           <div className="mt-4 space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.form.thumbnailUpload", "Thumbnail upload")}
               </label>
               <input
@@ -886,12 +918,12 @@ export function CreateTourInstancePage() {
                 }
               />
               {thumbnailFile && (
-                <p className="text-xs text-slate-500">{thumbnailFile.name}</p>
+                <p className="text-xs text-stone-500">{thumbnailFile.name}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-slate-700">
+              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.form.imagesUpload", "Gallery upload")}
               </label>
               <input
@@ -904,7 +936,7 @@ export function CreateTourInstancePage() {
                 }
               />
               {imageFiles.length > 0 && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-stone-500">
                   {t("tourInstance.form.filesSelected", "Files selected")}: {imageFiles.length}
                 </p>
               )}
@@ -929,7 +961,7 @@ export function CreateTourInstancePage() {
                 <button
                   type="button"
                   onClick={() => removeListItem("imageUrls", index)}
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  className="rounded-xl border border-stone-200 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 active:scale-[0.98] transition-all">
                   {t("common.remove", "Remove")}
                 </button>
               </div>
@@ -937,14 +969,14 @@ export function CreateTourInstancePage() {
             <button
               type="button"
               onClick={() => appendListItem("imageUrls")}
-              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              className="rounded-xl border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 active:scale-[0.98] transition-all">
               + {t("tourInstance.form.addImage", "Add image")}
             </button>
           </div>
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-base font-bold text-slate-900">
+        <section className="rounded-xl border border-stone-200 bg-white p-5">
+          <h2 className="text-base font-bold text-stone-900">
             {t("tourInstance.dynamicPricing", "Dynamic Pricing")}
           </h2>
           <div className="mt-4 space-y-3">
@@ -983,7 +1015,7 @@ export function CreateTourInstancePage() {
                 <button
                   type="button"
                   onClick={() => removeTier(index)}
-                  className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+                  className="rounded-xl border border-stone-200 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 active:scale-[0.98] transition-all">
                   {t("common.remove", "Remove")}
                 </button>
               </div>
@@ -991,7 +1023,7 @@ export function CreateTourInstancePage() {
             <button
               type="button"
               onClick={addTier}
-              className="rounded-lg border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              className="rounded-xl border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50 active:scale-[0.98] transition-all">
               + {t("tourInstance.form.addPricingTier", "Add pricing tier")}
             </button>
             {errors.dynamicPricing && (
@@ -1001,7 +1033,7 @@ export function CreateTourInstancePage() {
         </section>
 
         {selectedClassification && (
-          <section className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+          <section className="rounded-[2.5rem] border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
             {t("tourInstance.form.selectedClassification", "Selected classification")}: {" "}
             <strong>{selectedClassification.name}</strong>
           </section>

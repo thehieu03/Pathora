@@ -1,10 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { depositPolicyService } from "@/api/services/depositPolicyService";
 import type { DepositPolicy } from "@/types/depositPolicy";
 import { DepositPolicyList } from "./DepositPolicyList";
 import { DepositPolicyForm } from "./DepositPolicyForm";
+import { Icon } from "@/components/ui/Icon";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
+};
 
 export function DepositPoliciesPage() {
   const [view, setView] = useState<"list" | "form">("list");
@@ -64,47 +79,86 @@ export function DepositPoliciesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Deposit Policies</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage deposit amount rules for tours
+    <div className="space-y-8 max-w-[1400px] mx-auto">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="flex items-end justify-between gap-6"
+      >
+        <motion.div variants={itemVariants} className="flex-1">
+          <div className="flex items-center gap-3 mb-1">
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-amber-50 border border-amber-200">
+              <Icon icon="heroicons:banknotes" className="size-4 text-amber-500" />
+            </span>
+            <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
+              Policies
+            </span>
+          </div>
+          <h1 className="text-4xl font-bold text-stone-900 tracking-tight leading-none">
+            Deposit Policies
+          </h1>
+          <p className="mt-2 text-sm text-stone-500 max-w-[55ch] leading-relaxed">
+            Manage deposit requirements and payment rules based on booking timing.
           </p>
-        </div>
+        </motion.div>
         {view === "list" && (
-          <button
+          <motion.button
+            variants={itemVariants}
             onClick={handleCreate}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-transparent rounded-2xl shadow-sm text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-2 focus:ring-amber-500/30 focus:ring-offset-2 active:scale-[0.98] transition-all duration-200 whitespace-nowrap"
           >
-            + Add Policy
-          </button>
+            <Plus className="size-4" />
+            Add Policy
+          </motion.button>
         )}
-      </div>
+      </motion.div>
 
       {view === "list" ? (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
+          className="bg-white rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 overflow-hidden"
+        >
           <DepositPolicyList
             onEdit={handleEdit}
             onDelete={handleDelete}
             onToggleActive={handleToggleActive}
             refreshKey={refreshKey}
           />
-        </div>
+        </motion.div>
       ) : (
-        <div className="bg-white shadow rounded-lg p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
-            {editingPolicy ? "Edit Deposit Policy" : "Create Deposit Policy"}
-          </h2>
-          <DepositPolicyForm
-            policy={editingPolicy}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
+          className="bg-white rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 overflow-hidden"
+        >
+          <div className="px-8 pt-8 pb-0">
+            <div className="flex items-center gap-3 mb-1">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-amber-50 border border-amber-200">
+                <Icon icon="heroicons:pencil-square" className="size-4 text-amber-500" />
+              </span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-amber-600">
+                {editingPolicy ? "Editing" : "Creating"}
+              </span>
+            </div>
+            <h2 className="text-2xl font-bold text-stone-900 tracking-tight leading-tight">
+              {editingPolicy ? "Edit Deposit Policy" : "Create Deposit Policy"}
+            </h2>
+          </div>
+          <div className="p-8">
+            <DepositPolicyForm
+              policy={editingPolicy}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormCancel}
+            />
+          </div>
+        </motion.div>
       )}
     </div>
   );
 }
 
-
+import { Plus } from "@phosphor-icons/react";

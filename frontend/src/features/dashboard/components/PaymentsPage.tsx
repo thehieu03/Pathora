@@ -1,14 +1,17 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Icon } from "@/components/ui";
 import Card from "@/components/ui/Card";
+import { SkeletonTable } from "@/components/ui/SkeletonTable";
 import { adminService } from "@/api/services/adminService";
 import type { AdminOverview } from "@/types/admin";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 import { buildPaymentRowKeys } from "./paymentsPageLogic";
+
+type PaymentsDataState = "loading" | "ready" | "empty" | "error";
 
 interface StatCardProps {
   label: string;
@@ -18,20 +21,24 @@ interface StatCardProps {
   icon: string;
   iconBg: string;
   iconColor: string;
+  accentBorder?: string;
 }
 
-function StatCard({ label, value, change, changeType, icon, iconBg, iconColor }: StatCardProps) {
+function StatCard({ label, value, change, changeType, icon, iconBg, iconColor, accentBorder }: StatCardProps) {
   return (
-    <Card className="!p-0" bodyClass="p-5">
+    <Card
+      className={`rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 ${accentBorder ? `border-l-4 ${accentBorder}` : ""} !p-0`}
+      bodyClass="p-5"
+    >
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm text-slate-500">{label}</p>
-        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBg}`}>
+        <p className="text-sm text-stone-500">{label}</p>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${iconBg}`}>
           <Icon icon={icon} className={`size-5 ${iconColor}`} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <p className="text-2xl font-bold text-stone-900 tracking-tight data-value">{value}</p>
       {change && (
-        <p className={`text-xs mt-1 ${changeType === "positive" ? "text-green-600" : changeType === "negative" ? "text-red-600" : "text-slate-400"}`}>
+        <p className={`text-xs mt-1 ${changeType === "positive" ? "text-green-600" : changeType === "negative" ? "text-red-600" : "text-stone-400"}`}>
           {change}
         </p>
       )}
@@ -40,10 +47,10 @@ function StatCard({ label, value, change, changeType, icon, iconBg, iconColor }:
 }
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  completed: { bg: "bg-green-100", text: "text-green-700" },
-  pending: { bg: "bg-amber-100", text: "text-amber-700" },
-  refunded: { bg: "bg-red-100", text: "text-red-700" },
-  failed: { bg: "bg-red-100", text: "text-red-700" },
+  completed: { bg: "var(--success-muted)", text: "var(--success)" },
+  pending: { bg: "var(--warning-muted)", text: "var(--warning)" },
+  refunded: { bg: "var(--danger-muted)", text: "var(--danger)" },
+  failed: { bg: "var(--danger-muted)", text: "var(--danger)" },
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -55,24 +62,52 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.05 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
+};
+
 export function PaymentsPage() {
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("all");
   const [overview, setOverview] = useState<AdminOverview | null>(null);
+  const [dataState, setDataState] = useState<PaymentsDataState>("loading");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let active = true;
 
     const loadOverview = async () => {
+      setDataState("loading");
+      setErrorMessage(null);
+
       try {
         const result = await adminService.getOverview();
-        if (active && result) {
+        if (!active) return;
+        if (!result || !result.payments || result.payments.length === 0) {
+          setOverview(result ?? null);
+          setDataState("empty");
+        } else {
           setOverview(result);
+          setDataState("ready");
         }
-      } catch {
-        if (active) {
-          setOverview(null);
-        }
+      } catch (err) {
+        if (!active) return;
+        setOverview(null);
+        setDataState("error");
+        setErrorMessage(
+          err instanceof Error ? err.message : t("payments.error.loadFailed", "Failed to load payments"),
+        );
       }
     };
 
@@ -81,7 +116,12 @@ export function PaymentsPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [reloadToken, t]);
+
+  const isLoading = dataState === "loading";
+  const isError = dataState === "error";
+  const isEmpty = dataState === "empty";
+  const canShowData = dataState === "ready" || isEmpty;
 
   const payments = overview?.payments ?? [];
 
@@ -99,90 +139,232 @@ export function PaymentsPage() {
   const pendingAmount = payments
     .filter((p) => p.status === "pending")
     .reduce((sum, p) => sum + p.amount, 0);
+  const completedCount = payments.filter((p) => p.status === "completed").length;
+  const refundedCount = payments.filter((p) => p.status === "refunded").length;
+
+  const retryLoading = () => {
+    setReloadToken((value) => value + 1);
+  };
 
   return (
     <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}>
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
-      <main id="main-content" className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">Payments</h1>
-              <p className="text-sm text-slate-500 mt-0.5">Track all payment transactions</p>
+      <main id="main-content" className="p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
+        <motion.div
+          className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
+          variants={itemVariants}
+          initial="hidden"
+          animate="show"
+        >
+          <div className="pl-px">
+            <h1 className="text-4xl font-bold tracking-tight text-stone-900">
+              {t("payments.pageTitle", "Payment Management")}
+            </h1>
+            <p className="text-sm text-stone-500 mt-1.5">
+              {t("payments.pageSubtitle", "Track all payment transactions")}
+            </p>
+          </div>
+        </motion.div>
+
+        {isLoading ? (
+          <SkeletonTable rows={4} columns={7} />
+        ) : null}
+
+        {isError ? (
+          <motion.div
+            className="bg-white border border-red-200/50 rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] p-6"
+            variants={itemVariants}
+            initial="hidden"
+            animate="show"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-sm font-semibold text-red-800">
+                  {t("payments.error.title", "Could not load payments")}
+                </h2>
+                <p className="text-sm text-red-700 mt-1">
+                  {errorMessage ?? t("payments.error.fallback", "Unable to load payment data. Please try again.")}
+                </p>
+              </div>
+              <button
+                onClick={retryLoading}
+                className="px-3 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] transition-colors"
+              >
+                {t("common.retry", "Retry")}
+              </button>
             </div>
-          </div>
+          </motion.div>
+        ) : null}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard label="Total Revenue" value={`$${totalRevenue.toLocaleString()}`} change="+12.5% from last month" changeType="positive" icon="heroicons:banknotes" iconBg="bg-green-100" iconColor="text-green-600" />
-            <StatCard label="Pending Payments" value={`$${pendingAmount.toLocaleString()}`} change="8 transactions" changeType="neutral" icon="heroicons:clock" iconBg="bg-amber-100" iconColor="text-amber-600" />
-            <StatCard label="Completed" value={payments.filter(p => p.status === "completed").length.toString()} change="Synced from backend" changeType="positive" icon="heroicons:check-circle" iconBg="bg-blue-100" iconColor="text-blue-600" />
-            <StatCard label="Refunded" value={payments.filter(p => p.status === "refunded").length.toString()} change="Synced from backend" changeType="negative" icon="heroicons:arrow-uturn-left" iconBg="bg-red-100" iconColor="text-red-600" />
-          </div>
+        {canShowData ? (
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
+            {/* Total Revenue — featured, wide 5 cols */}
+            <motion.div variants={itemVariants} className="lg:col-span-5">
+              <StatCard
+                label={t("payments.stat.totalRevenue", "Total Revenue")}
+                value={`$${totalRevenue.toLocaleString()}`}
+                change={`+12.5% ${t("payments.stat.fromLastMonth", "from last month")}`}
+                changeType="positive"
+                icon="heroicons:banknotes"
+                iconBg="bg-green-50"
+                iconColor="text-green-600"
+                accentBorder="border-green-300"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants} className="lg:col-span-3">
+              <StatCard
+                label={t("payments.stat.pendingPayments", "Pending Payments")}
+                value={`$${pendingAmount.toLocaleString()}`}
+                change={`${payments.filter((p) => p.status === "pending").length} ${t("payments.stat.transactions", "transactions")}`}
+                changeType="neutral"
+                icon="heroicons:clock"
+                iconBg="bg-amber-50"
+                iconColor="text-amber-600"
+                accentBorder="border-amber-300"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <StatCard
+                label={t("payments.stat.completed", "Completed")}
+                value={completedCount.toString()}
+                change={t("payments.stat.syncedFromBackend", "Synced from backend")}
+                changeType="positive"
+                icon="heroicons:check-circle"
+                iconBg="bg-green-50/60"
+                iconColor="text-green-600"
+                accentBorder="border-green-300"
+              />
+            </motion.div>
+            <motion.div variants={itemVariants} className="lg:col-span-2">
+              <StatCard
+                label={t("payments.stat.refunded", "Refunded")}
+                value={refundedCount.toString()}
+                change={t("payments.stat.syncedFromBackend", "Synced from backend")}
+                changeType="negative"
+                icon="heroicons:arrow-uturn-left"
+                iconBg="bg-red-50"
+                iconColor="text-red-600"
+                accentBorder="border-red-300"
+              />
+            </motion.div>
+          </motion.div>
+        ) : null}
 
-          <div className="flex items-center gap-3">
+        {canShowData ? (
+          <motion.div
+            className="flex items-center gap-3"
+            variants={itemVariants}
+            initial="hidden"
+            animate="show"
+          >
             {["all", "completed", "pending", "refunded"].map((status) => (
-              <button key={status} onClick={() => setStatusFilter(status)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === status ? "bg-orange-500 text-white" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"}`}>
-                {status === "all" ? "All" : status.charAt(0).toUpperCase() + status.slice(1)}
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 ${statusFilter === status ? "bg-orange-500 text-white shadow-sm shadow-orange-500/20" : "bg-white text-stone-600 border border-stone-200 hover:bg-stone-50 hover:border-stone-300"}`}
+              >
+                {status === "all" ? t("payments.filter.all", "All") : status.charAt(0).toUpperCase() + status.slice(1)}
               </button>
             ))}
-          </div>
+          </motion.div>
+        ) : null}
 
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Payment ID</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Booking</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Customer</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Method</th>
-                    <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase">Amount</th>
-                    <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
-                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredPayments.length > 0 ? (
-                    filteredPayments.map((payment, index) => (
-                      <tr key={paymentRowKeys[index]} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4"><span className="font-mono text-sm text-slate-600">{payment.id}</span></td>
-                        <td className="px-6 py-4"><span className="text-sm text-slate-900">{payment.booking}</span></td>
-                        <td className="px-6 py-4"><span className="text-sm text-slate-600">{payment.customer}</span></td>
-                        <td className="px-6 py-4">
-                          <span className="inline-flex items-center gap-1.5 text-sm text-slate-600">
-                            <Icon
-                              icon={
-                                payment.method.toLowerCase().includes("bank")
-                                  ? "heroicons:building-library"
-                                  : payment.method.toLowerCase().includes("cash")
-                                    ? "heroicons:banknotes"
-                                    : "heroicons:qr-code"
-                              }
-                              className="size-4 text-slate-400"
-                            />
-                            {payment.method}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-right"><span className="font-semibold text-slate-900">${payment.amount.toLocaleString()}</span></td>
-                        <td className="px-6 py-4 text-center"><StatusBadge status={payment.status} /></td>
-                        <td className="px-6 py-4"><span className="text-sm text-slate-500">{payment.date}</span></td>
+        {canShowData ? (
+          isEmpty ? (
+            <motion.div
+              className="bg-white border border-stone-200/50 rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] p-12 text-center"
+              variants={itemVariants}
+              initial="hidden"
+              animate="show"
+            >
+              <div className="w-16 h-16 bg-stone-100 rounded-2xl flex items-center justify-center mx-auto">
+                <Icon
+                  icon="heroicons:credit-card"
+                  className="size-8 text-stone-400"
+                />
+              </div>
+              <h2 className="text-lg font-semibold text-stone-800 mt-4">
+                {t("payments.empty.title", "No payment transactions yet")}
+              </h2>
+              <p className="text-sm text-stone-500 mt-1.5 max-w-sm mx-auto">
+                {t("payments.empty.description", "There are no payment records to display.")}
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              variants={itemVariants}
+              initial="hidden"
+              animate="show"
+            >
+              <Card className="rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 !p-0 overflow-hidden" bodyClass="p-0 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-stone-50">
+                      <tr className="border-b border-stone-200">
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.paymentId", "Payment ID")}
+                        </th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.booking", "Booking")}
+                        </th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.customer", "Customer")}
+                        </th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.method", "Method")}
+                        </th>
+                        <th className="text-right px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.amount", "Amount")}
+                        </th>
+                        <th className="text-center px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.status", "Status")}
+                        </th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wide">
+                          {t("payments.column.date", "Date")}
+                        </th>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan={7} className="px-6 py-10 text-center text-sm text-slate-500">
-                        No payment transactions available yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </main>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 bg-white">
+                      {filteredPayments.map((payment, index) => (
+                        <tr key={paymentRowKeys[index]} className="hover:bg-stone-50 transition-colors">
+                          <td className="px-6 py-3"><span className="font-mono text-sm text-stone-600">{payment.id}</span></td>
+                          <td className="px-6 py-3"><span className="text-sm text-stone-900">{payment.booking}</span></td>
+                          <td className="px-6 py-3"><span className="text-sm text-stone-600">{payment.customer}</span></td>
+                          <td className="px-6 py-3">
+                            <span className="inline-flex items-center gap-1.5 text-sm text-stone-600">
+                              <Icon
+                                icon={
+                                  payment.method.toLowerCase().includes("bank")
+                                    ? "heroicons:building-library"
+                                    : payment.method.toLowerCase().includes("cash")
+                                      ? "heroicons:banknotes"
+                                      : "heroicons:qr-code"
+                                }
+                                className="size-4 text-stone-400"
+                              />
+                              {payment.method}
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 text-right"><span className="font-semibold text-stone-900 data-value">${payment.amount.toLocaleString()}</span></td>
+                          <td className="px-6 py-3 text-center"><StatusBadge status={payment.status} /></td>
+                          <td className="px-6 py-3"><span className="text-sm text-stone-500">{payment.date}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </motion.div>
+          )
+        ) : null}
+      </main>
     </AdminSidebar>
   );
 }
 
 export default PaymentsPage;
-
-

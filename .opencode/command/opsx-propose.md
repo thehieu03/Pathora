@@ -72,15 +72,6 @@ When ready to implement, run /opsx-apply
       - Use **AskUserQuestion tool** to clarify
       - Then continue with creation
 
-   d. **When creating `tasks`, enforce 3-workspace orchestration**
-      - Create exactly 3 top-level task groups in `tasks.md`:
-        1. Backend implementation task (workspace: `D:\DoAn\panthora_be`)
-        2. Frontend implementation task (workspace: `D:\DoAn\pathora`)
-        3. Code review task (workspace: `D:\DoAn\panthora_be`)
-      - Task group 3 must run only after task groups 1 and 2 are complete.
-      - Task group 3 is review-only (no net-new feature code), covering API contract compatibility, integration risk, and regression checks.
-      - Use checkbox format (`- [ ]`) with numbered sub-steps in each group.
-
 5. **Show final status**
    ```bash
    openspec status --change "<name>"
@@ -91,7 +82,7 @@ When ready to implement, run /opsx-apply
 After completing all artifacts, summarize:
 - Change name and location
 - List of artifacts created with brief descriptions
-- What's ready: "All artifacts created! Ready for implementation with backend/frontend/review task orchestration."
+- What's ready: "All artifacts created! Ready for implementation."
 - Prompt: "Run `/opsx-apply` to start implementing."
 
 **Artifact Creation Guidelines**
@@ -110,4 +101,3 @@ After completing all artifacts, summarize:
 - If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
 - If a change with that name already exists, ask if user wants to continue it or create a new one
 - Verify each artifact file exists after writing before proceeding to next
-- `tasks.md` MUST contain exactly 3 top-level task groups: backend, frontend, and final review

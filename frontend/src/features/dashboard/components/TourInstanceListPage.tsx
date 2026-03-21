@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/components/ui";
+import { SkeletonTable } from "@/components/ui/SkeletonTable";
 import { tourInstanceService } from "@/api/services/tourInstanceService";
 import { handleApiError } from "@/utils/apiResponse";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -16,6 +16,16 @@ import {
 } from "@/types/tour";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 
+/* ── Animation Variants ───────────────────────────────────── */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
+};
 
 /* ══════════════════════════════════════════════════════════════
    Stat Card
@@ -23,23 +33,34 @@ import { AdminSidebar, TopBar } from "./AdminSidebar";
 interface StatCardProps {
   label: string;
   value: number;
+  accent: "stone" | "green" | "amber" | "red";
   icon: string;
-  iconBg: string;
-  iconColor: string;
 }
 
-function StatCard({ label, value, icon, iconBg, iconColor }: StatCardProps) {
+function StatCard({ label, value, accent, icon }: StatCardProps) {
+  const configs = {
+    stone: { bg: "bg-stone-100", text: "text-stone-600", border: "border-stone-300" },
+    green: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-400" },
+    amber: { bg: "bg-amber-50", text: "text-amber-500", border: "border-amber-400" },
+    red: { bg: "bg-red-50", text: "text-red-500", border: "border-red-400" },
+  };
+  const c = configs[accent];
+
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 flex items-center justify-between shadow-sm">
-      <div>
-        <p className="text-sm text-slate-500">{label}</p>
-        <p className="text-2xl font-bold text-slate-900 mt-1">{value}</p>
+    <motion.div
+      variants={itemVariants}
+      className={`relative overflow-hidden bg-white rounded-[2.5rem] border border-stone-200/50 p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] transition-all duration-200 hover:shadow-[0_16px_36px_-12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 group`}>
+      <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-3xl opacity-40 transition-opacity duration-300 group-hover:opacity-60 ${c.bg}`} />
+      <div className="relative flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-stone-400">{label}</p>
+          <p className="text-3xl font-bold tracking-tight text-stone-900 mt-1 data-value">{value}</p>
+        </div>
+        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${c.bg} border-l-2 ${c.border}`}>
+          <Icon icon={icon} className={`size-5 ${c.text}`} />
+        </div>
       </div>
-      <div
-        className={`w-10 h-10 rounded-lg flex items-center justify-center ${iconBg}`}>
-        <Icon icon={icon} className={`size-5 ${iconColor}`} />
-      </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -51,14 +72,13 @@ function StatusBadge({ status }: { status: string }) {
   const lower = status.trim().toLowerCase().replace(/[\s_]+/g, "");
   const config = TourInstanceStatusMap[lower] ?? {
     label: status,
-    bg: "bg-slate-100",
-    text: "text-slate-600",
-    dot: "bg-slate-400",
+    bg: "bg-stone-100",
+    text: "text-stone-600",
+    dot: "bg-stone-400",
   };
 
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.text}`}>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.text}`}>
       <span className={`w-2 h-2 rounded-full ${config.dot}`} />
       {t(`tourInstance.statusLabels.${lower}`, config.label)}
     </span>
@@ -79,34 +99,37 @@ function ParticipantsCell({
 }) {
   const pct = max > 0 ? (registered / max) * 100 : 0;
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="flex items-center gap-1.5">
-        <Icon icon="heroicons:user-group" className="size-4 text-slate-400" />
-        <span className="text-sm font-medium text-slate-700">
+        <Icon icon="heroicons:user-group" className="size-4 text-stone-400" />
+        <span className="text-sm font-semibold text-stone-700 tracking-tight">
           {registered}/{max}
         </span>
       </div>
-      <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+      <div className="w-24 h-1.5 bg-stone-200 rounded-full overflow-hidden">
         <div
-          className="h-full bg-orange-500 rounded-full transition-all"
+          className="h-full bg-amber-500 rounded-full transition-all duration-300"
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
-      <p className="text-xs text-slate-400">Min: {min}</p>
+      <p className="text-[11px] text-stone-400">Min: {min}</p>
     </div>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════
-   TourInstanceListPage – Main Export
+   TourInstanceListPage - Main Export
    ══════════════════════════════════════════════════════════════ */
+type InstanceListDataState = "loading" | "ready" | "empty" | "error";
+
 export function TourInstanceListPage() {
   const { t } = useTranslation();
   const router = useRouter();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [instances, setInstances] = useState<NormalizedTourInstanceVm[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dataState, setDataState] = useState<InstanceListDataState>("loading");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText, 300);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -119,54 +142,53 @@ export function TourInstanceListPage() {
     soldOut: 0,
   });
   const pageSize = 10;
+  const [reloadToken, setReloadToken] = useState(0);
 
-  /* ── Fetch instances ──────────────────────────────────────── */
-  const fetchInstances = useCallback(async () => {
-    try {
-      setLoading(true);
-      const result = await tourInstanceService.getAllInstances(
-        debouncedSearchText || undefined,
-        statusFilter,
-        currentPage,
-        pageSize,
-      );
-      if (result) {
-        setInstances(result.data ?? []);
-        setTotalItems(result.total ?? 0);
+  /* ── Fetch instances and stats ──────────────────────────── */
+  useEffect(() => {
+    let active = true;
+    let statsActive = true;
+    const doFetchInstances = async () => {
+      try {
+        setDataState("loading");
+        setErrorMessage(null);
+        setCurrentPage(1);
+        const result = await tourInstanceService.getAllInstances(
+          debouncedSearchText || undefined,
+          statusFilter,
+          1,
+          pageSize,
+        );
+        if (!active) return;
+        if (result) {
+          setInstances(result.data ?? []);
+          setTotalItems(result.total ?? 0);
+          if (!result.data || result.data.length === 0) {
+            setDataState("empty");
+          } else {
+            setDataState("ready");
+          }
+        }
+      } catch (error: unknown) {
+        if (!active) return;
+        const handledError = handleApiError(error);
+        console.error("Failed to fetch tour instances:", handledError.message);
+        setInstances([]);
+        setDataState("error");
+        setErrorMessage(handledError.message);
       }
-    } catch (error: unknown) {
-      const handledError = handleApiError(error);
-      console.error("Failed to fetch tour instances:", handledError.message);
-      toast.error(
-        t("tourInstance.fetchError", "Failed to load tour instances"),
-      );
-      setInstances([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, debouncedSearchText, statusFilter, t]);
-
-  const fetchStats = useCallback(async () => {
-    try {
-      const result = await tourInstanceService.getStats();
-      if (result) setStats(result);
-    } catch {
-      // Fallback — derive from list data
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchInstances();
-  }, [fetchInstances]);
-
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
-
-  // Reset to page 1 when debounced search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearchText]);
+    };
+    const doFetchStats = async () => {
+      try {
+        const result = await tourInstanceService.getStats();
+        if (!statsActive) return;
+        if (result) setStats(result);
+      } catch { /* Fallback */ }
+    };
+    void doFetchInstances();
+    void doFetchStats();
+    return () => { active = false; statsActive = false; };
+  }, [debouncedSearchText, statusFilter, pageSize, reloadToken]);
 
   /* ── Pagination ───────────────────────────────────────────── */
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -185,171 +207,203 @@ export function TourInstanceListPage() {
     <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}>
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
 
-      <main id="main-content" className="p-6 space-y-6">
-          {/* ── Page Header ────────────────────────────────── */}
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <Icon
-                  icon="heroicons:calendar-days"
-                  className="size-6 text-slate-700"
-                />
-                <h1 className="text-2xl font-bold text-slate-900">
-                  Tour Instances
-                </h1>
+      <main id="main-content" className="p-6 space-y-8 max-w-[1400px] mx-auto">
+        {/* ── Page Header ────────────────────────────────── */}
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate="show"
+          className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-4xl font-bold tracking-tight text-stone-900">
+              {t("tourInstance.title", "Tour Instances")}
+            </h1>
+            <p className="text-sm text-stone-500">
+              {t("tourInstance.description", "Manage scheduled tour instances and track departures")}
+            </p>
+          </div>
+          <button
+            onClick={() => router.push("/tour-instances/create")}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white text-sm font-semibold rounded-2xl transition-all duration-200 shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 shrink-0">
+            <Icon icon="heroicons:plus" className="size-4" />
+            {t("tourInstance.createInstance", "Create Instance")}
+          </button>
+        </motion.div>
+
+        {/* ── Stat Cards ─────────────────────────────────── */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            label={t("tourInstance.totalInstances", "Total Instances")}
+            value={stats.totalInstances}
+            accent="stone"
+            icon="heroicons:calendar-days"
+          />
+          <StatCard
+            label={t("tourInstance.available", "Available")}
+            value={stats.available}
+            accent="green"
+            icon="heroicons:check-circle"
+          />
+          <StatCard
+            label={t("tourInstance.confirmed", "Confirmed")}
+            value={stats.confirmed}
+            accent="amber"
+            icon="heroicons:clipboard-document-check"
+          />
+          <StatCard
+            label={t("tourInstance.soldOut", "Sold Out")}
+            value={stats.soldOut}
+            accent="red"
+            icon="heroicons:x-circle"
+          />
+        </motion.div>
+
+        {/* ── Search & Filter ────────────────────────────── */}
+        <motion.div
+          variants={itemVariants}
+          initial="hidden"
+          animate="show"
+          className="bg-white border border-stone-200/50 rounded-[2.5rem] p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+          <div className="flex items-center gap-3 flex-col lg:flex-row">
+            <div className="relative flex-1 w-full">
+              <Icon
+                icon="heroicons:magnifying-glass"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-stone-400 pointer-events-none"
+              />
+              <input
+                type="text"
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder={t("placeholder.searchByTitleLocationCountry", "Search by title, location, or country...")}
+                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-stone-200/80 bg-white text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
+              />
+              {searchText && (
+                <button
+                  onClick={() => setSearchText("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors">
+                  <Icon icon="heroicons:x-mark" className="size-4" />
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Icon icon="heroicons:funnel" className="size-4 text-stone-400" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2.5 rounded-2xl border border-stone-200/80 bg-white text-sm text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200 cursor-pointer">
+                <option value="all">All Status</option>
+                <option value="available">Available</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="soldout">Sold Out</option>
+                <option value="inprogress">In Progress</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ── Table ──────────────────────────────────────── */}
+        <div className="bg-white border border-stone-200/50 rounded-[2.5rem] overflow-hidden shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+          {/* Error State */}
+          {dataState === "error" && (
+            <div className="m-6 p-6 bg-white border border-red-200/50 rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="text-sm font-semibold text-red-800">
+                    {t("tourInstance.form.error.title", "Could not load tour instances")}
+                  </h2>
+                  <p className="text-sm text-red-700 mt-1">
+                    {errorMessage ?? t("tourInstance.form.error.fallback", "Unable to load tour instance data. Please try again.")}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setReloadToken((v) => v + 1)}
+                  className="px-3 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] transition-colors">
+                  {t("common.retry", "Retry")}
+                </button>
               </div>
-              <p className="text-sm text-slate-500 mt-0.5">
-                Manage scheduled tour instances and track departures
+            </div>
+          )}
+
+          {/* Loading */}
+          {dataState === "loading" && (
+            <div className="p-6">
+              <SkeletonTable rows={5} columns={11} />
+            </div>
+          )}
+
+          {/* Empty state */}
+          {dataState === "empty" && instances.length === 0 && (
+            <div className="m-6 p-12 text-center">
+              <div className="w-16 h-16 rounded-3xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+                <Icon icon="heroicons:calendar" className="size-7 text-stone-300" />
+              </div>
+              <h2 className="text-lg font-bold text-stone-800">
+                {t("tourInstance.form.empty.title", "No tour instances found")}
+              </h2>
+              <p className="text-sm text-stone-500 mt-1">
+                {t("tourInstance.form.empty.description", "There are no scheduled tour instances yet. Create your first instance to get started.")}
               </p>
             </div>
-            <button
-              onClick={() => router.push("/tour-instances/create")}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-xl transition-colors">
-              <Icon icon="heroicons:plus" className="size-4" />
-              Create Instance
-            </button>
-          </div>
+          )}
 
-          {/* ── Stat Cards ─────────────────────────────────── */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <StatCard
-              label="Total Instances"
-              value={stats.totalInstances}
-              icon="heroicons:calendar-days"
-              iconBg="bg-slate-100"
-              iconColor="text-slate-600"
-            />
-            <StatCard
-              label="Available"
-              value={stats.available}
-              icon="heroicons:check-circle"
-              iconBg="bg-blue-100"
-              iconColor="text-blue-600"
-            />
-            <StatCard
-              label="Confirmed"
-              value={stats.confirmed}
-              icon="heroicons:clipboard-document-check"
-              iconBg="bg-green-100"
-              iconColor="text-green-600"
-            />
-            <StatCard
-              label="Sold Out"
-              value={stats.soldOut}
-              icon="heroicons:x-circle"
-              iconBg="bg-red-100"
-              iconColor="text-red-600"
-            />
-          </div>
-
-          {/* ── Search & Filter ────────────────────────────── */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1">
-                <Icon
-                  icon="heroicons:magnifying-glass"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-400"
-                />
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder={t("placeholder.searchByTitleLocationCountry", "Search by title, location, or country...")}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Icon
-                  icon="heroicons:funnel"
-                  className="size-5 text-slate-400"
-                />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500">
-                  <option value="all">All Status</option>
-                  <option value="available">Available</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="soldout">Sold Out</option>
-                  <option value="inprogress">In Progress</option>
-                  <option value="cancelled">Cancelled</option>
-                  <option value="completed">Completed</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Table ──────────────────────────────────────── */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            {loading && (
-              <div className="flex items-center justify-center py-20">
-                <Icon
-                  icon="heroicons:arrow-path"
-                  className="size-8 animate-spin text-slate-400"
-                />
-              </div>
-            )}
-
-            {!loading && instances.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <Icon
-                  icon="heroicons:calendar"
-                  className="size-12 text-slate-300 mb-3"
-                />
-                <p className="text-sm text-slate-500">
-                  {t("tourInstance.noInstances", "No tour instances found")}
-                </p>
-              </div>
-            )}
-
-            {!loading && instances.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200">
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Thumbnail
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Title
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Tour
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Code
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Location
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Departure
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Duration
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Participants
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Price
-                      </th>
-                      <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Status
-                      </th>
-                      <th className="text-center px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wide">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
+          {/* Table */}
+          {dataState === "ready" && instances.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-stone-100">
+                    <th className="text-left px-8 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.thumbnail", "Thumbnail")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.title", "Title")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.tour", "Tour")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.code", "Code")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.location", "Location")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.departure", "Departure")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.duration", "Duration")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.participants", "Participants")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.price", "Price")}
+                    </th>
+                    <th className="text-left px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.status", "Status")}
+                    </th>
+                    <th className="text-center px-6 py-4 text-[11px] font-bold text-stone-400 uppercase tracking-wider">
+                      {t("tourInstance.actions", "Actions")}
+                    </th>
+                  </tr>
+                </thead>
+                <motion.tbody variants={containerVariants} initial="hidden" animate="show" className="divide-y divide-stone-100">
+                  <AnimatePresence>
                     {instances.map((inst) => (
-                      <tr
+                      <motion.tr
+                        variants={itemVariants}
+                        layout
                         key={inst.id}
-                        className="hover:bg-slate-50 transition-colors">
+                        className="hover:bg-amber-50/30 transition-colors duration-150 group">
                         {/* Thumbnail */}
-                        <td className="px-6 py-4">
-                          <div className="w-14 h-16 rounded-lg border border-slate-200 bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                        <td className="px-8 py-5">
+                          <div className="w-14 h-16 rounded-xl border border-stone-200/80 bg-stone-100 flex items-center justify-center shrink-0 overflow-hidden group-hover:border-amber-300 transition-colors duration-200">
                             {inst.thumbnail?.publicURL ? (
                               <img
                                 src={inst.thumbnail.publicURL}
@@ -357,81 +411,67 @@ export function TourInstanceListPage() {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <Icon
-                                icon="heroicons:photo"
-                                className="size-5 text-slate-400"
-                              />
+                              <Icon icon="heroicons:photo" className="size-5 text-stone-400" />
                             )}
                           </div>
                         </td>
 
                         {/* Title */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm font-semibold text-slate-900 max-w-[220px] truncate">
+                        <td className="px-6 py-5">
+                          <p className="text-sm font-semibold text-stone-900 max-w-[200px] truncate tracking-tight">
                             {inst.title || inst.tourName}
                           </p>
                         </td>
 
                         {/* Tour Name */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm text-slate-700 max-w-[220px] truncate">
+                        <td className="px-6 py-5">
+                          <p className="text-sm text-stone-700 max-w-[200px] truncate">
                             {inst.tourName}
                           </p>
                         </td>
 
-                        {/* Tour Instance Code */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm font-medium text-slate-700">
+                        {/* Code */}
+                        <td className="px-6 py-5">
+                          <p className="text-sm font-medium text-stone-700 tracking-tight">
                             {inst.tourInstanceCode}
                           </p>
                         </td>
 
                         {/* Location */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-1 text-sm text-slate-600">
-                            <Icon
-                              icon="heroicons:map-pin"
-                              className="size-3.5 text-slate-400"
-                            />
-                            <span className="max-w-[160px] truncate">
-                              {inst.location || "-"}
-                            </span>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-1.5 text-sm text-stone-600">
+                            <Icon icon="heroicons:map-pin" className="size-3.5 text-stone-400 shrink-0" />
+                            <span className="max-w-[140px] truncate">{inst.location || "-"}</span>
                           </div>
                         </td>
 
                         {/* Departure */}
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-5">
                           <div>
-                            <div className="flex items-center gap-1">
-                              <Icon
-                                icon="heroicons:calendar"
-                                className="size-3.5 text-slate-400"
-                              />
-                              <span className="text-sm text-slate-700">
+                            <div className="flex items-center gap-1.5">
+                              <Icon icon="heroicons:calendar" className="size-3.5 text-stone-400" />
+                              <span className="text-sm text-stone-700 tracking-tight">
                                 {formatDate(inst.startDate)}
                               </span>
                             </div>
-                            <p className="text-xs text-slate-400 mt-0.5">
-                              Return: {formatDate(inst.endDate)}
+                            <p className="text-[11px] text-stone-400 mt-0.5 ml-5">
+                              {t("tourInstance.return", "Return")}: {formatDate(inst.endDate)}
                             </p>
                           </div>
                         </td>
 
                         {/* Duration */}
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-5">
                           <div className="flex items-center gap-1.5">
-                            <Icon
-                              icon="heroicons:clock"
-                              className="size-4 text-slate-400"
-                            />
-                            <span className="text-sm text-slate-700">
+                            <Icon icon="heroicons:clock" className="size-4 text-stone-400" />
+                            <span className="text-sm text-stone-700 tracking-tight">
                               {inst.durationDays} days
                             </span>
                           </div>
                         </td>
 
                         {/* Participants */}
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-5">
                           <ParticipantsCell
                             registered={inst.currentParticipation}
                             max={inst.maxParticipation}
@@ -440,66 +480,61 @@ export function TourInstanceListPage() {
                         </td>
 
                         {/* Price */}
-                        <td className="px-6 py-4">
-                          <p className="text-sm font-medium text-slate-900">
+                        <td className="px-6 py-5">
+                          <p className="text-sm font-semibold text-stone-900 tracking-tight">
                             {formatCurrency(inst.price)}
                           </p>
-                          <p className="text-xs text-slate-400">per person</p>
+                          <p className="text-[11px] text-stone-400">{t("tourInstance.perPerson", "per person")}</p>
                         </td>
 
                         {/* Status */}
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-5">
                           <StatusBadge status={inst.status} />
                         </td>
 
                         {/* Actions */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-center">
+                        <td className="px-6 py-5">
+                          <div className="flex items-center justify-center gap-1">
                             <button
-                              onClick={() =>
-                                router.push(`/tour-instances/${inst.id}`)
-                              }
-                              className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                              onClick={() => router.push(`/tour-instances/${inst.id}`)}
+                              className="p-2.5 rounded-xl text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200 active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset"
                               title="View Details">
                               <Icon icon="heroicons:eye" className="size-4" />
                             </button>
                           </div>
                         </td>
-                      </tr>
+                      </motion.tr>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* ── Pagination ─────────────────────────────────── */}
-          {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4">
-              <span className="text-sm text-slate-600">
-                Page {currentPage} of {totalPages}
-              </span>
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                  className="px-3 py-1 rounded text-sm text-slate-600 disabled:opacity-50 hover:bg-slate-100">
-                  Previous
-                </button>
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
-                  }
-                  className="px-3 py-1 rounded text-sm text-slate-600 disabled:opacity-50 hover:bg-slate-100">
-                  Next
-                </button>
-              </div>
+                  </AnimatePresence>
+                </motion.tbody>
+              </table>
             </div>
           )}
-        </main>
+        </div>
+
+        {/* ── Pagination ─────────────────────────────────── */}
+        {(dataState === "ready" || dataState === "empty") && totalPages > 1 && (
+          <div className="flex items-center justify-between bg-white border border-stone-200/50 rounded-[2.5rem] p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+            <span className="text-sm text-stone-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                className="px-4 py-1.5 rounded-xl text-sm text-stone-600 disabled:opacity-50 hover:bg-stone-100 active:scale-[0.98] transition-all">
+                Previous
+              </button>
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                className="px-4 py-1.5 rounded-xl text-sm text-stone-600 disabled:opacity-50 hover:bg-stone-100 active:scale-[0.98] transition-all">
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
     </AdminSidebar>
   );
 }
-
-

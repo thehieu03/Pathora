@@ -11,6 +11,7 @@
     "back": "Quay lại",
     "save": "Lưu",
     "loading": "Đang tải...",
+    "retry": "Thử lại",
     "auth": {
       "fullName": "Họ và tên",
       "phoneNumber": "Số điện thoại",
@@ -56,7 +57,6 @@
     "alreadyHaveAccount": "Đã có tài khoản?",
     "submit": "Gửi",
     "cancel": "Hủy",
-    "save": "Lưu",
     "delete": "Xóa",
     "edit": "Sửa",
     "add": "Thêm",
@@ -65,10 +65,8 @@
     "filter": "Lọc",
     "reset": "Đặt lại",
     "close": "Đóng",
-    "back": "Quay lại",
     "next": "Tiếp theo",
     "previous": "Trước",
-    "loading": "Đang tải...",
     "noData": "Không có dữ liệu",
     "copyright": "Bản quyền 2021, progcoder. Tất cả quyền được bảo lưu.",
     "weekly": "Hàng tuần",
@@ -103,7 +101,98 @@
     "newPassword": "Mật khẩu mới",
     "confirmNewPassword": "Xác nhận mật khẩu mới",
     "loadingDashboard": "Đang tải dữ liệu bảng điều khiển từ backend...",
-    "processing": "Đang xử lý..."
+    "processing": "Đang xử lý...",
+    "yes": "Có",
+    "no": "Không",
+    "required": "Trường này là bắt buộc",
+    "customers": {
+      "pageTitle": "Khách Hàng",
+      "pageSubtitle": "Quản lý hồ sơ và mức độ tương tác của khách hàng",
+      "searchPlaceholder": "Tìm theo tên, email hoặc ID...",
+      "empty": {
+        "title": "Chưa có khách hàng",
+        "description": "API không trả về bản ghi khách hàng nào cho workspace này."
+      },
+      "error": {
+        "title": "Không thể tải khách hàng",
+        "fallback": "Không thể tải dữ liệu khách hàng. Vui lòng thử lại."
+      },
+      "filterAll": "Tất cả",
+      "noMatch": "Không có khách hàng nào phù hợp với bộ lọc hiện tại.",
+      "stat": {
+        "total": "Tổng Khách Hàng",
+        "active": "Khách Hàng Hoạt Động",
+        "avgSpending": "Chi Tiêu TB",
+        "vipMembers": "Thành Viên VIP"
+      },
+      "column": {
+        "customer": "Khách Hàng",
+        "contact": "Liên Hệ",
+        "nationality": "Quốc Tịch",
+        "bookings": "Đặt Chỗ",
+        "totalSpent": "Tổng Chi",
+        "status": "Trạng Thái",
+        "lastBooking": "Đặt Chỗ Gần Nhất"
+      }
+    },
+    "insurance": {
+      "pageTitle": "Bảo Hiểm",
+      "pageSubtitle": "Quản lý các chính sách bảo hiểm du lịch",
+      "empty": {
+        "title": "Chưa có chính sách bảo hiểm",
+        "description": "API không trả về bản ghi bảo hiểm nào."
+      },
+      "error": {
+        "title": "Không thể tải bảo hiểm",
+        "fallback": "Không thể tải dữ liệu bảo hiểm. Vui lòng thử lại."
+      },
+      "filterAll": "Tất cả",
+      "stat": {
+        "active": "Hợp Đồng Đang Hoạt Động",
+        "premiums": "Tổng Phí Bảo Hiểm",
+        "claims": "Yêu Cầu Bồi Thường",
+        "avgPremium": "Phí TB"
+      },
+      "column": {
+        "policyId": "Mã Hợp Đồng",
+        "booking": "Đặt Chỗ",
+        "customer": "Khách Hàng",
+        "planType": "Loại Gói",
+        "coverage": "Mức Bảo Hiểm",
+        "premium": "Phí",
+        "status": "Trạng Thái",
+        "period": "Thời Hạn"
+      }
+    },
+    "visaApplications": {
+      "pageTitle": "Đơn Xin Visa",
+      "pageSubtitle": "Theo dõi trạng thái đơn xin visa",
+      "empty": {
+        "title": "Chưa có đơn xin visa",
+        "description": "API không trả về bản ghi đơn xin visa nào."
+      },
+      "error": {
+        "title": "Không thể tải đơn xin visa",
+        "fallback": "Không thể tải dữ liệu đơn xin visa. Vui lòng thử lại."
+      },
+      "filterAll": "Tất cả",
+      "stat": {
+        "total": "Tổng Đơn",
+        "approved": "Đã Duyệt",
+        "pending": "Đang Chờ Duyệt",
+        "rate": "Tỷ Lệ Duyệt"
+      },
+      "column": {
+        "applicationId": "Mã Đơn",
+        "applicant": "Người Xin",
+        "passport": "Hộ Chiếu",
+        "destination": "Điểm Đến",
+        "visaType": "Loại Visa",
+        "status": "Trạng Thái",
+        "submitted": "Ngày Nộp",
+        "decision": "Quyết Định"
+      }
+    }
   },
   "placeholder": {
     "searchAnything": "Tìm kiếm...",
@@ -1163,6 +1252,23 @@
         "title": "Chi tiết yêu cầu tour"
       }
     },
+    "pageTitle": "Yêu cầu tour",
+    "pageSubtitle": "Lọc, xem chi tiết và xử lý các yêu cầu tour tùy chỉnh.",
+    "empty": {
+      "title": "Không tìm thấy yêu cầu tour",
+      "description": "Không có yêu cầu tour nào phù hợp với bộ lọc hiện tại."
+    },
+    "error": {
+      "title": "Không thể tải yêu cầu tour",
+      "fallback": "Không thể tải dữ liệu yêu cầu tour. Vui lòng thử lại."
+    },
+    "common": {
+      "retry": "Thử lại",
+      "previous": "Trước",
+      "next": "Sau",
+      "view": "Xem",
+      "backToList": "Quay lại danh sách"
+    },
     "form": {
       "destination": "Điểm đến",
       "startDate": "Ngày khởi hành",
@@ -1296,7 +1402,15 @@
       "searchAria": "Tìm kiếm tour",
       "searchAlt": "Tìm kiếm",
       "exploreTours": "Khám phá tour",
-      "weekdays": ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+      "weekdays": [
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "CN"
+      ],
       "destinations": [
         "TP. Hồ Chí Minh",
         "Hà Nội",
@@ -1305,7 +1419,11 @@
         "New York",
         "California"
       ],
-      "classifications": ["Tiêu chuẩn", "VIP", "Cao cấp"],
+      "classifications": [
+        "Tiêu chuẩn",
+        "VIP",
+        "Cao cấp"
+      ],
       "calendar": {
         "previousMonth": "Tháng trước",
         "nextMonth": "Tháng sau"
@@ -1590,7 +1708,9 @@
       "guests": "Khách",
       "availability": "Khả dụng",
       "overview": "Tổng quan",
-      "itinerary": "Lịch trình",
+      "itinerary": {
+        "empty": "Không có lịch trình cho gói này."
+      },
       "aboutThisTour": "Về Tour Này",
       "itineraryComingSoon": "Lịch trình chi tiết sẽ sớm được cập nhật. Vui lòng liên hệ chúng tôi để biết thêm thông tin.",
       "youMightAlsoLike": "Bạn Có Thể Thích",
@@ -1620,8 +1740,20 @@
       "retry": "Thử lại",
       "package": "Gói",
       "plans": "Lịch trình",
-      "days": "ngày",
+      "accommodations": {
+        "empty": "Không có thông tin lưu trú cho gói này."
+      },
+      "locations": {
+        "empty": "Không có thông tin địa điểm cho gói này."
+      },
+      "transportation": {
+        "empty": "Không có thông tin phương tiện di chuyển cho gói này."
+      },
+      "services": {
+        "empty": "Không có dịch vụ khác cho gói này."
+      },
       "insurance": "Bảo hiểm",
+      "days": "ngày",
       "included": "bao gồm",
       "none": "Không có",
       "fee": "Phí",
@@ -1806,6 +1938,67 @@
       "invoice": "Hóa Đơn",
       "viewDetails": "Xem Chi Tiết",
       "noResults": "Không tìm thấy đặt chỗ."
+    },
+    "cancellationPolicy": {
+      "pageTitle": "Chính Sách Hủy Tour",
+      "pageSubtitle": "Quản lý quy tắc hoàn tiền hủy tour du lịch",
+      "empty": {
+        "title": "Chưa có chính sách hủy tour",
+        "description": "Tạo một chính sách mới để bắt đầu"
+      },
+      "error": {
+        "title": "Không thể tải danh sách chính sách",
+        "loadFailed": "Không thể tải danh sách chính sách hủy tour",
+        "deleteFailed": "Không thể xóa chính sách hủy tour",
+        "saveFailed": "Đã xảy ra lỗi khi lưu chính sách hủy tour"
+      },
+      "column": {
+        "policyCode": "Mã Chính Sách",
+        "tourScope": "Phạm Vi Tour",
+        "minDays": "Ngày Tối Thiểu",
+        "maxDays": "Ngày Tối Đa",
+        "penalty": "Phí %",
+        "applyOn": "Áp Dụng Cho",
+        "status": "Trạng Thái",
+        "actions": "Hành Động"
+      },
+      "applyOn": {
+        "FullAmount": "Toàn Bộ Số Tiền",
+        "DepositOnly": "Chỉ Tiền Đặt Cọc"
+      },
+      "form": {
+        "titleCreate": "Tạo Chính Sách Hủy Tour",
+        "titleEdit": "Chỉnh Sửa Chính Sách Hủy Tour",
+        "tourScope": "Phạm Vi Tour",
+        "minDays": "Số Ngày Tối Thiểu Trước Khởi Hành",
+        "maxDays": "Số Ngày Tối Đa Trước Khởi Hành",
+        "penaltyPercentage": "Phần Trăm Phạt",
+        "applyOn": "Áp Dụng Cho",
+        "translations": "Bản Dịch"
+      },
+      "validation": {
+        "minDaysRequired": "Số ngày tối thiểu là bắt buộc",
+        "maxDaysRequired": "Số ngày tối đa là bắt buộc",
+        "penaltyRequired": "Phần trăm phạt là bắt buộc",
+        "cannotBeNegative": "Không thể là số âm",
+        "cannotExceed100": "Không thể vượt quá 100%",
+        "minDaysGreaterThanMax": "Số ngày tối thiểu không thể lớn hơn số ngày tối đa"
+      },
+      "action": {
+        "addPolicy": "Thêm Chính Sách",
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "cancel": "Hủy",
+        "update": "Cập Nhật",
+        "create": "Tạo Mới",
+        "saving": "Đang lưu..."
+      },
+      "confirm": {
+        "delete": "Bạn có chắc chắn muốn xóa chính sách hủy tour này không?"
+      },
+      "unit": {
+        "days": "ngày"
+      }
     },
     "bookingDetail": {
       "backToBookings": "Quay Lại Đặt Chỗ",
@@ -2023,7 +2216,8 @@
       "openMenu": "Mở menu",
       "closeMenu": "Đóng menu",
       "changeLanguage": "Đổi ngôn ngữ",
-      "closeNavigationMenu": "Đóng menu điều hướng"
+      "closeNavigationMenu": "Đóng menu điều hướng",
+      "notificationsAria": "{{count}} thông báo chưa đọc"
     }
   },
   "booking": {
@@ -2055,6 +2249,40 @@
     "message": "Nội dung",
     "time": "Thời gian",
     "noNotificationsFound": "Không tìm thấy thông báo"
+  },
+  "tourList": {
+    "pageTitle": "Tours",
+    "pageSubtitle": "Quản lý các gói tour và lịch trình của bạn",
+    "addNewTour": "Thêm Tour Mới",
+    "searchPlaceholder": "Tìm kiếm theo tên hoặc mã...",
+    "statusFilter": {
+      "all": "Tất Cả Trạng Thái",
+      "active": "Hoạt Động",
+      "inactive": "Không Hoạt Động",
+      "draft": "Nháp",
+      "pending": "Đang Chờ"
+    },
+    "column": {
+      "tour": "Tour",
+      "code": "Mã",
+      "status": "Trạng Thái",
+      "updated": "Cập Nhật",
+      "actions": "Thao Tác"
+    },
+    "stat": {
+      "totalTours": "Tổng Tours",
+      "active": "Hoạt Động",
+      "inactive": "Không Hoạt Động",
+      "draft": "Nháp"
+    },
+    "empty": {
+      "title": "Không tìm thấy tour nào",
+      "description": "Chưa có tour nào để hiển thị. Tạo tour đầu tiên của bạn để bắt đầu."
+    },
+    "error": {
+      "title": "Không thể tải danh sách tour",
+      "fallback": "Không thể tải dữ liệu tour. Vui lòng thử lại."
+    }
   },
   "tourAdmin": {
     "title": "Quản lý Tour",
@@ -2288,6 +2516,14 @@
       "operatingCost": "Chi phí vận hành",
       "depositPerPerson": "Tiền cọc mỗi người",
       "locationPlaceholder": "Ví dụ: Hạ Long",
+      "empty": {
+        "title": "Không tìm thấy lịch khởi hành nào",
+        "description": "Chưa có lịch khởi hành nào. Tạo lịch khởi hành đầu tiên của bạn để bắt đầu."
+      },
+      "error": {
+        "title": "Không thể tải danh sách lịch khởi hành",
+        "fallback": "Không thể tải dữ liệu lịch khởi hành. Vui lòng thử lại."
+      },
       "includedServicesPlaceholder": "Ví dụ: Xe đưa đón",
       "addService": "Thêm dịch vụ",
       "guideName": "Tên hướng dẫn viên",
@@ -2312,6 +2548,8 @@
     },
     "pricingPolicy": {
       "title": "Chính sách giá",
+      "pageTitle": "Chính sách giá",
+      "pageSubtitle": "Quản lý quy tắc định giá theo độ tuổi cho các tour",
       "addPolicy": "Thêm chính sách",
       "editPolicy": "Sửa chính sách",
       "createPolicy": "Tạo chính sách giá",
@@ -2328,17 +2566,88 @@
       "pricePercentage": "Giá %",
       "noPolicies": "Không tìm thấy chính sách giá nào. Tạo một chính sách để bắt đầu.",
       "confirmDelete": "Bạn có chắc chắn muốn xóa chính sách giá này không?",
+      "deleteFailed": "Xóa chính sách giá thất bại",
+      "setDefaultFailed": "Đặt làm mặc định thất bại",
       "private": "Riêng",
       "public": "Công khai",
       "active": "Hoạt động",
-      "inactive": "Không hoạt động"
+      "inactive": "Không hoạt động",
+      "empty": {
+        "title": "Không tìm thấy chính sách giá nào",
+        "description": "Tạo chính sách giá đầu tiên của bạn để bắt đầu."
+      },
+      "error": {
+        "title": "Không thể tải chính sách giá",
+        "fallback": "Không thể tải dữ liệu chính sách giá. Vui lòng thử lại."
+      },
+      "column": {
+        "policyCode": "Mã chính sách",
+        "name": "Tên",
+        "tourType": "Loại tour",
+        "status": "Trạng thái",
+        "default": "Mặc định",
+        "tiers": "Bậc giá",
+        "actions": "Hành động"
+      },
+      "form": {
+        "policyName": "Tên chính sách",
+        "policyNamePlaceholder": "Nhập tên chính sách giá",
+        "tourType": "Loại tour",
+        "setAsDefault": "Đặt làm chính sách mặc định",
+        "translations": "Bản dịch",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "update": "Cập nhật",
+        "create": "Tạo mới",
+        "saving": "Đang lưu...",
+        "minOneTier": "Vui lòng thêm ít nhất một bậc giá",
+        "saveFailed": "Lưu chính sách giá thất bại",
+        "policyNameRequired": "Tên chính sách là bắt buộc"
+      },
+      "action": {
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "setDefault": "Đặt mặc định"
+      },
+      "tiersCount": "{{count}} bậc giá"
     },
     "visaPolicy": {
       "title": "Chính sách Visa",
+      "pageTitle": "Chính sách Visa",
+      "pageSubtitle": "Quản lý thời gian xử lý visa và yêu cầu theo khu vực",
       "add": "Thêm chính sách Visa",
       "edit": "Sửa chính sách Visa",
       "create": "Tạo chính sách Visa",
       "description": "Quản lý thời gian xử lý visa và yêu cầu theo khu vực",
+      "empty": {
+        "title": "Chưa có chính sách visa nào",
+        "description": "Thêm chính sách visa đầu tiên để bắt đầu."
+      },
+      "error": {
+        "title": "Không thể tải chính sách visa",
+        "fallback": "Không thể tải dữ liệu chính sách visa. Vui lòng thử lại."
+      },
+      "column": {
+        "region": "Khu vực",
+        "processingDays": "Ngày xử lý",
+        "bufferDays": "Ngày dự phòng",
+        "fullPayment": "Thanh toán đầy đủ",
+        "status": "Trạng thái",
+        "actions": "Hành động"
+      },
+      "form": {
+        "region": "Khu vực",
+        "regionPlaceholder": "ví dụ: Đông Nam Á, Châu Âu, Mỹ",
+        "processingDays": "Ngày xử lý",
+        "bufferDays": "Ngày dự phòng",
+        "fullPaymentRequired": "Yêu cầu thanh toán đầy đủ để xử lý visa",
+        "active": "Hoạt động",
+        "translations": "Bản dịch",
+        "cancel": "Hủy",
+        "create": "Tạo",
+        "update": "Cập nhật",
+        "saving": "Đang lưu..."
+      },
       "region": "Khu vực",
       "regionPlaceholder": "ví dụ: Việt Nam, Thái Lan, Mỹ",
       "processingDays": "Ngày xử lý",
@@ -2356,8 +2665,11 @@
       "deleteFailed": "Không thể xóa chính sách visa"
     },
     "depositPolicy": {
+      "pageTitle": "Chính sách đặt cọc",
+      "pageSubtitle": "Quản lý yêu cầu đặt cọc cho tour (phần trăm hoặc số tiền cố định)",
       "title": "Chính sách đặt cọc",
       "add": "Thêm chính sách đặt cọc",
+      "addPolicy": "Thêm chính sách",
       "edit": "Sửa chính sách đặt cọc",
       "create": "Tạo chính sách đặt cọc",
       "description": "Quản lý yêu cầu đặt cọc cho tour (phần trăm hoặc số tiền cố định)",
@@ -2378,7 +2690,41 @@
       "confirmDelete": "Bạn có chắc chắn muốn xóa chính sách đặt cọc này không?",
       "createFailed": "Không thể tạo chính sách đặt cọc",
       "updateFailed": "Không thể cập nhật chính sách đặt cọc",
-      "deleteFailed": "Không thể xóa chính sách đặt cọc"
+      "deleteFailed": "Không thể xóa chính sách đặt cọc",
+      "empty": {
+        "title": "Không tìm thấy chính sách đặt cọc nào",
+        "description": "Tạo chính sách đặt cọc đầu tiên của bạn để bắt đầu."
+      },
+      "error": {
+        "title": "Không thể tải chính sách đặt cọc",
+        "fallback": "Không thể tải dữ liệu chính sách đặt cọc. Vui lòng thử lại."
+      },
+      "column": {
+        "tourScope": "Phạm vi tour",
+        "depositType": "Loại đặt cọc",
+        "depositValue": "Giá trị đặt cọc",
+        "minDays": "Ngày tối thiểu",
+        "status": "Trạng thái",
+        "actions": "Hành động"
+      },
+      "form": {
+        "tourScope": "Phạm vi tour",
+        "depositType": "Loại đặt cọc",
+        "depositValue": "Giá trị đặt cọc",
+        "minDaysBeforeDeparture": "Số ngày tối thiểu trước khởi hành",
+        "translations": "Bản dịch",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Nhập mô tả chính sách đặt cọc"
+      },
+      "common": {
+        "retry": "Thử lại",
+        "cancel": "Hủy",
+        "create": "Tạo",
+        "update": "Cập nhật",
+        "saving": "Đang lưu...",
+        "edit": "Sửa",
+        "delete": "Xóa"
+      }
     },
     "policies": {
       "title": "Chính sách",
@@ -2474,6 +2820,230 @@
       },
       "messages": {
         "saveSuccess": "Đã cập nhật nội dung trang thành công."
+      }
+    }
+  },
+  "translation": {
+    "tab": {
+      "vietnamese": "Tiếng Việt",
+      "english": "English"
+    },
+    "field": {
+      "name": "Tên",
+      "namePlaceholderVi": "Nhập tên chính sách",
+      "namePlaceholderEn": "Enter policy name",
+      "description": "Mô tả",
+      "descriptionPlaceholderVi": "Nhập mô tả",
+      "descriptionPlaceholderEn": "Enter description"
+    }
+  },
+  "settings": {
+    "pageTitle": "Cài đặt",
+    "pageSubtitle": "Quản lý không gian làm việc và tùy chọn",
+    "tabs": {
+      "general": "Chung",
+      "taxConfigs": "Cấu hình Thuế",
+      "pricingPolicies": "Chính sách Giá",
+      "policies": "Chính sách",
+      "visaPolicies": "Chính sách Visa",
+      "depositPolicies": "Chính sách Đặt cọc",
+      "notifications": "Thông báo",
+      "security": "Bảo mật",
+      "billing": "Thanh toán",
+      "integrations": "Tích hợp"
+    },
+    "general": {
+      "organization": "Tổ chức",
+      "companyName": "Tên công ty",
+      "businessEmail": "Email kinh doanh",
+      "timezone": "Múi giờ",
+      "currency": "Tiền tệ",
+      "saveChanges": "Lưu thay đổi"
+    },
+    "teamMembers": {
+      "title": "Thành viên nhóm",
+      "inviteMember": "Mời thành viên",
+      "active": "Hoạt động",
+      "pending": "Đang chờ",
+      "owner": "Chủ sở hữu",
+      "admin": "Quản trị",
+      "editor": "Biên tập viên",
+      "viewer": "Người xem"
+    },
+    "notifications": {
+      "title": "Tùy chọn thông báo",
+      "emailBookings": "Thông báo email cho đặt tour mới",
+      "emailBookingsDesc": "Nhận thông báo khi khách hàng đặt tour mới",
+      "paymentReminders": "Nhắc nhở thanh toán",
+      "paymentRemindersDesc": "Nhận cảnh báo cho các khoản thanh toán đang chờ",
+      "visaUpdates": "Cập nhật đơn xin visa",
+      "visaUpdatesDesc": "Nhận thông báo khi trạng thái visa thay đổi",
+      "tourReminders": "Nhắc nhở khởi hành tour",
+      "tourRemindersDesc": "Cảnh báo trước ngày khởi hành tour",
+      "weeklyReports": "Báo cáo hàng tuần",
+      "weeklyReportsDesc": "Nhận báo cáo tổng hợp hàng tuần",
+      "marketing": "Cập nhật tiếp thị",
+      "marketingDesc": "Tin tức và nội dung khuyến mãi"
+    },
+    "security": {
+      "title": "Cài đặt bảo mật",
+      "changePassword": "Đổi mật khẩu",
+      "twoFactor": "Xác thực hai yếu tố",
+      "twoFactorDesc": "Thêm lớp bảo mật bổ sung cho tài khoản của bạn",
+      "enable2FA": "Bật 2FA",
+      "activeSessions": "Phiên đang hoạt động",
+      "currentSession": "Phiên hiện tại",
+      "chromeWindows": "Chrome trên Windows"
+    },
+    "billing": {
+      "plan": "Chuyên nghiệp",
+      "renewsOn": "$99/tháng - Gia hạn vào 01/04/2026",
+      "apiCalls": "Lệnh gọi API",
+      "storageUsed": "Dung lượng đã dùng",
+      "upgradePlan": "Nâng cấp gói",
+      "viewInvoices": "Xem hóa đơn"
+    },
+    "integrations": {
+      "paymentGateway": "Cổng thanh toán",
+      "paymentGatewayDesc": "Chấp nhận thanh toán trực tuyến",
+      "emailService": "Dịch vụ Email",
+      "emailServiceDesc": "Gửi email giao dịch",
+      "smsNotifications": "Thông báo SMS",
+      "smsNotificationsDesc": "Gửi cảnh báo SMS",
+      "analytics": "Phân tích",
+      "analyticsDesc": "Theo dõi phân tích trang web",
+      "crmIntegration": "Tích hợp CRM",
+      "crmIntegrationDesc": "Kết nối với công cụ CRM",
+      "connected": "Đã kết nối",
+      "connect": "Kết nối"
+    }
+  },
+  "adminDashboard": {
+    "pageTitle": "Bảng điều khiển",
+    "pageSubtitle": "Tổng quan quản trị và các chỉ số chính",
+    "refresh": "Làm mới",
+    "loading": "Đang tải dữ liệu bảng điều khiển từ backend...",
+    "noData": "Không có dữ liệu bảng điều khiển.",
+    "noDataChart": "Không có dữ liệu",
+    "statTotalRevenue": "Tổng doanh thu",
+    "statTotalBookings": "Tổng đặt tour",
+    "statActiveTours": "Tour đang hoạt động",
+    "statTotalCustomers": "Tổng khách hàng",
+    "statCancellationRate": "Tỷ lệ hủy",
+    "statVisaApproval": "Phê duyệt Visa",
+    "statRevenueSubtext": "Trên tất cả các chuyến tour và đặt tour",
+    "chartRevenueOverTime": "Doanh thu theo thời gian",
+    "chartByTourType": "Theo loại tour",
+    "chartByRegion": "Theo khu vực",
+    "chartBookingStatus": "Trạng thái đặt tour",
+    "chartBookingTrend": "Xu hướng đặt tour",
+    "chartTopSellingTours": "Tour bán chạy",
+    "chartTopDestinations": "Điểm đến hàng đầu",
+    "chartCustomerGrowth": "Tăng trưởng khách hàng",
+    "chartVisaProcessing": "Xử lý Visa",
+    "upcomingDeadlines": "Thời hạn sắp tới",
+    "noUpcomingDeadlines": "Không có thời hạn sắp tới.",
+    "visaSuccessRate": "Tỷ lệ thành công Visa",
+    "visaTotal": "Tổng cộng",
+    "visaApproved": "Đã phê duyệt",
+    "visaRejected": "Đã từ chối",
+    "customerNationality": "Quốc tịch khách hàng",
+    "operationalAlerts": "Cảnh báo vận hành",
+    "quickActions": "Thao tác nhanh",
+    "noAlerts": "Không có cảnh báo.",
+    "chartPeriodMonthly": "Hàng tháng",
+    "tableTour": "Tour",
+    "tableBookings": "Đặt tour",
+    "tableRevenue": "Doanh thu",
+    "noTopTourData": "Không có dữ liệu tour hàng đầu.",
+    "quickActionCreateTour": "Tạo tour",
+    "quickActionScheduleTour": "Lên lịch tour",
+    "quickActionViewBookings": "Xem đặt tour",
+    "quickActionEditSiteContent": "Sửa nội dung trang",
+    "quickActionManageVisa": "Quản lý Visa"
+  },
+  "payments": {
+    "pageTitle": "Quản Lý Thanh Toán",
+    "pageSubtitle": "Theo dõi tất cả giao dịch thanh toán",
+    "column": {
+      "paymentId": "Mã Thanh Toán",
+      "booking": "Đặt Chỗ",
+      "customer": "Khách Hàng",
+      "method": "Phương Thức",
+      "amount": "Số Tiền",
+      "status": "Trạng Thái",
+      "date": "Ngày"
+    },
+    "empty": {
+      "title": "Chưa có giao dịch thanh toán",
+      "description": "Không có bản ghi thanh toán nào để hiển thị."
+    },
+    "error": {
+      "title": "Không thể tải thanh toán",
+      "fallback": "Không thể tải dữ liệu thanh toán. Vui lòng thử lại."
+    },
+    "stat": {
+      "totalRevenue": "Tổng Doanh Thu",
+      "pendingPayments": "Thanh Toán Chờ Duyệt",
+      "completed": "Hoàn Thành",
+      "refunded": "Đã Hoàn Tiền",
+      "fromLastMonth": "từ tháng trước",
+      "transactions": "giao dịch",
+      "syncedFromBackend": "Đồng bộ từ backend"
+    },
+    "filter": {
+      "all": "Tất cả"
+    }
+  },
+  "taxConfig": {
+    "pageTitle": "Cấu hình thuế",
+    "pageSubtitle": "Quản lý thuế suất cho đơn đặt tour",
+    "addTax": "Thêm thuế",
+    "empty": {
+      "title": "Chưa có cấu hình thuế",
+      "description": "Tạo một cấu hình để bắt đầu"
+    },
+    "error": {
+      "title": "Không thể tải cấu hình thuế",
+      "fallback": "Không thể tải dữ liệu cấu hình thuế. Vui lòng thử lại."
+    },
+    "confirmDelete": "Bạn có chắc chắn muốn xóa cấu hình thuế này không?",
+    "deleteFailed": "Không thể xóa cấu hình thuế",
+    "column": {
+      "taxName": "Tên thuế",
+      "taxCode": "Mã thuế",
+      "taxRate": "Thuế suất",
+      "effectiveDate": "Ngày có hiệu lực",
+      "description": "Mô tả",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Không hoạt động"
+    },
+    "form": {
+      "createTitle": "Tạo cấu hình thuế",
+      "editTitle": "Sửa cấu hình thuế",
+      "taxName": "Tên thuế",
+      "taxNamePlaceholder": "VD: VAT, Thuế dịch vụ",
+      "taxRate": "Thuế suất (%)",
+      "effectiveDate": "Ngày có hiệu lực",
+      "description": "Mô tả (Tùy chọn)",
+      "descriptionPlaceholder": "Nhập mô tả hoặc ghi chú về thuế",
+      "isActive": "Hoạt động",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "saving": "Đang lưu...",
+      "create": "Tạo",
+      "update": "Cập nhật",
+      "validation": {
+        "taxNameRequired": "Tên thuế là bắt buộc",
+        "taxRateRequired": "Thuế suất là bắt buộc",
+        "taxRateNegative": "Không được âm",
+        "taxRateExceed": "Không được vượt quá 100%",
+        "effectiveDateRequired": "Ngày có hiệu lực là bắt buộc",
+        "saveFailed": "Không thể lưu cấu hình thuế"
       }
     }
   }
