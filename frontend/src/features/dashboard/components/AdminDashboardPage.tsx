@@ -20,19 +20,52 @@ import type {
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 
 // ─── Design Tokens ───────────────────────────────────────────────
-// Soft-skill accent — warm amber, desaturated
-const ACCENT = "#C9873A";
+// All colors via CSS variables — no hardcoded values
+const CSS = {
+  accent:       "var(--accent)",
+  accentHover:  "var(--accent-hover)",
+  accentMuted:  "var(--accent-muted)",
+  border:        "var(--border)",
+  borderSub:    "var(--border-subtle)",
+  surface:      "var(--surface)",
+  surfaceRaise: "var(--surface-raised)",
+  textPrimary:  "var(--text-primary)",
+  textSecondary:"var(--text-secondary)",
+  textMuted:    "var(--text-muted)",
+  success:      "var(--success)",
+  successMuted: "var(--success-muted)",
+  danger:       "var(--danger)",
+  dangerMuted:  "var(--danger-muted)",
+  warning:      "var(--warning)",
+  warningMuted: "var(--warning-muted)",
+  info:         "var(--info)",
+  infoMuted:    "var(--info-muted)",
+  shadowCard:   "var(--shadow-card)",
+  shadowCardH:  "var(--shadow-card-hover)",
+  shadowCardIn: "var(--shadow-card-inner)",
+  liveGreen:    "#22c55e",
+} as const;
+
+// Chart color palette — mapped from CSS variables
+const PALETTE = [
+  CSS.accent,
+  CSS.success,
+  CSS.danger,
+  CSS.info,
+  CSS.textMuted,
+  CSS.warning,
+] as const;
 
 // Spring physics — taste-skill perpetual motion
 const SPRING = { type: "spring" as const, stiffness: 100, damping: 20 };
 const EASE_BENTO = [0.32, 0.72, 0, 1] as [number, number, number, number];
 
 const QUICK_ACTIONS = [
-  { labelKey: "adminDashboard.quickActionCreateTour",   icon: "heroicons:plus",           href: "/tour-management/create" },
-  { labelKey: "adminDashboard.quickActionScheduleTour",  icon: "heroicons:calendar",        href: "/tour-instances/create" },
-  { labelKey: "adminDashboard.quickActionViewBookings", icon: "heroicons:eye",             href: "/dashboard/bookings" },
+  { labelKey: "adminDashboard.quickActionCreateTour",    icon: "heroicons:plus",          href: "/tour-management/create" },
+  { labelKey: "adminDashboard.quickActionScheduleTour", icon: "heroicons:calendar",       href: "/tour-instances/create" },
+  { labelKey: "adminDashboard.quickActionViewBookings", icon: "heroicons:eye",            href: "/dashboard/bookings" },
   { labelKey: "adminDashboard.quickActionEditSiteContent", icon: "heroicons:document-text", href: "/dashboard/site-content" },
-  { labelKey: "adminDashboard.quickActionManageVisa",  icon: "heroicons:shield-check",    href: "/dashboard/visa" },
+  { labelKey: "adminDashboard.quickActionManageVisa",  icon: "heroicons:shield-check",   href: "/dashboard/visa" },
 ];
 
 type SeverityStyle = {
@@ -40,10 +73,10 @@ type SeverityStyle = {
 };
 
 const SEVERITY_STYLES: Record<string, SeverityStyle> = {
-  info:    { icon: "heroicons:information-circle",   textColor: "var(--info)",    bgColor: "var(--info-muted)",    borderColor: "var(--info-border)" },
-  warning: { icon: "heroicons:exclamation-triangle", textColor: "var(--warning)", bgColor: "var(--warning-muted)", borderColor: "var(--warning-border)" },
-  danger:  { icon: "heroicons:exclamation-circle",   textColor: "var(--danger)", bgColor: "var(--danger-muted)",  borderColor: "var(--danger-border)" },
-  success: { icon: "heroicons:check-circle",         textColor: "var(--success)", bgColor: "var(--success-muted)", borderColor: "var(--success-border)" },
+  info:    { icon: "heroicons:information-circle",  textColor: CSS.info,    bgColor: CSS.infoMuted,    borderColor: "var(--info-border)" },
+  warning: { icon: "heroicons:exclamation-triangle", textColor: CSS.warning, bgColor: CSS.warningMuted, borderColor: "var(--warning-border)" },
+  danger:  { icon: "heroicons:exclamation-circle",  textColor: CSS.danger, bgColor: CSS.dangerMuted, borderColor: "var(--danger-border)" },
+  success: { icon: "heroicons:check-circle",          textColor: CSS.success, bgColor: CSS.successMuted, borderColor: "var(--success-border)" },
 };
 
 function normalizeCategoryData(items: AdminDashboardCategoryMetric[]): AdminDashboardCategoryMetric[] {
@@ -85,7 +118,7 @@ const ShimmerSkeleton = React.memo(function ShimmerSkeleton({ height = 200 }: { 
       <motion.div
         className="w-full h-full"
         style={{
-          background: "linear-gradient(90deg, var(--surface-raised) 25%, var(--surface) 50%, var(--surface-raised) 75%)",
+          background: `linear-gradient(90deg, ${CSS.surfaceRaise} 25%, ${CSS.surface} 50%, ${CSS.surfaceRaise} 75%)`,
           backgroundSize: "200% 100%",
         }}
         animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
@@ -118,7 +151,7 @@ const SpringTableRow = React.memo(function SpringTableRow({
   return (
     <motion.tr
       className="border-t cursor-default"
-      style={{ borderColor: "var(--border-subtle)" }}
+      style={{ borderColor: CSS.borderSub }}
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ ...SPRING, delay: delay * 0.04 }}
@@ -140,7 +173,7 @@ const SpringCard = React.memo(function SpringCard({
   return (
     <motion.div
       className={className}
-      whileHover={{ y: -3, boxShadow: "var(--shadow-card-hover)" }}
+      whileHover={{ y: -3, boxShadow: CSS.shadowCardH }}
       transition={SPRING}
     >
       {children}
@@ -158,7 +191,7 @@ function CardShell({ children, className = "" }: { children: React.ReactNode; cl
     <div
       className={`relative rounded-[1.5rem] ${className}`}
       style={{
-        background: "linear-gradient(145deg, rgba(0,0,0,0.025) 0%, rgba(0,0,0,0.008) 100%)",
+        background: `linear-gradient(145deg, rgba(0,0,0,0.025) 0%, rgba(0,0,0,0.008) 100%)`,
         boxShadow: "0 20px 50px -12px rgba(0,0,0,0.055), 0 4px 12px rgba(0,0,0,0.03)",
       }}
     >
@@ -169,8 +202,8 @@ function CardShell({ children, className = "" }: { children: React.ReactNode; cl
       />
       {/* Inner core */}
       <div
-        className="relative rounded-[1.25rem] bg-[var(--surface)] h-full overflow-hidden"
-        style={{ boxShadow: "var(--shadow-card-inner)" }}
+        className="relative rounded-[1.25rem] h-full overflow-hidden"
+        style={{ backgroundColor: CSS.surface, boxShadow: CSS.shadowCardIn }}
       >
         {children}
       </div>
@@ -183,7 +216,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <span
       className="inline-block text-[9px] font-semibold uppercase tracking-[0.2em] px-2.5 py-1 rounded-full mb-3"
-      style={{ color: ACCENT, backgroundColor: `${ACCENT}10`, border: `1px solid ${ACCENT}18` }}
+      style={{ color: CSS.accent, backgroundColor: `${CSS.accent}10`, border: `1px solid ${CSS.accent}18` }}
     >
       {children}
     </span>
@@ -216,11 +249,11 @@ function createLineOptions(categories: string[], yFormatter: (v: number) => stri
   return {
     chart: { type: "line", toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
     stroke: { curve: "smooth", width: 2.5 },
-    colors: [ACCENT],
-    xaxis: { categories, labels: { style: { colors: "#A8A29E", fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
-    yaxis: { labels: { formatter: yFormatter, style: { colors: "#A8A29E", fontSize: "12px" } } },
-    grid: { borderColor: "#F0F0EE", strokeDashArray: 5 },
-    markers: { size: 4, colors: [ACCENT], strokeWidth: 2, strokeColors: "#FFFFFF" },
+    colors: [CSS.accent],
+    xaxis: { categories, labels: { style: { colors: CSS.textMuted, fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { formatter: yFormatter, style: { colors: CSS.textMuted, fontSize: "12px" } } },
+    grid: { borderColor: CSS.borderSub, strokeDashArray: 5 },
+    markers: { size: 4, colors: [CSS.accent], strokeWidth: 2, strokeColors: CSS.surface },
     tooltip: { y: { formatter: yFormatter } },
     theme: { mode: "light" },
   };
@@ -229,11 +262,11 @@ function createAreaOptions(categories: string[]): ApexOptions {
   return {
     chart: { type: "area", toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
     stroke: { curve: "smooth", width: 2 },
-    colors: [ACCENT],
+    colors: [CSS.accent],
     fill: { type: "gradient", gradient: { opacityFrom: 0.1, opacityTo: 0.008, stops: [0, 100] } },
-    xaxis: { categories, labels: { style: { colors: "#A8A29E", fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
-    yaxis: { labels: { style: { colors: "#A8A29E", fontSize: "12px" } } },
-    grid: { borderColor: "#F0F0EE", strokeDashArray: 5 },
+    xaxis: { categories, labels: { style: { colors: CSS.textMuted, fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { style: { colors: CSS.textMuted, fontSize: "12px" } } },
+    grid: { borderColor: CSS.borderSub, strokeDashArray: 5 },
     tooltip: { shared: true }, legend: { show: false },
     theme: { mode: "light" },
   };
@@ -243,9 +276,9 @@ function createBarOptions(categories: string[], color: string): ApexOptions {
     chart: { type: "bar", toolbar: { show: false }, fontFamily: "inherit", background: "transparent" },
     colors: [color],
     plotOptions: { bar: { borderRadius: 8, columnWidth: "50%" } },
-    xaxis: { categories, labels: { style: { colors: "#A8A29E", fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
-    yaxis: { labels: { style: { colors: "#A8A29E", fontSize: "12px" } } },
-    grid: { borderColor: "#F0F0EE", strokeDashArray: 5 },
+    xaxis: { categories, labels: { style: { colors: CSS.textMuted, fontSize: "12px" } }, axisBorder: { show: false }, axisTicks: { show: false } },
+    yaxis: { labels: { style: { colors: CSS.textMuted, fontSize: "12px" } } },
+    grid: { borderColor: CSS.borderSub, strokeDashArray: 5 },
     dataLabels: { enabled: false },
     theme: { mode: "light" },
   };
@@ -255,7 +288,7 @@ function createDonutOptions(labels: string[], colors: string[]): ApexOptions {
     chart: { type: "donut", fontFamily: "inherit", background: "transparent" },
     colors, labels, legend: { show: false }, dataLabels: { enabled: false },
     plotOptions: { pie: { donut: { size: "68%" } } },
-    stroke: { width: 2, colors: ["#FFFFFF"] },
+    stroke: { width: 2, colors: [CSS.surface] },
     theme: { mode: "light" },
   };
 }
@@ -264,16 +297,16 @@ function createDonutOptions(labels: string[], colors: string[]): ApexOptions {
 // SHARED COMPONENTS
 // ═══════════════════════════════════════════════════════════════════
 
-function MetricLegend({ items, colors }: { items: AdminDashboardCategoryMetric[]; colors: string[] }) {
+function MetricLegend({ items, colors }: { items: AdminDashboardCategoryMetric[]; colors: readonly string[] }) {
   return (
     <div className="space-y-2.5">
       {items.map((item, index) => (
         <div key={`${item.label}-${index}`} className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: colors[index % colors.length] }} />
-            <span style={{ color: "var(--text-secondary)" }}>{item.label}</span>
+            <span style={{ color: CSS.textSecondary }}>{item.label}</span>
           </div>
-          <span className="font-medium data-value" style={{ color: "var(--text-primary)" }}>
+          <span className="font-medium data-value" style={{ color: CSS.textPrimary }}>
             {Math.round(item.value).toLocaleString()}
           </span>
         </div>
@@ -285,13 +318,13 @@ function MetricLegend({ items, colors }: { items: AdminDashboardCategoryMetric[]
 function VisaStatusBadge({ status }: { status: AdminDashboardVisaStatus }) {
   const n = status.label.toLowerCase();
   const isA = n === "approved", isR = n === "rejected", isV = n === "under review";
-  const bg = isA ? "var(--success-muted)" : isR ? "var(--danger-muted)" : isV ? "var(--info-muted)" : "var(--warning-muted)";
-  const text = isA ? "var(--success)" : isR ? "var(--danger)" : isV ? "var(--info)" : "var(--warning)";
+  const bg = isA ? CSS.successMuted : isR ? CSS.dangerMuted : isV ? CSS.infoMuted : CSS.warningMuted;
+  const text = isA ? CSS.success : isR ? CSS.danger : isV ? CSS.info : CSS.warning;
   const border = isA ? "var(--success-border)" : isR ? "var(--danger-border)" : isV ? "var(--info-border)" : "var(--warning-border)";
 
   return (
     <div className="rounded-2xl p-4 text-center border" style={{ backgroundColor: bg, borderColor: border }}>
-      <p className="text-2xl font-bold tracking-tight data-value" style={{ color: "var(--text-primary)" }}>
+      <p className="text-2xl font-bold tracking-tight data-value" style={{ color: CSS.textPrimary }}>
         {status.count.toLocaleString()}
       </p>
       <span className="inline-block mt-2 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full" style={{ color: text, backgroundColor: "rgba(255,255,255,0.55)" }}>
@@ -336,7 +369,7 @@ function StatCard({ labelKey, value, icon, accent, eyebrow, subtext, delay = 0 }
               <div className="flex-1 min-w-0">
                 {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
                 {/* Bento 2.0: label BELOW the card — gallery style */}
-                <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>{labelKey}</p>
+                <p className="text-sm font-medium" style={{ color: CSS.textMuted }}>{labelKey}</p>
               </div>
               <motion.div
                 className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ml-3"
@@ -347,10 +380,10 @@ function StatCard({ labelKey, value, icon, accent, eyebrow, subtext, delay = 0 }
                 <Icon icon={icon} className="size-5" style={{ color: accent }} />
               </motion.div>
             </div>
-            <p className="text-[2rem] font-bold tracking-tight data-value leading-none" style={{ color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+            <p className="text-[2rem] font-bold tracking-tight data-value leading-none" style={{ color: CSS.textPrimary, letterSpacing: "-0.03em" }}>
               {value}
             </p>
-            {subtext && <p className="text-xs mt-3" style={{ color: "var(--text-muted)" }}>{subtext}</p>}
+            {subtext && <p className="text-xs mt-3" style={{ color: CSS.textMuted }}>{subtext}</p>}
           </Card>
         </CardShell>
       </SpringCard>
@@ -377,10 +410,10 @@ function ChartCard({ title, eyebrow, period, children, delay = 0, className = ""
               <div className="flex-1 min-w-0">
                 {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
                 {/* Bento 2.0: title BELOW the eyebrow, above chart */}
-                <h3 className="text-sm font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>{title}</h3>
+                <h3 className="text-sm font-semibold tracking-tight" style={{ color: CSS.textPrimary }}>{title}</h3>
               </div>
               {period && (
-                <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0 ml-3" style={{ color: "var(--text-muted)", backgroundColor: "var(--surface-raised)" }}>
+                <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0 ml-3" style={{ color: CSS.textMuted, backgroundColor: CSS.surfaceRaise }}>
                   {period}
                 </span>
               )}
@@ -403,34 +436,34 @@ function QuickActionLink({ icon, labelKey, href }: { icon: string; labelKey: str
       href={href}
       className="group flex items-center gap-3 py-3.5 px-4 rounded-2xl border transition-all duration-700"
       style={{
-        borderColor: "var(--border)",
-        color: "var(--text-secondary)",
-        backgroundColor: "var(--surface)",
+        borderColor: CSS.border,
+        color: CSS.textSecondary,
+        backgroundColor: CSS.surface,
         transform: "translateX(0)",
         transitionProperty: "border-color, background-color, transform, box-shadow",
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = `${ACCENT}35`;
-        el.style.backgroundColor = `${ACCENT}05`;
+        el.style.borderColor = `${CSS.accent}35`;
+        el.style.backgroundColor = `${CSS.accent}05`;
         el.style.transform = "translateX(3px)";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLElement;
-        el.style.borderColor = "var(--border)";
-        el.style.backgroundColor = "var(--surface)";
+        el.style.borderColor = CSS.border;
+        el.style.backgroundColor = CSS.surface;
         el.style.transform = "translateX(0)";
       }}
     >
       <span
         className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-700 group-hover:scale-105"
-        style={{ backgroundColor: "var(--surface-raised)" }}
+        style={{ backgroundColor: CSS.surfaceRaise }}
       >
-        <Icon icon={icon} className="size-4" style={{ color: "var(--text-muted)" }} />
+        <Icon icon={icon} className="size-4" style={{ color: CSS.textMuted }} />
       </span>
       <span className="text-xs font-medium leading-tight">{labelKey}</span>
       <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ color: "var(--text-muted)" }}>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ color: CSS.textMuted }}>
           <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </span>
@@ -465,57 +498,55 @@ export function AdminDashboardPage() {
 
   useEffect(() => { void loadDashboard(); }, [loadDashboard]);
 
-  const revenueOverTime       = normalizePointData(dashboard?.revenueOverTime ?? []);
-  const revenueByTourType    = normalizeCategoryData(dashboard?.revenueByTourType ?? []);
-  const revenueByRegion      = normalizeCategoryData(dashboard?.revenueByRegion ?? []);
-  const bookingStatusDist    = normalizeCategoryData(dashboard?.bookingStatusDistribution ?? []);
-  const bookingTrend         = normalizePointData(dashboard?.bookingTrend ?? []);
-  const topDestinations      = normalizeCategoryData(dashboard?.topDestinations ?? []);
-  const customerGrowth       = normalizePointData(dashboard?.customerGrowth ?? []);
-  const customerNationalities = normalizeCategoryData(dashboard?.customerNationalities ?? []);
-
-  const chartPalette = useMemo(() => [ACCENT, "#346538", "#9F2F2D", "#1F6C9F", "#78716C", "#956400"], []);
+  const revenueOverTime         = normalizePointData(dashboard?.revenueOverTime ?? []);
+  const revenueByTourType       = normalizeCategoryData(dashboard?.revenueByTourType ?? []);
+  const revenueByRegion         = normalizeCategoryData(dashboard?.revenueByRegion ?? []);
+  const bookingStatusDist       = normalizeCategoryData(dashboard?.bookingStatusDistribution ?? []);
+  const bookingTrend            = normalizePointData(dashboard?.bookingTrend ?? []);
+  const topDestinations         = normalizeCategoryData(dashboard?.topDestinations ?? []);
+  const customerGrowth          = normalizePointData(dashboard?.customerGrowth ?? []);
+  const customerNationalities   = normalizeCategoryData(dashboard?.customerNationalities ?? []);
 
   // Memoized chart options
-  const revenueOverTimeOptions   = useMemo(() => createLineOptions(revenueOverTime.map(i => i.label), formatMoney), [revenueOverTime]);
+  const revenueOverTimeOptions    = useMemo(() => createLineOptions(revenueOverTime.map(i => i.label), formatMoney), [revenueOverTime]);
   const revenueOverTimeSeries    = useMemo(() => [{ name: "Revenue", data: revenueOverTime.map(i => Number(i.value)) }], [revenueOverTime]);
-  const revenueByTourTypeOptions  = useMemo(() => createDonutOptions(revenueByTourType.map(i => i.label), chartPalette), [revenueByTourType, chartPalette]);
-  const revenueByTourTypeSeries   = useMemo(() => revenueByTourType.map(i => Number(i.value)), [revenueByTourType]);
-  const revenueByRegionOptions    = useMemo(() => createDonutOptions(revenueByRegion.map(i => i.label), chartPalette), [revenueByRegion, chartPalette]);
-  const revenueByRegionSeries     = useMemo(() => revenueByRegion.map(i => Number(i.value)), [revenueByRegion]);
-  const bookingStatusOptions      = useMemo(() => createDonutOptions(bookingStatusDist.map(i => i.label), chartPalette), [bookingStatusDist, chartPalette]);
-  const bookingStatusSeries       = useMemo(() => bookingStatusDist.map(i => Number(i.value)), [bookingStatusDist]);
-  const bookingTrendOptions       = useMemo(() => createAreaOptions(bookingTrend.map(i => i.label)), [bookingTrend]);
-  const bookingTrendSeries        = useMemo(() => [{ name: "Bookings", data: bookingTrend.map(i => Number(i.value)) }], [bookingTrend]);
-  const topDestinationsOptions    = useMemo(() => createBarOptions(topDestinations.map(i => i.label), ACCENT), [topDestinations]);
-  const topDestinationsSeries     = useMemo(() => [{ name: "Bookings", data: topDestinations.map(i => Number(i.value)) }], [topDestinations]);
-  const customerGrowthOptions     = useMemo(() => createBarOptions(customerGrowth.map(i => i.label), "#346538"), [customerGrowth]);
-  const customerGrowthSeries      = useMemo(() => [{ name: "New Customers", data: customerGrowth.map(i => Number(i.value)) }], [customerGrowth]);
+  const revenueByTourTypeOptions  = useMemo(() => createDonutOptions(revenueByTourType.map(i => i.label), [...PALETTE]), [revenueByTourType]);
+  const revenueByTourTypeSeries  = useMemo(() => revenueByTourType.map(i => Number(i.value)), [revenueByTourType]);
+  const revenueByRegionOptions    = useMemo(() => createDonutOptions(revenueByRegion.map(i => i.label), [...PALETTE]), [revenueByRegion]);
+  const revenueByRegionSeries    = useMemo(() => revenueByRegion.map(i => Number(i.value)), [revenueByRegion]);
+  const bookingStatusOptions     = useMemo(() => createDonutOptions(bookingStatusDist.map(i => i.label), [...PALETTE]), [bookingStatusDist]);
+  const bookingStatusSeries      = useMemo(() => bookingStatusDist.map(i => Number(i.value)), [bookingStatusDist]);
+  const bookingTrendOptions      = useMemo(() => createAreaOptions(bookingTrend.map(i => i.label)), [bookingTrend]);
+  const bookingTrendSeries       = useMemo(() => [{ name: "Bookings", data: bookingTrend.map(i => Number(i.value)) }], [bookingTrend]);
+  const topDestinationsOptions   = useMemo(() => createBarOptions(topDestinations.map(i => i.label), CSS.accent), [topDestinations]);
+  const topDestinationsSeries    = useMemo(() => [{ name: "Bookings", data: topDestinations.map(i => Number(i.value)) }], [topDestinations]);
+  const customerGrowthOptions    = useMemo(() => createBarOptions(customerGrowth.map(i => i.label), CSS.success), [customerGrowth]);
+  const customerGrowthSeries     = useMemo(() => [{ name: "New Customers", data: customerGrowth.map(i => Number(i.value)) }], [customerGrowth]);
 
   const statCards = useMemo(() => [
-    { labelKey: "adminDashboard.statTotalRevenue",     value: formatMoney(dashboard?.stats.totalRevenue ?? 0),        icon: "heroicons:currency-dollar",    accent: ACCENT,       eyebrow: "Overview",     subtext: t("adminDashboard.statRevenueSubtext"), delay: 0 },
-    { labelKey: "adminDashboard.statTotalBookings",     value: (dashboard?.stats.totalBookings ?? 0).toLocaleString(), icon: "heroicons:clipboard-document", accent: "#346538",    eyebrow: "Bookings",     delay: 1 },
-    { labelKey: "adminDashboard.statActiveTours",      value: (dashboard?.stats.activeTours ?? 0).toLocaleString(),  icon: "heroicons:globe-alt",         accent: "#1F6C9F",    eyebrow: "Tours",        delay: 2 },
-    { labelKey: "adminDashboard.statTotalCustomers",   value: (dashboard?.stats.totalCustomers ?? 0).toLocaleString(), icon: "heroicons:user-group",         accent: "#78716C",    eyebrow: "Customers",    delay: 3 },
-    { labelKey: "adminDashboard.statCancellationRate", value: `${(dashboard?.stats.cancellationRate ?? 0).toFixed(1)}%`, icon: "heroicons:x-circle",         accent: "#9F2F2D",    eyebrow: "Cancellation", delay: 4 },
-    { labelKey: "adminDashboard.statVisaApproval",      value: `${(dashboard?.stats.visaApprovalRate ?? 0).toFixed(1)}%`, icon: "heroicons:shield-check",    accent: ACCENT,       eyebrow: "Visa",         delay: 5 },
+    { labelKey: "adminDashboard.statTotalRevenue",      value: formatMoney(dashboard?.stats.totalRevenue ?? 0),      icon: "heroicons:currency-dollar",      accent: CSS.accent, eyebrow: "Overview",     subtext: t("adminDashboard.statRevenueSubtext"), delay: 0 },
+    { labelKey: "adminDashboard.statTotalBookings",      value: (dashboard?.stats.totalBookings ?? 0).toLocaleString(), icon: "heroicons:clipboard-document", accent: CSS.success, eyebrow: "Bookings",     delay: 1 },
+    { labelKey: "adminDashboard.statActiveTours",       value: (dashboard?.stats.activeTours ?? 0).toLocaleString(),  icon: "heroicons:globe-alt",          accent: CSS.info,    eyebrow: "Tours",        delay: 2 },
+    { labelKey: "adminDashboard.statTotalCustomers",     value: (dashboard?.stats.totalCustomers ?? 0).toLocaleString(), icon: "heroicons:user-group",          accent: CSS.textMuted, eyebrow: "Customers",    delay: 3 },
+    { labelKey: "adminDashboard.statCancellationRate",   value: `${(dashboard?.stats.cancellationRate ?? 0).toFixed(1)}%`, icon: "heroicons:x-circle",         accent: CSS.danger, eyebrow: "Cancellation", delay: 4 },
+    { labelKey: "adminDashboard.statVisaApproval",       value: `${(dashboard?.stats.visaApprovalRate ?? 0).toFixed(1)}%`, icon: "heroicons:shield-check",    accent: CSS.accent, eyebrow: "Visa",         delay: 5 },
   ], [dashboard, t]);
 
   return (
     <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)}>
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
 
-      <main id="main-content" className="p-8 lg:p-10 max-w-[1440px] mx-auto">
+      <main id="main-content" className="p-6 lg:py-8 lg:pr-8 lg:pl-6">
 
         {/* ── Page Header ─────────────────────────────────────── */}
         <Reveal delay={0}>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
             <div>
               <Eyebrow>Analytics Dashboard</Eyebrow>
-              <h1 style={{ color: "var(--text-primary)", fontSize: "2.125rem", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1.05 }}>
+              <h1 style={{ color: CSS.textPrimary, fontSize: "2.125rem", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 1.05 }}>
                 {t("adminDashboard.pageTitle")}
               </h1>
-              <p className="text-sm mt-2.5" style={{ color: "var(--text-muted)" }}>
+              <p className="text-sm mt-2.5" style={{ color: CSS.textMuted }}>
                 {t("adminDashboard.pageSubtitle")}
               </p>
             </div>
@@ -523,7 +554,7 @@ export function AdminDashboardPage() {
               onClick={() => void loadDashboard()}
               disabled={isLoading}
               className="self-start sm:self-auto flex items-center gap-2.5 px-5 py-2.5 rounded-2xl text-sm font-medium border transition-all duration-700 active:scale-[0.97]"
-              style={{ borderColor: "var(--border)", color: "var(--text-secondary)", backgroundColor: "var(--surface)" }}
+              style={{ borderColor: CSS.border, color: CSS.textSecondary, backgroundColor: CSS.surface }}
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
               transition={SPRING}
@@ -551,17 +582,17 @@ export function AdminDashboardPage() {
             <CardShell className="p-[1px]">
               <Card bodyClass="p-12 border-0 shadow-none" className="border-0 shadow-none">
                 <div className="flex flex-col items-center gap-5 text-center">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "var(--danger-muted)" }}>
-                    <Icon icon="heroicons:exclamation-triangle" className="size-6" style={{ color: "var(--danger)" }} />
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: CSS.dangerMuted }}>
+                    <Icon icon="heroicons:exclamation-triangle" className="size-6" style={{ color: CSS.danger }} />
                   </div>
                   <div>
-                    <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{t("adminDashboard.noData")}</p>
-                    <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>Connection failed. Please try again.</p>
+                    <p className="text-sm font-medium" style={{ color: CSS.textPrimary }}>{t("adminDashboard.noData")}</p>
+                    <p className="text-xs mt-1" style={{ color: CSS.textMuted }}>Connection failed. Please try again.</p>
                   </div>
                   <motion.button
                     onClick={() => void loadDashboard()}
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-medium"
-                    style={{ backgroundColor: "#111111", color: "#FFFFFF" }}
+                    style={{ backgroundColor: CSS.textPrimary, color: CSS.surface }}
                     whileHover={{ y: -1 }}
                     whileTap={{ scale: 0.98 }}
                     transition={SPRING}
@@ -581,10 +612,10 @@ export function AdminDashboardPage() {
             <CardShell className="p-[1px]">
               <Card bodyClass="p-12 flex items-center justify-center border-0 shadow-none" className="border-0 shadow-none">
                 <div className="flex flex-col items-center gap-4 text-center">
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: "var(--surface-raised)" }}>
-                    <Icon icon="heroicons:chart-bar" className="size-6" style={{ color: "var(--text-muted)" }} />
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: CSS.surfaceRaise }}>
+                    <Icon icon="heroicons:chart-bar" className="size-6" style={{ color: CSS.textMuted }} />
                   </div>
-                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{t("adminDashboard.noData")}</p>
+                  <p className="text-sm font-medium" style={{ color: CSS.textPrimary }}>{t("adminDashboard.noData")}</p>
                 </div>
               </Card>
             </CardShell>
@@ -611,7 +642,7 @@ export function AdminDashboardPage() {
                   <Chart options={revenueByTourTypeOptions} series={revenueByTourTypeSeries} type="donut" height={180} width={180} />
                 </div>
                 <div className="mt-6">
-                  <MetricLegend items={revenueByTourType} colors={chartPalette} />
+                  <MetricLegend items={revenueByTourType} colors={PALETTE} />
                 </div>
               </ChartCard>
             </div>
@@ -623,7 +654,7 @@ export function AdminDashboardPage() {
                   <div className="shrink-0">
                     <Chart options={revenueByRegionOptions} series={revenueByRegionSeries} type="donut" height={180} width={180} />
                   </div>
-                  <MetricLegend items={revenueByRegion} colors={chartPalette} />
+                  <MetricLegend items={revenueByRegion} colors={PALETTE} />
                 </div>
               </ChartCard>
               <ChartCard title={t("adminDashboard.chartBookingStatus")} delay={3} className="lg:col-span-2">
@@ -631,7 +662,7 @@ export function AdminDashboardPage() {
                   <div className="shrink-0">
                     <Chart options={bookingStatusOptions} series={bookingStatusSeries} type="donut" height={160} width={160} />
                   </div>
-                  <MetricLegend items={bookingStatusDist} colors={chartPalette} />
+                  <MetricLegend items={bookingStatusDist} colors={PALETTE} />
                 </div>
               </ChartCard>
             </div>
@@ -646,24 +677,24 @@ export function AdminDashboardPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr>
-                        <th className="text-left py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{t("adminDashboard.tableTour")}</th>
-                        <th className="text-right py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{t("adminDashboard.tableBookings")}</th>
-                        <th className="text-right py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>{t("adminDashboard.tableRevenue")}</th>
+                        <th className="text-left py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: CSS.textMuted }}>{t("adminDashboard.tableTour")}</th>
+                        <th className="text-right py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: CSS.textMuted }}>{t("adminDashboard.tableBookings")}</th>
+                        <th className="text-right py-2.5 font-semibold text-[9px] uppercase tracking-widest" style={{ color: CSS.textMuted }}>{t("adminDashboard.tableRevenue")}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {dashboard.topTours.length === 0 ? (
                         <tr>
-                          <td colSpan={3} className="py-10 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                          <td colSpan={3} className="py-10 text-center text-sm" style={{ color: CSS.textMuted }}>
                             {t("adminDashboard.noTopTourData")}
                           </td>
                         </tr>
                       ) : (
                         dashboard.topTours.map((tour, index) => (
                           <SpringTableRow key={`${tour.name}-${index}`} delay={index}>
-                            <td className="py-3.5 text-sm" style={{ color: "var(--text-secondary)" }}>{tour.name}</td>
-                            <td className="py-3.5 text-right text-sm data-value" style={{ color: "var(--text-muted)" }}>{tour.bookings.toLocaleString()}</td>
-                            <td className="py-3.5 text-right text-sm font-semibold data-value" style={{ color: "var(--success)" }}>{formatMoney(tour.revenue)}</td>
+                            <td className="py-3.5 text-sm" style={{ color: CSS.textSecondary }}>{tour.name}</td>
+                            <td className="py-3.5 text-right text-sm data-value" style={{ color: CSS.textMuted }}>{tour.bookings.toLocaleString()}</td>
+                            <td className="py-3.5 text-right text-sm font-semibold data-value" style={{ color: CSS.success }}>{formatMoney(tour.revenue)}</td>
                           </SpringTableRow>
                         ))
                       )}
@@ -691,25 +722,25 @@ export function AdminDashboardPage() {
                   <CardShell className="p-[1px]">
                     <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
                       <Eyebrow>Visa Processing</Eyebrow>
-                      <h3 className="text-sm font-semibold tracking-tight mb-1" style={{ color: "var(--text-primary)" }}>
+                      <h3 className="text-sm font-semibold tracking-tight mb-1" style={{ color: CSS.textPrimary }}>
                         {t("adminDashboard.chartVisaProcessing")}
                       </h3>
                       {/* Status row with live breathing dot */}
                       <div className="flex items-center gap-2 mt-1 mb-6">
-                        <BreathingDot color={ACCENT} />
-                        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>Live</span>
+                        <BreathingDot color={CSS.accent} />
+                        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: CSS.textMuted }}>Live</span>
                       </div>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {dashboard.visaStatuses.map((status, index) => (
                           <VisaStatusBadge key={`${status.label}-${index}`} status={status} />
                         ))}
                       </div>
-                      <h4 className="text-[9px] font-semibold uppercase tracking-widest mt-8 mb-4" style={{ color: "var(--text-muted)" }}>
+                      <h4 className="text-[9px] font-semibold uppercase tracking-widest mt-8 mb-4" style={{ color: CSS.textMuted }}>
                         {t("adminDashboard.upcomingDeadlines")}
                       </h4>
                       <div className="space-y-1">
                         {dashboard.upcomingVisaDeadlines.length === 0 ? (
-                          <div className="py-5 px-4 rounded-2xl text-xs text-center border" style={{ color: "var(--text-muted)", borderColor: "var(--border)", backgroundColor: "var(--surface-raised)" }}>
+                          <div className="py-5 px-4 rounded-2xl text-xs text-center border" style={{ color: CSS.textMuted, borderColor: CSS.border, backgroundColor: CSS.surfaceRaise }}>
                             {t("adminDashboard.noUpcomingDeadlines")}
                           </div>
                         ) : (
@@ -717,12 +748,12 @@ export function AdminDashboardPage() {
                             <motion.div
                               key={`${deadline.tour}-${deadline.date}`}
                               className="flex items-center justify-between py-3.5 px-4 rounded-2xl transition-colors duration-150 cursor-default"
-                              style={{ backgroundColor: "var(--surface-raised)" }}
+                              style={{ backgroundColor: CSS.surfaceRaise }}
                               whileHover={{ x: 2 }}
                               transition={SPRING}
                             >
-                              <span className="text-sm truncate mr-4" style={{ color: "var(--text-secondary)" }}>{deadline.tour}</span>
-                              <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0" style={{ color: "var(--warning)", backgroundColor: "var(--warning-muted)" }}>
+                              <span className="text-sm truncate mr-4" style={{ color: CSS.textSecondary }}>{deadline.tour}</span>
+                              <span className="text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shrink-0" style={{ color: CSS.warning, backgroundColor: CSS.warningMuted }}>
                                 {deadline.date}
                               </span>
                             </motion.div>
@@ -736,7 +767,7 @@ export function AdminDashboardPage() {
 
               {/* Side Panel */}
               <div className="lg:col-span-5 space-y-5">
-                {/* Visa Summary */}
+                {/* visa Summary */}
                 <Reveal delay={9}>
                   <SpringCard>
                     <CardShell className="p-[1px]">
@@ -744,37 +775,37 @@ export function AdminDashboardPage() {
                         <div className="flex items-center gap-4 mb-5">
                           <motion.div
                             className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                            style={{ backgroundColor: `${ACCENT}12` }}
+                            style={{ backgroundColor: `${CSS.accent}12` }}
                             whileHover={{ scale: 1.06 }}
                             transition={SPRING}
                           >
                             <FloatIcon>
-                              <Icon icon="heroicons:shield-check" className="size-6" style={{ color: ACCENT }} />
+                              <Icon icon="heroicons:shield-check" className="size-6" style={{ color: CSS.accent }} />
                             </FloatIcon>
                           </motion.div>
                           <div>
-                            <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
+                            <p className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: CSS.textMuted }}>
                               {t("adminDashboard.visaSuccessRate")}
                             </p>
-                            <p className="text-[2rem] font-bold tracking-tight data-value leading-none" style={{ color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+                            <p className="text-[2rem] font-bold tracking-tight data-value leading-none" style={{ color: CSS.textPrimary, letterSpacing: "-0.03em" }}>
                               {dashboard.visaSummary.approvalRate.toFixed(1)}%
                             </p>
                           </div>
                         </div>
                         <div className="space-y-0">
                           {[
-                            { label: t("adminDashboard.visaTotal"),    value: dashboard.visaSummary.totalApplications.toLocaleString(), color: "var(--text-secondary)" },
-                            { label: t("adminDashboard.visaApproved"), value: dashboard.visaSummary.approved.toLocaleString(),           color: "var(--success)" },
-                            { label: t("adminDashboard.visaRejected"), value: dashboard.visaSummary.rejected.toLocaleString(),            color: "var(--danger)" },
+                            { label: t("adminDashboard.visaTotal"),    value: dashboard.visaSummary.totalApplications.toLocaleString(), color: CSS.textSecondary },
+                            { label: t("adminDashboard.visaApproved"), value: dashboard.visaSummary.approved.toLocaleString(),          color: CSS.success },
+                            { label: t("adminDashboard.visaRejected"), value: dashboard.visaSummary.rejected.toLocaleString(),            color: CSS.danger },
                           ].map((row) => (
                             <motion.div
                               key={row.label}
                               className="flex items-center justify-between py-3 border-t"
-                              style={{ borderColor: "var(--border-subtle)" }}
+                              style={{ borderColor: CSS.borderSub }}
                               whileHover={{ x: 2 }}
                               transition={SPRING}
                             >
-                              <span className="text-sm" style={{ color: "var(--text-muted)" }}>{row.label}</span>
+                              <span className="text-sm" style={{ color: CSS.textMuted }}>{row.label}</span>
                               <span className="font-semibold data-value" style={{ color: row.color }}>{row.value}</span>
                             </motion.div>
                           ))}
@@ -789,10 +820,10 @@ export function AdminDashboardPage() {
                   <SpringCard>
                     <CardShell className="p-[1px]">
                       <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
-                        <h3 className="text-[9px] font-semibold uppercase tracking-widest mb-5" style={{ color: "var(--text-muted)" }}>
+                        <h3 className="text-[9px] font-semibold uppercase tracking-widest mb-5" style={{ color: CSS.textMuted }}>
                           {t("adminDashboard.customerNationality")}
                         </h3>
-                        <MetricLegend items={customerNationalities} colors={chartPalette} />
+                        <MetricLegend items={customerNationalities} colors={PALETTE} />
                       </Card>
                     </CardShell>
                   </SpringCard>
@@ -803,7 +834,7 @@ export function AdminDashboardPage() {
                   <SpringCard>
                     <CardShell className="p-[1px]">
                       <Card bodyClass="p-7 border-0 shadow-none" className="border-0 shadow-none">
-                        <h3 className="text-[9px] font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>
+                        <h3 className="text-[9px] font-semibold uppercase tracking-widest mb-4" style={{ color: CSS.textMuted }}>
                           {t("adminDashboard.quickActions")}
                         </h3>
                         <div className="space-y-1.5">
@@ -826,16 +857,16 @@ export function AdminDashboardPage() {
                     <div className="flex items-center gap-3 mb-1">
                       <Eyebrow>Live Feed</Eyebrow>
                       <span className="flex items-center gap-1.5 mb-3">
-                        <BreathingDot color="#22c55e" />
-                        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: "#22c55e" }}>Active</span>
+                        <BreathingDot color={CSS.liveGreen} />
+                        <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: CSS.liveGreen }}>Active</span>
                       </span>
                     </div>
-                    <h3 className="text-sm font-semibold tracking-tight mb-4" style={{ color: "var(--text-primary)" }}>
+                    <h3 className="text-sm font-semibold tracking-tight mb-4" style={{ color: CSS.textPrimary }}>
                       {t("adminDashboard.operationalAlerts")}
                     </h3>
                     <div className="space-y-2">
                       {dashboard.alerts.length === 0 ? (
-                        <div className="py-5 text-center text-sm" style={{ color: "var(--text-muted)" }}>
+                        <div className="py-5 text-center text-sm" style={{ color: CSS.textMuted }}>
                           {t("adminDashboard.noAlerts")}
                         </div>
                       ) : (

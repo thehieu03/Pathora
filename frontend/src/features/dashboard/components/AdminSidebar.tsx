@@ -89,7 +89,7 @@ export function AdminSidebar({ isOpen, onClose, children }: AdminSidebarProps) {
             <div
               className="relative w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm text-white transition-transform duration-200 group-hover:scale-105"
               style={{
-                backgroundColor: "#C9873A",
+                backgroundColor: "var(--accent)",
               }}
             >
               <Buildings weight="fill" size={18} className="text-stone-900" />
@@ -200,7 +200,7 @@ export function AdminSidebar({ isOpen, onClose, children }: AdminSidebarProps) {
             <div
               className="relative w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
               style={{
-                backgroundColor: "#C9873A",
+                backgroundColor: "var(--accent)",
               }}
             >
               AD
@@ -242,8 +242,8 @@ export function AdminSidebar({ isOpen, onClose, children }: AdminSidebarProps) {
         )}
       </AnimatePresence>
 
-      {/* Main content */}
-      {children && <div className="lg:ml-64 max-w-[1440px] mx-auto">{children}</div>}
+      {/* Main content area — shifts right on lg so sidebar (fixed) doesn't cover it */}
+      {children && <div className="lg:ml-64">{children}</div>}
     </>
   );
 }
@@ -293,7 +293,7 @@ export function TopBar({ onMenuClick, title, subtitle }: TopBarProps) {
         >
           <Bell size={20} weight="regular" />
           {/* Notification dot */}
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full" style={{ backgroundColor: "var(--accent)" }} />
         </button>
       </div>
     </header>

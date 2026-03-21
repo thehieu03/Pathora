@@ -7,20 +7,8 @@ import { depositPolicyService } from "@/api/services/depositPolicyService";
 import type { DepositPolicy } from "@/types/depositPolicy";
 import { DepositPolicyList } from "./DepositPolicyList";
 import { DepositPolicyForm } from "./DepositPolicyForm";
-import { Icon } from "@/components/ui";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
-};
+const springTransition = { type: "spring" as const, stiffness: 100, damping: 20 };
 
 export function DepositPoliciesSettings() {
   const { t } = useTranslation();
@@ -81,39 +69,33 @@ export function DepositPoliciesSettings() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <div className="space-y-6">
+      {/* Action bar */}
       <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={springTransition}
+        className="flex items-center justify-between"
       >
-        <motion.div variants={itemVariants} className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center">
-              <Icon icon="heroicons:banknotes" className="w-5 h-5 text-amber-500" />
-            </div>
-            <h1 className="text-3xl lg:text-4xl font-bold text-stone-900 tracking-tight">
-              {t("depositPolicy.pageTitle", "Deposit Policies")}
-            </h1>
-          </div>
-          <p className="text-sm text-stone-500 max-w-xl pl-[3.5rem]">
+        <div>
+          <p className="text-xs text-stone-400 font-medium uppercase tracking-widest">
             {t("depositPolicy.pageSubtitle", "Manage deposit requirements for tours — percentage or fixed amount")}
           </p>
-        </motion.div>
-
-        <AnimatePresence mode="wait">
+        </div>
+        <AnimatePresence>
           {view === "list" && (
             <motion.button
               key="add-btn"
-              variants={itemVariants}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
+              transition={springTransition}
               onClick={handleCreate}
-              className="inline-flex items-center gap-2 px-5 py-2.5 border border-transparent rounded-2xl shadow-sm text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-2 focus:ring-amber-500/30 active:scale-[0.98] transition-all duration-200 whitespace-nowrap"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-transparent rounded-2xl shadow-sm text-sm font-semibold text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30 active:scale-[0.98] transition-all duration-200 whitespace-nowrap"
             >
-              <Icon icon="heroicons:plus" className="w-4 h-4" />
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               {t("depositPolicy.addPolicy", "Add Policy")}
             </motion.button>
           )}
@@ -124,11 +106,11 @@ export function DepositPoliciesSettings() {
         {view === "list" ? (
           <motion.div
             key="list-view"
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="bg-white rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 overflow-hidden"
+            transition={springTransition}
+            className="bg-white rounded-[2rem] border border-border shadow-card overflow-hidden"
           >
             <DepositPolicyList
               onEdit={handleEdit}
@@ -140,11 +122,11 @@ export function DepositPoliciesSettings() {
         ) : (
           <motion.div
             key="form-view"
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="bg-white rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 p-6 lg:p-8"
+            transition={springTransition}
+            className="bg-white rounded-[2rem] border border-border shadow-card p-8"
           >
             <DepositPolicyForm
               policy={editingPolicy}

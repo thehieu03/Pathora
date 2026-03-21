@@ -103,7 +103,7 @@ export function TaxConfigList({ onEdit, onDelete, refreshKey: _refreshKey }: Tax
   if (isError) {
     return (
       <motion.div
-        className="mx-6 my-6 bg-white border border-red-200/50 rounded-[2.5rem] p-6 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"
+        className="mx-6 my-6 bg-white border border-danger-border rounded-[2.5rem] p-6 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
@@ -136,7 +136,7 @@ export function TaxConfigList({ onEdit, onDelete, refreshKey: _refreshKey }: Tax
   if (isEmpty) {
     return (
       <motion.div
-        className="mx-6 my-6 bg-white border border-stone-200/50 rounded-[2.5rem] p-10 text-center shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"
+        className="mx-6 my-6 bg-white border border-border rounded-[2.5rem] p-10 text-center shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}

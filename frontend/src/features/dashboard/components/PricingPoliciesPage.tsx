@@ -1,25 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { pricingPolicyService } from "@/api/services/pricingPolicyService";
 import type { PricingPolicy } from "@/types/pricingPolicy";
 import { PricingPolicyList } from "./PricingPolicyList";
 import { PricingPolicyForm } from "./PricingPolicyForm";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 20 } },
-};
+const springTransition = { type: "spring" as const, stiffness: 100, damping: 20 };
 
 export function PricingPoliciesPage() {
   const { t } = useTranslation();
@@ -71,80 +60,83 @@ export function PricingPoliciesPage() {
   };
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="max-w-[1400px] mx-auto px-6 lg:px-10 py-8"
-    >
-      {/* Asymmetric header */}
-      <motion.div variants={itemVariants} className="mb-10">
-        <div className="flex items-end justify-between gap-4">
-          <div className="-ml-1">
-            <h1 className="text-4xl font-bold tracking-tight text-stone-900 leading-none">
-              {t("pricingPolicy.pageTitle", "Pricing Policies")}
-            </h1>
-            <p className="mt-2 text-sm text-stone-500 max-w-[50ch]">
-              {t("pricingPolicy.pageSubtitle", "Manage age-based pricing rules for tours")}
-            </p>
-          </div>
+    <div className="space-y-6">
+      {/* Action bar */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={springTransition}
+        className="flex items-center justify-between"
+      >
+        <div>
+          <p className="text-xs text-stone-400 font-medium uppercase tracking-widest">{t("pricingPolicy.pageSubtitle", "Manage age-based pricing rules for tours")}</p>
+        </div>
+        <AnimatePresence>
           {view === "list" && (
             <motion.button
-              variants={itemVariants}
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.98 }}
+              key="add-btn"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={springTransition}
               onClick={handleCreate}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-2xl shadow-[0_4px_16px_-4px_rgba(245,158,11,0.4)] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-transparent rounded-2xl text-sm font-semibold text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/30 active:scale-[0.98] transition-all duration-200 shadow-[0_4px_14px_-4px_rgba(201,135,58,0.35)]"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 3V13M3 8H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M12 5v14M5 12h14" />
               </svg>
               {t("pricingPolicy.addPolicy", "Add Policy")}
             </motion.button>
           )}
-        </div>
+        </AnimatePresence>
       </motion.div>
 
-      {view === "list" ? (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring" as const, stiffness: 100, damping: 20, delay: 0.05 }}
-          className="rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 bg-white overflow-hidden"
-        >
-          <PricingPolicyList
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onSetDefault={handleSetDefault}
-            refreshKey={refreshKey}
-          />
-        </motion.div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring" as const, stiffness: 100, damping: 20, delay: 0.05 }}
-          className="rounded-[2.5rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] border border-stone-200/50 bg-white p-8 lg:p-10"
-        >
-          <div className="mb-8 -ml-1">
-            <h2 className="text-2xl font-bold tracking-tight text-stone-900">
-              {editingPolicy
-                ? t("pricingPolicy.editPolicy", "Edit Pricing Policy")
-                : t("pricingPolicy.createPolicy", "Create Pricing Policy")}
-            </h2>
-            <p className="mt-1 text-sm text-stone-500">
-              {editingPolicy
-                ? t("pricingPolicy.editSubtitle", "Update pricing policy and tier configurations")
-                : t("pricingPolicy.createSubtitle", "Set up a new pricing policy with age-based tiers")}
-            </p>
-          </div>
-          <PricingPolicyForm
-            policy={editingPolicy}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        </motion.div>
-      )}
-    </motion.div>
+      <AnimatePresence mode="wait">
+        {view === "list" ? (
+          <motion.div
+            key="list-view"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={springTransition}
+            className="bg-white rounded-[2rem] border border-border shadow-card overflow-hidden"
+          >
+            <PricingPolicyList
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onSetDefault={handleSetDefault}
+              refreshKey={refreshKey}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="form-view"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={springTransition}
+            className="bg-white rounded-[2rem] border border-border shadow-card p-8"
+          >
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold tracking-tight text-stone-900">
+                {editingPolicy
+                  ? t("pricingPolicy.editPolicy", "Edit Pricing Policy")
+                  : t("pricingPolicy.createPolicy", "Create Pricing Policy")}
+              </h2>
+              <p className="mt-1 text-sm text-stone-500">
+                {editingPolicy
+                  ? t("pricingPolicy.editSubtitle", "Update pricing policy and tier configurations")
+                  : t("pricingPolicy.createSubtitle", "Set up a new pricing policy with age-based tiers")}
+              </p>
+            </div>
+            <PricingPolicyForm
+              policy={editingPolicy}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormCancel}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

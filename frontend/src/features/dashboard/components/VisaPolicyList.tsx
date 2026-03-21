@@ -81,7 +81,7 @@ export function VisaPolicyList({ onEdit, onDelete, onToggleActive, refreshKey = 
     return (
       <div className="p-4">
         <motion.div
-          className="rounded-[2rem] bg-white border border-red-200/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] p-5"
+          className="rounded-[2rem] bg-white border border-danger-border shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)] p-5"
           variants={itemVariants}
           initial="hidden"
           animate="show"

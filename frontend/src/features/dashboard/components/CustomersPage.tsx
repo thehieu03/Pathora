@@ -56,7 +56,7 @@ function TopBar({
           onChange={(event) => onSearchQueryChange(event.target.value)}
           disabled={disableSearch}
           placeholder={t("common.customers.searchPlaceholder")}
-          className="w-full pl-10 pr-4 py-2 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full pl-10 pr-4 py-2 rounded-xl border border-stone-200 bg-stone-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
       <div className="ml-auto relative">

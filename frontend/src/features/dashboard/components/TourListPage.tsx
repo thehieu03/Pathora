@@ -522,7 +522,7 @@ export function TourListPage() {
                         onClick={() => setCurrentPage(p)}
                         className={`w-8 h-8 flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200 ${
                           p === currentPage
-                            ? "bg-amber-500 text-white shadow-sm"
+                            ? "bg-primary text-white shadow-sm"
                             : "text-stone-600 hover:bg-stone-100 active:scale-[0.95]"
                         }`}>
                         {p}

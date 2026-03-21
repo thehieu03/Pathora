@@ -47,10 +47,10 @@ function StatCard({ label, value, change, changeType, icon, iconBg, iconColor, a
 }
 
 const STATUS_CONFIG: Record<string, { bg: string; text: string }> = {
-  completed: { bg: "bg-green-100", text: "text-green-700" },
-  pending: { bg: "bg-amber-100", text: "text-amber-700" },
-  refunded: { bg: "bg-red-100", text: "text-red-700" },
-  failed: { bg: "bg-red-100", text: "text-red-700" },
+  completed: { bg: "var(--success-muted)", text: "var(--success)" },
+  pending: { bg: "var(--warning-muted)", text: "var(--warning)" },
+  refunded: { bg: "var(--danger-muted)", text: "var(--danger)" },
+  failed: { bg: "var(--danger-muted)", text: "var(--danger)" },
 };
 
 function StatusBadge({ status }: { status: string }) {
