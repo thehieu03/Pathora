@@ -398,6 +398,12 @@ img, picture, video, canvas {
   animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ─── Dashboard fade-in card ─── */
+@utility fade-in-card {
+  animation: fade-in-up 0.3s ease-out forwards;
+  opacity: 0;
+}
+
 /* ─── Skeleton Loader ─── */
 @utility skeleton {
   background: linear-gradient(
