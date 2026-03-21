@@ -87,7 +87,7 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
         const payload: UpdatePricingPolicyRequest = {
           id: policy.id,
           name: data.name,
-          tourType: data.tourType,
+          tourType: Number(data.tourType),
           tiers,
           translations,
         };
@@ -95,7 +95,7 @@ export function PricingPolicyForm({ policy, onSuccess, onCancel }: PricingPolicy
       } else {
         const payload: CreatePricingPolicyRequest = {
           name: data.name,
-          tourType: data.tourType,
+          tourType: Number(data.tourType),
           tiers,
           isDefault: data.isDefault,
           translations,

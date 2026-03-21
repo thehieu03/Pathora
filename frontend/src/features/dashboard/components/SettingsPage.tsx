@@ -367,12 +367,6 @@ export function SettingsPage() {
                 </motion.div>
               )}
 
-              {activeTab === "cancellation-policies" && (
-                <motion.div key="cancellation-policies" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={springTransition}>
-                  <CancellationPoliciesPage />
-                </motion.div>
-              )}
-
               {activeTab === "visa-policies" && (
                 <motion.div key="visa-policies" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={springTransition}>
                   <VisaPoliciesPage />

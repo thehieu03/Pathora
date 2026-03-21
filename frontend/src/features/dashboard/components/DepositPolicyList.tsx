@@ -167,19 +167,24 @@ export function DepositPolicyList({ onEdit, onDelete, onToggleActive, refreshKey
                 </span>
               </td>
               <td className="px-6 py-4">
-                <button
-                  onClick={() => onToggleActive(policy)}
-                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-2 active:scale-[0.98] ${
-                    policy.isActive ? "bg-emerald-500" : "bg-stone-200"
-                  }`}
-                >
-                  <motion.span
-                    className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0"
-                    layout
-                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    animate={{ x: policy.isActive ? 20 : 0 }}
-                  />
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => onToggleActive(policy)}
+                    className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:ring-offset-2 active:scale-[0.98] ${
+                      policy.isActive ? "bg-emerald-500" : "bg-stone-200"
+                    }`}
+                  >
+                    <motion.span
+                      className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0"
+                      layout
+                      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                      animate={{ x: policy.isActive ? 20 : 0 }}
+                    />
+                  </button>
+                  <span className={`text-xs font-semibold ${policy.isActive ? "text-emerald-600" : "text-stone-400"}`}>
+                    {policy.isActive ? t("common.on", "On") : t("common.off", "Off")}
+                  </span>
+                </div>
               </td>
               <td className="px-6 py-4 text-right">
                 <div className="flex items-center justify-end gap-2">
