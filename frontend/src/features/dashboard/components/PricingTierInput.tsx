@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { PricingPolicyTier } from "@/types/pricingPolicy";
+
+const createUniqueId = () => `tier-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 import { StarHalf, Trash, Plus } from "@phosphor-icons/react";
 
 interface PricingTierInputProps {
@@ -13,6 +15,7 @@ interface PricingTierInputProps {
 export function PricingTierInput({ tiers, onChange }: PricingTierInputProps) {
   const addTier = () => {
     const newTier: PricingPolicyTier = {
+      id: createUniqueId(),
       label: "",
       ageFrom: 0,
       ageTo: null,
@@ -54,14 +57,14 @@ export function PricingTierInput({ tiers, onChange }: PricingTierInputProps) {
             <StarHalf className="w-6 h-6 text-stone-400" weight="duotone" />
           </div>
           <p className="text-sm text-stone-500 font-medium">No tiers added yet</p>
-          <p className="text-xs text-stone-400 mt-1">Click "Add Tier" to define an age-based pricing bracket</p>
+          <p className="text-xs text-stone-400 mt-1">Click &ldquo;Add Tier&rdquo; to define an age-based pricing bracket</p>
         </div>
       ) : (
         <div className="space-y-3">
           <AnimatePresence>
             {tiers.map((tier, index) => (
               <motion.div
-                key={`tier-${index}-${tier.ageFrom}`}
+                key={tier.id ?? `tier-new-${index}`}
                 initial={{ opacity: 0, y: 12, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.98 }}

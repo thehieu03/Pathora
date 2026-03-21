@@ -39,12 +39,19 @@ export function PricingPoliciesPage() {
     }
   };
 
-  const handleSetDefault = async (id: string) => {
-    const response = await pricingPolicyService.setAsDefault(id);
+  const handleToggleActive = async (policy: PricingPolicy) => {
+    const response = await pricingPolicyService.update({
+      id: policy.id,
+      name: policy.name,
+      tourType: policy.tourType,
+      tiers: policy.tiers,
+      translations: policy.translations,
+      status: policy.status === 1 ? 2 : 1,
+    });
     if (response.success) {
       setRefreshKey((k) => k + 1);
     } else {
-      alert(response.error?.[0]?.message || t("pricingPolicy.setDefaultFailed", "Failed to set as default"));
+      alert(response.error?.[0]?.message || t("pricingPolicy.toggleFailed", "Failed to update policy status"));
     }
   };
 
@@ -104,7 +111,7 @@ export function PricingPoliciesPage() {
             <PricingPolicyList
               onEdit={handleEdit}
               onDelete={handleDelete}
-              onSetDefault={handleSetDefault}
+              onToggleActive={handleToggleActive}
               refreshKey={refreshKey}
             />
           </motion.div>
