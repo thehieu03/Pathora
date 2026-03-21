@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 import { adminService } from "@/api/services/adminService";
 import type { AdminDashboard } from "@/types/admin";
+import { extractResult, handleApiError } from "@/utils/apiResponse";
 
 export interface UseDashboardDataReturn {
   data: AdminDashboard | null;
@@ -12,7 +13,7 @@ export interface UseDashboardDataReturn {
 
 export function useDashboardData(): UseDashboardDataReturn {
   const [data, setData] = useState<AdminDashboard | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -20,10 +21,17 @@ export function useDashboardData(): UseDashboardDataReturn {
     setError(null);
     try {
       const result = await adminService.getDashboard();
-      setData(result);
-    } catch {
+      const extracted = extractResult<AdminDashboard>(result);
+      if (extracted === null) {
+        setData(null);
+        setError("Failed to load dashboard data.");
+      } else {
+        setData(extracted);
+        setError(null);
+      }
+    } catch (err) {
       setData(null);
-      setError("error");
+      setError(handleApiError(err).message);
     } finally {
       setIsLoading(false);
     }
