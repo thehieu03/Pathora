@@ -130,3 +130,5 @@ export default function DashboardSidebarPanel({ dashboard, t }: DashboardSidebar
     </div>
   );
 }
+
+export { DashboardSidebarPanel };

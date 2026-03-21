@@ -186,3 +186,5 @@ export default function DashboardCharts({ dashboard, t }: DashboardChartsProps) 
     </>
   );
 }
+
+export { DashboardCharts };

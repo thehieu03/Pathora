@@ -57,4 +57,4 @@ export default function ChartCard({
   );
 }
 
-export { ChartCardProps };
+export type { ChartCardProps };

@@ -149,3 +149,5 @@ export default function DashboardVisaPanel({ dashboard, t }: DashboardVisaPanelP
     </div>
   );
 }
+
+export { DashboardVisaPanel };

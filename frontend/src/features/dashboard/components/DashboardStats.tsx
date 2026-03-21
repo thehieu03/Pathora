@@ -16,7 +16,7 @@ export function DashboardStats({ dashboard, t }: DashboardStatsProps) {
       {/* Row 1: 4 equal cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-5">
         <StatCard
-          label={t("adminDashboard.statTotalRevenue")}
+          labelKey={t("adminDashboard.statTotalRevenue")}
           value={`$${Math.round(stats.totalRevenue).toLocaleString()}`}
           icon="heroicons:currency-dollar"
           accent="#F97316"
@@ -25,7 +25,7 @@ export function DashboardStats({ dashboard, t }: DashboardStatsProps) {
           delay={0}
         />
         <StatCard
-          label={t("adminDashboard.statTotalBookings")}
+          labelKey={t("adminDashboard.statTotalBookings")}
           value={stats.totalBookings.toLocaleString()}
           icon="heroicons:clipboard-document-list"
           accent="#10B981"
@@ -33,7 +33,7 @@ export function DashboardStats({ dashboard, t }: DashboardStatsProps) {
           delay={1}
         />
         <StatCard
-          label={t("adminDashboard.statActiveTours")}
+          labelKey={t("adminDashboard.statActiveTours")}
           value={stats.activeTours.toLocaleString()}
           icon="heroicons:globe-alt"
           accent="#3B82F6"
@@ -41,7 +41,7 @@ export function DashboardStats({ dashboard, t }: DashboardStatsProps) {
           delay={2}
         />
         <StatCard
-          label={t("adminDashboard.statTotalCustomers")}
+          labelKey={t("adminDashboard.statTotalCustomers")}
           value={stats.totalCustomers.toLocaleString()}
           icon="heroicons:user-group"
           accent="#9CA3AF"
@@ -53,7 +53,7 @@ export function DashboardStats({ dashboard, t }: DashboardStatsProps) {
       {/* Row 2: 2 KPI cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
         <StatCard
-          label={t("adminDashboard.statCancellationRate")}
+          labelKey={t("adminDashboard.statCancellationRate")}
           value={`${stats.cancellationRate.toFixed(1)}%`}
           icon="heroicons:x-circle"
           accent="#EF4444"
@@ -61,7 +61,7 @@ export function DashboardStats({ dashboard, t }: DashboardStatsProps) {
           delay={4}
         />
         <StatCard
-          label={t("adminDashboard.statVisaApproval")}
+          labelKey={t("adminDashboard.statVisaApproval")}
           value={`${stats.visaApprovalRate.toFixed(1)}%`}
           icon="heroicons:shield-check"
           accent="#F97316"
