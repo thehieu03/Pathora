@@ -108,7 +108,7 @@ public class IdentityService(
                 {
                     To = request.Email,
                     Subject = "Chào mừng đến với hệ thống",
-                    Body = JsonSerializer.Serialize(new RegisterMail(_configuration["AppConfig:SwaggerBaseUrl"] ?? "https://pathora-be.duckdns.org/swagger/index.html", request.Email, 180.ToString())),
+                    Body = JsonSerializer.Serialize(new RegisterMail(_configuration["AppConfig:SwaggerBaseUrl"] ?? throw new InvalidOperationException("AppConfig:SwaggerBaseUrl is not configured."), request.Email, 180.ToString())),
                     Template = nameof(RegisterMail),
                 };
 
@@ -319,7 +319,7 @@ public class IdentityService(
         }
 
         // Get frontend URL from config
-        var frontendUrl = _configuration["AppConfig:FrontendBaseUrl"] ?? "http://localhost:3001";
+        var frontendUrl = _configuration["AppConfig:FrontendBaseUrl"] ?? throw new InvalidOperationException("AppConfig:FrontendBaseUrl is not configured.");
         var resetLink = $"{frontendUrl}/reset-password?token={token}";
 
         // Create and queue password reset email

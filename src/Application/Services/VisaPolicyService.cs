@@ -1,4 +1,5 @@
 using Application.Contracts.VisaPolicy;
+using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.UnitOfWork;
@@ -17,22 +18,24 @@ public interface IVisaPolicyService
 
 public class VisaPolicyService(
     IVisaPolicyRepository visaPolicyRepository,
-    IUnitOfWork unitOfWork)
+    IUnitOfWork unitOfWork,
+    IMapper mapper)
     : IVisaPolicyService
 {
     private readonly IVisaPolicyRepository _repository = visaPolicyRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<ErrorOr<IReadOnlyList<VisaPolicyResponse>>> GetAllAsync()
     {
         var policies = await _repository.GetActivePoliciesAsync();
-        return policies.Select(MapToResponse).ToList();
+        return policies.Select(p => _mapper.Map<VisaPolicyResponse>(p)).ToList();
     }
 
     public async Task<ErrorOr<VisaPolicyResponse?>> GetByIdAsync(Guid id)
     {
         var policy = await _repository.GetByIdAsync(id);
-        return policy is null ? null : MapToResponse(policy);
+        return policy is null ? null : _mapper.Map<VisaPolicyResponse>(policy);
     }
 
     public async Task<ErrorOr<Guid>> Create(CreateVisaPolicyRequest request)
@@ -74,7 +77,6 @@ public class VisaPolicyService(
         );
         policy.SetActive(request.IsActive, "system");
 
-        // Update translations if provided
         if (request.Translations != null)
         {
             policy.Translations = request.Translations;
@@ -98,17 +100,4 @@ public class VisaPolicyService(
         await _unitOfWork.SaveChangeAsync();
         return Result.Success;
     }
-
-    private static VisaPolicyResponse MapToResponse(VisaPolicyEntity entity) => new(
-        entity.Id,
-        entity.Region,
-        entity.ProcessingDays,
-        entity.BufferDays,
-        entity.FullPaymentRequired,
-        entity.IsActive,
-        entity.IsDeleted,
-        entity.Translations ?? [],
-        entity.CreatedOnUtc,
-        entity.LastModifiedOnUtc
-    );
 }
