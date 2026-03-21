@@ -1,20 +1,22 @@
-# CancellationPolicy Tiers Redesign
+# Thiết kế CancellationPolicy có Tiers
 
-## Overview
+## Tổng quan
 
-Redesign CancellationPolicy to use a tiered structure (like PricingPolicy), where each policy contains a list of cancellation tiers with day ranges and penalty percentages.
+Cấu trúc lại CancellationPolicy theo mô hình tier (giống PricingPolicy), mỗi policy chứa danh sách các tier với khoảng ngày và % phạt.
 
-## Problem Statement
+## Vấn đề hiện tại
 
-1. **Flat structure** — Current `CancellationPolicyEntity` stores a single `MinDays`, `MaxDays`, `PenaltyPercentage` per record. Creating a complete refund schedule requires multiple policy records per TourScope.
-2. **No compound policies** — A tour's cancellation policy is a single row, but a realistic refund schedule needs multiple brackets (e.g., 7+ days = 100% refund, 3-7 days = 70% refund, 0-3 days = 0% refund).
-3. **Unused field** — `ApplyOn` (FullAmount/DepositOnly) is always "DepositOnly" — should be removed.
+1. **Cấu trúc phẳng** — Mỗi `CancellationPolicyEntity` chỉ lưu 1 `MinDays`, `MaxDays`, `PenaltyPercentage`. Muốn bảng phí hoàn tiền đầy đủ phải tạo nhiều record riêng cho cùng TourScope.
 
-## Design
+2. **Không gộp được** — 1 tour gắn 1 policy, nhưng bảng hoàn tiền thực tế cần nhiều bậc (ví dụ: 7+ ngày → hoàn 100%, 3-7 ngày → hoàn 70%, 0-3 ngày → hoàn 0%).
+
+3. **Field không dùng** — `ApplyOn` (FullAmount/DepositOnly) luôn là "DepositOnly" → nên xóa.
+
+## Thiết kế
 
 ### 1. Domain Model
 
-#### CancellationPolicyTier (new value object)
+#### CancellationPolicyTier (value object mới)
 
 ```csharp
 public sealed record CancellationPolicyTier(
@@ -22,7 +24,7 @@ public sealed record CancellationPolicyTier(
     int MaxDaysBeforeDeparture,
     decimal PenaltyPercentage)
 {
-    // Enforce invariants via factory method in CancellationPolicyEntity
+    // Tạo với kiểm tra hợp lệ: min >= 0, max >= min, penalty 0-100
     public static CancellationPolicyTier? Create(int min, int max, decimal penalty) =>
         min >= 0 && max >= min && penalty >= 0 && penalty <= 100
             ? new CancellationPolicyTier(min, max, penalty)
@@ -30,57 +32,61 @@ public sealed record CancellationPolicyTier(
 }
 ```
 
-**All-zero penalty is allowed** — business may intentionally create a 0% tier (e.g., same-day cancellation with no refund).
+**Penalty = 0 được phép** — doanh nghiệp có thể cố ý tạo tier 0% (ví dụ: hủy cùng ngày không hoàn tiền).
 
-#### CancellationPolicyEntity (modified)
+#### CancellationPolicyEntity (sửa đổi)
 
-**Fields to REMOVE:**
+**Xóa fields:**
 - `MinDaysBeforeDeparture` (int)
 - `MaxDaysBeforeDeparture` (int)
 - `PenaltyPercentage` (decimal)
 - `ApplyOn` (string)
 
-**Fields to ADD:**
-- `Tiers` (List<CancellationPolicyTier>) — stored as JSONB
+**Thêm fields:**
+- `Tiers` (List<CancellationPolicyTier>) — lưu JSONB
 
-**Fields to KEEP:**
+**Giữ nguyên:**
 - `Id`, `PolicyCode`, `TourScope`, `Status`, `IsDeleted`, `Translations`, audit fields
 
-**Audit trail:** `performedBy` parameter added to `Create()` and `Update()` methods.
+**Audit trail:** thêm `performedBy` vào `Create()` và `Update()`.
 
 ### 2. Validation Rules
 
-| Rule | Description |
-|------|-------------|
-| MIN_TIER_COUNT | Policy must have at least 1 tier |
-| TIER_NO_OVERLAP | No two tiers within the same policy (regardless of Status) may have overlapping day ranges |
-| TIER_COVERS_ALL | Tiers must cover the full range from 0 to `int.MaxValue` with no gaps. The last tier must have `MaxDaysBeforeDeparture = int.MaxValue`. Enforce via: `tiers[^1].MaxDaysBeforeDeparture == int.MaxValue` |
-| TIER_MIN_DAYS | Each tier's `MinDaysBeforeDeparture >= 0` |
-| TIER_MIN_DAYS | Each tier's MinDaysBeforeDeparture >= 0 |
-| TIER_MAX_GE_MIN | Each tier's MaxDaysBeforeDeparture >= MinDaysBeforeDeparture |
-| TIER_PENALTY_RANGE | Each tier's PenaltyPercentage must be between 0 and 100 inclusive |
+| Rule | Mô tả |
+|------|--------|
+| MIN_TIER_COUNT | Policy phải có ít nhất 1 tier |
+| TIER_NO_OVERLAP | Các tiers trong cùng policy không được chồng lấn ngày (áp dụng cho mọi Status) |
+| TIER_COVERS_ALL | Các tiers phải cover đầy đủ từ 0 đến `int.MaxValue`, không có khoảng trống. Tier cuối cùng phải có `MaxDaysBeforeDeparture = int.MaxValue`. Kiểm tra: `tiers[^1].MaxDaysBeforeDeparture == int.MaxValue` |
+| TIER_MIN_DAYS | Mỗi tier có `MinDaysBeforeDeparture >= 0` |
+| TIER_MAX_GE_MIN | Mỗi tier có `MaxDaysBeforeDeparture >= MinDaysBeforeDeparture` |
+| TIER_PENALTY_RANGE | Mỗi tier có `PenaltyPercentage` từ 0 đến 100 |
 
 ### 3. EF Core Configuration
 
-**Remove columns from `CancellationPolicies` table:**
+**Xóa columns:**
 - `MinDaysBeforeDeparture`
 - `MaxDaysBeforeDeparture`
 - `PenaltyPercentage`
 - `ApplyOn`
 
-**Add/update:**
-- `Tiers` → JSONB column (`List<CancellationPolicyTier>`), stored as JSON array
+**Thêm/cập nhật:**
+- `Tiers` → JSONB column (`List<CancellationPolicyTier>`), lưu dạng JSON array
+
+**Thứ tự migration:**
+1. Thêm column `Tiers` (JSONB) trước
+2. Populate dữ liệu từ các columns cũ vào JSONB
+3. Chỉ sau đó mới xóa các columns cũ
 
 ### 4. Repository Interface
 
-**Add new method:**
+**Thêm method mới:**
 ```csharp
 Task<IReadOnlyList<CancellationPolicyEntity>> FindByTourScope(TourScope tourScope);
 ```
 
-Returns all non-deleted policies (regardless of Status) for the given TourScope. Follows existing pattern: `!IsDeleted` only.
+Trả về tất cả policies không bị xóa (`!IsDeleted`), không lọc theo Status.
 
-### 5. CalculateRefund Logic
+### 5. Logic CalculateRefund
 
 **Request:**
 ```csharp
@@ -104,16 +110,16 @@ public sealed record CalculateRefundResponse(
 public enum CalculationStatus { Calculated, NoPolicyAssigned, NoTierMatch, AfterDeparture }
 ```
 
-**Algorithm:**
-1. Load `Tour` → get `CancellationPolicyId`
-2. If `CancellationPolicyId` is null → return `RefundAmount = DepositAmount`, `Status = NoPolicyAssigned`
-3. Load `CancellationPolicy` → get `Tiers`
-4. Compute `daysBeforeDeparture = (Tour.DepartureDate - CancellationDate).Days`
-5. If `daysBeforeDeparture < 0` → return `RefundAmount = 0`, `Status = AfterDeparture` (already departed)
-6. Find matching tier: tier where `MinDaysBeforeDeparture <= daysBeforeDeparture <= MaxDaysBeforeDeparture`
-7. If no tier matches → return `RefundAmount = 0`, `Status = NoTierMatch`
-8. Compute `PenaltyAmount = DepositAmount * (PenaltyPercentage / 100)`
-9. Compute `RefundAmount = DepositAmount - PenaltyAmount`, `Status = Calculated`
+**Thuật toán:**
+1. Load `Tour` → lấy `CancellationPolicyId`
+2. Nếu `CancellationPolicyId` là null → hoàn 100%, `Status = NoPolicyAssigned`
+3. Load `CancellationPolicy` → lấy `Tiers`
+4. Tính `daysBeforeDeparture = (Tour.DepartureDate - CancellationDate).Days`
+5. Nếu `daysBeforeDeparture < 0` → hoàn 0%, `Status = AfterDeparture` (đã khởi hành rồi)
+6. Tìm tier phù hợp: tier có `MinDays <= daysBeforeDeparture <= MaxDays`
+7. Nếu không tìm được tier → hoàn 0%, `Status = NoTierMatch`
+8. Tính `PenaltyAmount = DepositAmount * (PenaltyPercentage / 100)`
+9. Tính `RefundAmount = DepositAmount - PenaltyAmount`, `Status = Calculated`
 
 ### 6. CQRS Commands
 
@@ -139,25 +145,25 @@ public sealed record UpdateCancellationPolicyCommand(
 
 ### 7. CQRS Queries
 
-#### GetCancellationPoliciesByScopeQuery (new)
+#### GetCancellationPoliciesByScopeQuery (mới)
 ```csharp
 public sealed record GetCancellationPoliciesByScopeQuery(TourScope TourScope)
     : IQuery<ErrorOr<IReadOnlyList<CancellationPolicyResponse>>>;
 ```
 
-Existing queries unchanged: `GetAllCancellationPoliciesQuery`, `GetCancellationPolicyByIdQuery`.
+Các query hiện tại giữ nguyên: `GetAllCancellationPoliciesQuery`, `GetCancellationPolicyByIdQuery`.
 
 ### 8. API Endpoints
 
-Existing endpoints unchanged (POST, PUT, DELETE, GET all, GET by id).
+Giữ nguyên các endpoints hiện tại (POST, PUT, DELETE, GET all, GET by id).
 
-New endpoint:
+Endpoints mới:
 - `GET /api/cancellation-policies/scope/{scope}` → `GetCancellationPoliciesByScopeQuery`
 - `POST /api/cancellation-policies/calculate-refund` → `CalculateRefundQuery`
 
-## Out of Scope
+## Ngoài phạm vi
 
-- Frontend UI redesign (form/list) — backend only
-- Changing Tour → CancellationPolicyId relationship
-- Migrating existing CancellationPolicy data — requires a sequential migration: (1) add new `Tiers` JSONB column first, (2) populate `Tiers` from existing columns, (3) only then drop old columns. Out of scope: the migration script itself.
-- Multi-language tier labels (tiers are numeric/ranges, translations stay at policy level for description)
+- Thiết kế lại UI frontend (form/list) — chỉ backend
+- Thay đổi quan hệ Tour → CancellationPolicyId
+- Migration dữ liệu CancellationPolicy hiện tại — cần viết script riêng
+- Đa ngôn ngữ cho tier labels (tiers là số/ngày, translations chỉ ở policy level)
