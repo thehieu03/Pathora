@@ -88,5 +88,17 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
             .WithOne(c => c.Tour)
             .HasForeignKey(c => c.TourId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Pricing policy relationship
+        builder.HasOne(t => t.PricingPolicy)
+            .WithMany()
+            .HasForeignKey(t => t.PricingPolicyId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Cancellation policy relationship
+        builder.HasOne(t => t.CancellationPolicy)
+            .WithMany()
+            .HasForeignKey(t => t.CancellationPolicyId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+using Domain.Entities.Translations;
 using Domain.Enums;
 
 namespace Application.Contracts.CancellationPolicy;
@@ -7,7 +9,9 @@ public sealed record CreateCancellationPolicyRequest(
     int MinDaysBeforeDeparture,
     int MaxDaysBeforeDeparture,
     decimal PenaltyPercentage,
-    string ApplyOn = "FullAmount"
+    string ApplyOn = "FullAmount",
+    [property: JsonPropertyName("translations")]
+    Dictionary<string, CancellationPolicyTranslationData>? Translations = null
 );
 
 public sealed record UpdateCancellationPolicyRequest(
@@ -17,7 +21,8 @@ public sealed record UpdateCancellationPolicyRequest(
     int MaxDaysBeforeDeparture,
     decimal PenaltyPercentage,
     string ApplyOn = "FullAmount",
-    CancellationPolicyStatus Status = CancellationPolicyStatus.Active
+    CancellationPolicyStatus Status = CancellationPolicyStatus.Active,
+    Dictionary<string, CancellationPolicyTranslationData>? Translations = null
 );
 
 public sealed record CancellationPolicyResponse(
@@ -31,6 +36,7 @@ public sealed record CancellationPolicyResponse(
     string ApplyOn,
     CancellationPolicyStatus Status,
     string StatusName,
+    Dictionary<string, CancellationPolicyTranslationData> Translations,
     DateTimeOffset CreatedOnUtc,
     DateTimeOffset? LastModifiedOnUtc
 );

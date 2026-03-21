@@ -1,6 +1,8 @@
+using Application.Common;
 using Application.Contracts.DepositPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
+using Domain.Entities.Translations;
 using ErrorOr;
 using FluentValidation;
 
@@ -10,7 +12,8 @@ public sealed record CreateDepositPolicyCommand(
     int TourScope,
     int DepositType,
     decimal DepositValue,
-    int MinDaysBeforeDeparture
+    int MinDaysBeforeDeparture,
+    Dictionary<string, DepositPolicyTranslationData>? Translations = null
 ) : ICommand<ErrorOr<Guid>>;
 
 public sealed class CreateDepositPolicyCommandValidator : AbstractValidator<CreateDepositPolicyCommand>
@@ -42,7 +45,8 @@ public sealed class CreateDepositPolicyCommandHandler(IDepositPolicyService depo
             request.TourScope,
             request.DepositType,
             request.DepositValue,
-            request.MinDaysBeforeDeparture
+            request.MinDaysBeforeDeparture,
+            request.Translations
         ));
         return result;
     }
@@ -54,7 +58,8 @@ public sealed record UpdateDepositPolicyCommand(
     int DepositType,
     decimal DepositValue,
     int MinDaysBeforeDeparture,
-    bool IsActive
+    bool IsActive,
+    Dictionary<string, DepositPolicyTranslationData>? Translations = null
 ) : ICommand<ErrorOr<Success>>;
 
 public sealed class UpdateDepositPolicyCommandValidator : AbstractValidator<UpdateDepositPolicyCommand>
@@ -91,7 +96,8 @@ public sealed class UpdateDepositPolicyCommandHandler(IDepositPolicyService depo
             request.DepositType,
             request.DepositValue,
             request.MinDaysBeforeDeparture,
-            request.IsActive
+            request.IsActive,
+            request.Translations
         ));
         return result;
     }

@@ -70,7 +70,11 @@ public class TourService(
             seoTitle: request.SEOTitle,
             seoDescription: request.SEODescription,
             thumbnail: thumbnail,
-            images: images);
+            images: images,
+            visaPolicyId: request.VisaPolicyId,
+            depositPolicyId: request.DepositPolicyId,
+            pricingPolicyId: request.PricingPolicyId,
+            cancellationPolicyId: request.CancellationPolicyId);
         tour.Translations = NormalizeTranslations(request.Translations);
 
         // Add Classifications with Plans, Activities, Insurances
@@ -251,7 +255,11 @@ public class TourService(
             seoTitle: request.SEOTitle,
             seoDescription: request.SEODescription,
             thumbnail: thumbnail,
-            images: images);
+            images: images,
+            visaPolicyId: request.VisaPolicyId,
+            depositPolicyId: request.DepositPolicyId,
+            pricingPolicyId: request.PricingPolicyId,
+            cancellationPolicyId: request.CancellationPolicyId);
         MergeTranslations(tour, request.Translations);
 
         await _tourRepository.Update(tour);

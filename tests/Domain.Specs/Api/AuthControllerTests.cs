@@ -554,7 +554,7 @@ public sealed class AuthControllerTests
             ErrorOr<TResponse> response,
             string path)
             where TRequest : IRequest<ErrorOr<TResponse>>
-        {
+    {
         var services = new ServiceCollection();
         var probe = new RequestProbe<TRequest, TResponse>(response);
         services.AddSingleton(probe);

@@ -1,6 +1,8 @@
+using System.Text.Json.Serialization;
 using Application.Contracts.CancellationPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
+using Domain.Entities.Translations;
 using Domain.Enums;
 using ErrorOr;
 using FluentValidation;
@@ -13,8 +15,10 @@ public sealed record UpdateCancellationPolicyCommand(
     int MinDaysBeforeDeparture,
     int MaxDaysBeforeDeparture,
     decimal PenaltyPercentage,
-    string ApplyOn,
-    CancellationPolicyStatus Status
+    string ApplyOn = "FullAmount",
+    CancellationPolicyStatus Status = CancellationPolicyStatus.Active,
+    [property: JsonPropertyName("translations")]
+    Dictionary<string, CancellationPolicyTranslationData>? Translations = null
 ) : ICommand<ErrorOr<CancellationPolicyResponse>>;
 
 public sealed class UpdateCancellationPolicyCommandValidator : AbstractValidator<UpdateCancellationPolicyCommand>
@@ -60,7 +64,8 @@ public sealed class UpdateCancellationPolicyCommandHandler(ICancellationPolicySe
             request.MaxDaysBeforeDeparture,
             request.PenaltyPercentage,
             request.ApplyOn,
-            request.Status
+            request.Status,
+            request.Translations
         );
 
         return await service.Update(updateRequest);

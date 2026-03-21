@@ -10,4 +10,5 @@ public interface IBookingRepository
     Task<List<BookingEntity>> GetByUserIdAsync(Guid userId);
     Task<List<BookingEntity>> GetRecentByUserIdAsync(Guid userId, int count);
     Task<int> CountByTourInstanceIdAsync(Guid tourInstanceId);
+    Task AddAsync(BookingEntity booking);
 }

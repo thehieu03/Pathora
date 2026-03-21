@@ -169,7 +169,7 @@ public class OutboxWorkerService(
             {
                 logger.LogDebug("No payment found for transaction {TransactionCode}, amount {Amount}",
                     payload.TransactionCode, payload.Amount);
-                
+
                 // Check if transaction has expired
                 var transaction = await paymentService.GetTransactionByCodeAsync(payload.TransactionCode);
                 if (transaction.IsError)

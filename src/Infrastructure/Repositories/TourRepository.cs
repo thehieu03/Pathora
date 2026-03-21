@@ -15,7 +15,11 @@ public class TourRepository(AppDbContext context) : ITourRepository
     {
         var query = asNoTracking
             ? BuildTourDetailQueryNoTracking()
-            : _context.Tours;
+            : _context.Tours
+                .Include(t => t.PricingPolicy)
+                .Include(t => t.DepositPolicy)
+                .Include(t => t.CancellationPolicy)
+                .Include(t => t.VisaPolicy);
 
         return await query.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }

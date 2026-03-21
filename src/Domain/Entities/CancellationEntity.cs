@@ -1,5 +1,6 @@
 namespace Domain.Entities;
 
+using Domain.Entities.Translations;
 using Domain.Enums;
 
 public class CancellationPolicyEntity : Aggregate<Guid>
@@ -15,6 +16,9 @@ public class CancellationPolicyEntity : Aggregate<Guid>
     public CancellationPolicyStatus Status { get; set; } = CancellationPolicyStatus.Active;
     public bool IsDeleted { get; set; }
 
+    // Translations (en, vi)
+    public Dictionary<string, CancellationPolicyTranslationData> Translations { get; set; } = [];
+
     public static string GeneratePolicyCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");
@@ -29,7 +33,8 @@ public class CancellationPolicyEntity : Aggregate<Guid>
         decimal penaltyPercentage,
         string applyOn = "FullAmount",
         CancellationPolicyStatus status = CancellationPolicyStatus.Active,
-        string performedBy = "system")
+        string performedBy = "system",
+        Dictionary<string, CancellationPolicyTranslationData>? translations = null)
     {
         return new CancellationPolicyEntity
         {
@@ -42,6 +47,7 @@ public class CancellationPolicyEntity : Aggregate<Guid>
             ApplyOn = applyOn,
             Status = status,
             IsDeleted = false,
+            Translations = translations ?? [],
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
             CreatedOnUtc = DateTimeOffset.UtcNow,
