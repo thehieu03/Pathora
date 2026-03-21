@@ -51,6 +51,26 @@ export function CancellationPoliciesPage() {
     }
   };
 
+  const handleToggleActive = async (policy: CancellationPolicy) => {
+    const updateData = {
+      id: policy.id,
+      tourScope: policy.tourScope,
+      minDaysBeforeDeparture: policy.minDaysBeforeDeparture,
+      maxDaysBeforeDeparture: policy.maxDaysBeforeDeparture,
+      penaltyPercentage: policy.penaltyPercentage,
+      applyOn: policy.applyOn,
+      status: policy.status === 1 ? 2 : 1,
+      translations: policy.translations,
+    };
+
+    const response = await cancellationPolicyService.update(updateData);
+    if (response.success) {
+      setRefreshKey((k) => k + 1);
+    } else {
+      alert(response.error?.[0]?.message || t("cancellationPolicy.error.toggleFailed", "Failed to update policy status"));
+    }
+  };
+
   const handleFormSuccess = () => {
     setView("list");
     setEditingPolicy(null);
@@ -108,6 +128,7 @@ export function CancellationPoliciesPage() {
           <CancellationPolicyList
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onToggleActive={handleToggleActive}
             refreshKey={refreshKey}
           />
         </motion.div>

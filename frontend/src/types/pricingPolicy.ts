@@ -1,6 +1,7 @@
 // Pricing Policy Types
 
 export interface PricingPolicyTier {
+  id?: string;
   label: string;
   ageFrom: number;
   ageTo: number | null;
@@ -42,6 +43,7 @@ export interface UpdatePricingPolicyRequest {
   name: string;
   tourType: number;
   tiers: PricingPolicyTier[];
+  status?: number;
   translations?: PricingPolicyTranslations;
 }
 

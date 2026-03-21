@@ -42,10 +42,14 @@ const DepositPoliciesSettings = dynamic(
   () => import("@/features/dashboard/components/DepositPoliciesSettings").then((mod) => mod.DepositPoliciesSettings),
   { ssr: false },
 );
+const CancellationPoliciesPage = dynamic(
+  () => import("@/features/dashboard/components/CancellationPoliciesPage").then((mod) => mod.CancellationPoliciesPage),
+  { ssr: false },
+);
 
 const VALID_TAB_IDS = [
-  "general", "tax-configs", "pricing-policies", "policies", "visa-policies",
-  "deposit-policies", "notifications", "security", "billing", "integrations",
+  "general", "tax-configs", "policies", "pricing-policies", "cancellation-policies",
+  "deposit-policies", "visa-policies", "notifications", "security", "billing", "integrations",
 ];
 
 const springTransition = { type: "spring" as const, stiffness: 100, damping: 20 };
@@ -184,10 +188,11 @@ export function SettingsPage() {
   const tabs = [
     { id: "general", label: t("settings.tabs.general"), icon: GearSix },
     { id: "tax-configs", label: t("settings.tabs.taxConfigs"), icon: Calculator },
-    { id: "pricing-policies", label: t("settings.tabs.pricingPolicies"), icon: CurrencyDollar },
     { id: "policies", label: t("settings.tabs.policies"), icon: ClipboardText },
-    { id: "visa-policies", label: t("settings.tabs.visaPolicies"), icon: FileText },
+    { id: "pricing-policies", label: t("settings.tabs.pricingPolicies"), icon: CurrencyDollar },
+    { id: "cancellation-policies", label: t("settings.tabs.cancellationPolicies"), icon: ClipboardText },
     { id: "deposit-policies", label: t("settings.tabs.depositPolicies"), icon: Bank },
+    { id: "visa-policies", label: t("settings.tabs.visaPolicies"), icon: FileText },
     { id: "notifications", label: t("settings.tabs.notifications"), icon: Bell },
     { id: "security", label: t("settings.tabs.security"), icon: ShieldCheck },
     { id: "billing", label: t("settings.tabs.billing"), icon: CreditCard },
@@ -359,6 +364,12 @@ export function SettingsPage() {
               {activeTab === "policies" && (
                 <motion.div key="policies" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={springTransition}>
                   <DashboardPoliciesPage />
+                </motion.div>
+              )}
+
+              {activeTab === "cancellation-policies" && (
+                <motion.div key="cancellation-policies" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={springTransition}>
+                  <CancellationPoliciesPage />
                 </motion.div>
               )}
 
