@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
 import type { CancellationPolicy, CreateCancellationPolicyRequest, UpdateCancellationPolicyRequest, CancellationPolicyTranslations } from "@/types/cancellationPolicy";
 import { TourScopeMap, CancellationPolicyStatusMap } from "@/types/cancellationPolicy";
-import { TranslationTabForm } from "./TranslationTabForm";
+import { TranslationTabForm, TranslationField } from "./TranslationTabForm";
+import { Icon } from "@/components/ui/Icon";
 
 interface CancellationPolicyFormProps {
   policy?: CancellationPolicy | null;
@@ -13,9 +16,22 @@ interface CancellationPolicyFormProps {
   onCancel: () => void;
 }
 
+const cancellationPolicyTranslationFields: TranslationField[] = [
+  {
+    key: "description",
+    label: "Description",
+    placeholder: {
+      vi: "Nhập mô tả chính sách hủy tour",
+      en: "Enter cancellation policy description",
+    },
+    type: "textarea",
+  },
+];
+
 export function CancellationPolicyForm({ policy, onSuccess, onCancel }: CancellationPolicyFormProps) {
-  const [loading, setLoading] = useState(false);
-  // Initialize with both languages to ensure both are saved
+  const { t } = useTranslation();
+  const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [translations, setTranslations] = useState<CancellationPolicyTranslations>(
     policy?.translations || { vi: { description: "" }, en: { description: "" } }
   );
@@ -50,11 +66,12 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
 
   const onSubmit = async (data: { tourScope: number; minDaysBeforeDeparture: number; maxDaysBeforeDeparture: number; penaltyPercentage: number; applyOn: string }) => {
     if (data.minDaysBeforeDeparture > data.maxDaysBeforeDeparture) {
-      alert("Min days cannot be greater than Max days");
+      alert(t("cancellationPolicy.validation.minDaysGreaterThanMax", "Min days cannot be greater than Max days"));
       return;
     }
 
-    setLoading(true);
+    setSaving(true);
+    setSubmitError(null);
     try {
       let response;
       if (policy) {
@@ -75,112 +92,166 @@ export function CancellationPolicyForm({ policy, onSuccess, onCancel }: Cancella
       if (response.success) {
         onSuccess();
       } else {
-        alert(response.error?.[0]?.message || "Failed to save cancellation policy");
+        setSubmitError(response.error?.[0]?.message || t("cancellationPolicy.error.saveFailed", "Failed to save cancellation policy"));
       }
-    } catch (err) {
-      alert("An error occurred while saving the cancellation policy");
+    } catch {
+      setSubmitError(t("cancellationPolicy.error.saveFailed", "An error occurred while saving the cancellation policy"));
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Tour Scope</label>
-        <select
-          {...register("tourScope", { required: true, valueAsNumber: true })}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+      {submitError && (
+        <motion.div
+          className="bg-red-50 border border-red-200/50 rounded-2xl p-4 flex items-start gap-3"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring" as const, stiffness: 100, damping: 20 }}
         >
-          {Object.entries(TourScopeMap).map(([key, value]) => (
-            <option key={key} value={key}>{value}</option>
-          ))}
-        </select>
-      </div>
+          <Icon icon="heroicons:exclamation-circle" className="size-5 text-red-500 mt-0.5 flex-shrink-0" />
+          <p className="text-sm text-red-700">{submitError}</p>
+        </motion.div>
+      )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="md:col-span-1">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">
+            {t("cancellationPolicy.form.tourScope", "Tour Scope")}
+          </label>
+          <select
+            {...register("tourScope", { required: true, valueAsNumber: true })}
+            className="block w-full px-3.5 py-2.5 border border-stone-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-stone-700 hover:border-stone-300 transition-colors"
+          >
+            {Object.entries(TourScopeMap).map(([key, value]) => (
+              <option key={key} value={key}>{value}</option>
+            ))}
+          </select>
+        </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700">Min Days Before Departure</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">
+            {t("cancellationPolicy.form.minDays", "Min Days")}
+          </label>
           <input
             type="number"
             {...register("minDaysBeforeDeparture", {
-              required: "Min days is required",
-              min: { value: 0, message: "Cannot be negative" },
+              required: t("cancellationPolicy.validation.minDaysRequired", "Min days is required"),
+              min: { value: 0, message: t("cancellationPolicy.validation.cannotBeNegative", "Cannot be negative") },
               valueAsNumber: true
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="block w-full px-3.5 py-2.5 border border-stone-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-stone-700 hover:border-stone-300 transition-colors"
           />
-          {errors.minDaysBeforeDeparture && <p className="mt-1 text-sm text-red-600">{errors.minDaysBeforeDeparture.message}</p>}
+          {errors.minDaysBeforeDeparture && (
+            <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+              <Icon icon="heroicons:exclamation-circle" className="size-3" />
+              {errors.minDaysBeforeDeparture.message}
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Max Days Before Departure</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">
+            {t("cancellationPolicy.form.maxDays", "Max Days")}
+          </label>
           <input
             type="number"
             {...register("maxDaysBeforeDeparture", {
-              required: "Max days is required",
-              min: { value: 0, message: "Cannot be negative" },
+              required: t("cancellationPolicy.validation.maxDaysRequired", "Max days is required"),
+              min: { value: 0, message: t("cancellationPolicy.validation.cannotBeNegative", "Cannot be negative") },
               valueAsNumber: true
             })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="block w-full px-3.5 py-2.5 border border-stone-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-stone-700 hover:border-stone-300 transition-colors"
           />
-          {errors.maxDaysBeforeDeparture && <p className="mt-1 text-sm text-red-600">{errors.maxDaysBeforeDeparture.message}</p>}
+          {errors.maxDaysBeforeDeparture && (
+            <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+              <Icon icon="heroicons:exclamation-circle" className="size-3" />
+              {errors.maxDaysBeforeDeparture.message}
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Penalty Percentage</label>
-          <input
-            type="number"
-            step="0.01"
-            {...register("penaltyPercentage", {
-              required: "Penalty percentage is required",
-              min: { value: 0, message: "Cannot be negative" },
-              max: { value: 100, message: "Cannot exceed 100%" },
-              valueAsNumber: true
-            })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-          {errors.penaltyPercentage && <p className="mt-1 text-sm text-red-600">{errors.penaltyPercentage.message}</p>}
+          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">
+            {t("cancellationPolicy.form.penaltyPercentage", "Penalty %")}
+          </label>
+          <div className="relative">
+            <input
+              type="number"
+              step="0.01"
+              {...register("penaltyPercentage", {
+                required: t("cancellationPolicy.validation.penaltyRequired", "Penalty percentage is required"),
+                min: { value: 0, message: t("cancellationPolicy.validation.cannotBeNegative", "Cannot be negative") },
+                max: { value: 100, message: t("cancellationPolicy.validation.cannotExceed100", "Cannot exceed 100%") },
+                valueAsNumber: true
+              })}
+              className="block w-full px-3.5 py-2.5 pr-10 border border-stone-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-stone-700 hover:border-stone-300 transition-colors"
+            />
+            <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-stone-400 pointer-events-none">%</span>
+          </div>
+          {errors.penaltyPercentage && (
+            <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
+              <Icon icon="heroicons:exclamation-circle" className="size-3" />
+              {errors.penaltyPercentage.message}
+            </p>
+          )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Apply On</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-2">
+            {t("cancellationPolicy.form.applyOn", "Apply On")}
+          </label>
           <select
             {...register("applyOn")}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            className="block w-full px-3.5 py-2.5 border border-stone-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-stone-700 hover:border-stone-300 transition-colors"
           >
-            <option value="FullAmount">Full Amount</option>
-            <option value="DepositOnly">Deposit Only</option>
+            <option value="FullAmount">{t("cancellationPolicy.applyOn.FullAmount", "Full Amount")}</option>
+            <option value="DepositOnly">{t("cancellationPolicy.applyOn.DepositOnly", "Deposit Only")}</option>
           </select>
         </div>
       </div>
 
-      {/* Translation Section */}
-      <div className="border-t border-gray-200 pt-6">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Translations</h3>
-        <TranslationTabForm translations={translations} onChange={setTranslations} />
+      <div className="border-t border-stone-200 pt-6">
+        <h3 className="text-sm font-bold text-stone-800 tracking-tight mb-4 flex items-center gap-2">
+          <Icon icon="heroicons:language" className="size-4 text-amber-500" />
+          {t("cancellationPolicy.form.translations", "Translations")}
+        </h3>
+        <TranslationTabForm
+          translations={translations}
+          onChange={setTranslations}
+          fields={cancellationPolicyTranslationFields}
+        />
       </div>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex items-center justify-end gap-3 pt-2">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          className="px-5 py-2.5 border border-stone-200 rounded-xl text-sm font-semibold text-stone-700 hover:bg-stone-50 hover:border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 active:scale-[0.98] transition-all duration-200"
         >
-          Cancel
+          {t("cancellationPolicy.action.cancel", "Cancel")}
         </button>
         <button
           type="submit"
-          disabled={loading}
-          className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+          disabled={saving}
+          className="inline-flex items-center gap-2 px-5 py-2.5 border border-transparent rounded-xl text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-2 focus:ring-amber-500/30 focus:ring-offset-2 disabled:opacity-50 active:scale-[0.98] transition-all duration-200"
         >
-          {loading ? "Saving..." : policy ? "Update" : "Create"}
+          {saving ? (
+            <>
+              <Icon icon="heroicons:arrow-path" className="size-4 animate-spin" />
+              {t("cancellationPolicy.action.saving", "Saving...")}
+            </>
+          ) : (
+            <>
+              <Icon icon="heroicons:check" className="size-4" />
+              {policy ? t("cancellationPolicy.action.update", "Update") : t("cancellationPolicy.action.create", "Create")}
+            </>
+          )}
         </button>
       </div>
     </form>
   );
 }
-
-

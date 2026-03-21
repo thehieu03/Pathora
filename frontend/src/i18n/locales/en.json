@@ -11,6 +11,7 @@
     "back": "Back",
     "save": "Save",
     "loading": "Loading...",
+    "retry": "Retry",
     "auth": {
       "fullName": "Full Name",
       "phoneNumber": "Phone Number",
@@ -56,7 +57,6 @@
     "alreadyHaveAccount": "Already have an account?",
     "submit": "Submit",
     "cancel": "Cancel",
-    "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
@@ -65,10 +65,8 @@
     "filter": "Filter",
     "reset": "Reset",
     "close": "Close",
-    "back": "Back",
     "next": "Next",
     "previous": "Previous",
-    "loading": "Loading...",
     "noData": "No data",
     "copyright": "Copyright 2021, progcoder. All Rights Reserved.",
     "weekly": "Weekly",
@@ -103,7 +101,98 @@
     "newPassword": "New password",
     "confirmNewPassword": "Confirm new password",
     "loadingDashboard": "Loading dashboard data from backend...",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "yes": "Yes",
+    "no": "No",
+    "required": "This field is required",
+    "customers": {
+      "pageTitle": "Customers",
+      "pageSubtitle": "Manage customer profiles and engagement",
+      "searchPlaceholder": "Search by name, email, or ID...",
+      "empty": {
+        "title": "No customers yet",
+        "description": "The API returned no customer records for this workspace."
+      },
+      "error": {
+        "title": "Could not load customers",
+        "fallback": "Unable to load customer data. Please try again."
+      },
+      "filterAll": "All",
+      "noMatch": "No customers match your current filters.",
+      "stat": {
+        "total": "Total Customers",
+        "active": "Active Customers",
+        "avgSpending": "Avg. Spending",
+        "vipMembers": "VIP Members"
+      },
+      "column": {
+        "customer": "Customer",
+        "contact": "Contact",
+        "nationality": "Nationality",
+        "bookings": "Bookings",
+        "totalSpent": "Total Spent",
+        "status": "Status",
+        "lastBooking": "Last Booking"
+      }
+    },
+    "insurance": {
+      "pageTitle": "Insurance",
+      "pageSubtitle": "Manage travel insurance policies",
+      "empty": {
+        "title": "No insurance policies yet",
+        "description": "No insurance records were returned by the API."
+      },
+      "error": {
+        "title": "Could not load insurance",
+        "fallback": "Unable to load insurance data. Please try again."
+      },
+      "filterAll": "All",
+      "stat": {
+        "active": "Active Policies",
+        "premiums": "Total Premiums",
+        "claims": "Claims",
+        "avgPremium": "Avg. Premium"
+      },
+      "column": {
+        "policyId": "Policy ID",
+        "booking": "Booking",
+        "customer": "Customer",
+        "planType": "Plan Type",
+        "coverage": "Coverage",
+        "premium": "Premium",
+        "status": "Status",
+        "period": "Period"
+      }
+    },
+    "visaApplications": {
+      "pageTitle": "Visa Applications",
+      "pageSubtitle": "Track visa application status",
+      "empty": {
+        "title": "No visa applications yet",
+        "description": "No visa application records were returned by the API."
+      },
+      "error": {
+        "title": "Could not load visa applications",
+        "fallback": "Unable to load visa application data. Please try again."
+      },
+      "filterAll": "All",
+      "stat": {
+        "total": "Total Applications",
+        "approved": "Approved",
+        "pending": "Pending Review",
+        "rate": "Approval Rate"
+      },
+      "column": {
+        "applicationId": "Application ID",
+        "applicant": "Applicant",
+        "passport": "Passport",
+        "destination": "Destination",
+        "visaType": "Visa Type",
+        "status": "Status",
+        "submitted": "Submitted",
+        "decision": "Decision"
+      }
+    }
   },
   "placeholder": {
     "searchAnything": "Search anything...",
@@ -1163,6 +1252,23 @@
         "title": "Tour Request Detail"
       }
     },
+    "pageTitle": "Tour Requests",
+    "pageSubtitle": "Review, filter, and process incoming custom tour requests.",
+    "empty": {
+      "title": "No tour requests found",
+      "description": "There are no tour requests matching your current filters."
+    },
+    "error": {
+      "title": "Could not load tour requests",
+      "fallback": "Unable to load tour request data. Please try again."
+    },
+    "common": {
+      "retry": "Retry",
+      "previous": "Previous",
+      "next": "Next",
+      "view": "View",
+      "backToList": "Back to list"
+    },
     "form": {
       "destination": "Destination",
       "startDate": "Start Date",
@@ -1296,7 +1402,15 @@
       "searchAria": "Search tours",
       "searchAlt": "Search",
       "exploreTours": "Explore Tours",
-      "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "weekdays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "destinations": [
         "Ho Chi Minh City",
         "Ha Noi",
@@ -1305,7 +1419,11 @@
         "New York",
         "California"
       ],
-      "classifications": ["Standard", "VIP", "Luxury"],
+      "classifications": [
+        "Standard",
+        "VIP",
+        "Luxury"
+      ],
       "calendar": {
         "previousMonth": "Previous month",
         "nextMonth": "Next month"
@@ -1590,7 +1708,9 @@
       "guests": "Guests",
       "availability": "Availability",
       "overview": "Overview",
-      "itinerary": "Itinerary",
+      "itinerary": {
+        "empty": "No itinerary available for this package."
+      },
       "aboutThisTour": "About This Tour",
       "itineraryComingSoon": "Detailed itinerary will be available soon. Please contact us for more information.",
       "youMightAlsoLike": "You Might Also Like",
@@ -1620,8 +1740,20 @@
       "retry": "Try Again",
       "package": "Package",
       "plans": "Day Plans",
-      "days": "days",
+      "accommodations": {
+        "empty": "No accommodations available for this package."
+      },
+      "locations": {
+        "empty": "No locations available for this package."
+      },
+      "transportation": {
+        "empty": "No transportation routes available."
+      },
+      "services": {
+        "empty": "No other services available for this package."
+      },
       "insurance": "Insurance",
+      "days": "days",
       "included": "included",
       "none": "None",
       "fee": "Fee",
@@ -1713,7 +1845,37 @@
       "copyAccountNumber": "Copy Account Number",
       "copiedToClipboard": "Copied to clipboard!",
       "scanQrOrTransfer": "Scan QR code or transfer manually",
-      "transferAmount": "Transfer Amount"
+      "transferAmount": "Transfer Amount",
+      "paymentFailed": "Payment Failed",
+      "transactionError": "An error occurred. Please try again.",
+      "transactionCreated": "Transaction created successfully!",
+      "tax": "Tax",
+      "children": "Children",
+      "infants": "Infants",
+      "qrAfterConfirm": "QR code will appear after confirming booking",
+      "processing": "Processing...",
+      "agreeTermsLabel": "I have read and agree to the terms & conditions",
+      "bookingConfirmed": "Booking Confirmed!",
+      "publicInstanceMessage": "Your booking has been confirmed. Get ready for your adventure!",
+      "bookingPending": "Booking Request Submitted",
+      "privateInstanceMessage": "Your request is pending admin review. We'll notify you once approved.",
+      "viewMyBookings": "View My Bookings",
+      "customerInfo": "Contact Information",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "email": "Email (Optional)",
+      "emailPlaceholder": "Enter your email address",
+      "day": "Day",
+      "days": "Days",
+      "instanceJoin": "Instance Join",
+      "tourBooking": "Tour Booking",
+      "public": "Public",
+      "private": "Private",
+      "adultsCount": "{{count}} Adults",
+      "childrenCount": ", {{count}} Children",
+      "infantsCount": ", {{count}} Infants"
     },
     "visa": {
       "title": "Visa Applications",
@@ -1776,6 +1938,67 @@
       "invoice": "Invoice",
       "viewDetails": "View Details",
       "noResults": "No bookings found."
+    },
+    "cancellationPolicy": {
+      "pageTitle": "Cancellation Policies",
+      "pageSubtitle": "Manage cancellation refund rules for tours",
+      "empty": {
+        "title": "No cancellation policies found",
+        "description": "Create one to get started"
+      },
+      "error": {
+        "title": "Could not load policies",
+        "loadFailed": "Failed to load cancellation policies",
+        "deleteFailed": "Failed to delete cancellation policy",
+        "saveFailed": "An error occurred while saving the cancellation policy"
+      },
+      "column": {
+        "policyCode": "Policy Code",
+        "tourScope": "Tour Scope",
+        "minDays": "Min Days",
+        "maxDays": "Max Days",
+        "penalty": "Penalty %",
+        "applyOn": "Apply On",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "applyOn": {
+        "FullAmount": "Full Amount",
+        "DepositOnly": "Deposit Only"
+      },
+      "form": {
+        "titleCreate": "Create Cancellation Policy",
+        "titleEdit": "Edit Cancellation Policy",
+        "tourScope": "Tour Scope",
+        "minDays": "Min Days Before Departure",
+        "maxDays": "Max Days Before Departure",
+        "penaltyPercentage": "Penalty Percentage",
+        "applyOn": "Apply On",
+        "translations": "Translations"
+      },
+      "validation": {
+        "minDaysRequired": "Min days is required",
+        "maxDaysRequired": "Max days is required",
+        "penaltyRequired": "Penalty percentage is required",
+        "cannotBeNegative": "Cannot be negative",
+        "cannotExceed100": "Cannot exceed 100%",
+        "minDaysGreaterThanMax": "Min days cannot be greater than Max days"
+      },
+      "action": {
+        "addPolicy": "Add Policy",
+        "edit": "Edit",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "update": "Update",
+        "create": "Create",
+        "saving": "Saving..."
+      },
+      "confirm": {
+        "delete": "Are you sure you want to delete this cancellation policy?"
+      },
+      "unit": {
+        "days": "days"
+      }
     },
     "bookingDetail": {
       "backToBookings": "Back to Bookings",
@@ -1993,7 +2216,8 @@
       "openMenu": "Open menu",
       "closeMenu": "Close menu",
       "changeLanguage": "Change language",
-      "closeNavigationMenu": "Close navigation menu"
+      "closeNavigationMenu": "Close navigation menu",
+      "notificationsAria": "{{count}} unread notifications"
     }
   },
   "booking": {
@@ -2025,6 +2249,40 @@
     "message": "Message",
     "time": "Time",
     "noNotificationsFound": "No notifications found"
+  },
+  "tourList": {
+    "pageTitle": "Tours",
+    "pageSubtitle": "Manage your tour packages and itineraries",
+    "addNewTour": "Add New Tour",
+    "searchPlaceholder": "Search by name or code...",
+    "statusFilter": {
+      "all": "All Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "draft": "Draft",
+      "pending": "Pending"
+    },
+    "column": {
+      "tour": "Tour",
+      "code": "Code",
+      "status": "Status",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "stat": {
+      "totalTours": "Total Tours",
+      "active": "Active",
+      "inactive": "Inactive",
+      "draft": "Draft"
+    },
+    "empty": {
+      "title": "No tours found",
+      "description": "There are no tours to display yet. Create your first tour to get started."
+    },
+    "error": {
+      "title": "Could not load tours",
+      "fallback": "Unable to load tour data. Please try again."
+    }
   },
   "tourAdmin": {
     "title": "Tour Management",
@@ -2204,7 +2462,7 @@
     "miceInfo": "MICE tours are designed for corporate events, meetings, incentive trips, conferences, and exhibitions.",
     "startDate": "Start Date",
     "endDate": "End Date",
-    "maxParticipants": "Maximum Participants",
+    "maxParticipants": "Max participants",
     "instanceSummary": "Instance Summary",
     "cancel": "Cancel",
     "creating": "Creating...",
@@ -2258,193 +2516,534 @@
       "operatingCost": "Operating cost",
       "depositPerPerson": "Deposit per person",
       "locationPlaceholder": "Ex: Ha Long",
-      "includedServicesPlaceholder": "Ex: Shuttle bus",
-      "addService": "Add service",
-      "guideName": "Guide name",
-      "guideAvatar": "Guide avatar URL",
-      "guideExperience": "Guide experience",
-      "guideLanguage": "Language code",
-      "addLanguage": "Add language",
-      "media": "Media",
-      "thumbnailUpload": "Thumbnail upload",
-      "imagesUpload": "Gallery upload",
-      "filesSelected": "Files selected",
-      "thumbnailUrl": "Thumbnail URL",
-      "imageUrl": "Image URL",
-      "addImage": "Add image",
-      "addPricingTier": "Add pricing tier",
-      "selectedClassification": "Selected classification",
-      "minParticipants": "Min participants",
-      "maxParticipants": "Max participants",
-      "pricePerPerson": "Price per person",
-      "currentParticipation": "Current participants",
-      "cancellationReason": "Cancellation reason"
+      "empty": {
+        "title": "No tour instances found",
+        "description": "There are no scheduled tour instances yet. Create your first instance to get started."
+      },
+      "error": {
+        "title": "Could not load tour instances",
+        "fallback": "Unable to load tour instance data. Please try again."
+      }
     },
-    "pricingPolicy": {
-      "title": "Pricing Policies",
-      "addPolicy": "Add Policy",
-      "editPolicy": "Edit Policy",
-      "createPolicy": "Create Pricing Policy",
-      "policyName": "Policy Name",
+    "includedServicesPlaceholder": "Ex: Shuttle bus",
+    "addService": "Add service",
+    "guideName": "Guide name",
+    "guideAvatar": "Guide avatar URL",
+    "guideExperience": "Guide experience",
+    "guideLanguage": "Language code",
+    "addLanguage": "Add language",
+    "media": "Media",
+    "thumbnailUpload": "Thumbnail upload",
+    "imagesUpload": "Gallery upload",
+    "filesSelected": "Files selected",
+    "thumbnailUrl": "Thumbnail URL",
+    "imageUrl": "Image URL",
+    "addImage": "Add image",
+    "addPricingTier": "Add pricing tier",
+    "selectedClassification": "Selected classification",
+    "minParticipants": "Min participants",
+    "pricePerPerson": "Price per person",
+    "currentParticipation": "Current participants",
+    "cancellationReason": "Cancellation reason"
+  },
+  "pricingPolicy": {
+    "title": "Pricing Policies",
+    "pageTitle": "Pricing Policies",
+    "pageSubtitle": "Manage age-based pricing rules for tours",
+    "addPolicy": "Add Policy",
+    "editPolicy": "Edit Policy",
+    "createPolicy": "Create Pricing Policy",
+    "policyName": "Policy Name",
+    "tourType": "Tour Type",
+    "status": "Status",
+    "default": "Default",
+    "setDefault": "Set as Default",
+    "tiers": "Pricing Tiers",
+    "addTier": "Add Tier",
+    "label": "Label",
+    "ageFrom": "Age From",
+    "ageTo": "Age To",
+    "pricePercentage": "Price %",
+    "noPolicies": "No pricing policies found. Create one to get started.",
+    "confirmDelete": "Are you sure you want to delete this pricing policy?",
+    "deleteFailed": "Failed to delete pricing policy",
+    "setDefaultFailed": "Failed to set as default",
+    "private": "Private",
+    "public": "Public",
+    "active": "Active",
+    "inactive": "Inactive",
+    "empty": {
+      "title": "No pricing policies found",
+      "description": "Create your first pricing policy to get started."
+    },
+    "error": {
+      "title": "Could not load pricing policies",
+      "fallback": "Unable to load pricing policy data. Please try again."
+    },
+    "column": {
+      "policyCode": "Policy Code",
+      "name": "Name",
       "tourType": "Tour Type",
       "status": "Status",
       "default": "Default",
-      "setDefault": "Set as Default",
-      "tiers": "Pricing Tiers",
-      "addTier": "Add Tier",
-      "label": "Label",
-      "ageFrom": "Age From",
-      "ageTo": "Age To",
-      "pricePercentage": "Price %",
-      "noPolicies": "No pricing policies found. Create one to get started.",
-      "confirmDelete": "Are you sure you want to delete this pricing policy?",
-      "private": "Private",
-      "public": "Public",
+      "tiers": "Tiers",
+      "actions": "Actions"
+    },
+    "form": {
+      "policyName": "Policy Name",
+      "policyNamePlaceholder": "Enter pricing policy name",
+      "tourType": "Tour Type",
+      "setAsDefault": "Set as default policy",
+      "translations": "Translations",
+      "cancel": "Cancel",
+      "save": "Save",
+      "update": "Update",
+      "create": "Create",
+      "saving": "Saving...",
+      "minOneTier": "Please add at least one pricing tier",
+      "saveFailed": "Failed to save pricing policy",
+      "policyNameRequired": "Policy name is required"
+    },
+    "action": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "setDefault": "Set Default"
+    },
+    "tiersCount": "{{count}} tiers"
+  },
+  "visaPolicy": {
+    "title": "Visa Policies",
+    "pageTitle": "Visa Policies",
+    "pageSubtitle": "Manage visa processing time and requirements by region",
+    "add": "Add Visa Policy",
+    "edit": "Edit Visa Policy",
+    "create": "Create Visa Policy",
+    "description": "Manage visa processing time and requirements by region",
+    "empty": {
+      "title": "No visa policies configured",
+      "description": "Add your first visa policy to get started."
+    },
+    "error": {
+      "title": "Could not load visa policies",
+      "fallback": "Unable to load visa policy data. Please try again."
+    },
+    "column": {
+      "region": "Region",
+      "processingDays": "Processing Days",
+      "bufferDays": "Buffer Days",
+      "fullPayment": "Full Payment",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "region": "Region",
+      "regionPlaceholder": "e.g., Southeast Asia, Europe, USA",
+      "processingDays": "Processing Days",
+      "bufferDays": "Buffer Days",
+      "fullPaymentRequired": "Full Payment Required for Visa Processing",
+      "active": "Active",
+      "translations": "Translations",
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving..."
+    },
+    "region": "Region",
+    "regionPlaceholder": "e.g., Vietnam, Thailand, USA",
+    "processingDays": "Processing Days",
+    "bufferDays": "Buffer Days",
+    "fullPayment": "Full Payment Required",
+    "fullPaymentRequired": "Full payment required for visa processing",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "days": "days",
+    "noPolicies": "No visa policies configured",
+    "confirmDelete": "Are you sure you want to delete this visa policy?",
+    "createFailed": "Failed to create visa policy",
+    "updateFailed": "Failed to update visa policy",
+    "deleteFailed": "Failed to delete visa policy"
+  },
+  "taxConfig": {
+    "pageTitle": "Tax Configurations",
+    "pageSubtitle": "Manage tax rates for bookings",
+    "addTax": "Add Tax",
+    "empty": {
+      "title": "No tax configurations found",
+      "description": "Create one to get started"
+    },
+    "error": {
+      "title": "Could not load tax configurations",
+      "fallback": "Unable to load tax configuration data. Please try again."
+    },
+    "confirmDelete": "Are you sure you want to delete this tax configuration?",
+    "deleteFailed": "Failed to delete tax configuration",
+    "column": {
+      "taxName": "Tax Name",
+      "taxCode": "Tax Code",
+      "taxRate": "Tax Rate",
+      "effectiveDate": "Effective Date",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
       "active": "Active",
       "inactive": "Inactive"
     },
-    "visaPolicy": {
-      "title": "Visa Policies",
-      "add": "Add Visa Policy",
-      "edit": "Edit Visa Policy",
-      "create": "Create Visa Policy",
-      "description": "Manage visa processing time and requirements by region",
-      "region": "Region",
-      "regionPlaceholder": "e.g., Vietnam, Thailand, USA",
-      "processingDays": "Processing Days",
-      "bufferDays": "Buffer Days",
-      "fullPayment": "Full Payment Required",
-      "fullPaymentRequired": "Full payment required for visa processing",
-      "status": "Status",
-      "active": "Active",
-      "inactive": "Inactive",
-      "days": "days",
-      "noPolicies": "No visa policies configured",
-      "confirmDelete": "Are you sure you want to delete this visa policy?",
-      "createFailed": "Failed to create visa policy",
-      "updateFailed": "Failed to update visa policy",
-      "deleteFailed": "Failed to delete visa policy"
+    "form": {
+      "createTitle": "Create Tax Configuration",
+      "editTitle": "Edit Tax Configuration",
+      "taxName": "Tax Name",
+      "taxNamePlaceholder": "e.g., VAT, Service Tax",
+      "taxRate": "Tax Rate (%)",
+      "effectiveDate": "Effective Date",
+      "description": "Description (Optional)",
+      "descriptionPlaceholder": "Enter tax description or notes",
+      "isActive": "Active",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving...",
+      "create": "Create",
+      "update": "Update",
+      "validation": {
+        "taxNameRequired": "Tax name is required",
+        "taxRateRequired": "Tax rate is required",
+        "taxRateNegative": "Cannot be negative",
+        "taxRateExceed": "Cannot exceed 100%",
+        "effectiveDateRequired": "Effective date is required",
+        "saveFailed": "Failed to save tax configuration"
+      }
+    }
+  },
+  "depositPolicy": {
+    "pageTitle": "Deposit Policies",
+    "pageSubtitle": "Manage deposit requirements for tours (percentage or fixed amount)",
+    "title": "Deposit Policies",
+    "add": "Add Deposit Policy",
+    "addPolicy": "Add Policy",
+    "edit": "Edit Deposit Policy",
+    "create": "Create Deposit Policy",
+    "description": "Manage deposit requirements for tours (percentage or fixed amount)",
+    "tourScope": "Tour Scope",
+    "depositType": "Deposit Type",
+    "depositValue": "Deposit Value",
+    "minDaysBeforeDeparture": "Min Days Before Departure",
+    "minDays": "Min Days",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "days": "days",
+    "percentage": "Percentage",
+    "fixedAmount": "Fixed Amount",
+    "domestic": "Domestic",
+    "international": "International",
+    "noPolicies": "No deposit policies found. Create one to get started.",
+    "confirmDelete": "Are you sure you want to delete this deposit policy?",
+    "createFailed": "Failed to create deposit policy",
+    "updateFailed": "Failed to update deposit policy",
+    "deleteFailed": "Failed to delete deposit policy",
+    "empty": {
+      "title": "No deposit policies found",
+      "description": "Create your first deposit policy to get started."
     },
-    "depositPolicy": {
-      "title": "Deposit Policies",
-      "add": "Add Deposit Policy",
-      "edit": "Edit Deposit Policy",
-      "create": "Create Deposit Policy",
-      "description": "Manage deposit requirements for tours (percentage or fixed amount)",
+    "error": {
+      "title": "Could not load deposit policies",
+      "fallback": "Unable to load deposit policy data. Please try again."
+    },
+    "column": {
+      "tourScope": "Tour Scope",
+      "depositType": "Deposit Type",
+      "depositValue": "Deposit Value",
+      "minDays": "Min Days",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
       "tourScope": "Tour Scope",
       "depositType": "Deposit Type",
       "depositValue": "Deposit Value",
       "minDaysBeforeDeparture": "Min Days Before Departure",
-      "minDays": "Min Days",
+      "translations": "Translations",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter deposit policy description"
+    },
+    "common": {
+      "retry": "Retry",
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving...",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "policies": {
+    "title": "Policies",
+    "description": "Review and manage pricing, deposit, cancellation, and visa policy rules.",
+    "searchPlaceholder": "Search by policy name, type, or scope",
+    "confirmToggle": "Are you sure you want to change the status for this policy?",
+    "types": {
+      "pricing": "Pricing",
+      "deposit": "Deposit",
+      "cancellation": "Cancellation",
+      "visa": "Visa"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "policy": "Policy",
+      "type": "Type",
+      "scope": "Scope",
       "status": "Status",
+      "updated": "Last updated",
+      "destination": "Management",
+      "actions": "Actions"
+    },
+    "metrics": {
+      "total": "Total policies",
       "active": "Active",
       "inactive": "Inactive",
-      "days": "days",
-      "percentage": "Percentage",
-      "fixedAmount": "Fixed Amount",
-      "domestic": "Domestic",
-      "international": "International",
-      "noPolicies": "No deposit policies found. Create one to get started.",
-      "confirmDelete": "Are you sure you want to delete this deposit policy?",
-      "createFailed": "Failed to create deposit policy",
-      "updateFailed": "Failed to update deposit policy",
-      "deleteFailed": "Failed to delete deposit policy"
+      "categories": "Policy categories"
     },
-    "policies": {
-      "title": "Policies",
-      "description": "Review and manage pricing, deposit, cancellation, and visa policy rules.",
-      "searchPlaceholder": "Search by policy name, type, or scope",
-      "confirmToggle": "Are you sure you want to change the status for this policy?",
-      "types": {
-        "pricing": "Pricing",
-        "deposit": "Deposit",
-        "cancellation": "Cancellation",
-        "visa": "Visa"
-      },
-      "filters": {
-        "all": "All",
-        "active": "Active",
-        "inactive": "Inactive"
-      },
-      "table": {
-        "policy": "Policy",
-        "type": "Type",
-        "scope": "Scope",
-        "status": "Status",
-        "updated": "Last updated",
-        "destination": "Management",
-        "actions": "Actions"
-      },
-      "metrics": {
-        "total": "Total policies",
-        "active": "Active",
-        "inactive": "Inactive",
-        "categories": "Policy categories"
-      },
-      "states": {
-        "loading": "Loading policy data...",
-        "emptyTitle": "No policies found",
-        "emptyDescription": "Create your first policy to start configuring business rules.",
-        "filteredEmptyTitle": "No matching policies",
-        "filteredEmptyDescription": "Try another keyword or reset filters to see all policies."
-      },
-      "actions": {
-        "refresh": "Refresh",
-        "create": "Create policy",
-        "view": "View",
-        "edit": "Edit",
-        "reset": "Reset",
-        "retry": "Retry",
-        "updating": "Updating..."
-      },
-      "errors": {
-        "loadFailed": "Unable to load policies.",
-        "toggleFailed": "Unable to change policy status. Please try again."
-      }
+    "states": {
+      "loading": "Loading policy data...",
+      "emptyTitle": "No policies found",
+      "emptyDescription": "Create your first policy to start configuring business rules.",
+      "filteredEmptyTitle": "No matching policies",
+      "filteredEmptyDescription": "Try another keyword or reset filters to see all policies."
     },
-    "siteContent": {
-      "title": "Site Content",
-      "description": "Manage page content records and edit English/Vietnamese JSON values.",
-      "searchPlaceholder": "Search by page key or content key",
-      "filters": {
-        "pageKey": "Page key",
-        "allPageKeys": "All page keys"
-      },
-      "table": {
-        "pageKey": "Page key",
-        "contentKey": "Content key",
-        "locales": "Locales",
-        "updated": "Last updated",
-        "actions": "Actions",
-        "system": "system"
-      },
-      "states": {
-        "loading": "Loading site content records...",
-        "emptyTitle": "No site content records found",
-        "emptyDescription": "Try another filter or search keyword.",
-        "loadingDetail": "Loading content detail..."
-      },
-      "actions": {
-        "refresh": "Refresh",
-        "edit": "Edit",
-        "close": "Close",
-        "save": "Save changes",
-        "saving": "Saving..."
-      },
-      "editor": {
-        "title": "Bilingual content editor",
-        "englishLabel": "English JSON (en)",
-        "vietnameseLabel": "Vietnamese JSON (vi)"
-      },
-      "errors": {
-        "loadList": "Unable to load site content records. Please try again.",
-        "loadDetail": "Unable to load content detail. Please try again.",
-        "invalidJson": "English and Vietnamese content must be valid JSON.",
-        "saveFailed": "Unable to save content changes. Please try again."
-      },
-      "messages": {
-        "saveSuccess": "Site content updated successfully."
-      }
+    "actions": {
+      "refresh": "Refresh",
+      "create": "Create policy",
+      "view": "View",
+      "edit": "Edit",
+      "reset": "Reset",
+      "retry": "Retry",
+      "updating": "Updating..."
+    },
+    "errors": {
+      "loadFailed": "Unable to load policies.",
+      "toggleFailed": "Unable to change policy status. Please try again."
+    }
+  },
+  "siteContent": {
+    "title": "Site Content",
+    "description": "Manage page content records and edit English/Vietnamese JSON values.",
+    "searchPlaceholder": "Search by page key or content key",
+    "filters": {
+      "pageKey": "Page key",
+      "allPageKeys": "All page keys"
+    },
+    "table": {
+      "pageKey": "Page key",
+      "contentKey": "Content key",
+      "locales": "Locales",
+      "updated": "Last updated",
+      "actions": "Actions",
+      "system": "system"
+    },
+    "states": {
+      "loading": "Loading site content records...",
+      "emptyTitle": "No site content records found",
+      "emptyDescription": "Try another filter or search keyword.",
+      "loadingDetail": "Loading content detail..."
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "edit": "Edit",
+      "close": "Close",
+      "save": "Save changes",
+      "saving": "Saving..."
+    },
+    "editor": {
+      "title": "Bilingual content editor",
+      "englishLabel": "English JSON (en)",
+      "vietnameseLabel": "Vietnamese JSON (vi)"
+    },
+    "errors": {
+      "loadList": "Unable to load site content records. Please try again.",
+      "loadDetail": "Unable to load content detail. Please try again.",
+      "invalidJson": "English and Vietnamese content must be valid JSON.",
+      "saveFailed": "Unable to save content changes. Please try again."
+    },
+    "messages": {
+      "saveSuccess": "Site content updated successfully."
+    }
+  },
+  "translation": {
+    "tab": {
+      "vietnamese": "Vietnamese",
+      "english": "English"
+    },
+    "field": {
+      "name": "Name",
+      "namePlaceholderVi": "Enter policy name",
+      "namePlaceholderEn": "Enter policy name",
+      "description": "Description",
+      "descriptionPlaceholderVi": "Enter description",
+      "descriptionPlaceholderEn": "Enter description"
+    }
+  },
+  "settings": {
+    "pageTitle": "Settings",
+    "pageSubtitle": "Manage your workspace and preferences",
+    "tabs": {
+      "general": "General",
+      "taxConfigs": "Tax Configs",
+      "pricingPolicies": "Pricing Policies",
+      "policies": "Policies",
+      "visaPolicies": "Visa Policies",
+      "depositPolicies": "Deposit Policies",
+      "notifications": "Notifications",
+      "security": "Security",
+      "billing": "Billing",
+      "integrations": "Integrations"
+    },
+    "general": {
+      "organization": "Organization",
+      "companyName": "Company Name",
+      "businessEmail": "Business Email",
+      "timezone": "Timezone",
+      "currency": "Currency",
+      "saveChanges": "Save Changes"
+    },
+    "teamMembers": {
+      "title": "Team Members",
+      "inviteMember": "Invite Member",
+      "active": "Active",
+      "pending": "Pending",
+      "owner": "Owner",
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "emailBookings": "Email notifications for new bookings",
+      "emailBookingsDesc": "Get notified when a customer makes a new booking",
+      "paymentReminders": "Payment reminders",
+      "paymentRemindersDesc": "Receive alerts for pending payments",
+      "visaUpdates": "Visa application updates",
+      "visaUpdatesDesc": "Get notified when visa status changes",
+      "tourReminders": "Tour departure reminders",
+      "tourRemindersDesc": "Alerts before tour departure dates",
+      "weeklyReports": "Weekly reports",
+      "weeklyReportsDesc": "Receive weekly summary reports",
+      "marketing": "Marketing updates",
+      "marketingDesc": "News and promotional content"
+    },
+    "security": {
+      "title": "Security Settings",
+      "changePassword": "Change Password",
+      "twoFactor": "Two-Factor Authentication",
+      "twoFactorDesc": "Add an extra layer of security to your account",
+      "enable2FA": "Enable 2FA",
+      "activeSessions": "Active Sessions",
+      "currentSession": "Current session",
+      "chromeWindows": "Chrome on Windows"
+    },
+    "billing": {
+      "plan": "Professional",
+      "renewsOn": "$99/month - Renews on Apr 1, 2026",
+      "apiCalls": "API Calls",
+      "storageUsed": "Storage Used",
+      "upgradePlan": "Upgrade Plan",
+      "viewInvoices": "View Invoices"
+    },
+    "integrations": {
+      "paymentGateway": "Payment Gateway",
+      "paymentGatewayDesc": "Accept online payments",
+      "emailService": "Email Service",
+      "emailServiceDesc": "Send transactional emails",
+      "smsNotifications": "SMS Notifications",
+      "smsNotificationsDesc": "Send SMS alerts",
+      "analytics": "Analytics",
+      "analyticsDesc": "Track website analytics",
+      "crmIntegration": "CRM Integration",
+      "crmIntegrationDesc": "Connect with CRM tools",
+      "connected": "Connected",
+      "connect": "Connect"
+    }
+  },
+  "adminDashboard": {
+    "pageTitle": "Dashboard",
+    "pageSubtitle": "Admin overview and key metrics",
+    "refresh": "Refresh",
+    "loading": "Loading dashboard data from backend...",
+    "noData": "No dashboard data is available.",
+    "noDataChart": "No Data",
+    "statTotalRevenue": "Total Revenue",
+    "statTotalBookings": "Total Bookings",
+    "statActiveTours": "Active Tours",
+    "statTotalCustomers": "Total Customers",
+    "statCancellationRate": "Cancellation Rate",
+    "statVisaApproval": "Visa Approval",
+    "statRevenueSubtext": "Across all tour instances and bookings",
+    "chartRevenueOverTime": "Revenue Over Time",
+    "chartByTourType": "By Tour Type",
+    "chartByRegion": "By Region",
+    "chartBookingStatus": "Booking Status",
+    "chartBookingTrend": "Booking Trend",
+    "chartTopSellingTours": "Top Selling Tours",
+    "chartTopDestinations": "Top Destinations",
+    "chartCustomerGrowth": "Customer Growth",
+    "chartVisaProcessing": "Visa Processing",
+    "upcomingDeadlines": "Upcoming Deadlines",
+    "noUpcomingDeadlines": "No upcoming deadlines.",
+    "visaSuccessRate": "Visa Success Rate",
+    "visaTotal": "Total",
+    "visaApproved": "Approved",
+    "visaRejected": "Rejected",
+    "customerNationality": "Customer Nationality",
+    "operationalAlerts": "Operational Alerts",
+    "quickActions": "Quick Actions",
+    "noAlerts": "No alerts.",
+    "chartPeriodMonthly": "Monthly",
+    "tableTour": "Tour",
+    "tableBookings": "Bookings",
+    "tableRevenue": "Revenue",
+    "noTopTourData": "No top tour data available.",
+    "quickActionCreateTour": "Create Tour",
+    "quickActionScheduleTour": "Schedule Tour",
+    "quickActionViewBookings": "View Bookings",
+    "quickActionEditSiteContent": "Edit Site Content",
+    "quickActionManageVisa": "Manage Visa"
+  },
+  "payments": {
+    "pageTitle": "Payment Management",
+    "pageSubtitle": "Track all payment transactions",
+    "column": {
+      "paymentId": "Payment ID",
+      "booking": "Booking",
+      "customer": "Customer",
+      "method": "Method",
+      "amount": "Amount",
+      "status": "Status",
+      "date": "Date"
+    },
+    "empty": {
+      "title": "No payment transactions yet",
+      "description": "There are no payment records to display."
+    },
+    "error": {
+      "title": "Could not load payments",
+      "fallback": "Unable to load payment data. Please try again."
+    },
+    "stat": {
+      "totalRevenue": "Total Revenue",
+      "pendingPayments": "Pending Payments",
+      "completed": "Completed",
+      "refunded": "Refunded",
+      "fromLastMonth": "from last month",
+      "transactions": "transactions",
+      "syncedFromBackend": "Synced from backend"
+    },
+    "filter": {
+      "all": "All"
     }
   }
 }

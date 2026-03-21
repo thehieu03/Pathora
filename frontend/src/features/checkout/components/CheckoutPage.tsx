@@ -1,6 +1,7 @@
 "use client";
 import Checkbox from "@/components/ui/Checkbox";
 import Button from "@/components/ui/Button";
+import InputGroup from "@/components/ui/InputGroup";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -8,6 +9,7 @@ import { Icon } from "@/components/ui";
 import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 import { toast } from "react-toastify";
 import {
   paymentService,
@@ -26,7 +28,15 @@ import {
 } from "@/features/checkout/components/paymentFlowUtils";
 
 /* ── Helpers ───────────────────────────────────────────────── */
-const fmt = (n: number) => "$" + n.toLocaleString("en-US");
+const fmt = (n: number, currency = "VND") => {
+  const locale = typeof window !== "undefined" && i18n.language === "vi" ? "vi-VN" : "en-US";
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  }).format(n);
+};
 
 const copyToClipboard = (text: string, successMsg: string) => {
   navigator.clipboard.writeText(text).then(() => {
@@ -34,26 +44,51 @@ const copyToClipboard = (text: string, successMsg: string) => {
   });
 };
 
+/* ── Static data ─────────────────────────────────────────────── */
+const STATUS_STEPS = ["Pending", "Processing", "Completed"] as const;
+const DEFAULT_DEPOSIT_PERCENTAGE = 0.3;
+
+const mapPaymentMethodToApi = (method: "qr" | "cash" | "bank_transfer"): number => {
+  if (method === "cash") return 1;
+  return 2; // qr and bank_transfer both map to BankTransfer
+};
+
+const CANCELLATION_KEYS = [
+  "landing.checkout.cancelItem1",
+  "landing.checkout.cancelItem2",
+  "landing.checkout.cancelItem3",
+  "landing.checkout.cancelItem4",
+] as const;
+
+const PAYMENT_TERM_KEYS = [
+  "landing.checkout.payTermItem1",
+  "landing.checkout.payTermItem2",
+  "landing.checkout.payTermItem3",
+  "landing.checkout.payTermItem4",
+] as const;
+
+const IMPORTANT_INFO_KEYS = [
+  "landing.checkout.infoItem1",
+  "landing.checkout.infoItem2",
+  "landing.checkout.infoItem3",
+  "landing.checkout.infoItem4",
+  "landing.checkout.infoItem5",
+] as const;
+
 /* ── Step Indicator ────────────────────────────────────────── */
 function StepIndicator() {
   const { t } = useTranslation();
 
-  const steps = [
-    {
-      label: t("landing.checkout.stepSelectTour"),
-      status: "completed" as const,
-    },
-    { label: t("landing.checkout.stepCheckout"), status: "active" as const },
-    {
-      label: t("landing.checkout.stepConfirmation"),
-      status: "upcoming" as const,
-    },
+  const STEP_KEYS = [
+    { key: "landing.checkout.stepSelectTour", status: "completed" as const },
+    { key: "landing.checkout.stepCheckout", status: "active" as const },
+    { key: "landing.checkout.stepConfirmation", status: "upcoming" as const },
   ];
 
   return (
     <div className="flex items-center justify-center gap-0 mb-8">
-      {steps.map((step, i) => (
-        <React.Fragment key={i}>
+      {STEP_KEYS.map((step, i) => (
+        <React.Fragment key={step.key}>
           {/* Step circle + label */}
           <div className="flex flex-col items-center gap-1.5">
             {step.status === "completed" ? (
@@ -73,12 +108,12 @@ function StepIndicator() {
               className={`text-xs font-medium whitespace-nowrap ${
                 step.status === "upcoming" ? "text-gray-400" : "text-gray-700"
               }`}>
-              {step.label}
+              {t(step.key)}
             </span>
           </div>
 
           {/* Connector line between steps */}
-          {i < steps.length - 1 && (
+          {i < STEP_KEYS.length - 1 && (
             <div
               className={`h-0.5 w-8 md:w-15 mx-1 md:mx-2 -mt-5 ${
                 i === 0 ? "bg-orange-500" : "bg-gray-200"
@@ -217,6 +252,10 @@ function useCountdown(expiredAt: string | undefined) {
 
 /* ── Bank Account Info Component ───────────────────────────── */
 function BankAccountInfo({ t }: { t: (key: string) => string }) {
+  const bankName = process.env.NEXT_PUBLIC_BANK_NAME || "MBBank (MB)";
+  const accountNumber = process.env.NEXT_PUBLIC_BANK_ACCOUNT_NUMBER || "0378175727";
+  const accountHolder = process.env.NEXT_PUBLIC_BANK_ACCOUNT_HOLDER || "PATHORA TRAVEL";
+
   return (
     <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
       <div className="flex items-center gap-2 mb-3">
@@ -228,15 +267,16 @@ function BankAccountInfo({ t }: { t: (key: string) => string }) {
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">{t("landing.checkout.bankName")}</span>
-          <span className="text-sm font-semibold text-slate-900">MBBank (MB)</span>
+          <span className="text-sm font-semibold text-slate-900">{bankName}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">{t("landing.checkout.accountNumber")}</span>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-900 font-mono">0378175727</span>
+            <span className="text-sm font-semibold text-slate-900 font-mono">{accountNumber}</span>
             <button
               type="button"
-              onClick={() => copyToClipboard("0378175727", t("landing.checkout.copied"))}
+              aria-label={t("landing.checkout.copyAccountNumber")}
+              onClick={() => copyToClipboard(accountNumber, t("landing.checkout.copied"))}
               className="size-6 rounded-md bg-blue-100 hover:bg-blue-200 flex items-center justify-center transition-colors cursor-pointer">
               <Icon icon="heroicons:clipboard-document" className="size-3.5 text-blue-600" />
             </button>
@@ -244,7 +284,7 @@ function BankAccountInfo({ t }: { t: (key: string) => string }) {
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">{t("landing.checkout.accountHolder")}</span>
-          <span className="text-sm font-semibold text-slate-900">PATHORA TRAVEL</span>
+          <span className="text-sm font-semibold text-slate-900">{accountHolder}</span>
         </div>
       </div>
     </div>
@@ -334,9 +374,8 @@ function PaymentStatusPanel({
     );
   }
 
-  const statusSteps = ["Pending", "Processing", "Completed"] as const;
-  const currentIdx = statusSteps.indexOf(
-    transaction.status as (typeof statusSteps)[number],
+  const currentIdx = STATUS_STEPS.indexOf(
+    transaction.status as (typeof STATUS_STEPS)[number],
   );
 
   return (
@@ -396,7 +435,7 @@ function PaymentStatusPanel({
 
       {/* Status progress */}
       <div className="flex items-center justify-between px-2">
-        {statusSteps.map((step, i) => (
+        {STATUS_STEPS.map((step, i) => (
           <React.Fragment key={step}>
             <div className="flex flex-col items-center gap-1">
               <div
@@ -418,7 +457,7 @@ function PaymentStatusPanel({
                 {t(`landing.checkout.status${step}`)}
               </span>
             </div>
-            {i < statusSteps.length - 1 && (
+            {i < STATUS_STEPS.length - 1 && (
               <div
                 className={`h-0.5 flex-1 mx-2 -mt-4 ${
                   i < currentIdx ? "bg-orange-500" : "bg-gray-200"
@@ -561,10 +600,11 @@ export function CheckoutPage() {
 
     pollingRef.current = setInterval(async () => {
       try {
-        const statusSnapshot = await paymentService.getNormalizedStatus(transactionCode);
+        const [statusSnapshot, updated] = await Promise.all([
+          paymentService.getNormalizedStatus(transactionCode),
+          paymentService.getTransaction(transactionCode),
+        ]);
         setNormalizedStatus(statusSnapshot.normalizedStatus);
-
-        const updated = await paymentService.getTransaction(transactionCode);
         if (updated) {
           setTransaction(updated);
         }
@@ -646,17 +686,6 @@ export function CheckoutPage() {
   const handleConfirmBooking = async () => {
     setLoading(true);
 
-    const mapPaymentMethod = (method: "qr" | "cash" | "bank_transfer") => {
-      switch (method) {
-        case "qr":
-          return 2; // BankTransfer
-        case "bank_transfer":
-          return 2; // BankTransfer
-        case "cash":
-          return 1; // Cash
-      }
-    };
-
     try {
       let currentBookingId = bookingId;
 
@@ -674,7 +703,7 @@ export function CheckoutPage() {
           numberAdult: parseInt(adultsParam, 10) || 1,
           numberChild: parseInt(childrenParam, 10) || 0,
           numberInfant: parseInt(infantsParam, 10) || 0,
-          paymentMethod: mapPaymentMethod(paymentMethod),
+          paymentMethod: mapPaymentMethodToApi(paymentMethod),
           isFullPay: paymentOption === "full",
         };
 
@@ -693,7 +722,7 @@ export function CheckoutPage() {
         type: paymentOption === "full" ? "FullPayment" : "Deposit",
         amount: payAmount,
         paymentMethod: (paymentMethod === "cash" ? "Cash" : "BankTransfer") as "Cash" | "BankTransfer",
-        paymentNote: `Payment for ${checkoutPrice?.tourName ?? "Tour"} - ${paymentOption === "full" ? "Full Payment" : `Deposit ${Math.round((checkoutPrice?.depositPercentage ?? 0.3) * 100)}%`}`,
+        paymentNote: `Payment for ${checkoutPrice?.tourName ?? "Tour"} - ${paymentOption === "full" ? "Full Payment" : `Deposit ${Math.round((checkoutPrice?.depositPercentage ?? DEFAULT_DEPOSIT_PERCENTAGE) * 100)}%`}`,
         createdBy: user?.email ?? user?.username ?? "guest",
       });
 
@@ -717,28 +746,10 @@ export function CheckoutPage() {
     }
   };
 
-  /* ── Cancellation Policy items ────────────────────────── */
-  const cancellationItems = [
-    t("landing.checkout.cancelItem1"),
-    t("landing.checkout.cancelItem2"),
-    t("landing.checkout.cancelItem3"),
-    t("landing.checkout.cancelItem4"),
-  ];
-
-  const paymentTermItems = [
-    t("landing.checkout.payTermItem1"),
-    t("landing.checkout.payTermItem2"),
-    t("landing.checkout.payTermItem3"),
-    t("landing.checkout.payTermItem4"),
-  ];
-
-  const importantInfoItems = [
-    t("landing.checkout.infoItem1"),
-    t("landing.checkout.infoItem2"),
-    t("landing.checkout.infoItem3"),
-    t("landing.checkout.infoItem4"),
-    t("landing.checkout.infoItem5"),
-  ];
+  /* ── Policy items ─────────────────────────────────────── */
+  const cancellationItems = CANCELLATION_KEYS.map((k) => t(k));
+  const paymentTermItems = PAYMENT_TERM_KEYS.map((k) => t(k));
+  const importantInfoItems = IMPORTANT_INFO_KEYS.map((k) => t(k));
 
   return (
     <>
@@ -789,42 +800,44 @@ export function CheckoutPage() {
                         <>
                           <Icon icon="heroicons:check-circle" className="size-12 text-green-500 mb-2" />
                           <p className="text-lg font-semibold text-green-600 mb-2">
-                            {t("landing.checkout.bookingConfirmed", "Booking Confirmed!")}
+                            {t("landing.checkout.bookingConfirmed")}
                           </p>
                           <p className="text-sm text-gray-600 mb-4">
-                            {t("landing.checkout.publicInstanceMessage", "Your booking has been confirmed. Get ready for your adventure!")}
+                            {t("landing.checkout.publicInstanceMessage")}
                           </p>
                         </>
                       ) : (
                         <>
                           <Icon icon="heroicons:clock" className="size-12 text-blue-500 mb-2" />
                           <p className="text-lg font-semibold text-blue-600 mb-2">
-                            {t("landing.checkout.bookingPending", "Booking Request Submitted")}
+                            {t("landing.checkout.bookingPending")}
                           </p>
                           <p className="text-sm text-gray-600 mb-4">
-                            {t("landing.checkout.privateInstanceMessage", "Your request is pending admin review. We'll notify you once approved.")}
+                            {t("landing.checkout.privateInstanceMessage")}
                           </p>
                         </>
                       )}
                       <div className="bg-gray-50 rounded-xl p-4 text-left w-full max-w-md">
                         <h4 className="font-semibold text-slate-900 mb-2">{tourInstanceBooking.tourName}</h4>
-                        <p className="text-xs text-gray-500">
-                          📍 {tourInstanceBooking.location || "N/A"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          📅 {tourInstanceBooking.startDate} - {tourInstanceBooking.endDate}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-2 font-semibold text-orange-500">
-                          💰 Deposit: {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(tourInstanceBooking.depositPerPerson)}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-2">
-                          📋 Type: {tourInstanceBooking.bookingType === "InstanceJoin" ? "Instance Join" : "Tour Booking"}
-                          {" | "}
-                          Visibility: {tourInstanceBooking.instanceType === "public" ? "Public" : "Private"}
-                        </p>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                          <Icon icon="heroicons:map-pin" className="size-3.5 text-gray-400 shrink-0" />
+                          {tourInstanceBooking.location || "N/A"}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                          <Icon icon="heroicons:calendar" className="size-3.5 text-gray-400 shrink-0" />
+                          {tourInstanceBooking.startDate} - {tourInstanceBooking.endDate}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-orange-500 mt-2">
+                          <Icon icon="heroicons:banknotes" className="size-3.5 text-orange-500 shrink-0" />
+                          {t("landing.checkout.deposit")}: {fmt(tourInstanceBooking.depositPerPerson)}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
+                          <Icon icon="heroicons:information-circle" className="size-3.5 text-gray-400 shrink-0" />
+                          {tourInstanceBooking.bookingType === "InstanceJoin" ? t("landing.checkout.instanceJoin") : t("landing.checkout.tourBooking")} | {tourInstanceBooking.instanceType === "public" ? t("landing.checkout.public") : t("landing.checkout.private")}
+                        </div>
                       </div>
                       <Link href="/bookings" className="text-sm text-orange-500 hover:underline mt-4">
-                        {t("landing.checkout.viewMyBookings", "View My Bookings")}
+                        {t("landing.checkout.viewMyBookings")}
                       </Link>
                     </div>
                   ) : (
@@ -857,23 +870,23 @@ export function CheckoutPage() {
                               icon="heroicons:clock"
                               className="size-3.5 shrink-0 text-gray-400"
                             />
-                            {checkoutPrice.durationDays} {checkoutPrice.durationDays === 1 ? "Day" : "Days"}
+                            {checkoutPrice.durationDays} {checkoutPrice.durationDays === 1 ? t("landing.checkout.day") : t("landing.checkout.days")}
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <Icon
                               icon="heroicons:calendar"
                               className="size-3.5 shrink-0 text-gray-400"
                             />
-                            {new Date(checkoutPrice.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} - {new Date(checkoutPrice.endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                            {new Date(checkoutPrice.startDate).toLocaleDateString(i18n.language === "vi" ? "vi-VN" : "en-US", { month: "short", day: "numeric", year: "numeric" })} - {new Date(checkoutPrice.endDate).toLocaleDateString(i18n.language === "vi" ? "vi-VN" : "en-US", { month: "short", day: "numeric" })}
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-gray-500">
                             <Icon
                               icon="heroicons:users"
                               className="size-3.5 shrink-0 text-gray-400"
                             />
-                            {checkoutPrice.numberAdult} Adults
-                            {checkoutPrice.numberChild > 0 && `, ${checkoutPrice.numberChild} Children`}
-                            {checkoutPrice.numberInfant > 0 && `, ${checkoutPrice.numberInfant} Infants`}
+                            {t("landing.checkout.adultsCount", { count: checkoutPrice.numberAdult })}
+                            {checkoutPrice.numberChild > 0 && t("landing.checkout.childrenCount", { count: checkoutPrice.numberChild })}
+                            {checkoutPrice.numberInfant > 0 && t("landing.checkout.infantsCount", { count: checkoutPrice.numberInfant })}
                           </div>
                           <span className="inline-flex items-center self-start px-2 py-0.5 rounded-full bg-orange-100 text-orange-600 text-[10px] font-semibold mt-1">
                             {checkoutPrice.tourCode}
@@ -903,7 +916,7 @@ export function CheckoutPage() {
                           {checkoutPrice.numberChild > 0 && (
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-gray-600">
-                                {t("landing.checkout.children") || "Children"} × {checkoutPrice.numberChild}
+                                {t("landing.checkout.children")} × {checkoutPrice.numberChild}
                               </span>
                               <span className="font-semibold text-slate-900">
                                 {fmt(checkoutPrice.childSubtotal)}
@@ -914,7 +927,7 @@ export function CheckoutPage() {
                           {checkoutPrice.numberInfant > 0 && (
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-gray-600">
-                                {t("landing.checkout.infants") || "Infants"} × {checkoutPrice.numberInfant}
+                                {t("landing.checkout.infants")} × {checkoutPrice.numberInfant}
                               </span>
                               <span className="font-semibold text-slate-900">
                                 {fmt(checkoutPrice.infantSubtotal)}
@@ -925,7 +938,7 @@ export function CheckoutPage() {
                           {checkoutPrice.taxAmount > 0 && (
                             <div className="flex items-center justify-between text-sm">
                               <span className="text-gray-600">
-                                {t("landing.checkout.tax") || "Tax"} ({checkoutPrice.taxRate}%)
+                                {t("landing.checkout.tax")} ({checkoutPrice.taxRate}%)
                               </span>
                               <span className="font-semibold text-slate-900">
                                 {fmt(checkoutPrice.taxAmount)}
@@ -1014,7 +1027,7 @@ export function CheckoutPage() {
                         <div className="flex flex-col items-start text-left">
                           <span className="text-sm font-semibold text-slate-900">
                             {t("landing.checkout.deposit")} (
-                            {Math.round((checkoutPrice?.depositPercentage ?? 0.3) * 100)}%)
+                            {Math.round((checkoutPrice?.depositPercentage ?? DEFAULT_DEPOSIT_PERCENTAGE) * 100)}%)
                           </span>
                           <span className="text-[10px] text-gray-400 font-medium">
                             {t("landing.checkout.depositDesc")}
@@ -1028,6 +1041,44 @@ export function CheckoutPage() {
                   </div>
                 </div>
               </div>
+
+              {/* ── Customer Info Card (only when creating a new booking) ── */}
+              {needsBookingCreation && (
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <CardHeader title="" />
+                  <div className="p-5">
+                    <h3 className="text-base font-bold text-slate-900 mb-4">
+                      {t("landing.checkout.customerInfo")}
+                    </h3>
+                    <div className="flex flex-col gap-4">
+                      <InputGroup
+                        type="text"
+                        label={t("landing.checkout.fullName")}
+                        placeholder={t("landing.checkout.fullNamePlaceholder")}
+                        value={customerName}
+                        onChange={(e) => setCustomerName(e.target.value)}
+                        id="customer-name"
+                      />
+                      <InputGroup
+                        type="tel"
+                        label={t("landing.checkout.phone")}
+                        placeholder={t("landing.checkout.phonePlaceholder")}
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        id="customer-phone"
+                      />
+                      <InputGroup
+                        type="email"
+                        label={t("landing.checkout.email")}
+                        placeholder={t("landing.checkout.emailPlaceholder")}
+                        value={customerEmail}
+                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        id="customer-email"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* ── Terms & Conditions Card ────────────────── */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -1069,6 +1120,23 @@ export function CheckoutPage() {
                   {/* Checkboxes */}
                   <div className="border-t border-gray-200 mt-5 pt-4 flex flex-col gap-3">
                     <Checkbox
+                      value={agreeTerms}
+                      onChange={() => setAgreeTerms(!agreeTerms)}
+                      activeClass="!bg-orange-500 !ring-orange-500 !border-orange-500"
+                      label={
+                        <span className="text-xs text-gray-600 font-medium leading-4">
+                          {t("landing.checkout.agreeTermsPrefix")}{" "}
+                          <span className="font-semibold text-orange-500">
+                            {t("landing.checkout.cancellationPolicyLink")}
+                          </span>{" "}
+                          {t("landing.checkout.and")}{" "}
+                          <span className="font-semibold text-orange-500">
+                            {t("landing.checkout.paymentTermsLink")}
+                          </span>
+                        </span>
+                      }
+                    />
+                    <Checkbox
                       value={acknowledgeInfo}
                       onChange={() => setAcknowledgeInfo(!acknowledgeInfo)}
                       activeClass="!bg-orange-500 !ring-orange-500 !border-orange-500"
@@ -1078,6 +1146,7 @@ export function CheckoutPage() {
                           <span className="font-semibold text-orange-500">
                             {t("landing.checkout.importantInfoLink")}
                           </span>{" "}
+                          {t("landing.checkout.acknowledgeSuffix")}
                         </span>
                       }
                     />
@@ -1217,7 +1286,7 @@ export function CheckoutPage() {
                       <>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-600">
-                            {t("landing.checkout.deposit")} (30%)
+                            {t("landing.checkout.deposit")} ({Math.round((checkoutPrice?.depositPercentage ?? DEFAULT_DEPOSIT_PERCENTAGE) * 100)}%)
                           </span>
                           <span className="text-lg font-bold text-slate-900">
                             {fmt(depositAmount)}
