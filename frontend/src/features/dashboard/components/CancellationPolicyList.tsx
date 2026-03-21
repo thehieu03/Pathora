@@ -5,13 +5,14 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
 import type { CancellationPolicy } from "@/types/cancellationPolicy";
-import { TourScopeMap, CancellationPolicyStatusMap } from "@/types/cancellationPolicy";
+import { TourScopeMap } from "@/types/cancellationPolicy";
 import { SkeletonTable } from "@/components/ui/SkeletonTable";
 import { Icon } from "@/components/ui/Icon";
 
 interface CancellationPolicyListProps {
   onEdit: (policy: CancellationPolicy) => void;
   onDelete: (id: string) => void;
+  onToggleActive: (policy: CancellationPolicy) => void;
   refreshKey?: number;
 }
 
@@ -24,7 +25,7 @@ const rowVariants = {
   }),
 };
 
-export function CancellationPolicyList({ onEdit, onDelete, refreshKey: _refreshKey }: CancellationPolicyListProps) {
+export function CancellationPolicyList({ onEdit, onDelete, onToggleActive, refreshKey: _refreshKey }: CancellationPolicyListProps) {
   const { t } = useTranslation();
   const [policies, setPolicies] = useState<CancellationPolicy[]>([]);
   const [loading, setLoading] = useState(true);
@@ -182,31 +183,34 @@ export function CancellationPolicyList({ onEdit, onDelete, refreshKey: _refreshK
                 {t(`cancellationPolicy.applyOn.${policy.applyOn}`, policy.applyOn)}
               </td>
               <td className="px-5 py-4 whitespace-nowrap">
-                <span
-                  className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                    policy.status === 1
-                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                      : "bg-stone-100 text-stone-600 border border-stone-200"
+                <button
+                  onClick={() => onToggleActive(policy)}
+                  className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/20 focus-visible:ring-offset-2 active:scale-[0.98] ${
+                    policy.status === 1 ? "bg-emerald-500" : "bg-stone-200"
                   }`}
                 >
-                  {CancellationPolicyStatusMap[policy.status] || policy.statusName}
-                </span>
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm transition duration-200 ease-in-out ${
+                      policy.status === 1 ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
               </td>
-              <td className="px-5 py-4 whitespace-nowrap text-right">
+              <td className="px-5 py-4 whitespace-nowrap">
                 <div className="flex items-center justify-end gap-1">
                   <button
                     onClick={() => onEdit(policy)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 active:scale-[0.98] transition-all duration-150"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-stone-500 hover:text-amber-600 hover:bg-amber-50 active:scale-[0.98] transition-all duration-150"
                   >
                     <Icon icon="heroicons:pencil-square" className="size-3.5" />
-                    {t("cancellationPolicy.action.edit", "Edit")}
+                    {t("common.edit")}
                   </button>
                   <button
                     onClick={() => onDelete(policy.id)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 active:scale-[0.98] transition-all duration-150"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-stone-400 hover:text-red-600 hover:bg-red-50 active:scale-[0.98] transition-all duration-150"
                   >
                     <Icon icon="heroicons:trash" className="size-3.5" />
-                    {t("cancellationPolicy.action.delete", "Delete")}
+                    {t("common.delete")}
                   </button>
                 </div>
               </td>

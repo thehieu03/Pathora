@@ -4,9 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Plus, ArrowClockwise, FileText, MagnifyingGlass, Funnel, X } from "@phosphor-icons/react";
+import { ArrowClockwise, FileText, MagnifyingGlass, Funnel, X } from "@phosphor-icons/react";
 
-import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
 import { Icon } from "@/components/ui";
 import { SkeletonTable } from "@/components/ui/SkeletonTable";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -19,9 +18,7 @@ import type {
 import {
   calculateDashboardPolicyMetrics,
   filterDashboardPolicies,
-  getPrimaryPolicyCreateHref,
   getStatusVariant,
-  getToggleActionLabel,
   loadDashboardPoliciesData,
 } from "./dashboardPoliciesPageLogic";
 
@@ -44,15 +41,6 @@ const formatUpdatedDate = (value: string | null): string => {
   return date.toLocaleDateString();
 };
 
-const isApiSuccess = (response: unknown): boolean => {
-  if (!response || typeof response !== "object") return false;
-  if ("success" in response && typeof response.success === "boolean") return response.success;
-  if ("isSuccess" in response && typeof (response as Record<string, unknown>).isSuccess === "boolean") {
-    return (response as Record<string, unknown>).isSuccess as boolean;
-  }
-  return false;
-};
-
 export function DashboardPoliciesPage() {
   const { t } = useTranslation();
   const [dataState, setDataState] = useState<DashboardPoliciesDataState>("loading");
@@ -60,7 +48,6 @@ export function DashboardPoliciesPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<DashboardPolicyStatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [actionBusyKey, setActionBusyKey] = useState<string | null>(null);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
@@ -97,31 +84,6 @@ export function DashboardPoliciesPage() {
   const handleResetFilters = () => {
     setSearchQuery("");
     setStatusFilter("all");
-  };
-
-  const handleToggleStatus = async (policy: DashboardPolicyListItem) => {
-    if (!policy.canToggleStatus || !policy.togglePayload) return;
-    const confirmed = window.confirm(
-      t(
-        "dashboard.policies.confirmToggle",
-        "Are you sure you want to change the status for this policy?",
-      ),
-    );
-    if (!confirmed) return;
-    setActionBusyKey(policy.rowKey);
-    setErrorMessage(null);
-    const response = await cancellationPolicyService.update(policy.togglePayload);
-    if (isApiSuccess(response)) {
-      await loadPolicies();
-    } else {
-      setErrorMessage(
-        t(
-          "dashboard.policies.errors.toggleFailed",
-          "Unable to change policy status. Please try again.",
-        ),
-      );
-    }
-    setActionBusyKey(null);
   };
 
   return (
@@ -163,13 +125,6 @@ export function DashboardPoliciesPage() {
           >
             <FileText className="size-4" weight="bold" />
             <span className="hidden sm:inline">{t("dashboard.siteContent.title", "Site Content")}</span>
-          </Link>
-          <Link
-            href={getPrimaryPolicyCreateHref()}
-            className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-amber-600 active:scale-[0.98] shadow-[0_4px_14px_-4px_rgba(245,158,11,0.35)]"
-          >
-            <Plus className="size-4" weight="bold" />
-            {t("dashboard.policies.actions.create", "Create")}
           </Link>
         </div>
       </motion.div>
@@ -357,16 +312,9 @@ export function DashboardPoliciesPage() {
           <p className="mt-2 text-sm text-stone-500 max-w-[40ch] mx-auto">
             {t(
               "dashboard.policies.states.emptyDescription",
-              "Create your first policy to start configuring business rules.",
+              "No policies found matching your criteria.",
             )}
           </p>
-          <Link
-            href={getPrimaryPolicyCreateHref()}
-            className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-amber-600 active:scale-[0.98] shadow-[0_4px_14px_-4px_rgba(245,158,11,0.35)]"
-          >
-            <Plus className="size-4" weight="bold" />
-            {t("dashboard.policies.actions.create", "Create policy")}
-          </Link>
         </motion.div>
       )}
 
@@ -458,28 +406,11 @@ export function DashboardPoliciesPage() {
                     <td className="px-5 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <Link
-                          href={policy.viewHref}
-                          className="rounded-xl border border-stone-200/70 px-3 py-1.5 text-xs font-medium text-stone-600 transition-all duration-200 hover:bg-stone-100 hover:text-stone-800 active:scale-[0.98]"
-                        >
-                          {t("dashboard.policies.actions.view", "View")}
-                        </Link>
-                        <Link
                           href={policy.editHref}
                           className="rounded-xl border border-stone-200/70 px-3 py-1.5 text-xs font-medium text-stone-600 transition-all duration-200 hover:bg-stone-100 hover:text-stone-800 active:scale-[0.98]"
                         >
                           {t("dashboard.policies.actions.edit", "Edit")}
                         </Link>
-                        <button
-                          type="button"
-                          disabled={!policy.canToggleStatus || actionBusyKey === policy.rowKey}
-                          title={policy.toggleBlockedReason ?? undefined}
-                          onClick={() => { void handleToggleStatus(policy); }}
-                          className="rounded-xl border border-amber-200/60 px-3 py-1.5 text-xs font-medium text-amber-700 transition-all duration-200 hover:bg-amber-50 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-400 active:scale-[0.98]"
-                        >
-                          {actionBusyKey === policy.rowKey
-                            ? t("dashboard.policies.actions.updating", "Updating...")
-                            : getToggleActionLabel(policy)}
-                        </button>
                       </div>
                     </td>
                   </tr>
@@ -528,27 +459,11 @@ export function DashboardPoliciesPage() {
 
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <Link
-                    href={policy.viewHref}
-                    className="rounded-xl border border-stone-200/70 px-3 py-1.5 text-xs font-medium text-stone-600 transition-all duration-200 hover:bg-stone-100 active:scale-[0.98]"
-                  >
-                    {t("dashboard.policies.actions.view", "View")}
-                  </Link>
-                  <Link
                     href={policy.editHref}
                     className="rounded-xl border border-stone-200/70 px-3 py-1.5 text-xs font-medium text-stone-600 transition-all duration-200 hover:bg-stone-100 active:scale-[0.98]"
                   >
                     {t("dashboard.policies.actions.edit", "Edit")}
                   </Link>
-                  <button
-                    type="button"
-                    disabled={!policy.canToggleStatus || actionBusyKey === policy.rowKey}
-                    onClick={() => { void handleToggleStatus(policy); }}
-                    className="rounded-xl border border-amber-200/60 px-3 py-1.5 text-xs font-medium text-amber-700 transition-all duration-200 hover:bg-amber-50 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-400 active:scale-[0.98]"
-                  >
-                    {actionBusyKey === policy.rowKey
-                      ? t("dashboard.policies.actions.updating", "Updating...")
-                      : getToggleActionLabel(policy)}
-                  </button>
                 </div>
               </motion.div>
             ))}
