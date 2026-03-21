@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.ValueObjects;
 
 namespace Domain.Specs.Helpers;
 
@@ -63,12 +65,11 @@ public class TestDataBuilder
         int maxDays = 7,
         decimal penaltyPercentage = 10)
     {
+        var tier = new CancellationPolicyTier(minDays, maxDays, penaltyPercentage);
         return CancellationPolicyEntity.Create(
-            tourScope: tourScope,
-            minDaysBeforeDeparture: minDays,
-            maxDaysBeforeDeparture: maxDays,
-            penaltyPercentage: penaltyPercentage,
-            performedBy: "test"
+            tourScope,
+            new List<CancellationPolicyTier> { tier },
+            "test"
         );
     }
 }

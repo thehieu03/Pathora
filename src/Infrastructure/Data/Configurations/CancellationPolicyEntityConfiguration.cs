@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Domain.Entities;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -26,20 +27,6 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
             .HasMaxLength(50)
             .IsRequired();
 
-        builder.Property(p => p.MinDaysBeforeDeparture)
-            .IsRequired();
-
-        builder.Property(p => p.MaxDaysBeforeDeparture)
-            .IsRequired();
-
-        builder.Property(p => p.PenaltyPercentage)
-            .IsRequired()
-            .HasPrecision(5, 2);
-
-        builder.Property(p => p.ApplyOn)
-            .HasMaxLength(50)
-            .HasDefaultValue("FullAmount");
-
         builder.Property(p => p.Status)
             .HasConversion<string>()
             .HasMaxLength(50)
@@ -48,6 +35,17 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
 
         builder.Property(p => p.IsDeleted)
             .HasDefaultValue(false);
+
+        // Tiers as JSONB with explicit conversion
+        builder.Property(p => p.Tiers)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                value => JsonSerializer.Serialize(value, (JsonSerializerOptions?)null),
+                value => JsonSerializer.Deserialize<List<CancellationPolicyTier>>(value, (JsonSerializerOptions?)null) ?? new List<CancellationPolicyTier>(),
+                new ValueComparer<List<CancellationPolicyTier>>(
+                    (left, right) => JsonSerializer.Serialize(left) == JsonSerializer.Serialize(right),
+                    value => JsonSerializer.Serialize(value).GetHashCode(),
+                    value => JsonSerializer.Deserialize<List<CancellationPolicyTier>>(JsonSerializer.Serialize(value)) ?? new List<CancellationPolicyTier>()));
 
         // Translations as JSONB with explicit conversion
         builder.Property(p => p.Translations)
@@ -60,8 +58,8 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
                     value => JsonSerializer.Serialize(value).GetHashCode(),
                     value => JsonSerializer.Deserialize<Dictionary<string, Domain.Entities.Translations.CancellationPolicyTranslationData>>(JsonSerializer.Serialize(value)) ?? new Dictionary<string, Domain.Entities.Translations.CancellationPolicyTranslationData>()));
 
-        // Composite index for efficient policy lookup
-        builder.HasIndex(p => new { p.TourScope, p.MinDaysBeforeDeparture, p.MaxDaysBeforeDeparture, p.Status, p.IsDeleted });
+        // Indexes
+        builder.HasIndex(p => new { p.TourScope, p.Status, p.IsDeleted });
         builder.HasIndex(p => new { p.Status, p.IsDeleted });
         builder.HasIndex(p => p.CreatedOnUtc);
     }

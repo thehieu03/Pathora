@@ -4,7 +4,6 @@ using Api.Controllers;
 using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
-using ErrorOr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;

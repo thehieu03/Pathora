@@ -23,7 +23,7 @@ public class CancellationPolicyRepository(AppDbContext context) : ICancellationP
             .AsNoTracking()
             .Where(p => !p.IsDeleted)
             .OrderBy(p => p.TourScope)
-            .ThenBy(p => p.MinDaysBeforeDeparture)
+            .ThenBy(p => p.Tiers.Count > 0 ? p.Tiers.Min(t => t.MinDaysBeforeDeparture) : 0)
             .ToListAsync();
     }
 
@@ -33,11 +33,23 @@ public class CancellationPolicyRepository(AppDbContext context) : ICancellationP
             .AsNoTracking()
             .Where(p => p.TourScope == tourScope
                     && !p.IsDeleted
-                    && p.Status == CancellationPolicyStatus.Active
-                    && p.MinDaysBeforeDeparture <= daysBeforeDeparture
-                    && p.MaxDaysBeforeDeparture >= daysBeforeDeparture)
-            .OrderByDescending(p => p.MinDaysBeforeDeparture)
-            .FirstOrDefaultAsync();
+                    && p.Status == CancellationPolicyStatus.Active)
+            .ToListAsync()
+            .ContinueWith(task =>
+                task.Result
+                    .Select(p => new { Policy = p, Tier = p.FindMatchingTier(daysBeforeDeparture) })
+                    .Where(x => x.Tier != null)
+                    .OrderByDescending(x => x.Tier!.MinDaysBeforeDeparture)
+                    .Select(x => x.Policy)
+                    .FirstOrDefault());
+    }
+
+    public async Task<IReadOnlyList<CancellationPolicyEntity>> FindByTourScope(TourScope tourScope)
+    {
+        return await _context.CancellationPolicies
+            .AsNoTracking()
+            .Where(p => p.TourScope == tourScope && !p.IsDeleted)
+            .ToListAsync();
     }
 
     public async Task Create(CancellationPolicyEntity entity)

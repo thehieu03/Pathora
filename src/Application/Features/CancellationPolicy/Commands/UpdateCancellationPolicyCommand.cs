@@ -4,6 +4,7 @@ using Application.Services;
 using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.Enums;
+using Domain.ValueObjects;
 using ErrorOr;
 using FluentValidation;
 
@@ -12,10 +13,7 @@ namespace Application.Features.CancellationPolicy.Commands;
 public sealed record UpdateCancellationPolicyCommand(
     Guid Id,
     TourScope TourScope,
-    int MinDaysBeforeDeparture,
-    int MaxDaysBeforeDeparture,
-    decimal PenaltyPercentage,
-    string ApplyOn = "FullAmount",
+    List<CancellationPolicyTier> Tiers,
     CancellationPolicyStatus Status = CancellationPolicyStatus.Active,
     [property: JsonPropertyName("translations")]
     Dictionary<string, CancellationPolicyTranslationData>? Translations = null
@@ -31,19 +29,20 @@ public sealed class UpdateCancellationPolicyCommandValidator : AbstractValidator
         RuleFor(x => x.TourScope)
             .IsInEnum().WithMessage("Invalid tour scope");
 
-        RuleFor(x => x.MinDaysBeforeDeparture)
-            .GreaterThanOrEqualTo(0).WithMessage("Min days must be >= 0");
+        RuleFor(x => x.Tiers)
+            .NotNull().WithMessage("Tiers are required")
+            .NotEmpty().WithMessage("At least one tier is required");
 
-        RuleFor(x => x.MaxDaysBeforeDeparture)
-            .GreaterThanOrEqualTo(x => x.MinDaysBeforeDeparture)
-            .WithMessage("Max days must be >= min days");
-
-        RuleFor(x => x.PenaltyPercentage)
-            .InclusiveBetween(0, 100).WithMessage("Penalty percentage must be between 0 and 100");
-
-        RuleFor(x => x.ApplyOn)
-            .NotEmpty().WithMessage("ApplyOn is required")
-            .MaximumLength(50).WithMessage("ApplyOn must not exceed 50 characters");
+        RuleForEach(x => x.Tiers).ChildRules(tier =>
+        {
+            tier.RuleFor(t => t.MinDaysBeforeDeparture)
+                .GreaterThanOrEqualTo(0).WithMessage("Min days must be >= 0");
+            tier.RuleFor(t => t.MaxDaysBeforeDeparture)
+                .GreaterThanOrEqualTo(t => t.MinDaysBeforeDeparture)
+                .WithMessage("Max days must be >= min days");
+            tier.RuleFor(t => t.PenaltyPercentage)
+                .InclusiveBetween(0, 100).WithMessage("Penalty percentage must be between 0 and 100");
+        });
 
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("Invalid status");
@@ -60,10 +59,7 @@ public sealed class UpdateCancellationPolicyCommandHandler(ICancellationPolicySe
         var updateRequest = new UpdateCancellationPolicyRequest(
             request.Id,
             request.TourScope,
-            request.MinDaysBeforeDeparture,
-            request.MaxDaysBeforeDeparture,
-            request.PenaltyPercentage,
-            request.ApplyOn,
+            request.Tiers,
             request.Status,
             request.Translations
         );

@@ -4,18 +4,17 @@ using Application.Services;
 using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.Enums;
+using Domain.ValueObjects;
 using ErrorOr;
 using FluentValidation;
 
 namespace Application.Features.CancellationPolicy.Commands;
 
-// Note: translations will be supported in a future update
 public sealed record CreateCancellationPolicyCommand(
     TourScope TourScope,
-    int MinDaysBeforeDeparture,
-    int MaxDaysBeforeDeparture,
-    decimal PenaltyPercentage,
-    string ApplyOn = "FullAmount"
+    List<CancellationPolicyTier> Tiers,
+    [property: JsonPropertyName("translations")]
+    Dictionary<string, CancellationPolicyTranslationData>? Translations = null
 ) : ICommand<ErrorOr<CancellationPolicyResponse>>;
 
 public sealed class CreateCancellationPolicyCommandValidator : AbstractValidator<CreateCancellationPolicyCommand>
@@ -25,19 +24,20 @@ public sealed class CreateCancellationPolicyCommandValidator : AbstractValidator
         RuleFor(x => x.TourScope)
             .IsInEnum().WithMessage("Invalid tour scope");
 
-        RuleFor(x => x.MinDaysBeforeDeparture)
-            .GreaterThanOrEqualTo(0).WithMessage("Min days must be >= 0");
+        RuleFor(x => x.Tiers)
+            .NotNull().WithMessage("Tiers are required")
+            .NotEmpty().WithMessage("At least one tier is required");
 
-        RuleFor(x => x.MaxDaysBeforeDeparture)
-            .GreaterThanOrEqualTo(x => x.MinDaysBeforeDeparture)
-            .WithMessage("Max days must be >= min days");
-
-        RuleFor(x => x.PenaltyPercentage)
-            .InclusiveBetween(0, 100).WithMessage("Penalty percentage must be between 0 and 100");
-
-        RuleFor(x => x.ApplyOn)
-            .NotEmpty().WithMessage("ApplyOn is required")
-            .MaximumLength(50).WithMessage("ApplyOn must not exceed 50 characters");
+        RuleForEach(x => x.Tiers).ChildRules(tier =>
+        {
+            tier.RuleFor(t => t.MinDaysBeforeDeparture)
+                .GreaterThanOrEqualTo(0).WithMessage("Min days must be >= 0");
+            tier.RuleFor(t => t.MaxDaysBeforeDeparture)
+                .GreaterThanOrEqualTo(t => t.MinDaysBeforeDeparture)
+                .WithMessage("Max days must be >= min days");
+            tier.RuleFor(t => t.PenaltyPercentage)
+                .InclusiveBetween(0, 100).WithMessage("Penalty percentage must be between 0 and 100");
+        });
     }
 }
 
@@ -50,10 +50,8 @@ public sealed class CreateCancellationPolicyCommandHandler(ICancellationPolicySe
     {
         var createRequest = new CreateCancellationPolicyRequest(
             request.TourScope,
-            request.MinDaysBeforeDeparture,
-            request.MaxDaysBeforeDeparture,
-            request.PenaltyPercentage,
-            request.ApplyOn
+            request.Tiers,
+            request.Translations
         );
 
         return await service.Create(createRequest);
