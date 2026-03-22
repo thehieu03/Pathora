@@ -4,8 +4,46 @@ import AppProviders from "@/providers/AppProviders";
 import { buildThemeInitScript } from "@/hooks/themePreference";
 
 export const metadata: Metadata = {
-  title: "Pathora",
-  description: "Pathora web",
+  title: {
+    template: "%s | Pathora",
+    default: "Pathora - Discover Amazing Tours",
+  },
+  description:
+    "Pathora is a premier travel platform offering curated tour packages, custom tour planning, visa assistance, and comprehensive travel services across Vietnam and Asia.",
+  keywords: [
+    "travel",
+    "tours",
+    "Vietnam travel",
+    "Asia tours",
+    "custom tour",
+    "visa service",
+    "booking",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "Pathora",
+    title: "Pathora - Discover Amazing Tours",
+    description:
+      "Pathora is a premier travel platform offering curated tour packages, custom tour planning, visa assistance, and comprehensive travel services.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@pathora",
+    title: "Pathora - Discover Amazing Tours",
+    description:
+      "Pathora is a premier travel platform offering curated tour packages, custom tour planning, visa assistance, and comprehensive travel services.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: [
+      { url: "/globe.svg", type: "image/svg+xml" },
+      { url: "/file.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/globe.svg",
+  },
 };
 
 const themeInitScript = buildThemeInitScript();

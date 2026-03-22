@@ -1,16 +1,21 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
 import FileInput from "@/components/ui/FileInput";
+import SearchableSelect from "@/components/ui/SearchableSelect";
+import LanguageTabs, {
+  type SupportedLanguage,
+} from "@/components/ui/LanguageTabs";
 import { tourService } from "@/api/services/tourService";
 import { pricingPolicyService } from "@/api/services/pricingPolicyService";
 import { depositPolicyService } from "@/api/services/depositPolicyService";
 import { cancellationPolicyService } from "@/api/services/cancellationPolicyService";
 import { visaPolicyService } from "@/api/services/visaPolicyService";
+import { buildCreateTourFormData } from "@/api/services/tourCreatePayload";
 import type { PricingPolicy } from "@/types/pricingPolicy";
 import type { DepositPolicy } from "@/types/depositPolicy";
 import type { CancellationPolicy } from "@/types/cancellationPolicy";
@@ -117,92 +122,91 @@ interface TranslationFields {
 
 /* ── Constants ──────────────────────────────────────────────── */
 const ACTIVITY_TYPE_OPTIONS = [
-  { value: "0", label: "Sightseeing" },
-  { value: "1", label: "Dining" },
-  { value: "2", label: "Shopping" },
-  { value: "3", label: "Adventure" },
-  { value: "4", label: "Relaxation" },
-  { value: "5", label: "Cultural" },
-  { value: "6", label: "Entertainment" },
-  { value: "7", label: "Transportation" },
-  { value: "8", label: "Accommodation" },
-  { value: "9", label: "Free Time" },
-  { value: "99", label: "Other" },
+  { value: "0" },
+  { value: "1" },
+  { value: "2" },
+  { value: "3" },
+  { value: "4" },
+  { value: "5" },
+  { value: "6" },
+  { value: "7" },
+  { value: "8" },
+  { value: "9" },
+  { value: "99" },
 ];
 
 const INSURANCE_TYPE_OPTIONS = [
-  { value: "0", label: "None" },
-  { value: "1", label: "Travel" },
-  { value: "2", label: "Health" },
-  { value: "3", label: "Trip Cancellation" },
-  { value: "4", label: "Baggage Loss" },
-  { value: "5", label: "Personal Liability" },
-  { value: "6", label: "Adventure Sports" },
+  { value: "0" },
+  { value: "1" },
+  { value: "2" },
+  { value: "3" },
+  { value: "4" },
+  { value: "5" },
+  { value: "6" },
 ];
 
 const WIZARD_STEPS = [
-  { key: "basic", label: "Basic Info", icon: "heroicons:information-circle" },
-  { key: "packages", label: "Packages", icon: "heroicons:cube" },
-  { key: "itineraries", label: "Itineraries", icon: "heroicons:calendar-days" },
+  { key: "basic", label: "", icon: "heroicons:information-circle" },
+  { key: "packages", label: "", icon: "heroicons:cube" },
+  { key: "itineraries", label: "", icon: "heroicons:calendar-days" },
   {
     key: "accommodations",
-    label: "Accommodations",
+    label: "",
     icon: "heroicons:home-modern",
   },
-  { key: "locations", label: "Locations", icon: "heroicons:map-pin" },
-  { key: "transportation", label: "Transportation", icon: "heroicons:truck" },
-  { key: "services", label: "Services", icon: "heroicons:wrench-screwdriver" },
-  { key: "insurance", label: "Insurance", icon: "heroicons:shield-check" },
-  { key: "review", label: "Review", icon: "heroicons:check-circle" },
+  { key: "locations", label: "", icon: "heroicons:map-pin" },
+  { key: "transportation", label: "", icon: "heroicons:truck" },
+  { key: "services", label: "", icon: "heroicons:wrench-screwdriver" },
+  { key: "insurance", label: "", icon: "heroicons:shield-check" },
 ];
 
 /* ── Sidebar ────────────────────────────────────────────────── */
 const NAV_ITEMS = [
-  { label: "Dashboard", icon: "heroicons:squares-2x2", href: "/dashboard" },
-  { label: "Tours", icon: "heroicons:globe-alt", href: "/tour-management" },
+  { label: "", icon: "heroicons:squares-2x2", href: "/dashboard" },
+  { label: "", icon: "heroicons:globe-alt", href: "/tour-management" },
   {
-    label: "Tour Instances",
+    label: "",
     icon: "heroicons:calendar-days",
     href: "/tour-instances",
   },
   {
-    label: "Bookings",
+    label: "",
     icon: "heroicons:ticket",
     href: "/dashboard/bookings",
   },
   {
-    label: "Payments",
+    label: "",
     icon: "heroicons:credit-card",
     href: "/dashboard/payments",
   },
   {
-    label: "Customers",
+    label: "",
     icon: "heroicons:user-group",
     href: "/dashboard/customers",
   },
   {
-    label: "Insurance",
+    label: "",
     icon: "heroicons:shield-check",
     href: "/dashboard/insurance",
   },
   {
-    label: "Visa Applications",
+    label: "",
     icon: "heroicons:document-check",
     href: "/dashboard/visa",
   },
   {
-    label: "Policies",
+    label: "",
     icon: "heroicons:clipboard-document-list",
     href: "/dashboard/policies",
   },
   {
-    label: "Settings",
+    label: "",
     icon: "heroicons:cog-6-tooth",
     href: "/dashboard/settings",
   },
 ];
 
-function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+function Sidebar({ open, onClose, navItems }: { open: boolean; onClose: () => void; navItems: Array<{ label: string; icon: string; href: string }> }) {
   return (
     <aside
       className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col transition-transform lg:translate-x-0 ${
@@ -223,12 +227,12 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         </button>
       </div>
       <nav className="flex-1 py-3 px-3 space-y-1 overflow-y-auto">
-        {NAV_ITEMS.map((item) => (
+        {navItems.map((item) => (
           <Link
-            key={item.label}
+            key={item.href}
             href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-              item.label === "Tours"
+              item.label === navItems[1]?.label
                 ? "bg-orange-500 text-white"
                 : "text-slate-300 hover:bg-slate-800 hover:text-white"
             }`}>
@@ -243,8 +247,8 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             AD
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium truncate">Administrator</p>
-            <p className="text-xs text-slate-400 truncate">Administrator</p>
+            <p className="text-sm font-medium truncate">{navItems[navItems.length - 1]?.label}</p>
+            <p className="text-xs text-slate-400 truncate">{navItems[navItems.length - 1]?.label}</p>
           </div>
         </div>
       </div>
@@ -339,6 +343,68 @@ export default function CreateTourPage() {
   const { t } = useTranslation();
   const router = useRouter();
 
+  /* ── i18n ──────────────────────────────────────────────────── */
+  const navItems = [
+    { icon: "heroicons:squares-2x2", href: "/dashboard" },
+    { icon: "heroicons:globe-alt", href: "/tour-management" },
+    { icon: "heroicons:calendar-days", href: "/tour-instances" },
+    { icon: "heroicons:ticket", href: "/dashboard/bookings" },
+    { icon: "heroicons:credit-card", href: "/dashboard/payments" },
+    { icon: "heroicons:user-group", href: "/dashboard/customers" },
+    { icon: "heroicons:shield-check", href: "/dashboard/insurance" },
+    { icon: "heroicons:document-check", href: "/dashboard/visa" },
+    { icon: "heroicons:clipboard-document-list", href: "/dashboard/policies" },
+    { icon: "heroicons:cog-6-tooth", href: "/dashboard/settings" },
+  ];
+  const navLabels = [
+    t("tourAdmin.nav.dashboard"),
+    t("tourAdmin.nav.tours"),
+    t("tourAdmin.nav.tourInstances"),
+    t("tourAdmin.nav.bookings"),
+    t("tourAdmin.nav.payments"),
+    t("tourAdmin.nav.customers"),
+    t("tourAdmin.nav.insurance"),
+    t("tourAdmin.nav.visaApplications"),
+    t("tourAdmin.nav.policies"),
+    t("tourAdmin.nav.settings"),
+  ];
+  const navWithLabels = navItems.map((item, i) => ({ ...item, label: navLabels[i] }));
+
+  const wizardStepLabels = [
+    t("tourAdmin.steps.basic"),
+    t("tourAdmin.steps.packages"),
+    t("tourAdmin.steps.itineraries"),
+    t("tourAdmin.steps.accommodations"),
+    t("tourAdmin.steps.locations"),
+    t("tourAdmin.steps.transportation"),
+    t("tourAdmin.steps.services"),
+    t("tourAdmin.steps.insurance"),
+  ];
+
+  const activityTypes = [
+    t("tourAdmin.activityTypes.0"),
+    t("tourAdmin.activityTypes.1"),
+    t("tourAdmin.activityTypes.2"),
+    t("tourAdmin.activityTypes.3"),
+    t("tourAdmin.activityTypes.4"),
+    t("tourAdmin.activityTypes.5"),
+    t("tourAdmin.activityTypes.6"),
+    t("tourAdmin.activityTypes.7"),
+    t("tourAdmin.activityTypes.8"),
+    t("tourAdmin.activityTypes.9"),
+    t("tourAdmin.activityTypes.99"),
+  ];
+
+  const insuranceTypes = [
+    t("tourAdmin.insuranceTypes.0"),
+    t("tourAdmin.insuranceTypes.1"),
+    t("tourAdmin.insuranceTypes.2"),
+    t("tourAdmin.insuranceTypes.3"),
+    t("tourAdmin.insuranceTypes.4"),
+    t("tourAdmin.insuranceTypes.5"),
+    t("tourAdmin.insuranceTypes.6"),
+  ];
+
   /* ── Layout state ─────────────────────────────────────────── */
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -347,6 +413,8 @@ export default function CreateTourPage() {
   const [saving, setSaving] = useState(false);
 
   /* ── Step 1: Basic Info ───────────────────────────────────── */
+  const [activeLang, setActiveLang] = useState<SupportedLanguage>("vi");
+
   const [basicInfo, setBasicInfo] = useState<BasicInfoForm>({
     tourName: "",
     shortDescription: "",
@@ -356,7 +424,7 @@ export default function CreateTourPage() {
     seoDescription: "",
     status: "3",
   });
-  const [enTranslation] = useState<TranslationFields>({
+  const [enTranslation, setEnTranslation] = useState<TranslationFields>({
     tourName: "",
     shortDescription: "",
     longDescription: "",
@@ -408,7 +476,11 @@ export default function CreateTourPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   /* ── Fetch Policies ──────────────────────────────────────────── */
+  const policiesFetched = useRef(false);
   useEffect(() => {
+    if (policiesFetched.current) return;
+    policiesFetched.current = true;
+
     const fetchPolicies = async () => {
       try {
         const [ppRes, dpRes, cpRes, vpRes] = await Promise.all([
@@ -797,180 +869,25 @@ export default function CreateTourPage() {
 
     try {
       setSaving(true);
-      const formData = new FormData();
-
-      // Basic info
-      formData.append("tourName", basicInfo.tourName);
-      formData.append("shortDescription", basicInfo.shortDescription);
-      formData.append("longDescription", basicInfo.longDescription);
-      formData.append("ecoDescription", basicInfo.ecoDescription);
-      formData.append("seoTitle", basicInfo.seoTitle);
-      formData.append("seoDescription", basicInfo.seoDescription);
-      formData.append("status", basicInfo.status);
-      if (thumbnail) formData.append("thumbnail", thumbnail);
-      images.forEach((img) => formData.append("images", img));
-
-      // Policy IDs
-      if (selectedPricingPolicyId) formData.append("pricingPolicyId", selectedPricingPolicyId);
-      if (selectedDepositPolicyId) formData.append("depositPolicyId", selectedDepositPolicyId);
-      if (selectedCancellationPolicyId) formData.append("cancellationPolicyId", selectedCancellationPolicyId);
-      if (selectedVisaPolicyId) formData.append("visaPolicyId", selectedVisaPolicyId);
-
-      const translationPayload: Record<
-        string,
-        {
-          TourName: string;
-          ShortDescription: string;
-          LongDescription: string;
-          SEOTitle?: string;
-          SEODescription?: string;
-        }
-      > = {
-        vi: {
-          TourName: basicInfo.tourName,
-          ShortDescription: basicInfo.shortDescription,
-          LongDescription: basicInfo.longDescription,
-          SEOTitle: basicInfo.seoTitle,
-          SEODescription: basicInfo.seoDescription,
+      const formData = buildCreateTourFormData({
+        basicInfo,
+        thumbnail,
+        images,
+        vietnameseTranslation: {
+          tourName: basicInfo.tourName,
+          shortDescription: basicInfo.shortDescription,
+          longDescription: basicInfo.longDescription,
+          seoTitle: basicInfo.seoTitle,
+          seoDescription: basicInfo.seoDescription,
         },
-      };
-
-      if (
-        enTranslation.tourName ||
-        enTranslation.shortDescription ||
-        enTranslation.longDescription
-      ) {
-        translationPayload.en = {
-          TourName: enTranslation.tourName,
-          ShortDescription: enTranslation.shortDescription,
-          LongDescription: enTranslation.longDescription,
-          SEOTitle: enTranslation.seoTitle,
-          SEODescription: enTranslation.seoDescription,
-        };
-      }
-
-      formData.append("translations", JSON.stringify(translationPayload));
-
-      // Classifications with nested day plans, activities, and insurance
-      classifications.forEach((cls, ci) => {
-        const prefix = `classifications[${ci}]`;
-        formData.append(`${prefix}.name`, cls.name);
-        formData.append(`${prefix}.description`, cls.description);
-        formData.append(`${prefix}.price`, cls.price);
-        formData.append(`${prefix}.salePrice`, cls.salePrice || cls.price);
-        formData.append(`${prefix}.durationDays`, cls.durationDays);
-
-        // Day plans
-        const plans = dayPlans[ci] ?? [];
-        plans.forEach((day, di) => {
-          const dayPrefix = `${prefix}.plans[${di}]`;
-          formData.append(`${dayPrefix}.dayNumber`, day.dayNumber);
-          formData.append(`${dayPrefix}.title`, day.title);
-          formData.append(`${dayPrefix}.description`, day.description);
-
-          // Activities
-          day.activities.forEach((act, ai) => {
-            const actPrefix = `${dayPrefix}.activities[${ai}]`;
-            formData.append(`${actPrefix}.activityType`, act.activityType);
-            formData.append(`${actPrefix}.title`, act.title);
-            formData.append(`${actPrefix}.description`, act.description);
-            formData.append(`${actPrefix}.note`, act.note);
-            formData.append(
-              `${actPrefix}.estimatedCost`,
-              act.estimatedCost || "0",
-            );
-            formData.append(`${actPrefix}.isOptional`, String(act.isOptional));
-            formData.append(`${actPrefix}.startTime`, act.startTime);
-            formData.append(`${actPrefix}.endTime`, act.endTime);
-          });
-        });
-
-        // Insurance
-        const ins = insurances[ci] ?? [];
-        ins.forEach((insurance, ii) => {
-          const insPrefix = `${prefix}.insurances[${ii}]`;
-          formData.append(
-            `${insPrefix}.insuranceName`,
-            insurance.insuranceName,
-          );
-          formData.append(
-            `${insPrefix}.insuranceType`,
-            insurance.insuranceType,
-          );
-          formData.append(
-            `${insPrefix}.insuranceProvider`,
-            insurance.insuranceProvider,
-          );
-          formData.append(
-            `${insPrefix}.coverageDescription`,
-            insurance.coverageDescription,
-          );
-          formData.append(
-            `${insPrefix}.coverageAmount`,
-            insurance.coverageAmount || "0",
-          );
-          formData.append(
-            `${insPrefix}.coverageFee`,
-            insurance.coverageFee || "0",
-          );
-          formData.append(
-            `${insPrefix}.isOptional`,
-            String(insurance.isOptional),
-          );
-          formData.append(`${insPrefix}.note`, insurance.note);
-        });
-      });
-
-      // Services
-      services.forEach((svc, si) => {
-        const prefix = `services[${si}]`;
-        formData.append(`${prefix}.serviceName`, svc.serviceName);
-        formData.append(`${prefix}.pricingType`, svc.pricingType);
-        formData.append(`${prefix}.price`, svc.price || "0");
-        formData.append(`${prefix}.salePrice`, svc.salePrice || "0");
-        formData.append(`${prefix}.email`, svc.email);
-        formData.append(`${prefix}.contactNumber`, svc.contactNumber);
-      });
-
-      // Accommodations
-      accommodations.forEach((acc, ai) => {
-        const prefix = `accommodations[${ai}]`;
-        formData.append(`${prefix}.accommodationName`, acc.accommodationName);
-        formData.append(`${prefix}.address`, acc.address);
-        formData.append(`${prefix}.contactPhone`, acc.contactPhone);
-        formData.append(`${prefix}.checkInTime`, acc.checkInTime);
-        formData.append(`${prefix}.checkOutTime`, acc.checkOutTime);
-        formData.append(`${prefix}.note`, acc.note);
-      });
-
-      // Locations
-      locations.forEach((loc, li) => {
-        const prefix = `locations[${li}]`;
-        formData.append(`${prefix}.locationName`, loc.locationName);
-        formData.append(`${prefix}.type`, loc.type);
-        formData.append(`${prefix}.description`, loc.description);
-        formData.append(`${prefix}.city`, loc.city);
-        formData.append(`${prefix}.country`, loc.country);
-        formData.append(`${prefix}.entranceFee`, loc.entranceFee || "0");
-        formData.append(`${prefix}.address`, loc.address);
-      });
-
-      // Transportations
-      transportations.forEach((tr, ti) => {
-        const prefix = `transportations[${ti}]`;
-        formData.append(`${prefix}.fromLocation`, tr.fromLocation);
-        formData.append(`${prefix}.toLocation`, tr.toLocation);
-        formData.append(`${prefix}.transportationType`, tr.transportationType);
-        formData.append(`${prefix}.transportationName`, tr.transportationName);
-        formData.append(`${prefix}.durationMinutes`, tr.durationMinutes || "0");
-        formData.append(`${prefix}.pricingType`, tr.pricingType);
-        formData.append(`${prefix}.price`, tr.price || "0");
-        formData.append(
-          `${prefix}.requiresIndividualTicket`,
-          String(tr.requiresIndividualTicket),
-        );
-        formData.append(`${prefix}.ticketInfo`, tr.ticketInfo);
-        formData.append(`${prefix}.note`, tr.note);
+        englishTranslation: enTranslation,
+        classifications,
+        dayPlans,
+        insurances,
+        selectedPricingPolicyId,
+        selectedDepositPolicyId,
+        selectedCancellationPolicyId,
+        selectedVisaPolicyId,
       });
 
       await tourService.createTour(formData);
@@ -1000,7 +917,7 @@ export default function CreateTourPage() {
         />
       )}
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} navItems={navWithLabels} />
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-64">
@@ -1016,10 +933,10 @@ export default function CreateTourPage() {
               </button>
               <div>
                 <h1 className="text-lg font-semibold text-slate-900 dark:text-white">
-                  Create New Package Tour
+                  {t("tourAdmin.createPage.title")}
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Step {currentStep + 1} of {WIZARD_STEPS.length}
+                  {t("tourAdmin.createPage.stepOf", { current: currentStep + 1, total: WIZARD_STEPS.length })}
                 </p>
               </div>
             </div>
@@ -1027,7 +944,7 @@ export default function CreateTourPage() {
               <button
                 onClick={() => router.push("/tour-management")}
                 className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Cancel
+                {t("tourAdmin.createPage.cancel")}
               </button>
               <button
                 onClick={() => {
@@ -1036,7 +953,7 @@ export default function CreateTourPage() {
                   );
                 }}
                 className="px-4 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
-                Save Draft
+                {t("tourAdmin.createPage.saveDraft")}
               </button>
               <button
                 onClick={handleSubmit}
@@ -1048,7 +965,7 @@ export default function CreateTourPage() {
                     className="size-4 animate-spin"
                   />
                 )}
-                Publish Tour
+                {t("tourAdmin.createPage.publishTour")}
               </button>
             </div>
           </div>
@@ -1087,7 +1004,7 @@ export default function CreateTourPage() {
                       {i + 1}
                     </span>
                   )}
-                  <span className="hidden sm:inline">{step.label}</span>
+                  <span className="hidden sm:inline">{wizardStepLabels[i]}</span>
                 </button>
               </React.Fragment>
             ))}
@@ -1100,221 +1017,338 @@ export default function CreateTourPage() {
           {currentStep === 0 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
               <h2 className="text-base font-semibold text-slate-900 dark:text-white mb-1">
-                Basic Tour Information
+                {t("tourAdmin.basicInfo.sectionTitle")}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Fill in the basic details for this package tour
+                {t("tourAdmin.basicInfo.sectionSubtitle")}
               </p>
 
-              <div className="space-y-5">
-                {/* Tour Name */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Tour Name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={basicInfo.tourName}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        tourName: e.target.value,
-                      }))
-                    }
-                    placeholder={t("placeholder.enterTourName", "Enter tour name")}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                  />
-                  {errors.tourName && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.tourName}
-                    </p>
-                  )}
-                </div>
-
-                {/* Short Description */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Short Description <span className="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    value={basicInfo.shortDescription}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        shortDescription: e.target.value,
-                      }))
-                    }
-                    rows={2}
-                    placeholder="Brief tour description for listings"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                  />
-                  {errors.shortDescription && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.shortDescription}
-                    </p>
-                  )}
-                </div>
-
-                {/* Long Description */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Long Description
-                  </label>
-                  <textarea
-                    value={basicInfo.longDescription}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        longDescription: e.target.value,
-                      }))
-                    }
-                    rows={4}
-                    placeholder="Detailed tour description"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                  />
-                </div>
-
-                {/* ECO Description */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    ECO Description
-                  </label>
-                  <textarea
-                    value={basicInfo.ecoDescription}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        ecoDescription: e.target.value,
-                      }))
-                    }
-                    rows={2}
-                    placeholder="Environmental & sustainability information"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                  />
-                </div>
-
-                {/* SEO Title */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    SEO Title
-                  </label>
-                  <input
-                    type="text"
-                    value={basicInfo.seoTitle}
-                    onChange={(e) =>
-                      setBasicInfo((prev) => ({
-                        ...prev,
-                        seoTitle: e.target.value,
-                      }))
-                    }
-                    placeholder="SEO-optimized title for search engines"
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                      Thumbnail File
-                    </label>
-                    <FileInput
-                      name="thumbnail"
-                      selectedFile={thumbnail}
-                      onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
-                    />
-                    {thumbnail && (
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        Selected: {thumbnail.name}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                      Gallery Images
-                    </label>
-                    <FileInput
-                      name="images"
-                      multiple
-                      selectedFiles={images}
-                      onChange={(e) =>
-                        setImages(Array.from(e.target.files ?? []))
-                      }
-                    />
-                    {images.length > 0 && (
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        Selected: {images.length} file(s)
-                      </p>
-                    )}
-                  </div>
-                </div>
+              {/* Language Tabs */}
+              <div className="mb-5">
+                <LanguageTabs
+                  activeLanguage={activeLang}
+                  onChange={setActiveLang}
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  {t("tourAdmin.langTabs.translationHint")}
+                </p>
               </div>
 
-              {/* ── Policy Selectors ──────────────────────────── */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200 mt-4">
-                {/* Pricing Policy */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Pricing Policy
-                  </label>
-                  <select
-                    value={selectedPricingPolicyId}
-                    onChange={(e) => setSelectedPricingPolicyId(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
-                    <option value="">-- Select Pricing Policy --</option>
-                    {pricingPolicies.map((p) => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
+              {/* ── Vietnamese Content ── */}
+              {activeLang === "vi" && (
+                <div className="space-y-5">
+                  {/* Tour Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.tourName")} <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={basicInfo.tourName}
+                      onChange={(e) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          tourName: e.target.value,
+                        }))
+                      }
+                      placeholder={t("placeholder.enterTourName")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                    />
+                    {errors.tourName && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.tourName}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Short Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.shortDescription")} <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      value={basicInfo.shortDescription}
+                      onChange={(e) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          shortDescription: e.target.value,
+                        }))
+                      }
+                      rows={2}
+                      placeholder={t("placeholder.briefTourDescription")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                    {errors.shortDescription && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.shortDescription}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Long Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.longDescription")}
+                    </label>
+                    <textarea
+                      value={basicInfo.longDescription}
+                      onChange={(e) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          longDescription: e.target.value,
+                        }))
+                      }
+                      rows={4}
+                      placeholder={t("placeholder.detailedTourDescription")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                  </div>
+
+                  {/* ECO Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.ecoDescription")}
+                    </label>
+                    <textarea
+                      value={basicInfo.ecoDescription}
+                      onChange={(e) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          ecoDescription: e.target.value,
+                        }))
+                      }
+                      rows={2}
+                      placeholder={t("placeholder.environmentalInfo")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                  </div>
+
+                  {/* SEO Title */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.seoTitle")}
+                    </label>
+                    <input
+                      type="text"
+                      value={basicInfo.seoTitle}
+                      onChange={(e) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          seoTitle: e.target.value,
+                        }))
+                      }
+                      placeholder={t("placeholder.seoOptimizedTitle")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                    />
+                  </div>
+
+                  {/* SEO Description */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.seoDescription")}
+                    </label>
+                    <textarea
+                      value={basicInfo.seoDescription}
+                      onChange={(e) =>
+                        setBasicInfo((prev) => ({
+                          ...prev,
+                          seoDescription: e.target.value,
+                        }))
+                      }
+                      rows={2}
+                      placeholder={t("placeholder.seoOptimizedDescription")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        {t("tourAdmin.basicInfo.thumbnailFile")}
+                      </label>
+                      <FileInput
+                        name="thumbnail"
+                        selectedFile={thumbnail}
+                        onChange={(e) => setThumbnail(e.target.files?.[0] ?? null)}
+                      />
+                      {thumbnail && (
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                          {t("tourAdmin.basicInfo.selectedFile", { name: thumbnail.name })}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        {t("tourAdmin.basicInfo.galleryImages")}
+                      </label>
+                      <FileInput
+                        name="images"
+                        multiple
+                        selectedFiles={images}
+                        onChange={(e) =>
+                          setImages(Array.from(e.target.files ?? []))
+                        }
+                      />
+                      {images.length > 0 && (
+                        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                          {t("tourAdmin.basicInfo.selectedFiles", { count: images.length })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
+              )}
+
+              {/* ── English Content ── */}
+              {activeLang === "en" && (
+                <div className="space-y-5">
+                  {/* Tour Name EN */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.tourName")} (EN)
+                    </label>
+                    <input
+                      type="text"
+                      value={enTranslation.tourName}
+                      onChange={(e) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          tourName: e.target.value,
+                        }))
+                      }
+                      placeholder={t("placeholder.enterTourNameEn")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                    />
+                  </div>
+
+                  {/* Short Description EN */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.shortDescription")} (EN)
+                    </label>
+                    <textarea
+                      value={enTranslation.shortDescription}
+                      onChange={(e) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          shortDescription: e.target.value,
+                        }))
+                      }
+                      rows={2}
+                      placeholder={t("placeholder.briefDescEn")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                  </div>
+
+                  {/* Long Description EN */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.longDescription")} (EN)
+                    </label>
+                    <textarea
+                      value={enTranslation.longDescription}
+                      onChange={(e) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          longDescription: e.target.value,
+                        }))
+                      }
+                      rows={4}
+                      placeholder={t("placeholder.detailedDescEn")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                  </div>
+
+                  {/* SEO Title EN */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.seoTitle")} (EN)
+                    </label>
+                    <input
+                      type="text"
+                      value={enTranslation.seoTitle}
+                      onChange={(e) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          seoTitle: e.target.value,
+                        }))
+                      }
+                      placeholder={t("placeholder.seoOptimizedTitle")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                    />
+                  </div>
+
+                  {/* SEO Description EN */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                      {t("tourAdmin.basicInfo.seoDescription")} (EN)
+                    </label>
+                    <textarea
+                      value={enTranslation.seoDescription}
+                      onChange={(e) =>
+                        setEnTranslation((prev) => ({
+                          ...prev,
+                          seoDescription: e.target.value,
+                        }))
+                      }
+                      rows={2}
+                      placeholder={t("placeholder.seoOptimizedDescription")}
+                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* ── Policy Selectors ──────────────────────────── */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200 mt-6">
+                {/* Pricing Policy */}
+                <SearchableSelect
+                  label={t("tourAdmin.basicInfo.pricingPolicy")}
+                  placeholder={t("tourAdmin.basicInfo.searchPricingPolicy")}
+                  value={selectedPricingPolicyId}
+                  onChange={setSelectedPricingPolicyId}
+                  options={pricingPolicies.map((p) => ({
+                    value: p.id,
+                    label: p.name,
+                  }))}
+                />
 
                 {/* Deposit Policy */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Deposit Policy
-                  </label>
-                  <select
-                    value={selectedDepositPolicyId}
-                    onChange={(e) => setSelectedDepositPolicyId(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
-                    <option value="">-- Select Deposit Policy --</option>
-                    {depositPolicies.map((p) => (
-                      <option key={p.id} value={p.id}>{p.tourScopeName} - {p.depositTypeName} {p.depositValue}{p.depositType === 2 ? "%" : ""}</option>
-                    ))}
-                  </select>
-                </div>
+                <SearchableSelect
+                  label={t("tourAdmin.basicInfo.depositPolicy")}
+                  placeholder={t("tourAdmin.basicInfo.searchDepositPolicy")}
+                  value={selectedDepositPolicyId}
+                  onChange={setSelectedDepositPolicyId}
+                  options={depositPolicies.map((p) => ({
+                    value: p.id,
+                    label: `${p.tourScopeName} - ${p.depositTypeName} ${p.depositValue}${p.depositType === 2 ? "%" : ""}`,
+                  }))}
+                />
 
                 {/* Cancellation Policy */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Cancellation Policy
-                  </label>
-                  <select
-                    value={selectedCancellationPolicyId}
-                    onChange={(e) => setSelectedCancellationPolicyId(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
-                    <option value="">-- Select Cancellation Policy --</option>
-                    {cancellationPolicies.map((p) => (
-                      <option key={p.id} value={p.id}>{p.policyCode} ({p.tourScopeName}, {p.tiers.length} tier{p.tiers.length !== 1 ? "s" : ""})</option>
-                    ))}
-                  </select>
-                </div>
+                <SearchableSelect
+                  label={t("tourAdmin.basicInfo.cancellationPolicy")}
+                  placeholder={t("tourAdmin.basicInfo.searchCancellationPolicy")}
+                  value={selectedCancellationPolicyId}
+                  onChange={setSelectedCancellationPolicyId}
+                  options={cancellationPolicies.map((p) => ({
+                    value: p.id,
+                    label: `${p.policyCode} (${p.tourScopeName}, ${p.tiers.length} tier${p.tiers.length !== 1 ? "s" : ""})`,
+                  }))}
+                />
 
                 {/* Visa Policy */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Visa Policy
-                  </label>
-                  <select
-                    value={selectedVisaPolicyId}
-                    onChange={(e) => setSelectedVisaPolicyId(e.target.value)}
-                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none">
-                    <option value="">-- Select Visa Policy --</option>
-                    {visaPolicies.map((p) => (
-                      <option key={p.id} value={p.id}>{p.region} ({p.processingDays} days processing)</option>
-                    ))}
-                  </select>
-                </div>
+                <SearchableSelect
+                  label={t("tourAdmin.basicInfo.visaPolicy")}
+                  placeholder={t("tourAdmin.basicInfo.searchVisaPolicy")}
+                  value={selectedVisaPolicyId}
+                  onChange={setSelectedVisaPolicyId}
+                  options={visaPolicies.map((p) => ({
+                    value: p.id,
+                    label: `${p.region} (${p.processingDays} days processing)`,
+                  }))}
+                />
               </div>
             </div>
           )}
@@ -1324,14 +1358,14 @@ export default function CreateTourPage() {
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                  Package Classifications
+                  {t("tourAdmin.packages.sectionTitle")}
                 </h2>
                 <button
                   type="button"
                   onClick={addClassification}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                   <Icon icon="heroicons:plus" className="size-4" />
-                  Add Package
+                  {t("tourAdmin.buttons.addPackage")}
                 </button>
               </div>
               <div className="flex items-center gap-2 mb-6 p-3 bg-blue-50 dark:bg-blue-500/10 rounded-lg border border-blue-200 dark:border-blue-500/20">
@@ -1340,8 +1374,7 @@ export default function CreateTourPage() {
                   className="size-4 text-blue-500 shrink-0"
                 />
                 <p className="text-xs text-blue-700 dark:text-blue-400">
-                  Each package will have its own itinerary. Prices are
-                  auto-calculated from resources.
+                  {t("tourAdmin.packages.infoBanner")}
                 </p>
               </div>
 
@@ -1352,13 +1385,13 @@ export default function CreateTourPage() {
                     className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        Package #{clsI + 1}
+                        {t("tourAdmin.packages.packageNumber", { number: clsI + 1 })}
                       </h3>
                       {classifications.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeClassification(clsI)}
-                          aria-label="Remove package"
+                          aria-label={t("tourAdmin.packages.removePackage")}
                           className="text-red-400 hover:text-red-600 transition-colors">
                           <Icon icon="heroicons:trash" className="size-4" />
                         </button>
@@ -1367,7 +1400,7 @@ export default function CreateTourPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Package Type <span className="text-red-500">*</span>
+                          {t("tourAdmin.packages.packageType")} <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -1375,7 +1408,7 @@ export default function CreateTourPage() {
                           onChange={(e) =>
                             updateClassification(clsI, "name", e.target.value)
                           }
-                          placeholder="e.g. Standard, Luxury, Premium"
+                          placeholder={t("tourAdmin.packages.placeholderPackageType")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                         {errors[`cls_${clsI}_name`] && (
@@ -1386,7 +1419,7 @@ export default function CreateTourPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Duration (Days){" "}
+                          {t("tourAdmin.packages.durationDays")}{" "}
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1400,7 +1433,7 @@ export default function CreateTourPage() {
                               e.target.value,
                             )
                           }
-                          placeholder="e.g. 5"
+                          placeholder={t("tourAdmin.packages.placeholderDuration")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                         {errors[`cls_${clsI}_duration`] && (
@@ -1412,7 +1445,7 @@ export default function CreateTourPage() {
                     </div>
                     <div className="mt-4">
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                        Description
+                        {t("tourAdmin.packages.description")}
                       </label>
                       <textarea
                         value={cls.description}
@@ -1424,7 +1457,7 @@ export default function CreateTourPage() {
                           )
                         }
                         rows={2}
-                        placeholder="Describe what this package includes"
+                        placeholder={t("tourAdmin.packages.placeholderDescription")}
                         className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                       />
                     </div>
@@ -1440,11 +1473,10 @@ export default function CreateTourPage() {
               {/* Package Selector */}
               <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                 <h2 className="text-base font-semibold text-slate-900 dark:text-white mb-1">
-                  Select Package to Edit Itinerary
+                  {t("tourAdmin.itineraries.selectPackageTitle")}
                 </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                  Choose a package classification to manage its day-by-day
-                  itinerary
+                  {t("tourAdmin.itineraries.selectPackageSubtitle")}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {classifications.map((cls, i) => {
@@ -1467,7 +1499,7 @@ export default function CreateTourPage() {
                                 ? "text-orange-600 dark:text-orange-400"
                                 : "text-slate-700 dark:text-slate-300"
                             }`}>
-                            Package #{i + 1}
+                            {t("tourAdmin.packages.packageNumber", { number: i + 1 })}
                           </span>
                           {selectedPackageIndex === i && (
                             <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
@@ -1479,10 +1511,10 @@ export default function CreateTourPage() {
                           )}
                         </div>
                         <p className="text-xs font-medium text-slate-900 dark:text-white">
-                          {cls.name || "Unnamed"}
+                          {cls.name || t("tourAdmin.packages.packageType")}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          {totalDays} days, {daysProcessed} days processed
+                          {t("tourAdmin.itineraries.daysProcessed", { processed: daysProcessed, total: totalDays })}
                         </p>
                       </button>
                     );
@@ -1494,14 +1526,14 @@ export default function CreateTourPage() {
               <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                 <div className="flex items-center justify-between mb-5">
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                    Itinerary for Package #{ci + 1}
+                    {t("tourAdmin.itineraries.itineraryForPackage", { number: ci + 1 })}
                   </h2>
                   <button
                     type="button"
                     onClick={() => addDayPlan(ci)}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                     <Icon icon="heroicons:plus" className="size-4" />
-                    Add Day
+                    {t("tourAdmin.buttons.addDay")}
                   </button>
                 </div>
 
@@ -1512,8 +1544,7 @@ export default function CreateTourPage() {
                       className="size-10 mx-auto mb-3 opacity-40"
                     />
                     <p className="text-sm">
-                      No days added yet. Click &quot;Add Day&quot; to start
-                      building the itinerary.
+                      {t("tourAdmin.itineraries.noDaysYet")}
                     </p>
                   </div>
                 ) : (
@@ -1534,14 +1565,14 @@ export default function CreateTourPage() {
                               onChange={(e) =>
                                 updateDayPlan(ci, di, "title", e.target.value)
                               }
-                              placeholder={`Day ${day.dayNumber} title`}
+                              placeholder={t("tourAdmin.itineraries.placeholderDayTitle", { number: day.dayNumber })}
                               className="flex-1 px-2 py-1 text-sm bg-white/10 text-white rounded border border-white/20 placeholder:text-white/60 focus:ring-2 focus:ring-white/30 outline-none"
                             />
                           </div>
                           <button
                             type="button"
                             onClick={() => removeDayPlan(ci, di)}
-                            aria-label="Remove day"
+                            aria-label={t("tourAdmin.itineraries.removeDay")}
                             className="text-white/70 hover:text-white transition-colors">
                             <Icon icon="heroicons:x-mark" className="size-5" />
                           </button>
@@ -1551,7 +1582,7 @@ export default function CreateTourPage() {
                         <div className="p-4">
                           <div className="mb-4">
                             <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
-                              Day Description
+                              {t("tourAdmin.itineraries.dayDescription")}
                             </label>
                             <textarea
                               value={day.description}
@@ -1564,7 +1595,7 @@ export default function CreateTourPage() {
                                 )
                               }
                               rows={2}
-                              placeholder="Overview of activities for this day"
+                              placeholder={t("tourAdmin.itineraries.placeholderOverview")}
                               className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                             />
                           </div>
@@ -1573,7 +1604,7 @@ export default function CreateTourPage() {
                           <div>
                             <div className="flex items-center justify-between mb-3">
                               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                Activities
+                                {t("tourAdmin.itineraries.activities")}
                               </span>
                               <button
                                 type="button"
@@ -1583,13 +1614,13 @@ export default function CreateTourPage() {
                                   icon="heroicons:plus"
                                   className="size-3"
                                 />
-                                Add Activity
+                                {t("tourAdmin.buttons.addActivity")}
                               </button>
                             </div>
 
                             {day.activities.length === 0 && (
                               <p className="text-xs text-slate-400 text-center py-4">
-                                No activities yet
+                                {t("tourAdmin.itineraries.noActivitiesYet")}
                               </p>
                             )}
 
@@ -1599,12 +1630,12 @@ export default function CreateTourPage() {
                                 className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4 mb-3 border border-slate-100 dark:border-slate-700/50">
                                 <div className="flex items-center justify-between mb-3">
                                   <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-                                    Activity #{ai + 1}
+                                    {t("tourAdmin.itineraries.activityNumber", { number: ai + 1 })}
                                   </span>
                                   <button
                                     type="button"
                                     onClick={() => removeActivity(ci, di, ai)}
-                                    aria-label="Remove activity"
+                                    aria-label={t("tourAdmin.itineraries.removeActivity")}
                                     className="text-red-400 hover:text-red-600 transition-colors">
                                     <Icon
                                       icon="heroicons:trash"
@@ -1617,7 +1648,7 @@ export default function CreateTourPage() {
                                   {/* Activity Type */}
                                   <div>
                                     <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                      Activity Type{" "}
+                                      {t("tourAdmin.itineraries.activityType")}{" "}
                                       <span className="text-red-500">*</span>
                                     </label>
                                     <select
@@ -1631,13 +1662,13 @@ export default function CreateTourPage() {
                                           e.target.value,
                                         )
                                       }
-                                      aria-label="Activity type"
+                                      aria-label={t("tourAdmin.itineraries.activityType")}
                                       className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition">
-                                      {ACTIVITY_TYPE_OPTIONS.map((opt) => (
+                                      {ACTIVITY_TYPE_OPTIONS.map((opt, idx) => (
                                         <option
                                           key={opt.value}
                                           value={opt.value}>
-                                          {opt.label}
+                                          {activityTypes[idx]}
                                         </option>
                                       ))}
                                     </select>
@@ -1646,7 +1677,7 @@ export default function CreateTourPage() {
                                   {/* Start Time */}
                                   <div>
                                     <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                      Start Time
+                                      {t("tourAdmin.itineraries.startTime")}
                                     </label>
                                     <input
                                       type="text"
@@ -1660,7 +1691,7 @@ export default function CreateTourPage() {
                                           e.target.value,
                                         )
                                       }
-                                      placeholder="09:00"
+                                      placeholder={t("tourAdmin.itineraries.startTime")}
                                       className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                     />
                                   </div>
@@ -1668,7 +1699,7 @@ export default function CreateTourPage() {
                                   {/* End Time */}
                                   <div>
                                     <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                      End Time
+                                      {t("tourAdmin.itineraries.endTime")}
                                     </label>
                                     <input
                                       type="text"
@@ -1682,7 +1713,7 @@ export default function CreateTourPage() {
                                           e.target.value,
                                         )
                                       }
-                                      placeholder="12:00"
+                                      placeholder={t("placeholder.endTime")}
                                       className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                     />
                                   </div>
@@ -1691,7 +1722,7 @@ export default function CreateTourPage() {
                                 {/* Title */}
                                 <div className="mb-3">
                                   <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                    Title{" "}
+                                    {t("tourAdmin.itineraries.title")}{" "}
                                     <span className="text-red-500">*</span>
                                   </label>
                                   <input
@@ -1706,7 +1737,7 @@ export default function CreateTourPage() {
                                         e.target.value,
                                       )
                                     }
-                                    placeholder="Activity title"
+                                    placeholder={t("tourAdmin.itineraries.placeholderActivityTitle")}
                                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                   />
                                 </div>
@@ -1714,7 +1745,7 @@ export default function CreateTourPage() {
                                 {/* Description */}
                                 <div className="mb-3">
                                   <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                    Description
+                                    {t("tourAdmin.itineraries.description")}
                                   </label>
                                   <textarea
                                     value={act.description}
@@ -1728,7 +1759,7 @@ export default function CreateTourPage() {
                                       )
                                     }
                                     rows={2}
-                                    placeholder="Describe this activity"
+                                    placeholder={t("tourAdmin.itineraries.placeholderDescribeActivity")}
                                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                                   />
                                 </div>
@@ -1736,7 +1767,7 @@ export default function CreateTourPage() {
                                 {/* Note */}
                                 <div className="mb-3">
                                   <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                    Note
+                                    {t("tourAdmin.itineraries.note")}
                                   </label>
                                   <input
                                     type="text"
@@ -1750,7 +1781,7 @@ export default function CreateTourPage() {
                                         e.target.value,
                                       )
                                     }
-                                    placeholder="Any additional notes"
+                                    placeholder={t("tourAdmin.itineraries.placeholderAdditionalNotes")}
                                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                   />
                                 </div>
@@ -1758,7 +1789,7 @@ export default function CreateTourPage() {
                                 {/* Link to Resources */}
                                 <div>
                                   <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                                    Link to Resources (Optional)
+                                    {t("tourAdmin.itineraries.linkToResources")}
                                   </label>
                                   <div className="space-y-2">
                                     {act.linkToResources.map((link, li) => (
@@ -1777,7 +1808,7 @@ export default function CreateTourPage() {
                                               e.target.value,
                                             )
                                           }
-                                          placeholder="https://..."
+                                          placeholder={t("tourAdmin.itineraries.placeholderHttps")}
                                           className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                         />
                                         {act.linkToResources.length > 1 && (
@@ -1811,7 +1842,7 @@ export default function CreateTourPage() {
                                         icon="heroicons:plus"
                                         className="size-3"
                                       />
-                                      Add link
+                                      {t("tourAdmin.buttons.addLink")}
                                     </button>
                                   </div>
                                 </div>
@@ -1837,7 +1868,7 @@ export default function CreateTourPage() {
                     className="size-5 text-orange-500"
                   />
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                    Accommodations
+                    {t("tourAdmin.accommodations.sectionTitle")}
                   </h2>
                 </div>
                 <button
@@ -1845,11 +1876,11 @@ export default function CreateTourPage() {
                   onClick={addAccommodation}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                   <Icon icon="heroicons:plus" className="size-4" />
-                  Add Accommodation
+                  {t("tourAdmin.buttons.addAccommodation")}
                 </button>
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Shared resource pool. Link to activities in Itinerary step.
+                {t("tourAdmin.accommodations.infoBanner")}
               </p>
 
               <div className="space-y-4">
@@ -1859,13 +1890,13 @@ export default function CreateTourPage() {
                     className="border border-slate-200 dark:border-slate-700 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        Accommodation #{accI + 1}
+                        {t("tourAdmin.accommodations.accommodationNumber", { number: accI + 1 })}
                       </h3>
                       {accommodations.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeAccommodation(accI)}
-                          aria-label="Remove accommodation"
+                          aria-label={t("tourAdmin.accommodations.removeAccommodation")}
                           className="text-red-400 hover:text-red-600 transition-colors">
                           <Icon icon="heroicons:trash" className="size-4" />
                         </button>
@@ -1875,7 +1906,7 @@ export default function CreateTourPage() {
                       {/* Accommodation Name */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Accommodation Name{" "}
+                          {t("tourAdmin.accommodations.accommodationName")}{" "}
                           <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -1888,14 +1919,14 @@ export default function CreateTourPage() {
                               e.target.value,
                             )
                           }
-                          placeholder="Hotel Metropole Hanoi"
+                          placeholder={t("tourAdmin.accommodations.placeholderAccommodationName")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                       </div>
                       {/* Address */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Address
+                          {t("tourAdmin.accommodations.address")}
                         </label>
                         <input
                           type="text"
@@ -1903,7 +1934,7 @@ export default function CreateTourPage() {
                           onChange={(e) =>
                             updateAccommodation(accI, "address", e.target.value)
                           }
-                          placeholder="15 Ngo Quyen Street, Hoan Kiem District, Hanoi"
+                          placeholder={t("tourAdmin.accommodations.placeholderAddress")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                       </div>
@@ -1911,7 +1942,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Contact Phone
+                            {t("tourAdmin.accommodations.contactPhone")}
                           </label>
                           <input
                             type="text"
@@ -1923,13 +1954,13 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="+84 24 3826 6919"
+                            placeholder={t("tourAdmin.accommodations.placeholderPhone")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Check-in Time
+                            {t("tourAdmin.accommodations.checkInTime")}
                           </label>
                           <input
                             type="text"
@@ -1941,7 +1972,7 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="14:00"
+                            placeholder={t("tourAdmin.accommodations.placeholderCheckIn")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -1950,7 +1981,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Check-out Time
+                            {t("tourAdmin.accommodations.checkOutTime")}
                           </label>
                           <input
                             type="text"
@@ -1962,7 +1993,7 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="12:00"
+                            placeholder={t("tourAdmin.accommodations.placeholderCheckOut")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -1970,7 +2001,7 @@ export default function CreateTourPage() {
                       {/* Note */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Note
+                          {t("tourAdmin.accommodations.note")}
                         </label>
                         <textarea
                           value={acc.note}
@@ -1978,7 +2009,7 @@ export default function CreateTourPage() {
                             updateAccommodation(accI, "note", e.target.value)
                           }
                           rows={3}
-                          placeholder="Additional information, amenities, special requirements..."
+                          placeholder={t("tourAdmin.accommodations.placeholderAdditionalInfo")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                         />
                       </div>
@@ -1999,7 +2030,7 @@ export default function CreateTourPage() {
                     className="size-5 text-orange-500"
                   />
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                    Locations / Attractions
+                    {t("tourAdmin.locations.sectionTitle")}
                   </h2>
                 </div>
                 <button
@@ -2007,11 +2038,11 @@ export default function CreateTourPage() {
                   onClick={addLocation}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                   <Icon icon="heroicons:plus" className="size-4" />
-                  Add Location
+                  {t("tourAdmin.buttons.addLocation")}
                 </button>
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Shared resource pool. Link to activities in Itinerary step.
+                {t("tourAdmin.locations.infoBanner")}
               </p>
 
               <div className="space-y-4">
@@ -2021,13 +2052,13 @@ export default function CreateTourPage() {
                     className="border border-slate-200 dark:border-slate-700 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        Location #{locI + 1}
+                        {t("tourAdmin.locations.locationNumber", { number: locI + 1 })}
                       </h3>
                       {locations.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeLocation(locI)}
-                          aria-label="Remove location"
+                          aria-label={t("tourAdmin.locations.removeLocation")}
                           className="text-red-400 hover:text-red-600 transition-colors">
                           <Icon icon="heroicons:trash" className="size-4" />
                         </button>
@@ -2038,7 +2069,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Location Name{" "}
+                            {t("tourAdmin.locations.locationName")}{" "}
                             <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -2051,13 +2082,13 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Temple of Literature"
+                            placeholder={t("tourAdmin.locations.placeholderLocationName")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Type
+                            {t("tourAdmin.locations.type")}
                           </label>
                           <input
                             type="text"
@@ -2065,7 +2096,7 @@ export default function CreateTourPage() {
                             onChange={(e) =>
                               updateLocation(locI, "type", e.target.value)
                             }
-                            placeholder="Temple, Museum..."
+                            placeholder={t("tourAdmin.locations.placeholderType")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -2073,7 +2104,7 @@ export default function CreateTourPage() {
                       {/* Description */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Description
+                          {t("tourAdmin.locations.description")}
                         </label>
                         <textarea
                           value={loc.description}
@@ -2081,7 +2112,7 @@ export default function CreateTourPage() {
                             updateLocation(locI, "description", e.target.value)
                           }
                           rows={2}
-                          placeholder="Location description..."
+                          placeholder={t("tourAdmin.locations.placeholderDescription")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                         />
                       </div>
@@ -2089,7 +2120,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            City
+                            {t("tourAdmin.locations.city")}
                           </label>
                           <input
                             type="text"
@@ -2097,13 +2128,13 @@ export default function CreateTourPage() {
                             onChange={(e) =>
                               updateLocation(locI, "city", e.target.value)
                             }
-                            placeholder="Hanoi"
+                            placeholder={t("tourAdmin.locations.placeholderCity")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Country
+                            {t("tourAdmin.locations.country")}
                           </label>
                           <input
                             type="text"
@@ -2111,13 +2142,13 @@ export default function CreateTourPage() {
                             onChange={(e) =>
                               updateLocation(locI, "country", e.target.value)
                             }
-                            placeholder="Vietnam"
+                            placeholder={t("tourAdmin.locations.placeholderCountry")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Entrance Fee
+                            {t("tourAdmin.locations.entranceFee")}
                           </label>
                           <input
                             type="number"
@@ -2129,7 +2160,7 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="30000"
+                            placeholder={t("tourAdmin.locations.placeholderEntranceFee")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -2137,7 +2168,7 @@ export default function CreateTourPage() {
                       {/* Address */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Address
+                          {t("tourAdmin.locations.address")}
                         </label>
                         <input
                           type="text"
@@ -2145,7 +2176,7 @@ export default function CreateTourPage() {
                           onChange={(e) =>
                             updateLocation(locI, "address", e.target.value)
                           }
-                          placeholder="Full address..."
+                          placeholder={t("tourAdmin.locations.placeholderAddress")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                       </div>
@@ -2166,7 +2197,7 @@ export default function CreateTourPage() {
                     className="size-5 text-orange-500"
                   />
                   <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                    Transportation Routes
+                    {t("tourAdmin.transportation.sectionTitle")}
                   </h2>
                 </div>
                 <button
@@ -2174,11 +2205,11 @@ export default function CreateTourPage() {
                   onClick={addTransportation}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
                   <Icon icon="heroicons:plus" className="size-4" />
-                  Add Route
+                  {t("tourAdmin.buttons.addRoute")}
                 </button>
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Shared resource pool. Link to activities in Itinerary step.
+                {t("tourAdmin.transportation.infoBanner")}
               </p>
 
               <div className="space-y-4">
@@ -2192,14 +2223,14 @@ export default function CreateTourPage() {
                           {trI + 1}
                         </div>
                         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                          Route #{trI + 1}
+                          {t("tourAdmin.transportation.routeNumber", { number: trI + 1 })}
                         </h3>
                       </div>
                       {transportations.length > 1 && (
                         <button
                           type="button"
                           onClick={() => removeTransportation(trI)}
-                          aria-label="Remove route"
+                          aria-label={t("tourAdmin.transportation.removeRoute")}
                           className="text-red-400 hover:text-red-600 transition-colors">
                           <Icon icon="heroicons:trash" className="size-4" />
                         </button>
@@ -2210,7 +2241,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            From Location{" "}
+                            {t("tourAdmin.transportation.fromLocation")}{" "}
                             <span className="text-red-500">*</span>
                           </label>
                           <input
@@ -2223,13 +2254,13 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Hanoi"
+                            placeholder={t("tourAdmin.transportation.placeholderFrom")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            To Location <span className="text-red-500">*</span>
+                            {t("tourAdmin.transportation.toLocation")} <span className="text-red-500">*</span>
                           </label>
                           <input
                             type="text"
@@ -2241,13 +2272,13 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Halong Bay"
+                            placeholder={t("tourAdmin.transportation.placeholderTo")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Transportation Type
+                            {t("tourAdmin.transportation.transportationType")}
                           </label>
                           <input
                             type="text"
@@ -2259,7 +2290,7 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Bus, Flight, Car..."
+                            placeholder={t("tourAdmin.transportation.placeholderTransportationType")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -2268,7 +2299,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Transportation Name
+                            {t("tourAdmin.transportation.transportationName")}
                           </label>
                           <input
                             type="text"
@@ -2280,13 +2311,13 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Vietnam Airlines..."
+                            placeholder={t("tourAdmin.transportation.placeholderTransportationName")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Duration (minutes)
+                            {t("tourAdmin.transportation.durationMinutes")}
                           </label>
                           <input
                             type="number"
@@ -2298,13 +2329,13 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="0"
+                            placeholder={t("tourAdmin.transportation.placeholderDuration")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Pricing Type
+                            {t("tourAdmin.transportation.pricingType")}
                           </label>
                           <input
                             type="text"
@@ -2316,7 +2347,7 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Per person, Fixed..."
+                            placeholder={t("tourAdmin.transportation.placeholderPricingType")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -2325,7 +2356,7 @@ export default function CreateTourPage() {
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Price ($)
+                            {t("tourAdmin.transportation.price")}
                           </label>
                           <input
                             type="number"
@@ -2333,7 +2364,7 @@ export default function CreateTourPage() {
                             onChange={(e) =>
                               updateTransportation(trI, "price", e.target.value)
                             }
-                            placeholder="Optional"
+                            placeholder={t("tourAdmin.transportation.placeholderPrice")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -2350,11 +2381,11 @@ export default function CreateTourPage() {
                             }
                             className="rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                           />
-                          Requires Individual Ticket
+                          {t("tourAdmin.transportation.requiresIndividualTicket")}
                         </label>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            Ticket Info
+                            {t("tourAdmin.transportation.ticketInfo")}
                           </label>
                           <input
                             type="text"
@@ -2366,7 +2397,7 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder="Booking reference..."
+                            placeholder={t("tourAdmin.transportation.placeholderTicketInfo")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
                         </div>
@@ -2374,7 +2405,7 @@ export default function CreateTourPage() {
                       {/* Note */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                          Note
+                          {t("tourAdmin.transportation.note")}
                         </label>
                         <textarea
                           value={tr.note}
@@ -2382,7 +2413,7 @@ export default function CreateTourPage() {
                             updateTransportation(trI, "note", e.target.value)
                           }
                           rows={2}
-                          placeholder="Air-conditioned vehicle..."
+                          placeholder={t("tourAdmin.transportation.placeholderNote")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                         />
                       </div>
@@ -2402,10 +2433,10 @@ export default function CreateTourPage() {
                   className="size-10 mx-auto mb-3 opacity-40"
                 />
                 <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Other Services
+                  {t("tourAdmin.services.sectionTitle")}
                 </h2>
                 <p className="text-sm">
-                  Configuration for services will be available soon.
+                  {t("tourAdmin.services.notAvailable")}
                 </p>
               </div>
             </div>
@@ -2420,12 +2451,11 @@ export default function CreateTourPage() {
                   className="size-5 text-orange-500"
                 />
                 <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                  Insurance Packages
+                  {t("tourAdmin.insurance.sectionTitle")}
                 </h2>
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-                Select insurance packages available for this tour (filtered by
-                classification)
+                {t("tourAdmin.insurance.sectionSubtitle")}
               </p>
 
               <div className="space-y-5">
@@ -2433,22 +2463,21 @@ export default function CreateTourPage() {
                   <div key={clsI}>
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        {cls.name || `Package #${clsI + 1}`}
+                        {cls.name || t("tourAdmin.packages.packageNumber", { number: clsI + 1 })}
                       </h3>
                       <button
                         type="button"
                         onClick={() => addInsurance(clsI)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
                         <Icon icon="heroicons:plus" className="size-4" />
-                        Add Insurance
+                        {t("tourAdmin.buttons.addInsurance")}
                       </button>
                     </div>
 
                     {(insurances[clsI] ?? []).length === 0 ? (
                       <div className="border border-dashed border-slate-300 dark:border-slate-600 rounded-lg py-6 text-center">
                         <p className="text-sm text-slate-400">
-                          No insurance added. Click &quot;Add Insurance&quot; to
-                          create one.
+                          {t("tourAdmin.insurance.noInsuranceYet")}
                         </p>
                       </div>
                     ) : (
@@ -2460,19 +2489,17 @@ export default function CreateTourPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="font-medium text-sm text-slate-900 dark:text-white">
-                                  {ins.insuranceName || "Untitled"}
+                                  {ins.insuranceName || t("tourAdmin.review.untitled")}
                                 </span>
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400">
-                                  {INSURANCE_TYPE_OPTIONS.find(
-                                    (o) => o.value === ins.insuranceType,
-                                  )?.label ?? "Travel"}
+                                  {insuranceTypes[Number(ins.insuranceType)] || insuranceTypes[1]}
                                 </span>
                               </div>
                               <p className="text-xs text-slate-500 dark:text-slate-400">
-                                Coverage: ${ins.coverageAmount || "0"} &bull;
-                                Duration of tour
+                                {t("tourAdmin.insurance.coverage")}: ${ins.coverageAmount || "0"} &bull;
+                                {t("tourAdmin.insurance.durationOfTour")}
                                 {ins.coverageFee
-                                  ? ` • Fee: $${ins.coverageFee}`
+                                  ? ` • ${t("tourAdmin.insurance.fee")}: $${ins.coverageFee}`
                                   : ""}
                               </p>
                             </div>
@@ -2483,7 +2510,7 @@ export default function CreateTourPage() {
                               <button
                                 type="button"
                                 onClick={() => removeInsurance(clsI, ii)}
-                                aria-label="Remove insurance"
+                                aria-label={t("tourAdmin.buttons.addInsurance")}
                                 className="text-red-400 hover:text-red-600 transition-colors">
                                 <Icon
                                   icon="heroicons:trash"
@@ -2506,13 +2533,15 @@ export default function CreateTourPage() {
                     key={`edit-${clsI}-${ii}`}
                     className="mt-4 border border-slate-200 dark:border-slate-700 rounded-xl p-5">
                     <h4 className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3">
-                      Edit: {ins.insuranceName || `Insurance #${ii + 1}`} —{" "}
-                      {cls.name || `Package #${clsI + 1}`}
+                      {t("tourAdmin.insurance.editInsurance", {
+                        insuranceName: ins.insuranceName || t("tourAdmin.review.untitled"),
+                        packageName: cls.name || t("tourAdmin.packages.packageNumber", { number: clsI + 1 }),
+                      })}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       <div>
                         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                          Name
+                          {t("tourAdmin.insurance.insuranceName")}
                         </label>
                         <input
                           type="text"
@@ -2525,13 +2554,13 @@ export default function CreateTourPage() {
                               e.target.value,
                             )
                           }
-                          placeholder="Insurance name"
+                          placeholder={t("tourAdmin.insurance.insuranceName")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                          Type
+                          {t("tourAdmin.insurance.insuranceType")}
                         </label>
                         <select
                           value={ins.insuranceType}
@@ -2543,18 +2572,18 @@ export default function CreateTourPage() {
                               e.target.value,
                             )
                           }
-                          aria-label="Insurance type"
+                          aria-label={t("tourAdmin.insurance.insuranceType")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition">
-                          {INSURANCE_TYPE_OPTIONS.map((opt) => (
+                          {INSURANCE_TYPE_OPTIONS.map((opt, idx) => (
                             <option key={opt.value} value={opt.value}>
-                              {opt.label}
+                              {insuranceTypes[idx]}
                             </option>
                           ))}
                         </select>
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                          Provider
+                          {t("tourAdmin.insurance.provider")}
                         </label>
                         <input
                           type="text"
@@ -2567,14 +2596,14 @@ export default function CreateTourPage() {
                               e.target.value,
                             )
                           }
-                          placeholder="Provider name"
+                          placeholder={t("tourAdmin.insurance.provider")}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                         />
                       </div>
                     </div>
                     <div className="mt-3">
                       <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                        Coverage Description
+                        {t("tourAdmin.insurance.coverageDescription")}
                       </label>
                       <textarea
                         value={ins.coverageDescription}
@@ -2587,14 +2616,14 @@ export default function CreateTourPage() {
                           )
                         }
                         rows={2}
-                        placeholder="Describe coverage"
+                        placeholder={t("tourAdmin.insurance.coverageDescription")}
                         className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
                       <div>
                         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                          Coverage ($)
+                          {t("tourAdmin.insurance.coverageAmount")}
                         </label>
                         <input
                           type="number"
@@ -2613,7 +2642,7 @@ export default function CreateTourPage() {
                       </div>
                       <div>
                         <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                          Fee ($)
+                          {t("tourAdmin.insurance.coverageFee")}
                         </label>
                         <input
                           type="number"
@@ -2644,7 +2673,7 @@ export default function CreateTourPage() {
                           }
                           className="rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                         />
-                        Optional
+                        {t("tourAdmin.insurance.optional")}
                       </label>
                     </div>
                   </div>
@@ -2657,182 +2686,10 @@ export default function CreateTourPage() {
               ) && (
                 <div className="mt-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg px-4 py-3">
                   <p className="text-sm text-amber-700 dark:text-amber-400">
-                    No insurance selected. Consider adding insurance packages
-                    for customer protection.
+                    {t("tourAdmin.insurance.noInsuranceSelected")}
                   </p>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* ── Step 9: Review ───────────────────────────────── */}
-          {currentStep === 8 && (
-            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <Icon
-                  icon="heroicons:check-circle"
-                  className="size-5 text-green-600"
-                />
-                <h2 className="text-base font-semibold text-slate-900 dark:text-white">
-                  Review Tour Package
-                </h2>
-              </div>
-
-              <div className="space-y-6">
-                {/* Basic Information */}
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-                    Basic Information
-                  </h3>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4 space-y-1.5">
-                    <p className="text-sm">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">
-                        Code:
-                      </span>{" "}
-                      <span className="text-slate-900 dark:text-white">
-                        Auto-generated after creation
-                      </span>
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">
-                        Name:
-                      </span>{" "}
-                      <span className="text-slate-900 dark:text-white">
-                        {basicInfo.tourName || "N/A"}
-                      </span>
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">
-                        Short Description:
-                      </span>{" "}
-                      <span className="text-slate-900 dark:text-white">
-                        {basicInfo.shortDescription || "N/A"}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Package Classifications */}
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-                    Package Classifications
-                  </h3>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                    <p className="text-sm font-medium text-slate-900 dark:text-white mb-2">
-                      {classifications.length} package(s) defined
-                    </p>
-                    <div className="space-y-1">
-                      {classifications.map((cls, i) => (
-                        <p
-                          key={i}
-                          className="text-sm text-slate-600 dark:text-slate-400">
-                          <span className="font-medium">#{i + 1}:</span>{" "}
-                          {cls.name || "Unnamed"} – {cls.durationDays || 0} days
-                          – {(dayPlans[i] ?? []).length} itinerary days
-                          generated
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Resources */}
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-                    Resources
-                  </h3>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                    <div className="grid grid-cols-2 gap-y-2 gap-x-8">
-                      <p className="text-sm">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          Accommodations:
-                        </span>{" "}
-                        <span className="text-slate-900 dark:text-white">
-                          {
-                            accommodations.filter(
-                              (a) => a.accommodationName.trim() !== "",
-                            ).length
-                          }
-                        </span>
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          Locations:
-                        </span>{" "}
-                        <span className="text-slate-900 dark:text-white">
-                          {
-                            locations.filter(
-                              (l) => l.locationName.trim() !== "",
-                            ).length
-                          }
-                        </span>
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          Routes:
-                        </span>{" "}
-                        <span className="text-slate-900 dark:text-white">
-                          {
-                            transportations.filter(
-                              (t) => t.fromLocation.trim() !== "",
-                            ).length
-                          }
-                        </span>
-                      </p>
-                      <p className="text-sm">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          Services:
-                        </span>{" "}
-                        <span className="text-slate-900 dark:text-white">
-                          {
-                            services.filter((s) => s.serviceName.trim() !== "")
-                              .length
-                          }
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Insurance Packages */}
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
-                    Insurance Packages
-                  </h3>
-                  <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
-                    {classifications.every(
-                      (_, i) => (insurances[i] ?? []).length === 0,
-                    ) ? (
-                      <p className="text-sm text-slate-400">
-                        No insurance packages selected
-                      </p>
-                    ) : (
-                      <div className="space-y-1">
-                        {classifications.map((cls, clsI) =>
-                          (insurances[clsI] ?? []).map((ins, ii) => (
-                            <p
-                              key={`${clsI}-${ii}`}
-                              className="text-sm text-slate-600 dark:text-slate-400">
-                              {ins.insuranceName || "Untitled"} ({cls.name}) —
-                              Coverage: ${ins.coverageAmount || "0"}, Fee: $
-                              {ins.coverageFee || "0"}
-                            </p>
-                          )),
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Note banner */}
-                <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg px-4 py-3">
-                  <p className="text-sm text-amber-700 dark:text-amber-400">
-                    <span className="font-semibold">Note:</span> Package prices
-                    will be automatically calculated from linked accommodations,
-                    locations, routes, and services based on each itinerary.
-                  </p>
-                </div>
-              </div>
             </div>
           )}
 
@@ -2845,7 +2702,7 @@ export default function CreateTourPage() {
               }
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
               <Icon icon="heroicons:arrow-left" className="size-4" />
-              {currentStep === 0 ? "Back to List" : "Previous"}
+              {currentStep === 0 ? t("tourAdmin.buttons.backToList") : t("tourAdmin.buttons.previous")}
             </button>
 
             {currentStep < WIZARD_STEPS.length - 1 ? (
@@ -2853,21 +2710,25 @@ export default function CreateTourPage() {
                 type="button"
                 onClick={goNext}
                 className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
-                Next
+                {t("tourAdmin.buttons.next")}
                 <Icon icon="heroicons:arrow-right" className="size-4" />
               </button>
             ) : (
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={handleSubmit}
+                  onClick={() => {
+                    toast.info(
+                      t("toast.draftNotImplemented", "Draft saving not yet implemented"),
+                    );
+                  }}
                   disabled={saving}
                   className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-50">
                   <Icon
                     icon="heroicons:clipboard-document"
                     className="size-4"
                   />
-                  Save Draft
+                  {t("tourAdmin.createPage.saveDraft")}
                 </button>
                 <button
                   type="button"
@@ -2881,7 +2742,7 @@ export default function CreateTourPage() {
                     />
                   )}
                   <Icon icon="heroicons:check" className="size-4" />
-                  Publish Tour
+                  {t("tourAdmin.createPage.publishTour")}
                 </button>
               </div>
             )}

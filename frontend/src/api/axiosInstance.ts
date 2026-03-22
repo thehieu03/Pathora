@@ -59,8 +59,12 @@ const axiosInstance: AxiosInstance = axios.create({
 
 const onUnauthorized = (): void => {
   if (typeof document !== "undefined") {
-    document.cookie =
-      "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // Clear all auth-related cookies
+    const cookies = ["access_token", "auth_status", "refresh_token"];
+    cookies.forEach((name) => {
+      document.cookie =
+        `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
+    });
   }
   if (typeof window !== "undefined") {
     window.location.href = "/";
