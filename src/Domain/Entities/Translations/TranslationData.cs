@@ -4,15 +4,15 @@ namespace Domain.Entities.Translations;
 
 public sealed class TourTranslationData
 {
-    [JsonPropertyName("description")]
+    [JsonPropertyName("tourName")]
     public string TourName { get; set; } = string.Empty;
     [JsonPropertyName("shortDescription")]
     public string ShortDescription { get; set; } = string.Empty;
     [JsonPropertyName("longDescription")]
     public string LongDescription { get; set; } = string.Empty;
-    [JsonPropertyName("sEOTitle")]
+    [JsonPropertyName("seoTitle")]
     public string? SEOTitle { get; set; }
-    [JsonPropertyName("sEODescription")]
+    [JsonPropertyName("seoDescription")]
     public string? SEODescription { get; set; }
 }
 
