@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin)]
 [Route(BookingManagementEndpoint.Base)]
 public class BookingManagementController : BaseApiController
 {

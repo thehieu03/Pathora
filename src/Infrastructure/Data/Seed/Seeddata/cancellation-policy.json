@@ -1,0 +1,44 @@
+[
+  {
+    "Id": "01952800-0000-7000-8000-000000000001",
+    "PolicyCode": "CP-DOMESTIC-001",
+    "TourScope": 1,
+    "Status": 0,
+    "IsDeleted": false,
+    "Tiers": [
+      { "MinDaysBeforeDeparture": 0, "MaxDaysBeforeDeparture": 2, "PenaltyPercentage": 100 },
+      { "MinDaysBeforeDeparture": 3, "MaxDaysBeforeDeparture": 6, "PenaltyPercentage": 50 },
+      { "MinDaysBeforeDeparture": 7, "MaxDaysBeforeDeparture": 14, "PenaltyPercentage": 25 },
+      { "MinDaysBeforeDeparture": 15, "MaxDaysBeforeDeparture": 2147483647, "PenaltyPercentage": 0 }
+    ],
+    "Translations": {
+      "vi": { "description": "Chính sách hủy tour nội địa - hoàn tiền theo số ngày trước khi khởi hành" },
+      "en": { "description": "Domestic tour cancellation policy - refund based on days before departure" }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952800-0000-7000-8000-000000000002",
+    "PolicyCode": "CP-INTERNATIONAL-001",
+    "TourScope": 2,
+    "Status": 0,
+    "IsDeleted": false,
+    "Tiers": [
+      { "MinDaysBeforeDeparture": 0, "MaxDaysBeforeDeparture": 6, "PenaltyPercentage": 100 },
+      { "MinDaysBeforeDeparture": 7, "MaxDaysBeforeDeparture": 14, "PenaltyPercentage": 50 },
+      { "MinDaysBeforeDeparture": 15, "MaxDaysBeforeDeparture": 29, "PenaltyPercentage": 30 },
+      { "MinDaysBeforeDeparture": 30, "MaxDaysBeforeDeparture": 2147483647, "PenaltyPercentage": 10 }
+    ],
+    "Translations": {
+      "vi": { "description": "Chính sách hủy tour quốc tế - phí hủy cao hơn do chi phí đặt cọc lớn" },
+      "en": { "description": "International tour cancellation policy - higher fees due to larger deposit costs" }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

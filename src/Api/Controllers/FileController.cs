@@ -1,11 +1,12 @@
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin)]
 [Route(FileEndpoint.Base)]
 public class FileController : BaseApiController
 {

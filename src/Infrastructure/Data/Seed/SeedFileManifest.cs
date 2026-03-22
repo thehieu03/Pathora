@@ -6,6 +6,7 @@ internal static class SeedFileManifest
     [
         new("BookingAccommodationDetailContextSeed", "booking-accommodation-detail.json", ["Id", "BookingActivityReservationId", "AccommodationName", "RoomType"], null, ["BookingActivityReservationId"]),
         new("BookingActivityReservationContextSeed", "booking-activity-reservation.json", ["Id", "BookingId", "Order", "ActivityType", "Title"], "Id", ["BookingId"]),
+        new("CancellationPolicyContextSeed", "cancellation-policy.json", ["Id", "PolicyCode", "TourScope", "Status"], "Id", null),
         new("BookingContextSeed", "booking.json", ["Id", "TourInstanceId", "CustomerName", "CustomerPhone", "NumberAdult", "TotalPrice"], "Id", ["TourInstanceId"]),
         new("BookingParticipantContextSeed", "booking-participant.json", ["Id", "BookingId", "ParticipantType", "FullName"], "Id", ["BookingId"]),
         new("BookingTourGuideContextSeed", "booking-tour-guide.json", ["Id", "BookingId", "UserId", "AssignedRole"], "Id", ["BookingId", "UserId"]),
@@ -15,7 +16,6 @@ internal static class SeedFileManifest
         new("DepartmentContextSeed", "department.json", ["Id", "Name", "Level"], "Id", null),
         new("DynamicPricingTierContextSeed", "dynamic-pricing-tier.json", ["Id", "MinParticipants", "MaxParticipants", "PricePerPerson"], "Id", null),
         new("FileMetadataContextSeed", "file-metadata.json", ["Id", "OriginalFileName", "StoredFileName", "Url"], "Id", null),
-        new("FunctionContextSeed", "function.json", ["Id", "ApiUrl", "CategoryId"], "Id", null),
         new("OtpContextSeed", "otp.json", ["Id", "Code", "Email"], "Id", null),
         new("PassportContextSeed", "passport.json", ["Id", "BookingParticipantId", "PassportNumber"], "Id", ["BookingParticipantId"]),
         new("PositionContextSeed", "position.json", ["Id", "Name", "Level"], "Id", null),
@@ -23,7 +23,6 @@ internal static class SeedFileManifest
         new("RegisterContextSeed", "register.json", ["Id", "Username", "Email", "Password"], "Id", null),
         new("ReviewContextSeed", "review.json", ["Id", "TourId", "UserId", "Rating"], "Id", ["TourId", "UserId"]),
         new("RoleContextSeed", "role.json", ["Id", "Name", "Type", "Status"], "Id", null),
-        new("RoleFunctionContextSeed", "role-function.json", ["RoleId", "FunctionId"], null, ["RoleId", "FunctionId"]),
         new("SupplierContextSeed", "supplier.json", ["Id", "SupplierCode", "SupplierType", "Name"], "Id", null),
         new("SupplierPayableContextSeed", "supplier-payable.json", ["Id", "BookingId", "SupplierId", "ExpectedAmount", "Status"], "Id", ["BookingId", "SupplierId"]),
         new("SupplierReceiptContextSeed", "supplier-receipt.json", ["Id", "SupplierPayableId", "Amount", "PaymentMethod", "PaidAt"], "Id", ["SupplierPayableId"]),

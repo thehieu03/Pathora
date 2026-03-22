@@ -1,4 +1,5 @@
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Features.TourRequest.Commands;
 using Application.Features.TourRequest.Queries;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.Public;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin_Customer)]
 [Route(PublicEndpoint.Base + "/" + PublicEndpoint.TourRequests)]
 public class PublicTourRequestController : BaseApiController
 {

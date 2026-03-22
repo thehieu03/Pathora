@@ -1,6 +1,7 @@
 using System.Text.Json;
 
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
@@ -12,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin_TourManager_TourOperator)]
 [Route(TourEndpoint.Base)]
 public class TourController(IFileService fileService) : BaseApiController
 {

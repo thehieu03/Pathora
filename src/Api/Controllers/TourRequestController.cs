@@ -1,4 +1,5 @@
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Features.TourRequest.Commands;
 using Application.Features.TourRequest.Queries;
 using Domain.Enums;
@@ -8,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin_TourManager_TourOperator_SalesManager_SalesStaff)]
 [Route(TourRequestEndpoint.Base)]
 public class TourRequestController : BaseApiController
 {

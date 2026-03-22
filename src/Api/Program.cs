@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-var disableAuthorization = builder.Configuration.IsAuthorizationDisabled();
 builder.Logging.ClearProviders();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -47,7 +46,21 @@ if (!app.Environment.IsDevelopment())
 //    app.UseHttpsRedirection();
 }
 
-app.UseExceptionHandler(_ => { });
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        var ex = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
+        await context.Response.WriteAsJsonAsync(new
+        {
+            error = ex?.GetType().Name,
+            message = ex?.Message,
+            stack = ex?.StackTrace
+        });
+    });
+});
 
 app.UseResponseCompression();
 
@@ -76,12 +89,7 @@ app.MapHealthChecks("/health/ready", new()
     Predicate = check => check.Name == "database"
 });
 
-var controllerEndpoints = app.MapControllers();
-if (disableAuthorization)
-{
-    controllerEndpoints.AllowAnonymous();
-    Log.Warning("Authorization is disabled via configuration key Auth:DisableAuthorization");
-}
+app.MapControllers();
 
 // Map SignalR hubs
 app.MapHub<Api.Hubs.NotificationsHub>("/hubs/notifications");

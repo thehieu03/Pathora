@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Contracts.Payment;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin_Accountant)]
 [Route(PaymentEndpoint.Base)]
 public class PaymentController : BaseApiController
 {

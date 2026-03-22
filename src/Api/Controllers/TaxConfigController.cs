@@ -1,4 +1,5 @@
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Features.TaxConfig.Commands;
 using Application.Features.TaxConfig.Queries;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin)]
 [Route(TaxConfigEndpoint.Base)]
 public class TaxConfigController : BaseApiController
 {

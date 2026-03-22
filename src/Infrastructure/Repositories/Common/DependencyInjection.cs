@@ -26,9 +26,6 @@ internal static class DependencyInjection
         services.AddKeyedScoped<ISystemKeyRepository, SystemKeyRepository>("original");
         services.AddScoped<ISystemKeyRepository, SystemKeyRepository>();
 
-        services.AddKeyedScoped<IFunctionRepository, FunctionRepository>("original");
-        services.AddScoped<IFunctionRepository, FunctionRepository>();
-
         services.AddScoped<ITourRepository, TourRepository>();
         services.AddScoped<ITourInstanceRepository, TourInstanceRepository>();
         services.AddScoped<IDynamicPricingTierRepository, DynamicPricingTierRepository>();

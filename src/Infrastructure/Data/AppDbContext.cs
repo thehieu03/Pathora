@@ -52,7 +52,6 @@ public class AppDbContext : DbContext
     public DbSet<PositionEntity> Positions => Set<PositionEntity>();
     public DbSet<FileMetadataEntity> FileMetadatas => Set<FileMetadataEntity>();
     public DbSet<RefreshTokenEntity> RefreshTokens => Set<RefreshTokenEntity>();
-    public DbSet<Domain.Constant.Function> Functions => Set<Domain.Constant.Function>();
     public DbSet<Domain.Constant.SystemKey> SystemKeys => Set<Domain.Constant.SystemKey>();
     public DbSet<TourEntity> Tours => Set<TourEntity>();
     public DbSet<TourClassificationEntity> TourClassifications => Set<TourClassificationEntity>();
@@ -64,7 +63,6 @@ public class AppDbContext : DbContext
     public DbSet<TourPlanRouteEntity> TourPlanRoutes => Set<TourPlanRouteEntity>();
     public DbSet<MailEntity> Mails => Set<MailEntity>();
     public DbSet<LogError> logErrors => Set<LogError>();
-    public DbSet<RoleFunctionEntity> RoleFunctions => Set<RoleFunctionEntity>();
     public DbSet<RegisterEntity> Registers => Set<RegisterEntity>();
     public DbSet<ReviewEntity> Reviews => Set<ReviewEntity>();
     public DbSet<TourInstanceEntity> TourInstances => Set<TourInstanceEntity>();

@@ -1,11 +1,12 @@
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Features.Admin.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin)]
 [Route(AdminEndpoint.Base)]
 public class AdminController : BaseApiController
 {

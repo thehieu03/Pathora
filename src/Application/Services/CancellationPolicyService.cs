@@ -213,11 +213,15 @@ public class CancellationPolicyService(
         if (lastTier.MaxDaysBeforeDeparture != TIER_COVERS_ALL)
             errors.Add(Error.Validation("TIER_LAST_MUST_COVER_ALL", "Last tier must have MaxDays = int.MaxValue to cover all remaining days"));
 
-        // No overlaps: sort by MinDays, check consecutive pairs don't overlap
+        // Tiers must be sorted by MinDays ascending, last tier covers to MaxValue
+        // Non-overlapping (sorted by penalty asc) so earlier tiers apply to shorter cancellation windows
         var sorted = tiers.OrderBy(t => t.MinDaysBeforeDeparture).ToList();
         for (var i = 0; i < sorted.Count - 1; i++)
         {
-            if (sorted[i].MaxDaysBeforeDeparture >= sorted[i + 1].MinDaysBeforeDeparture)
+            var current = sorted[i];
+            var next = sorted[i + 1];
+            // Allow gaps — earlier tier covers the specific window, gap means no rule applies there
+            if (current.MaxDaysBeforeDeparture > next.MinDaysBeforeDeparture)
                 errors.Add(Error.Validation("TIERS_OVERLAP", $"Tier {i} and {i + 1} have overlapping day ranges"));
         }
 

@@ -19,12 +19,15 @@ public class CancellationPolicyRepository(AppDbContext context) : ICancellationP
 
     public async Task<IReadOnlyList<CancellationPolicyEntity>> FindAll()
     {
-        return await _context.CancellationPolicies
+        var entities = await _context.CancellationPolicies
             .AsNoTracking()
             .Where(p => !p.IsDeleted)
+            .ToListAsync();
+
+        return entities
             .OrderBy(p => p.TourScope)
             .ThenBy(p => p.Tiers.Count > 0 ? p.Tiers.Min(t => t.MinDaysBeforeDeparture) : 0)
-            .ToListAsync();
+            .ToList();
     }
 
     public async Task<CancellationPolicyEntity?> FindByTourScopeAndDays(TourScope tourScope, int daysBeforeDeparture)

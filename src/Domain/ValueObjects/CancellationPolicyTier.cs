@@ -1,12 +1,11 @@
-using System.Text.Json.Serialization;
-
 namespace Domain.ValueObjects;
 
-[JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
 public sealed record CancellationPolicyTier(
     int MinDaysBeforeDeparture,
     int MaxDaysBeforeDeparture,
-    decimal PenaltyPercentage)
+    decimal PenaltyPercentage);
+
+public static class CancellationPolicyTierFactory
 {
     public static CancellationPolicyTier? Create(int min, int max, decimal penalty)
     {

@@ -20,15 +20,13 @@ public interface IRoleService
     Task<ErrorOr<PaginatedListWithPermissions<RoleVm>>> GetAll(GetAllRoleRequest request);
     Task<ErrorOr<List<LookupVm>>> GetAll();
     Task<ErrorOr<RoleDetailVm>> GetDetail(GetRoleDetailRequest request);
-    Task<ErrorOr<Dictionary<string, bool>>> HasFunctions(string userId, int categoryId, string[] type);
 }
 
-public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleRepository, IFunctionRepository functionRepository) : IRoleService
+public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleRepository) : IRoleService
 {
     private readonly IUser _user = user;
     private readonly IUnitOfWork _uow = uow;
     private readonly IRoleRepository _roleRepository = roleRepository;
-    private readonly IFunctionRepository _functionRepository = functionRepository;
 
     public async Task<ErrorOr<int>> Create(CreateRoleRequest request)
     {
@@ -104,13 +102,5 @@ public class RoleService(IUser user, IUnitOfWork uow, IRoleRepository roleReposi
 
         var role = roleResult.Value;
         return new RoleDetailVm(role.Id, role.Name, role.Description, role.Type, role.Status, []);
-    }
-
-    public async Task<ErrorOr<Dictionary<string, bool>>> HasFunctions(string userId, int categoryId, string[] type)
-    {
-        var result = new Dictionary<string, bool>();
-        foreach (var t in type)
-            result[t] = false;
-        return result;
     }
 }

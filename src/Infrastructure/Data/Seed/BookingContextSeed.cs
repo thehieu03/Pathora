@@ -54,6 +54,7 @@ public static class BookingContextSeed
         hasChanges |= SeedReviews(context);
         hasChanges |= SeedPricingPolicies(context);
         hasChanges |= SeedTaxConfigs(context);
+        hasChanges |= SeedCancellationPolicies(context);
 
         hasChanges |= BackfillTourDayTranslations(context);
         hasChanges |= BackfillTourInstanceTranslations(context);
@@ -675,6 +676,21 @@ public static class BookingContextSeed
         if (data is { Count: > 0 })
         {
             context.TaxConfigs.AddRange(data);
+            context.SaveChanges();
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool SeedCancellationPolicies(AppDbContext context)
+    {
+        if (context.CancellationPolicies.Any()) return false;
+
+        var data = SeedDataLoader.LoadData<CancellationPolicyEntity>("cancellation-policy.json");
+        if (data is { Count: > 0 })
+        {
+            context.CancellationPolicies.AddRange(data);
             context.SaveChanges();
             return true;
         }

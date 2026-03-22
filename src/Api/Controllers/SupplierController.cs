@@ -1,4 +1,5 @@
 using Api.Endpoint;
+using Application.Common.Constant;
 using Application.Contracts.Booking;
 using Application.Features.BookingManagement.Supplier;
 using Domain.Enums;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = RoleConstants.SuperAdmin_Admin)]
 [Route(SupplierEndpoint.Base)]
 public class SupplierController : BaseApiController
 {

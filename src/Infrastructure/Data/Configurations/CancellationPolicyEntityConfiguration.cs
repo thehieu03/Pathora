@@ -41,7 +41,7 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
             .HasColumnType("jsonb")
             .HasConversion(
                 value => JsonSerializer.Serialize(value, (JsonSerializerOptions?)null),
-                value => JsonSerializer.Deserialize<List<CancellationPolicyTier>>(value, (JsonSerializerOptions?)null) ?? new List<CancellationPolicyTier>(),
+                value => DeserializeTiers(value),
                 new ValueComparer<List<CancellationPolicyTier>>(
                     (left, right) => JsonSerializer.Serialize(left) == JsonSerializer.Serialize(right),
                     value => JsonSerializer.Serialize(value).GetHashCode(),
@@ -62,5 +62,21 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
         builder.HasIndex(p => new { p.TourScope, p.Status, p.IsDeleted });
         builder.HasIndex(p => new { p.Status, p.IsDeleted });
         builder.HasIndex(p => p.CreatedOnUtc);
+    }
+
+    private static List<CancellationPolicyTier> DeserializeTiers(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value == "[]" || value == "{}")
+            return new List<CancellationPolicyTier>();
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<CancellationPolicyTier>>(value, (JsonSerializerOptions?)null)
+                ?? new List<CancellationPolicyTier>();
+        }
+        catch (JsonException)
+        {
+            return new List<CancellationPolicyTier>();
+        }
     }
 }
