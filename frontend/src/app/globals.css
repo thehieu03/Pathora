@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* ─── Google Fonts: Outfit ─── */
+/* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
 /* ─── Design Tokens — Light Mode ─── */
 :root {
@@ -73,6 +74,46 @@
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-card-hover: 0 16px 48px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
   --shadow-card-inner: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+/* ─── Bold Dark Theme Tokens — Bold & Immersive ─── */
+:root[data-theme="bold"] {
+  /* Backgrounds */
+  --bold-bg-primary: #0a0a1a;
+  --bold-bg-deepest: #050510;
+  --bold-bg-card: #111827;
+  --bold-bg-elevated: #1a1a2e;
+
+  /* Accent Colors */
+  --bold-accent-orange: #fb8b02;
+  --bold-accent-blue: #3b82f6;
+  --bold-accent-pink: #ec4899;
+
+  /* Text */
+  --bold-text-primary: #ffffff;
+  --bold-text-secondary: rgba(255, 255, 255, 0.6);
+  --bold-text-muted: rgba(255, 255, 255, 0.4);
+
+  /* Glows */
+  --bold-glow-orange: 0 0 20px rgba(251, 139, 2, 0.3);
+  --bold-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
+  --bold-glow-pink: 0 0 20px rgba(236, 72, 153, 0.3);
+
+  /* Shadows */
+  --bold-shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --bold-shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+  /* Border Radius */
+  --bold-radius-card: 16px;
+  --bold-radius-section: 24px;
+  --bold-radius-pill: 9999px;
+}
+
+/* ─── Bold Dark Theme Body ─── */
+body.bold-theme {
+  background-color: #0a0a1a;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* ─── Tailwind Theme Mapping ─── */

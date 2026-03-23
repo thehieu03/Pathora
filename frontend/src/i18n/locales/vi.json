@@ -3310,5 +3310,69 @@
         "saveFailed": "Không thể lưu cấu hình thuế"
       }
     }
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "Nền tảng Du lịch hàng đầu Việt Nam",
+      "searchPlaceholder": "Bạn muốn đi đâu?"
+    },
+    "destinations": {
+      "eyebrow": "Khám phá",
+      "title": "Điểm đến nổi bật",
+      "viewAll": "Xem tất cả điểm đến",
+      "tours": "tour"
+    },
+    "videoShowcase": {
+      "label": "Trải nghiệm Việt Nam",
+      "caption": "Việt Nam đang chờ đón bạn",
+      "subcaption": "Khám phá cảnh quan tuyệt đẹp và di sản văn hóa phong phú"
+    },
+    "featured": {
+      "eyebrow": "Tuyển chọn",
+      "title": "Những cuộc phiêu lưu nổi bật"
+    },
+    "latest": {
+      "eyebrow": "Mới nhất",
+      "title": "Tour gần đây",
+      "viewAll": "Xem tất cả"
+    },
+    "whyChoose": {
+      "eyebrow": "Tại sao chọn Pathora",
+      "title": "Tại sao chọn chúng tôi",
+      "items": {
+        "price": { "title": "Giá tốt nhất", "desc": "Đảm bảo giá thấp nhất cho mọi tour" },
+        "guides": { "title": "Hướng dẫn viên chuyên nghiệp", "desc": "Đội ngũ am hiểu địa phương" },
+        "support": { "title": "Hỗ trợ 24/7", "desc": "Luôn sẵn sàng khi bạn cần" },
+        "flexible": { "title": "Đặt tour linh hoạt", "desc": "Hủy miễn phí trước 24 giờ" }
+      }
+    },
+    "cta": {
+      "title": "Sẵn sàng cho cuộc phiêu lưu tiếp theo?",
+      "subtitle": "Cùng hàng nghìn du khách khám phá những bí mật Việt Nam với Pathora.",
+      "ctaButton": "Khám phá Tour",
+      "secondaryButton": "Tìm hiểu thêm"
+    },
+    "reviews": {
+      "eyebrow": "Đánh giá",
+      "title": "Khách hàng nói gì",
+      "rating": "Xếp hạng"
+    },
+    "footer": {
+      "about": "Giới thiệu",
+      "tours": "Tour",
+      "blog": "Blog",
+      "careers": "Tuyển dụng",
+      "help": "Trung tâm trợ giúp",
+      "contact": "Liên hệ",
+      "faq": "Câu hỏi thường gặp",
+      "policies": "Chính sách",
+      "destinations": "Điểm đến",
+      "tagline": "Nền tảng du lịch hàng đầu Việt Nam. Khám phá bí mật, tour được tuyển chọn và những cuộc phiêu lưu khó quên.",
+      "newsletter": "Cập nhật tin tức",
+      "newsletterDesc": "Nhận tin tức và ưu đãi du lịch mới nhất.",
+      "copyright": "Mọi quyền được bảo lưu.",
+      "privacy": "Quyền riêng tư",
+      "terms": "Điều khoản"
+    }
   }
 }

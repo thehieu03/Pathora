@@ -57,6 +57,11 @@ const defaultRemotePatterns: RemotePattern[] = [
     hostname: "cdn3.ivivu.com",
     pathname: "/**",
   },
+  {
+    protocol: "https",
+    hostname: "images.unsplash.com",
+    pathname: "/**",
+  },
 ];
 
 const allowUnoptimized = process.env.NEXT_PUBLIC_IMAGES_UNOPTIMIZED === "true";

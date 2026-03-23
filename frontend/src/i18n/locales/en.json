@@ -3309,5 +3309,69 @@
     "filter": {
       "all": "All"
     }
+  },
+  "landing": {
+    "hero": {
+      "eyebrow": "Vietnam's Premier Travel Platform",
+      "searchPlaceholder": "Where do you want to go?"
+    },
+    "destinations": {
+      "eyebrow": "Explore",
+      "title": "Trending Destinations",
+      "viewAll": "View all destinations",
+      "tours": "tours"
+    },
+    "videoShowcase": {
+      "label": "Experience Vietnam",
+      "caption": "Vietnam Awaits",
+      "subcaption": "Discover breathtaking landscapes and rich cultural heritage"
+    },
+    "featured": {
+      "eyebrow": "Handpicked",
+      "title": "Featured Adventures"
+    },
+    "latest": {
+      "eyebrow": "Just Added",
+      "title": "Latest Tours",
+      "viewAll": "View all"
+    },
+    "whyChoose": {
+      "eyebrow": "Why Pathora",
+      "title": "Why Choose Us",
+      "items": {
+        "price": { "title": "Best Price", "desc": "Guaranteed lowest prices on all tours" },
+        "guides": { "title": "Expert Guides", "desc": "Local experts with deep knowledge" },
+        "support": { "title": "24/7 Support", "desc": "Always here when you need us" },
+        "flexible": { "title": "Flexible Booking", "desc": "Free cancellation up to 24 hours" }
+      }
+    },
+    "cta": {
+      "title": "Ready for Your Next Adventure?",
+      "subtitle": "Join thousands of travelers discovering Vietnam's hidden gems with Pathora.",
+      "ctaButton": "Explore Tours",
+      "secondaryButton": "Learn More"
+    },
+    "reviews": {
+      "eyebrow": "Testimonials",
+      "title": "What Travelers Say",
+      "rating": "Rating"
+    },
+    "footer": {
+      "about": "About",
+      "tours": "Tours",
+      "blog": "Blog",
+      "careers": "Careers",
+      "help": "Help Center",
+      "contact": "Contact",
+      "faq": "FAQ",
+      "policies": "Policies",
+      "destinations": "Destinations",
+      "tagline": "Vietnam's premier travel platform. Discover hidden gems, curated tours, and unforgettable adventures.",
+      "newsletter": "Stay Updated",
+      "newsletterDesc": "Get the latest travel deals and updates.",
+      "copyright": "All rights reserved.",
+      "privacy": "Privacy",
+      "terms": "Terms"
+    }
   }
 }
