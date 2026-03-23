@@ -20,6 +20,12 @@ public interface IFileManager
         List<Guid> ids,
         CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Deletes files from MinIO storage by their object names.
+    /// Used for rollback when an operation (e.g., tour creation) fails after files were uploaded.
+    /// </summary>
+    public Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default);
+
     public Task<Stream> DownloadFileAsync(
         string fileUrl,
         CancellationToken cancellationToken = default);

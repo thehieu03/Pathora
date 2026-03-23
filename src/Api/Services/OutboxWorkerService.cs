@@ -59,7 +59,15 @@ public class OutboxWorkerService(
                 logger.LogError(ex, "Error processing outbox messages");
             }
 
-            await Task.Delay(_options.PollingIntervalMs, stoppingToken);
+            try
+            {
+                await Task.Delay(_options.PollingIntervalMs, stoppingToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Host is stopping — exit gracefully
+                break;
+            }
         }
 
         logger.LogInformation("Outbox Worker stopped");

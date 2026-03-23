@@ -1,4 +1,5 @@
 using Api.Controllers;
+using Application.Common.Interfaces;
 using Application.Contracts.File;
 using Application.Features.Tour.Commands;
 using Application.Services;
@@ -25,7 +26,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("TourName.Required", "Tour name is required"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -51,7 +52,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("TourName.MaxLength", "Tour name must not exceed 500 characters"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -78,7 +79,7 @@ public sealed class CreateTourValidationTests
         var (controller, probe) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             expectedId,
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -112,7 +113,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("ShortDescription.Required", "Short description is required"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -138,7 +139,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("ShortDescription.MaxLength", "Short description must not exceed 250 characters"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -167,7 +168,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("LongDescription.Required", "Long description is required"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -193,7 +194,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("LongDescription.MaxLength", "Long description must not exceed 5000 characters"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -223,7 +224,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("SEOTitle.MaxLength", "SEO title must not exceed 70 characters"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -249,7 +250,7 @@ public sealed class CreateTourValidationTests
         var (controller, _) = ApiControllerTestHelper.BuildController<TourController, CreateTourCommand, Guid>(
             Error.Validation("SEODescription.MaxLength", "SEO description must not exceed 320 characters"),
             "/api/tour",
-            new StubFileService());
+            new StubFileService(), new StubFileManager());
 
         // Act
         var actionResult = await controller.Create(
@@ -282,5 +283,24 @@ public sealed class CreateTourValidationTests
 
         public Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request)
             => Task.CompletedTask;
+
+        public Task DeleteUploadedFilesAsync(List<string> objectNames)
+            => Task.CompletedTask;
+    }
+
+    private sealed class StubFileManager : IFileManager
+    {
+        public Task<string> UploadFileAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
+            => Task.FromResult("http://cdn/default");
+        public Task<IEnumerable<Domain.Entities.FileMetadataEntity>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
+            => Task.FromResult<IEnumerable<Domain.Entities.FileMetadataEntity>>([]);
+        public Task<Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>> FindFiles(string[] entityIds)
+            => Task.FromResult(new Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>());
+        public Task DeleteMultipleFilesAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+        public Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+        public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
+            => Task.FromResult<Stream>(Stream.Null);
     }
 }

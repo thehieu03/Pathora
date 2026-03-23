@@ -91,6 +91,14 @@ public class FileManager(
             throw new InvalidOperationException(result.FirstError.Description);
     }
 
+    public async Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default)
+    {
+        if (objectNames.Count == 0)
+            return;
+
+        await minIOCloudService.DeleteFilesAsync(DefaultBucket, objectNames, cancellationToken);
+    }
+
     public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
         => throw new NotImplementedException();
 }

@@ -135,5 +135,8 @@ public sealed class FileControllerTests
             CapturedDeleteRequest = request;
             return Task.CompletedTask;
         }
+
+        public Task DeleteUploadedFilesAsync(List<string> objectNames)
+            => Task.CompletedTask;
     }
 }

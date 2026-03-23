@@ -8,6 +8,7 @@ public interface IFileService
     Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request);
     Task<IEnumerable<FileMetadataVm>> UploadMultipleFilesAsync(UploadMultipleFilesRequest request);
     Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request);
+    Task DeleteUploadedFilesAsync(List<string> objectNames);
 }
 
 public class FileService(IFileManager fileManager) : IFileService
@@ -41,6 +42,11 @@ public class FileService(IFileManager fileManager) : IFileService
     public Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request)
     {
         return fileManager.DeleteMultipleFilesAsync(request.FileIds);
+    }
+
+    public Task DeleteUploadedFilesAsync(List<string> objectNames)
+    {
+        return fileManager.DeleteUploadedFilesAsync(objectNames);
     }
 }
 

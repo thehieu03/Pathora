@@ -1,4 +1,5 @@
 using Api.Controllers;
+using Application.Common.Interfaces;
 using Application.Contracts.File;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
@@ -17,6 +18,11 @@ public sealed class TourControllerTranslationTests
         return new StubFileServiceImpl();
     }
 
+    private static IFileManager StubFileManager()
+    {
+        return new StubFileManagerImpl();
+    }
+
     private sealed class StubFileServiceImpl : IFileService
     {
         public Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request)
@@ -27,6 +33,25 @@ public sealed class TourControllerTranslationTests
 
         public Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request)
             => Task.CompletedTask;
+
+        public Task DeleteUploadedFilesAsync(List<string> objectNames)
+            => Task.CompletedTask;
+    }
+
+    private sealed class StubFileManagerImpl : IFileManager
+    {
+        public Task<string> UploadFileAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
+            => Task.FromResult("http://cdn/default");
+        public Task<IEnumerable<Domain.Entities.FileMetadataEntity>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
+            => Task.FromResult<IEnumerable<Domain.Entities.FileMetadataEntity>>([]);
+        public Task<Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>> FindFiles(string[] entityIds)
+            => Task.FromResult(new Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>());
+        public Task DeleteMultipleFilesAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+        public Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+        public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
+            => Task.FromResult<Stream>(Stream.Null);
     }
 
     [Fact]
@@ -35,7 +60,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var translationsJson = """
                                {
@@ -73,7 +98,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var translationsJson = """
                                {
@@ -119,7 +144,7 @@ public sealed class TourControllerTranslationTests
 
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         await controller.Create(
             tourName: "Tour goc",
@@ -150,7 +175,7 @@ public sealed class TourControllerTranslationTests
         var tourId = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, UpdateTourCommand, Success>(
-                Result.Success, "/api/tour", StubFileService());
+                Result.Success, "/api/tour", StubFileService(), StubFileManager());
 
         var translationsJson = """
                                {
@@ -186,7 +211,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var classificationsJson = """
                                   [
@@ -238,7 +263,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var classificationsJson = """
                                   [
@@ -294,7 +319,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var classificationsJson = """
                                   [
@@ -359,7 +384,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var classificationsJson = """
                                   [
@@ -416,7 +441,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var accommodationsJson = """
                                  [
@@ -463,7 +488,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var locationsJson = """
                             [
@@ -510,7 +535,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var transportationsJson = """
                                   [
@@ -560,7 +585,7 @@ public sealed class TourControllerTranslationTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var classificationsJson = """
                                   [

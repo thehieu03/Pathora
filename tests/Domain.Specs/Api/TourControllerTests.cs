@@ -1,4 +1,5 @@
 using Api.Controllers;
+using Application.Common.Interfaces;
 using Contracts;
 using Application.Contracts.File;
 using Application.Dtos;
@@ -18,6 +19,11 @@ public sealed class TourControllerTests
         return new StubFileServiceImpl();
     }
 
+    private static IFileManager StubFileManager()
+    {
+        return new StubFileManagerImpl();
+    }
+
     private sealed class StubFileServiceImpl : IFileService
     {
         public Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request)
@@ -28,6 +34,25 @@ public sealed class TourControllerTests
 
         public Task DeleteMultipleFilesAsync(DeleteMultipleFilesRequest request)
             => Task.CompletedTask;
+
+        public Task DeleteUploadedFilesAsync(List<string> objectNames)
+            => Task.CompletedTask;
+    }
+
+    private sealed class StubFileManagerImpl : IFileManager
+    {
+        public Task<string> UploadFileAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
+            => Task.FromResult("http://cdn/default");
+        public Task<IEnumerable<Domain.Entities.FileMetadataEntity>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
+            => Task.FromResult<IEnumerable<Domain.Entities.FileMetadataEntity>>([]);
+        public Task<Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>> FindFiles(string[] entityIds)
+            => Task.FromResult(new Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>());
+        public Task DeleteMultipleFilesAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+        public Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+        public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)
+            => Task.FromResult<Stream>(Stream.Null);
     }
 
     [Fact]
@@ -47,7 +72,7 @@ public sealed class TourControllerTests
         var response = new PaginatedList<TourVm>(tours.Count, tours);
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, GetAllToursQuery, PaginatedList<TourVm>>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var actionResult = await controller.GetAll(searchText: "Đà Nẵng", pageNumber: 2, pageSize: 5);
 
@@ -67,7 +92,7 @@ public sealed class TourControllerTests
             .BuildController<TourController, GetTourDetailQuery, TourDto>(
                 Error.NotFound("Tour.NotFound", "Không tìm thấy tour"),
                 $"/api/tour/{id}",
-                StubFileService());
+                StubFileService(), StubFileManager());
 
         var actionResult = await controller.GetDetail(id);
 
@@ -86,7 +111,7 @@ public sealed class TourControllerTests
         var response = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, CreateTourCommand, Guid>(
-                response, "/api/tour", StubFileService());
+                response, "/api/tour", StubFileService(), StubFileManager());
 
         var actionResult = await controller.Create(
             tourName: "Tour Đà Nẵng",
@@ -113,7 +138,7 @@ public sealed class TourControllerTests
         var tourId = Guid.CreateVersion7();
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<TourController, UpdateTourCommand, Success>(
-                Result.Success, "/api/tour", StubFileService());
+                Result.Success, "/api/tour", StubFileService(), StubFileManager());
 
         var actionResult = await controller.Update(
             id: tourId,
@@ -143,7 +168,7 @@ public sealed class TourControllerTests
             .BuildController<TourController, DeleteTourCommand, Success>(
                 Error.NotFound("Tour.NotFound", "Không tìm thấy tour"),
                 $"/api/tour/{id}",
-                StubFileService());
+                StubFileService(), StubFileManager());
 
         var actionResult = await controller.Delete(id);
 

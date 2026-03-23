@@ -10,5 +10,6 @@ public interface IMinIOCloudService
         bool isPublicBucket = false,
         CancellationToken ct = default);
     Task<string> GetShareLinkAsync(string bucketName, string objectName, int expireTime);
+    Task DeleteFilesAsync(string bucketName, List<string> objectNames, CancellationToken ct = default);
 }
 

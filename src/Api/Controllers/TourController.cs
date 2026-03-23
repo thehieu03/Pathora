@@ -2,6 +2,7 @@ using System.Text.Json;
 
 using Api.Endpoint;
 using Application.Common.Constant;
+using Application.Common.Interfaces;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
@@ -15,7 +16,7 @@ namespace Api.Controllers;
 
 [Authorize(Roles = RoleConstants.SuperAdmin_Admin_TourManager_TourOperator)]
 [Route(TourEndpoint.Base)]
-public class TourController(IFileService fileService) : BaseApiController
+public class TourController(IFileService fileService, IFileManager fileManager) : BaseApiController
 {
     private static readonly JsonSerializerOptions TranslationJsonOptions = new()
     {
@@ -80,9 +81,6 @@ public class TourController(IFileService fileService) : BaseApiController
         [FromForm] Guid? pricingPolicyId = null,
         [FromForm] Guid? cancellationPolicyId = null)
     {
-        Console.WriteLine($"[DEBUG] CreateTour received: tourName={tourName}, shortDesc={shortDescription?.Length ?? -1}, longDesc={longDescription?.Length ?? -1}, status={status}");
-        Console.WriteLine($"[DEBUG] Thumbnail={thumbnail?.FileName}, Images={images?.Count}, Classifications={classifications?.Length}, Translations={translations?.Length}, Accommodations={accommodations?.Length}, Locations={locations?.Length}, Transportations={transportations?.Length}");
-
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
             ? await UploadFiles(images)
@@ -93,29 +91,53 @@ public class TourController(IFileService fileService) : BaseApiController
         var locationData = ParseLocations(locations);
         var transportationData = ParseTransportations(transportations);
 
-        Console.WriteLine($"[DEBUG] Parsed: ThumbnailDto={thumbnailDto?.FileId}, ImageDtos={imageDtos?.Count}, Classifications={classificationData?.Count}, Translations={translationData?.Count}, Accommodations={accommodationData?.Count}, Locations={locationData?.Count}, Transportations={transportationData?.Count}");
+        // Collect all uploaded object names for rollback on failure
+        var uploadedObjectNames = new List<string>();
+        if (thumbnailDto?.FileId is not null)
+            uploadedObjectNames.Add(thumbnailDto.FileId);
+        if (imageDtos is not null)
+            uploadedObjectNames.AddRange(imageDtos.Select(i => i.FileId).Where(id => !string.IsNullOrEmpty(id)));
 
-        var command = new CreateTourCommand(
-            tourName,
-            shortDescription ?? string.Empty,
-            longDescription ?? string.Empty,
-            seoTitle,
-            seoDescription,
-            status,
-            thumbnailDto,
-            imageDtos,
-            translationData,
-            classificationData,
-            accommodationData,
-            locationData,
-            transportationData,
-            visaPolicyId,
-            depositPolicyId,
-            pricingPolicyId,
-            cancellationPolicyId);
+        try
+        {
+            var command = new CreateTourCommand(
+                tourName,
+                shortDescription ?? string.Empty,
+                longDescription ?? string.Empty,
+                seoTitle,
+                seoDescription,
+                status,
+                thumbnailDto,
+                imageDtos,
+                translationData,
+                classificationData,
+                accommodationData,
+                locationData,
+                transportationData,
+                visaPolicyId,
+                depositPolicyId,
+                pricingPolicyId,
+                cancellationPolicyId);
 
-        var result = await Sender.Send(command);
-        return HandleResult(result);
+            var result = await Sender.Send(command);
+            return HandleResult(result);
+        }
+        catch
+        {
+            // Rollback: delete any files that were uploaded before the command failed
+            if (uploadedObjectNames.Count > 0)
+            {
+                try
+                {
+                    await fileManager.DeleteUploadedFilesAsync(uploadedObjectNames);
+                }
+                catch
+                {
+                    // Log but don't mask the original exception
+                }
+            }
+            throw;
+        }
     }
 
     [HttpPut]

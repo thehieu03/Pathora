@@ -23,7 +23,11 @@ builder.Services.AddHostedService<OutboxWorkerService>();
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
-    .AddCheck<DatabaseHealthCheck>("database");
+    .AddCheck<DatabaseHealthCheck>("database")
+    .AddCheck<MinIOHealthCheck>("minio");
+
+// Initialize MinIO buckets at startup
+builder.Services.AddHostedService<MinIOBucketInitializer>();
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
 builder.Services.AddCors(options =>
@@ -86,7 +90,7 @@ app.MapHealthChecks("/health/live", new()
 });
 app.MapHealthChecks("/health/ready", new()
 {
-    Predicate = check => check.Name == "database"
+    Predicate = check => check.Name == "database" || check.Name == "minio"
 });
 
 app.MapControllers();
