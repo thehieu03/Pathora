@@ -179,11 +179,7 @@ Ensure no ESLint errors and build succeeds.
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-<<<<<<< Updated upstream
-This project is indexed by GitNexus as **pathora** (2053 symbols, 3773 relationships, 41 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
-=======
-This project is indexed by GitNexus as **pathora** (2064 symbols, 3784 relationships, 41 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
->>>>>>> Stashed changes
+This project is indexed by GitNexus as **pathora** (2008 symbols, 3728 relationships, 41 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
