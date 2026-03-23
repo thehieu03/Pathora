@@ -105,7 +105,6 @@ export interface LayoutState {
   isRTL: boolean;
   isCollapsed: boolean;
   customizer: boolean;
-  semiDarkMode: boolean;
   skin: SkinMode;
   contentWidth: ContentWidth;
   type: MenuLayoutType;

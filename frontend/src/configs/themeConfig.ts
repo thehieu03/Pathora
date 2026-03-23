@@ -13,7 +13,6 @@ export interface MenuConfig {
 
 export interface LayoutConfig {
   isRTL: boolean;
-  semiDarkMode: boolean;
   skin: SkinMode;
   contentWidth: ContentWidth;
   type: LayoutType;
@@ -41,7 +40,6 @@ const themeConfig: ThemeConfig = {
   // layout
   layout: {
     isRTL: false,
-    semiDarkMode: false,
     skin: "default",
     contentWidth: "full",
     type: "vertical",

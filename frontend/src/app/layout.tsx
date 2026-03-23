@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppProviders from "@/providers/AppProviders";
-import { buildThemeInitScript } from "@/hooks/themePreference";
 
 export const metadata: Metadata = {
   title: {
@@ -46,8 +45,6 @@ export const metadata: Metadata = {
   },
 };
 
-const themeInitScript = buildThemeInitScript();
-
 export default function RootLayout({
   children,
 }: {
@@ -75,10 +72,6 @@ export default function RootLayout({
               })();
             `,
           }}
-        />
-        <script
-          id="theme-init"
-          dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
       </head>
       <body

@@ -6,7 +6,6 @@ vi.mock("@/configs/themeConfig", () => ({
   default: {
     layout: {
       isRTL: false,
-      semiDarkMode: false,
       skin: "default",
       contentWidth: "full",
       type: "vertical",
@@ -36,7 +35,6 @@ vi.stubGlobal("window", {
 import layoutReducer, {
   handleSidebarCollapsed,
   handleCustomizer,
-  handleSemiDarkMode,
   handleRtl,
   handleSkin,
   handleContentWidth,
@@ -62,7 +60,6 @@ const getDefaultState = () => ({
   isRTL: false,
   isCollapsed: false,
   customizer: false,
-  semiDarkMode: false,
   skin: "default" as SkinMode,
   contentWidth: "full" as ContentWidth,
   type: "vertical" as MenuLayoutType,
@@ -121,16 +118,6 @@ describe("layoutSlice", () => {
       store.dispatch(handleCustomizer(false));
 
       expect(store.getState().layout.customizer).toBe(false);
-    });
-  });
-
-  describe("handleSemiDarkMode", () => {
-    it("sets semiDarkMode to true", () => {
-      const store = createLayoutStore({ layout: getDefaultState() });
-
-      store.dispatch(handleSemiDarkMode(true));
-
-      expect(store.getState().layout.semiDarkMode).toBe(true);
     });
   });
 

@@ -25,7 +25,9 @@ import { handleApiError } from "@/utils/apiResponse";
 /* ── Types ──────────────────────────────────────────────────── */
 interface ClassificationForm {
   name: string;
+  enName: string;
   description: string;
+  enDescription: string;
   price: string;
   salePrice: string;
   durationDays: string;
@@ -34,8 +36,11 @@ interface ClassificationForm {
 interface ActivityForm {
   activityType: string;
   title: string;
+  enTitle: string;
   description: string;
+  enDescription: string;
   note: string;
+  enNote: string;
   estimatedCost: string;
   isOptional: boolean;
   startTime: string;
@@ -46,51 +51,71 @@ interface ActivityForm {
 interface DayPlanForm {
   dayNumber: string;
   title: string;
+  enTitle: string;
   description: string;
+  enDescription: string;
   activities: ActivityForm[];
 }
 
 interface InsuranceForm {
   insuranceName: string;
+  enInsuranceName: string;
   insuranceType: string;
   insuranceProvider: string;
   coverageDescription: string;
+  enCoverageDescription: string;
   coverageAmount: string;
   coverageFee: string;
   isOptional: boolean;
   note: string;
+  enNote: string;
 }
 
 interface AccommodationForm {
   accommodationName: string;
+  enAccommodationName: string;
   address: string;
+  enAddress: string;
   contactPhone: string;
   checkInTime: string;
   checkOutTime: string;
   note: string;
+  enNote: string;
 }
 
 interface LocationForm {
   locationName: string;
+  enLocationName: string;
   type: string;
+  enType: string;
   description: string;
+  enDescription: string;
   city: string;
+  enCity: string;
   country: string;
+  enCountry: string;
   entranceFee: string;
   address: string;
+  enAddress: string;
 }
 
 interface TransportationForm {
   fromLocation: string;
+  enFromLocation: string;
   toLocation: string;
+  enToLocation: string;
   transportationType: string;
+  enTransportationType: string;
   transportationName: string;
+  enTransportationName: string;
   durationMinutes: string;
   pricingType: string;
   price: string;
   requiresIndividualTicket: boolean;
   ticketInfo: string;
+  enTicketInfo: string;
   note: string;
+  enNote: string;
 }
 
 interface ServiceForm {
@@ -259,7 +284,9 @@ function Sidebar({ open, onClose, navItems }: { open: boolean; onClose: () => vo
 /* ── Empty form factories ───────────────────────────────────── */
 const emptyClassification = (): ClassificationForm => ({
   name: "",
+  enName: "",
   description: "",
+  enDescription: "",
   price: "",
   salePrice: "",
   durationDays: "",
@@ -268,8 +295,11 @@ const emptyClassification = (): ClassificationForm => ({
 const emptyActivity = (): ActivityForm => ({
   activityType: "0",
   title: "",
+  enTitle: "",
   description: "",
+  enDescription: "",
   note: "",
+  enNote: "",
   estimatedCost: "",
   isOptional: false,
   startTime: "",
@@ -280,19 +310,24 @@ const emptyActivity = (): ActivityForm => ({
 const emptyDayPlan = (): DayPlanForm => ({
   dayNumber: "1",
   title: "",
+  enTitle: "",
   description: "",
+  enDescription: "",
   activities: [],
 });
 
 const emptyInsurance = (): InsuranceForm => ({
   insuranceName: "",
+  enInsuranceName: "",
   insuranceType: "1",
   insuranceProvider: "",
   coverageDescription: "",
+  enCoverageDescription: "",
   coverageAmount: "",
   coverageFee: "",
   isOptional: false,
   note: "",
+  enNote: "",
 });
 
 const emptyService = (): ServiceForm => ({
@@ -306,34 +341,49 @@ const emptyService = (): ServiceForm => ({
 
 const emptyAccommodation = (): AccommodationForm => ({
   accommodationName: "",
+  enAccommodationName: "",
   address: "",
+  enAddress: "",
   contactPhone: "",
   checkInTime: "",
   checkOutTime: "",
   note: "",
+  enNote: "",
 });
 
 const emptyLocation = (): LocationForm => ({
   locationName: "",
+  enLocationName: "",
   type: "",
+  enType: "",
   description: "",
+  enDescription: "",
   city: "",
+  enCity: "",
   country: "",
+  enCountry: "",
   entranceFee: "",
   address: "",
+  enAddress: "",
 });
 
 const emptyTransportation = (): TransportationForm => ({
   fromLocation: "",
+  enFromLocation: "",
   toLocation: "",
+  enToLocation: "",
   transportationType: "",
+  enTransportationType: "",
   transportationName: "",
+  enTransportationName: "",
   durationMinutes: "",
   pricingType: "",
   price: "",
   requiresIndividualTicket: false,
   ticketInfo: "",
+  enTicketInfo: "",
   note: "",
+  enNote: "",
 });
 
 /* ══════════════════════════════════════════════════════════════
@@ -1378,6 +1428,16 @@ export default function CreateTourPage() {
                 </p>
               </div>
 
+              <div className="mb-5">
+                <LanguageTabs
+                  activeLanguage={activeLang}
+                  onChange={setActiveLang}
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  {t("tourAdmin.langTabs.translationHint")}
+                </p>
+              </div>
+
               <div className="space-y-4">
                 {classifications.map((cls, clsI) => (
                   <div
@@ -1385,7 +1445,8 @@ export default function CreateTourPage() {
                     className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 relative">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        {t("tourAdmin.packages.packageNumber", { number: clsI + 1 })}
+                        {t("tourAdmin.packages.packageNumber", { number: clsI + 1 })}:{" "}
+                        {activeLang === "vi" ? (cls.name || t("tourAdmin.review.untitled")) : (cls.enName || cls.name || t("tourAdmin.review.untitled"))}
                       </h3>
                       {classifications.length > 1 && (
                         <button
@@ -1402,16 +1463,28 @@ export default function CreateTourPage() {
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                           {t("tourAdmin.packages.packageType")} <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          value={cls.name}
-                          onChange={(e) =>
-                            updateClassification(clsI, "name", e.target.value)
-                          }
-                          placeholder={t("tourAdmin.packages.placeholderPackageType")}
-                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                        />
-                        {errors[`cls_${clsI}_name`] && (
+                        {activeLang === "vi" ? (
+                          <input
+                            type="text"
+                            value={cls.name}
+                            onChange={(e) =>
+                              updateClassification(clsI, "name", e.target.value)
+                            }
+                            placeholder={t("tourAdmin.packages.placeholderPackageType")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={cls.enName}
+                            onChange={(e) =>
+                              updateClassification(clsI, "enName", e.target.value)
+                            }
+                            placeholder={t("tourAdmin.packages.placeholderPackageType")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        )}
+                        {activeLang === "vi" && errors[`cls_${clsI}_name`] && (
                           <p className="text-red-500 text-xs mt-1">
                             {errors[`cls_${clsI}_name`]}
                           </p>
@@ -1447,19 +1520,35 @@ export default function CreateTourPage() {
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                         {t("tourAdmin.packages.description")}
                       </label>
-                      <textarea
-                        value={cls.description}
-                        onChange={(e) =>
-                          updateClassification(
-                            clsI,
-                            "description",
-                            e.target.value,
-                          )
-                        }
-                        rows={2}
-                        placeholder={t("tourAdmin.packages.placeholderDescription")}
-                        className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                      />
+                      {activeLang === "vi" ? (
+                        <textarea
+                          value={cls.description}
+                          onChange={(e) =>
+                            updateClassification(
+                              clsI,
+                              "description",
+                              e.target.value,
+                            )
+                          }
+                          rows={2}
+                          placeholder={t("tourAdmin.packages.placeholderDescription")}
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                        />
+                      ) : (
+                        <textarea
+                          value={cls.enDescription}
+                          onChange={(e) =>
+                            updateClassification(
+                              clsI,
+                              "enDescription",
+                              e.target.value,
+                            )
+                          }
+                          rows={2}
+                          placeholder={t("tourAdmin.packages.placeholderDescription")}
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
@@ -1511,7 +1600,7 @@ export default function CreateTourPage() {
                           )}
                         </div>
                         <p className="text-xs font-medium text-slate-900 dark:text-white">
-                          {cls.name || t("tourAdmin.packages.packageType")}
+                          {activeLang === "vi" ? (cls.name || t("tourAdmin.packages.packageType")) : (cls.enName || cls.name || t("tourAdmin.packages.packageType"))}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                           {t("tourAdmin.itineraries.daysProcessed", { processed: daysProcessed, total: totalDays })}
@@ -1520,6 +1609,16 @@ export default function CreateTourPage() {
                     );
                   })}
                 </div>
+              </div>
+
+              <div className="mb-5">
+                <LanguageTabs
+                  activeLanguage={activeLang}
+                  onChange={setActiveLang}
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  {t("tourAdmin.langTabs.translationHint")}
+                </p>
               </div>
 
               {/* Itinerary Editor */}
@@ -1561,9 +1660,14 @@ export default function CreateTourPage() {
                           <div className="flex-1 flex items-center gap-3">
                             <input
                               type="text"
-                              value={day.title}
+                              value={activeLang === "vi" ? day.title : (day.enTitle || day.title)}
                               onChange={(e) =>
-                                updateDayPlan(ci, di, "title", e.target.value)
+                                updateDayPlan(
+                                  ci,
+                                  di,
+                                  activeLang === "vi" ? "title" : "enTitle",
+                                  e.target.value,
+                                )
                               }
                               placeholder={t("tourAdmin.itineraries.placeholderDayTitle", { number: day.dayNumber })}
                               className="flex-1 px-2 py-1 text-sm bg-white/10 text-white rounded border border-white/20 placeholder:text-white/60 focus:ring-2 focus:ring-white/30 outline-none"
@@ -1585,12 +1689,12 @@ export default function CreateTourPage() {
                               {t("tourAdmin.itineraries.dayDescription")}
                             </label>
                             <textarea
-                              value={day.description}
+                              value={activeLang === "vi" ? day.description : (day.enDescription || day.description)}
                               onChange={(e) =>
                                 updateDayPlan(
                                   ci,
                                   di,
-                                  "description",
+                                  activeLang === "vi" ? "description" : "enDescription",
                                   e.target.value,
                                 )
                               }
@@ -1727,13 +1831,13 @@ export default function CreateTourPage() {
                                   </label>
                                   <input
                                     type="text"
-                                    value={act.title}
+                                    value={activeLang === "vi" ? act.title : (act.enTitle || act.title)}
                                     onChange={(e) =>
                                       updateActivity(
                                         ci,
                                         di,
                                         ai,
-                                        "title",
+                                        activeLang === "vi" ? "title" : "enTitle",
                                         e.target.value,
                                       )
                                     }
@@ -1748,13 +1852,13 @@ export default function CreateTourPage() {
                                     {t("tourAdmin.itineraries.description")}
                                   </label>
                                   <textarea
-                                    value={act.description}
+                                    value={activeLang === "vi" ? act.description : (act.enDescription || act.description)}
                                     onChange={(e) =>
                                       updateActivity(
                                         ci,
                                         di,
                                         ai,
-                                        "description",
+                                        activeLang === "vi" ? "description" : "enDescription",
                                         e.target.value,
                                       )
                                     }
@@ -1771,13 +1875,13 @@ export default function CreateTourPage() {
                                   </label>
                                   <input
                                     type="text"
-                                    value={act.note}
+                                    value={activeLang === "vi" ? act.note : (act.enNote || act.note)}
                                     onChange={(e) =>
                                       updateActivity(
                                         ci,
                                         di,
                                         ai,
-                                        "note",
+                                        activeLang === "vi" ? "note" : "enNote",
                                         e.target.value,
                                       )
                                     }
@@ -1883,6 +1987,16 @@ export default function CreateTourPage() {
                 {t("tourAdmin.accommodations.infoBanner")}
               </p>
 
+              <div className="mb-5">
+                <LanguageTabs
+                  activeLanguage={activeLang}
+                  onChange={setActiveLang}
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  {t("tourAdmin.langTabs.translationHint")}
+                </p>
+              </div>
+
               <div className="space-y-4">
                 {accommodations.map((acc, accI) => (
                   <div
@@ -1909,34 +2023,62 @@ export default function CreateTourPage() {
                           {t("tourAdmin.accommodations.accommodationName")}{" "}
                           <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="text"
-                          value={acc.accommodationName}
-                          onChange={(e) =>
-                            updateAccommodation(
-                              accI,
-                              "accommodationName",
-                              e.target.value,
-                            )
-                          }
-                          placeholder={t("tourAdmin.accommodations.placeholderAccommodationName")}
-                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                        />
+                        {activeLang === "vi" ? (
+                          <input
+                            type="text"
+                            value={acc.accommodationName}
+                            onChange={(e) =>
+                              updateAccommodation(
+                                accI,
+                                "accommodationName",
+                                e.target.value,
+                              )
+                            }
+                            placeholder={t("tourAdmin.accommodations.placeholderAccommodationName")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={acc.enAccommodationName}
+                            onChange={(e) =>
+                              updateAccommodation(
+                                accI,
+                                "enAccommodationName",
+                                e.target.value,
+                              )
+                            }
+                            placeholder={t("tourAdmin.accommodations.placeholderAccommodationName")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        )}
                       </div>
                       {/* Address */}
                       <div>
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                           {t("tourAdmin.accommodations.address")}
                         </label>
-                        <input
-                          type="text"
-                          value={acc.address}
-                          onChange={(e) =>
-                            updateAccommodation(accI, "address", e.target.value)
-                          }
-                          placeholder={t("tourAdmin.accommodations.placeholderAddress")}
-                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                        />
+                        {activeLang === "vi" ? (
+                          <input
+                            type="text"
+                            value={acc.address}
+                            onChange={(e) =>
+                              updateAccommodation(accI, "address", e.target.value)
+                            }
+                            placeholder={t("tourAdmin.accommodations.placeholderAddress")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            value={acc.enAddress}
+                            onChange={(e) =>
+                              updateAccommodation(accI, "enAddress", e.target.value)
+                            }
+                            placeholder={t("tourAdmin.accommodations.placeholderAddress")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        )}
                       </div>
                       {/* Contact Phone + Check-in Time */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2003,15 +2145,27 @@ export default function CreateTourPage() {
                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                           {t("tourAdmin.accommodations.note")}
                         </label>
-                        <textarea
-                          value={acc.note}
-                          onChange={(e) =>
-                            updateAccommodation(accI, "note", e.target.value)
-                          }
-                          rows={3}
-                          placeholder={t("tourAdmin.accommodations.placeholderAdditionalInfo")}
-                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                        />
+                        {activeLang === "vi" ? (
+                          <textarea
+                            value={acc.note}
+                            onChange={(e) =>
+                              updateAccommodation(accI, "note", e.target.value)
+                            }
+                            rows={3}
+                            placeholder={t("tourAdmin.accommodations.placeholderAdditionalInfo")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                          />
+                        ) : (
+                          <textarea
+                            value={acc.enNote}
+                            onChange={(e) =>
+                              updateAccommodation(accI, "enNote", e.target.value)
+                            }
+                            rows={3}
+                            placeholder={t("tourAdmin.accommodations.placeholderAdditionalInfo")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
+                          />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -2044,6 +2198,16 @@ export default function CreateTourPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
                 {t("tourAdmin.locations.infoBanner")}
               </p>
+
+              <div className="mb-5">
+                <LanguageTabs
+                  activeLanguage={activeLang}
+                  onChange={setActiveLang}
+                />
+                <p className="text-xs text-slate-400 mt-2">
+                  {t("tourAdmin.langTabs.translationHint")}
+                </p>
+              </div>
 
               <div className="space-y-4">
                 {locations.map((loc, locI) => (
