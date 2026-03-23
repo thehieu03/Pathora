@@ -459,6 +459,7 @@ export default function CreateTourPage() {
 
   /* ── Wizard state ─────────────────────────────────────────── */
   const [currentStep, setCurrentStep] = useState(0);
+  const [maxNavigableStep, setMaxNavigableStep] = useState(0);
   const [saving, setSaving] = useState(false);
 
   /* ── Step 1: Basic Info ───────────────────────────────────── */
@@ -522,6 +523,8 @@ export default function CreateTourPage() {
 
   /* ── Validation ───────────────────────────────────────────── */
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [thumbnailError, setThumbnailError] = useState<string>();
+  const [imagesError, setImagesError] = useState<string>();
 
   /* ── Fetch Policies ──────────────────────────────────────────── */
   const policiesFetched = useRef(false);
@@ -556,17 +559,130 @@ export default function CreateTourPage() {
         newErrors.tourName = t("tourAdmin.required", "Required");
       if (!basicInfo.shortDescription.trim())
         newErrors.shortDescription = t("tourAdmin.required", "Required");
+      if (thumbnailError) newErrors.thumbnail = thumbnailError;
+      if (imagesError) newErrors.images = imagesError;
     }
 
     if (step === 1) {
+      if (classifications.length === 0) {
+        newErrors.classifications = t("tourAdmin.validation.atLeastOnePackage", "At least one package is required.");
+      }
       classifications.forEach((cls, i) => {
         if (!cls.name.trim())
           newErrors[`cls_${i}_name`] = t("tourAdmin.required", "Required");
+        if (!cls.enName.trim())
+          newErrors[`cls_${i}_enName`] = t("tourAdmin.required", "Required");
+        if (!cls.description.trim())
+          newErrors[`cls_${i}_description`] = t("tourAdmin.required", "Required");
+        if (!cls.enDescription.trim())
+          newErrors[`cls_${i}_enDescription`] = t("tourAdmin.required", "Required");
         if (!cls.durationDays || Number(cls.durationDays) <= 0)
           newErrors[`cls_${i}_duration`] = t(
             "tourAdmin.invalidDuration",
             "Invalid duration",
           );
+        const price = Number(cls.price);
+        if (!cls.price.trim() || isNaN(price) || price < 0)
+          newErrors[`cls_${i}_price`] = t(
+            "tourAdmin.validation.invalidPrice",
+            "Invalid price",
+          );
+      });
+    }
+
+    if (step === 2) {
+      const plans = dayPlans[ci] ?? [];
+      if (plans.length === 0) {
+        newErrors.dayPlans = t("tourAdmin.validation.atLeastOneDayPlan", "At least one day plan is required.");
+      }
+      plans.forEach((plan, i) => {
+        if (!plan.title.trim())
+          newErrors[`plan_${i}_title`] = t("tourAdmin.required", "Required");
+        if (!plan.enTitle.trim())
+          newErrors[`plan_${i}_enTitle`] = t("tourAdmin.required", "Required");
+        if (!plan.description.trim())
+          newErrors[`plan_${i}_description`] = t("tourAdmin.required", "Required");
+        if (!plan.enDescription.trim())
+          newErrors[`plan_${i}_enDescription`] = t("tourAdmin.required", "Required");
+      });
+    }
+
+    if (step === 3) {
+      accommodations.forEach((acc, i) => {
+        if (!acc.accommodationName.trim())
+          newErrors[`acc_${i}_name`] = t("tourAdmin.required", "Required");
+        if (!acc.enAccommodationName.trim())
+          newErrors[`acc_${i}_enName`] = t("tourAdmin.required", "Required");
+        if (!acc.address.trim())
+          newErrors[`acc_${i}_address`] = t("tourAdmin.required", "Required");
+      });
+    }
+
+    if (step === 4) {
+      locations.forEach((loc, i) => {
+        if (!loc.locationName.trim())
+          newErrors[`loc_${i}_name`] = t("tourAdmin.required", "Required");
+        if (!loc.enLocationName.trim())
+          newErrors[`loc_${i}_enName`] = t("tourAdmin.required", "Required");
+        if (!loc.city.trim())
+          newErrors[`loc_${i}_city`] = t("tourAdmin.required", "Required");
+        if (!loc.country.trim())
+          newErrors[`loc_${i}_country`] = t("tourAdmin.required", "Required");
+      });
+    }
+
+    if (step === 5) {
+      transportations.forEach((tr, i) => {
+        if (!tr.transportationType.trim())
+          newErrors[`tr_${i}_type`] = t("tourAdmin.required", "Required");
+        if (!tr.enTransportationType.trim())
+          newErrors[`tr_${i}_enType`] = t("tourAdmin.required", "Required");
+        if (!tr.fromLocation.trim())
+          newErrors[`tr_${i}_from`] = t("tourAdmin.required", "Required");
+        if (!tr.enFromLocation.trim())
+          newErrors[`tr_${i}_enFrom`] = t("tourAdmin.required", "Required");
+        if (!tr.toLocation.trim())
+          newErrors[`tr_${i}_to`] = t("tourAdmin.required", "Required");
+        if (!tr.enToLocation.trim())
+          newErrors[`tr_${i}_enTo`] = t("tourAdmin.required", "Required");
+        const price = Number(tr.price);
+        if (!tr.price.trim() || isNaN(price) || price < 0)
+          newErrors[`tr_${i}_price`] = t(
+            "tourAdmin.validation.invalidPrice",
+            "Invalid price",
+          );
+      });
+    }
+
+    if (step === 6) {
+      services.forEach((svc, i) => {
+        if (!svc.serviceName.trim())
+          newErrors[`svc_${i}_name`] = t("tourAdmin.required", "Required");
+        if (!svc.pricingType.trim())
+          newErrors[`svc_${i}_pricingType`] = t("tourAdmin.required", "Required");
+      });
+    }
+
+    if (step === 7) {
+      // Insurance is optional, but if provided, validate required fields
+      const insurancesForClass = insurances[ci] ?? [];
+      insurancesForClass.forEach((ins, i) => {
+        if (ins.insuranceName.trim() || ins.enInsuranceName.trim()) {
+          if (!ins.insuranceName.trim())
+            newErrors[`ins_${i}_name`] = t("tourAdmin.required", "Required");
+          if (!ins.enInsuranceName.trim())
+            newErrors[`ins_${i}_enName`] = t("tourAdmin.required", "Required");
+          if (!ins.coverageDescription.trim())
+            newErrors[`ins_${i}_coverage`] = t("tourAdmin.required", "Required");
+          if (!ins.enCoverageDescription.trim())
+            newErrors[`ins_${i}_enCoverage`] = t("tourAdmin.required", "Required");
+          const amount = Number(ins.coverageAmount);
+          if (!ins.coverageAmount.trim() || isNaN(amount) || amount <= 0)
+            newErrors[`ins_${i}_amount`] = t(
+              "tourAdmin.validation.invalidCoverageAmount",
+              "Invalid coverage amount",
+            );
+        }
       });
     }
 
@@ -576,7 +692,11 @@ export default function CreateTourPage() {
 
   const goNext = () => {
     if (validateStep(currentStep)) {
-      setCurrentStep((s) => Math.min(s + 1, WIZARD_STEPS.length - 1));
+      setThumbnailError(undefined);
+      setImagesError(undefined);
+      const nextStep = Math.min(currentStep + 1, WIZARD_STEPS.length - 1);
+      setCurrentStep(nextStep);
+      setMaxNavigableStep((max) => Math.max(max, nextStep));
     }
   };
 
@@ -1039,15 +1159,18 @@ export default function CreateTourPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (i < currentStep) setCurrentStep(i);
+                    if (i <= maxNavigableStep) setCurrentStep(i);
                   }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors shrink-0 ${
                     i === currentStep
                       ? "bg-orange-500 text-white"
                       : i < currentStep
-                        ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400"
-                        : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
-                  }`}>
+                        ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 cursor-pointer hover:bg-orange-200 dark:hover:bg-orange-500/30"
+                        : i <= maxNavigableStep
+                          ? "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-400 cursor-pointer hover:bg-orange-200 dark:hover:bg-orange-500/30"
+                          : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed"
+                  }`}
+                  disabled={i > maxNavigableStep}>
                   {i < currentStep ? (
                     <Icon icon="heroicons:check" className="size-3.5" />
                   ) : (
@@ -1199,6 +1322,10 @@ export default function CreateTourPage() {
                     images={images}
                     setImages={setImages}
                     t={t}
+                    thumbnailError={thumbnailError}
+                    imagesError={imagesError}
+                    onThumbnailError={setThumbnailError}
+                    onImagesError={setImagesError}
                   />
                 </div>
               )}
@@ -1465,6 +1592,9 @@ export default function CreateTourPage() {
                             placeholder={t("tourAdmin.packages.placeholderDescription")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                           />
+                          {errors[`cls_${clsI}_description`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_description`]}</p>
+                          )}
                         </div>
                       </div>
 
@@ -1490,6 +1620,9 @@ export default function CreateTourPage() {
                             placeholder="e.g. Standard, Premium, Luxury"
                             className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
+                          {errors[`cls_${clsI}_enName`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_enName`]}</p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1">
@@ -1502,6 +1635,9 @@ export default function CreateTourPage() {
                             placeholder="Describe what this package includes..."
                             className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                           />
+                          {errors[`cls_${clsI}_enDescription`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_enDescription`]}</p>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1618,6 +1754,11 @@ export default function CreateTourPage() {
                               className="flex-1 px-2 py-1 text-sm bg-white/5 text-white/70 rounded border border-white/10 placeholder:text-white/30 focus:ring-2 focus:ring-white/20 outline-none"
                             />
                           </div>
+                          {(errors[`plan_${di}_title`] || errors[`plan_${di}_enTitle`]) && (
+                            <p className="text-red-400 text-xs mt-1">
+                              {errors[`plan_${di}_title`] || errors[`plan_${di}_enTitle`]}
+                            </p>
+                          )}
                           <button
                             type="button"
                             onClick={() => removeDayPlan(ci, di)}
@@ -1653,6 +1794,11 @@ export default function CreateTourPage() {
                                 placeholder="Day description in English..."
                                 className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
                               />
+                              {(errors[`plan_${di}_description`] || errors[`plan_${di}_enDescription`]) && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors[`plan_${di}_description`] || errors[`plan_${di}_enDescription`]}
+                                </p>
+                              )}
                             </div>
                           </div>
 
@@ -2003,6 +2149,9 @@ export default function CreateTourPage() {
                               placeholder={t("tourAdmin.accommodations.placeholderAccommodationName")}
                               className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                             />
+                            {errors[`acc_${accI}_name`] && (
+                              <p className="text-red-500 text-xs mt-1">{errors[`acc_${accI}_name`]}</p>
+                            )}
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-1 text-xs">
@@ -2022,6 +2171,9 @@ export default function CreateTourPage() {
                               placeholder={t("tourAdmin.accommodations.placeholderAccommodationName")}
                               className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                             />
+                            {errors[`acc_${accI}_enName`] && (
+                              <p className="text-red-500 text-xs mt-1">{errors[`acc_${accI}_enName`]}</p>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -2045,6 +2197,9 @@ export default function CreateTourPage() {
                               placeholder={t("tourAdmin.accommodations.placeholderAddress")}
                               className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                             />
+                            {errors[`acc_${accI}_address`] && (
+                              <p className="text-red-500 text-xs mt-1">{errors[`acc_${accI}_address`]}</p>
+                            )}
                           </div>
                           <div className="space-y-1">
                             <div className="flex items-center gap-1 text-xs">
@@ -2258,6 +2413,12 @@ export default function CreateTourPage() {
                                 placeholder={t("tourAdmin.locations.placeholderLocationName")}
                                 className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                               />
+                              {errors[`loc_${locI}_name`] && (
+                                <p className="text-red-500 text-xs mt-1">{errors[`loc_${locI}_name`]}</p>
+                              )}
+                              {errors[`loc_${locI}_enName`] && (
+                                <p className="text-red-500 text-xs mt-1">{errors[`loc_${locI}_enName`]}</p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -2373,6 +2534,9 @@ export default function CreateTourPage() {
                                 placeholder={t("tourAdmin.locations.placeholderCity")}
                                 className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                               />
+                              {errors[`loc_${locI}_city`] && (
+                                <p className="text-red-500 text-xs mt-1">{errors[`loc_${locI}_city`]}</p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -2410,6 +2574,9 @@ export default function CreateTourPage() {
                                 placeholder={t("tourAdmin.locations.placeholderCountry")}
                                 className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                               />
+                              {errors[`loc_${locI}_country`] && (
+                                <p className="text-red-500 text-xs mt-1">{errors[`loc_${locI}_country`]}</p>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -2547,6 +2714,12 @@ export default function CreateTourPage() {
                             placeholder={t("tourAdmin.transportation.placeholderFrom")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
+                          {errors[`tr_${trI}_from`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_from`]}</p>
+                          )}
+                          {errors[`tr_${trI}_enFrom`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_enFrom`]}</p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -2565,6 +2738,12 @@ export default function CreateTourPage() {
                             placeholder={t("tourAdmin.transportation.placeholderTo")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
+                          {errors[`tr_${trI}_to`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_to`]}</p>
+                          )}
+                          {errors[`tr_${trI}_enTo`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_enTo`]}</p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -2583,6 +2762,12 @@ export default function CreateTourPage() {
                             placeholder={t("tourAdmin.transportation.placeholderTransportationType")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
+                          {errors[`tr_${trI}_type`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_type`]}</p>
+                          )}
+                          {errors[`tr_${trI}_enType`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_enType`]}</p>
+                          )}
                         </div>
                       </div>
                       {/* Transportation Name + Duration + Pricing Type */}
@@ -2684,6 +2869,9 @@ export default function CreateTourPage() {
                             placeholder={t("tourAdmin.transportation.placeholderPrice")}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                           />
+                          {errors[`tr_${trI}_price`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_price`]}</p>
+                          )}
                         </div>
                         <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 self-end pb-2">
                           <input

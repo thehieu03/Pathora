@@ -4,12 +4,32 @@ import { useCallback, useRef } from "react";
 import Image from "next/image";
 import Icon from "@/components/ui/Icon";
 
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function validateFile(
+  file: File,
+  t: (key: string, fallback: string) => string,
+): string | undefined {
+  if (!ACCEPTED_TYPES.includes(file.type)) {
+    return t("tourAdmin.validation.invalidFileType", "Invalid file type. Only PNG, JPG, WEBP allowed.");
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return t("tourAdmin.validation.fileTooLarge", "File too large. Maximum size is 10MB.");
+  }
+  return undefined;
+}
+
 interface TourImageUploadProps {
   thumbnail: File | null;
   setThumbnail: (file: File | null) => void;
   images: File[];
   setImages: (files: File[]) => void;
   t: (key: string, fallback: string) => string;
+  thumbnailError?: string;
+  imagesError?: string;
+  onThumbnailError?: (msg: string | undefined) => void;
+  onImagesError?: (msg: string | undefined) => void;
 }
 
 export default function TourImageUpload({
@@ -18,6 +38,10 @@ export default function TourImageUpload({
   images,
   setImages,
   t,
+  thumbnailError,
+  imagesError,
+  onThumbnailError,
+  onImagesError,
 }: TourImageUploadProps) {
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -25,19 +49,47 @@ export default function TourImageUpload({
   const handleThumbnailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file) setThumbnail(file);
+      if (!file) return;
+      const error = validateFile(file, t);
+      onThumbnailError?.(error);
+      if (!error) {
+        setThumbnail(file);
+      }
     },
-    [setThumbnail],
+    [setThumbnail, onThumbnailError, t],
   );
 
   const handleGalleryChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files ?? []);
-      if (files.length > 0) {
-        setImages([...images, ...files]);
+      if (files.length === 0) return;
+
+      const MAX_IMAGES = 20;
+      const remaining = MAX_IMAGES - images.length;
+      if (remaining <= 0) {
+        onImagesError?.(t("tourAdmin.validation.maxImagesReached", `Maximum ${MAX_IMAGES} images allowed.`));
+        return;
       }
+
+      const toAdd = files.slice(0, remaining);
+      const errors: string[] = [];
+      const validFiles: File[] = [];
+
+      for (const file of toAdd) {
+        const error = validateFile(file, t);
+        if (error) {
+          errors.push(`${file.name}: ${error}`);
+        } else {
+          validFiles.push(file);
+        }
+      }
+
+      if (validFiles.length > 0) {
+        setImages([...images, ...validFiles]);
+      }
+      onImagesError?.(errors.length > 0 ? errors.join("; ") : undefined);
     },
-    [images, setImages],
+    [images, setImages, onImagesError, t],
   );
 
   const removeGalleryImage = useCallback(
@@ -108,6 +160,11 @@ export default function TourImageUpload({
             <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 text-center">
               {thumbnail.name}
             </p>
+            {thumbnailError && (
+              <p className="mt-1 text-xs text-red-500 dark:text-red-400 text-center">
+                {thumbnailError}
+              </p>
+            )}
           </div>
         ) : (
           <button
@@ -233,6 +290,11 @@ export default function TourImageUpload({
           <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
             {images.length}{" "}
             {t("tourAdmin.basicInfo.imagesSelected", "ảnh đã chọn")}
+          </p>
+        )}
+        {imagesError && (
+          <p className="mt-1 text-xs text-red-500 dark:text-red-400 text-center">
+            {imagesError}
           </p>
         )}
       </div>
