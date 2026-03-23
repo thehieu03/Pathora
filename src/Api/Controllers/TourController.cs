@@ -72,13 +72,16 @@ public class TourController(IFileService fileService) : BaseApiController
         [FromForm] List<IFormFile>? images,
         [FromForm] string? translations = null,
         [FromForm] string? classifications = null,
+        [FromForm] string? accommodations = null,
+        [FromForm] string? locations = null,
+        [FromForm] string? transportations = null,
         [FromForm] Guid? visaPolicyId = null,
         [FromForm] Guid? depositPolicyId = null,
         [FromForm] Guid? pricingPolicyId = null,
         [FromForm] Guid? cancellationPolicyId = null)
     {
         Console.WriteLine($"[DEBUG] CreateTour received: tourName={tourName}, shortDesc={shortDescription?.Length ?? -1}, longDesc={longDescription?.Length ?? -1}, status={status}");
-        Console.WriteLine($"[DEBUG] Thumbnail={thumbnail?.FileName}, Images={images?.Count}, Classifications={classifications?.Length}, Translations={translations?.Length}");
+        Console.WriteLine($"[DEBUG] Thumbnail={thumbnail?.FileName}, Images={images?.Count}, Classifications={classifications?.Length}, Translations={translations?.Length}, Accommodations={accommodations?.Length}, Locations={locations?.Length}, Transportations={transportations?.Length}");
 
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
@@ -86,22 +89,11 @@ public class TourController(IFileService fileService) : BaseApiController
             : null;
         var translationData = ParseTranslations(translations);
         var classificationData = ParseClassifications(classifications);
+        var accommodationData = ParseAccommodations(accommodations);
+        var locationData = ParseLocations(locations);
+        var transportationData = ParseTransportations(transportations);
 
-        Console.WriteLine($"[DEBUG] Parsed: ThumbnailDto={thumbnailDto?.FileId}, ImageDtos={imageDtos?.Count}, Classifications={classificationData?.Count}, Translations={translationData?.Count}");
-        if (classificationData != null)
-        {
-            foreach (var cls in classificationData)
-            {
-                Console.WriteLine($"[DEBUG] Classification: Name={cls.Name}, Plans={cls.Plans?.Count}, Insurances={cls.Insurances?.Count}");
-                if (cls.Plans != null)
-                {
-                    foreach (var plan in cls.Plans)
-                    {
-                        Console.WriteLine($"[DEBUG]   Plan Day#{plan.DayNumber}: Title={plan.Title}, Activities={plan.Activities?.Count}");
-                    }
-                }
-            }
-        }
+        Console.WriteLine($"[DEBUG] Parsed: ThumbnailDto={thumbnailDto?.FileId}, ImageDtos={imageDtos?.Count}, Classifications={classificationData?.Count}, Translations={translationData?.Count}, Accommodations={accommodationData?.Count}, Locations={locationData?.Count}, Transportations={transportationData?.Count}");
 
         var command = new CreateTourCommand(
             tourName,
@@ -114,6 +106,9 @@ public class TourController(IFileService fileService) : BaseApiController
             imageDtos,
             translationData,
             classificationData,
+            accommodationData,
+            locationData,
+            transportationData,
             visaPolicyId,
             depositPolicyId,
             pricingPolicyId,
@@ -278,6 +273,63 @@ public class TourController(IFileService fileService) : BaseApiController
             return JsonSerializer.Deserialize<List<ClassificationDto>>(
                 classifications,
                 ClassificationJsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static List<AccommodationDto>? ParseAccommodations(string? accommodations)
+    {
+        if (string.IsNullOrWhiteSpace(accommodations))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<AccommodationDto>>(
+                accommodations,
+                TranslationJsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static List<LocationDto>? ParseLocations(string? locations)
+    {
+        if (string.IsNullOrWhiteSpace(locations))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<LocationDto>>(
+                locations,
+                TranslationJsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static List<TransportationDto>? ParseTransportations(string? transportations)
+    {
+        if (string.IsNullOrWhiteSpace(transportations))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<TransportationDto>>(
+                transportations,
+                TranslationJsonOptions);
         }
         catch (JsonException)
         {

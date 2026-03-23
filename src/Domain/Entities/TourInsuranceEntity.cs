@@ -1,5 +1,7 @@
 ﻿namespace Domain.Entities;
 
+using Domain.Entities.Translations;
+
 public class TourInsuranceEntity : Aggregate<Guid>
 {
     public string InsuranceName { get; set; } = null!;
@@ -10,6 +12,7 @@ public class TourInsuranceEntity : Aggregate<Guid>
     public decimal CoverageFee { get; set; }
     public bool IsOptional { get; set; } = false;
     public string? Note { get; set; }
+    public Dictionary<string, TourClassificationTranslationData> Translations { get; set; } = [];
     public Guid TourClassificationId { get; set; }
     public virtual TourClassificationEntity TourClassification { get; set; } = null!;
 

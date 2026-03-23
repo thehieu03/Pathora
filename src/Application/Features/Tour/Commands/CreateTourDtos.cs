@@ -1,3 +1,4 @@
+using Domain.Entities.Translations;
 using Domain.Enums;
 
 namespace Application.Features.Tour.Commands;
@@ -11,14 +12,16 @@ public sealed record ClassificationDto(
     int NumberOfDay,
     int NumberOfNight,
     List<DayPlanDto> Plans,
-    List<InsuranceDto> Insurances
+    List<InsuranceDto> Insurances,
+    Dictionary<string, TourClassificationTranslationData>? Translations = null
 );
 
 public sealed record DayPlanDto(
     int DayNumber,
     string Title,
     string? Description,
-    List<ActivityDto> Activities
+    List<ActivityDto> Activities,
+    Dictionary<string, TourDayTranslationData>? Translations = null
 );
 
 public sealed record ActivityDto(
@@ -31,7 +34,8 @@ public sealed record ActivityDto(
     string? StartTime,
     string? EndTime,
     List<RouteDto> Routes,
-    AccommodationDto? Accommodation
+    AccommodationDto? Accommodation,
+    Dictionary<string, TourDayActivityTranslationData>? Translations = null
 );
 
 public sealed record RouteDto(
@@ -44,7 +48,9 @@ public sealed record RouteDto(
     decimal? Price,
     bool RequiresIndividualTicket,
     string? TicketInfo,
-    string? Note
+    string? Note,
+    Dictionary<string, TourPlanLocationTranslationData>? Translations = null,
+    Dictionary<string, TourPlanRouteTranslationData>? RouteTranslations = null
 );
 
 public sealed record InsuranceDto(
@@ -55,7 +61,8 @@ public sealed record InsuranceDto(
     decimal CoverageAmount,
     decimal CoverageFee,
     bool IsOptional,
-    string? Note
+    string? Note,
+    Dictionary<string, TourClassificationTranslationData>? Translations = null
 );
 
 public sealed record AccommodationDto(
@@ -64,7 +71,8 @@ public sealed record AccommodationDto(
     string? ContactPhone,
     string? CheckInTime,
     string? CheckOutTime,
-    string? Note
+    string? Note,
+    Dictionary<string, TourPlanAccommodationTranslationData>? Translations = null
 );
 
 public sealed record LocationDto(
@@ -74,7 +82,8 @@ public sealed record LocationDto(
     string? City,
     string? Country,
     decimal? EntranceFee,
-    string? Address
+    string? Address,
+    Dictionary<string, TourPlanLocationTranslationData>? Translations = null
 );
 
 public sealed record ServiceDto(
@@ -96,5 +105,6 @@ public sealed record TransportationDto(
     decimal? Price,
     bool RequiresIndividualTicket,
     string? TicketInfo,
-    string? Note
+    string? Note,
+    Dictionary<string, TourPlanRouteTranslationData>? Translations = null
 );

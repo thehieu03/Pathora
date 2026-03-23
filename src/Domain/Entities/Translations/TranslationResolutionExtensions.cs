@@ -75,8 +75,11 @@ public static class TranslationResolutionExtensions
         var (requested, fallback) = ResolveCandidates(entity.Translations, language);
         return new TourPlanRouteTranslationData
         {
+            FromLocationName = requested?.FromLocationName ?? fallback?.FromLocationName ?? (entity.FromLocation?.LocationName ?? string.Empty),
+            ToLocationName = requested?.ToLocationName ?? fallback?.ToLocationName ?? (entity.ToLocation?.LocationName ?? string.Empty),
+            TransportationType = requested?.TransportationType ?? fallback?.TransportationType,
             TransportationName = requested?.TransportationName ?? fallback?.TransportationName ?? entity.TransportationName,
-            TransportationNote = requested?.TransportationNote ?? fallback?.TransportationNote ?? entity.TransportationNote,
+            TicketInfo = requested?.TicketInfo ?? fallback?.TicketInfo,
             Note = requested?.Note ?? fallback?.Note ?? entity.Note
         };
     }
@@ -155,7 +158,6 @@ public static class TranslationResolutionExtensions
     {
         var translated = entity.ResolveTranslation(language);
         entity.TransportationName = translated.TransportationName;
-        entity.TransportationNote = translated.TransportationNote;
         entity.Note = translated.Note;
 
         if (entity.FromLocation is not null)

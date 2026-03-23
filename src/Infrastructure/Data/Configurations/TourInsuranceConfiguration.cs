@@ -41,6 +41,9 @@ public class TourInsuranceConfiguration : IEntityTypeConfiguration<TourInsurance
         builder.Property(i => i.Note)
             .HasMaxLength(1000);
 
+        builder.Property(i => i.Translations)
+            .ConfigureTranslationsJsonb();
+
         builder.Property(i => i.TourClassificationId)
             .IsRequired();
 

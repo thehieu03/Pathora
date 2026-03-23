@@ -48,6 +48,12 @@ public sealed class TourPlanLocationTranslationData
     public string LocationName { get; set; } = string.Empty;
     [JsonPropertyName("locationDescription")]
     public string? LocationDescription { get; set; }
+    [JsonPropertyName("city")]
+    public string? City { get; set; }
+    [JsonPropertyName("country")]
+    public string? Country { get; set; }
+    [JsonPropertyName("address")]
+    public string? Address { get; set; }
     [JsonPropertyName("note")]
     public string? Note { get; set; }
 }
@@ -56,6 +62,8 @@ public sealed class TourPlanAccommodationTranslationData
 {
     [JsonPropertyName("accommodationName")]
     public string AccommodationName { get; set; } = string.Empty;
+    [JsonPropertyName("address")]
+    public string? Address { get; set; }
     [JsonPropertyName("specialRequest")]
     public string? SpecialRequest { get; set; }
     [JsonPropertyName("note")]
@@ -64,10 +72,16 @@ public sealed class TourPlanAccommodationTranslationData
 
 public sealed class TourPlanRouteTranslationData
 {
+    [JsonPropertyName("fromLocationName")]
+    public string? FromLocationName { get; set; }
+    [JsonPropertyName("toLocationName")]
+    public string? ToLocationName { get; set; }
+    [JsonPropertyName("transportationType")]
+    public string? TransportationType { get; set; }
     [JsonPropertyName("transportationName")]
     public string? TransportationName { get; set; }
-    [JsonPropertyName("transportationNote")]
-    public string? TransportationNote { get; set; }
+    [JsonPropertyName("ticketInfo")]
+    public string? TicketInfo { get; set; }
     [JsonPropertyName("note")]
     public string? Note { get; set; }
 }

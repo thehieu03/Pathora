@@ -92,6 +92,7 @@ public class TourService(
                     cls.NumberOfDay,
                     cls.NumberOfNight,
                     _user.Id ?? string.Empty);
+                classification.Translations = NormalizeTranslationsFromPayload(cls.Translations);
 
                 // Add Plans (Days)
                 foreach (var plan in cls.Plans)
@@ -102,6 +103,7 @@ public class TourService(
                         plan.Title,
                         _user.Id ?? string.Empty,
                         plan.Description);
+                    day.Translations = NormalizeTranslationsFromPayload(plan.Translations);
 
                     // Add Activities
                     foreach (var act in plan.Activities)
@@ -132,6 +134,7 @@ public class TourService(
                             endTime,
                             act.EstimatedCost,
                             act.IsOptional);
+                        activity.Translations = NormalizeTranslationsFromPayload(act.Translations);
 
                         // Add Routes (Transportations)
                         foreach (var route in act.Routes)
@@ -156,7 +159,7 @@ public class TourService(
                                 transportationType,
                                 _user.Id ?? string.Empty,
                                 route.TransportationName,
-                                route.Note,
+                                null, // transportationNote
                                 null, // estimatedDepartureTime
                                 null, // estimatedArrivalTime
                                 route.DurationMinutes,
@@ -164,6 +167,11 @@ public class TourService(
                                 route.Price,
                                 route.TicketInfo,
                                 route.Note);
+
+                            routeEntity.Translations = NormalizeTranslationsFromPayload(route.RouteTranslations);
+
+                            fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
+                            toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
 
                             routeEntity.FromLocation = fromLocation;
                             routeEntity.ToLocation = toLocation;
@@ -195,6 +203,7 @@ public class TourService(
                                 null, // longitude
                                 act.Accommodation.Note);
 
+                            accommodation.Translations = NormalizeTranslationsFromPayload(act.Accommodation.Translations);
                             activity.Accommodation = accommodation;
                         }
 
@@ -219,11 +228,37 @@ public class TourService(
                         _user.Id ?? string.Empty,
                         ins.IsOptional,
                         ins.Note);
+                    insurance.Translations = NormalizeTranslationsFromPayload(ins.Translations);
 
                     classification.Insurances.Add(insurance);
                 }
 
                 tour.Classifications.Add(classification);
+            }
+        }
+
+        // Standalone Accommodations, Locations, and Transportations from wizard Steps 3-5
+        // are accepted at the API layer for future persistence. Currently logged for observability.
+        // The TourEntity does not yet have shared entity collections for these resource pools.
+        if (request.Accommodations?.Count > 0)
+        {
+            foreach (var acc in request.Accommodations)
+            {
+                Console.WriteLine($"[DEBUG] Accommodation: {acc.AccommodationName}");
+            }
+        }
+        if (request.Locations?.Count > 0)
+        {
+            foreach (var loc in request.Locations)
+            {
+                Console.WriteLine($"[DEBUG] Location: {loc.LocationName}");
+            }
+        }
+        if (request.Transportations?.Count > 0)
+        {
+            foreach (var tr in request.Transportations)
+            {
+                Console.WriteLine($"[DEBUG] Transportation: {tr.FromLocation} -> {tr.ToLocation}");
             }
         }
 
@@ -330,6 +365,17 @@ public class TourService(
         }
 
         return result;
+    }
+
+    private static Dictionary<string, TTranslation> NormalizeTranslationsFromPayload<TTranslation>(
+        Dictionary<string, TTranslation>? translations) where TTranslation : class
+    {
+        if (translations == null || translations.Count == 0)
+            return [];
+        return translations.ToDictionary(
+            kvp => kvp.Key.ToLowerInvariant(),
+            kvp => kvp.Value,
+            StringComparer.OrdinalIgnoreCase);
     }
 
     private static void MergeTranslations(TourEntity tour, Dictionary<string, TourTranslationData>? translations)
