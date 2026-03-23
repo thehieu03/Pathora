@@ -1,0 +1,730 @@
+using Application.Dtos;
+using Application.Features.Tour.Commands;
+using Application.Services;
+using AutoMapper;
+using Contracts.Interfaces;
+using Domain.Common.Repositories;
+using Domain.Entities;
+using Domain.Entities.Translations;
+using Domain.UnitOfWork;
+using ErrorOr;
+using NSubstitute;
+
+namespace Domain.Specs.Application.Services;
+
+/// <summary>
+/// Unit tests for TourService.Create() covering the full entity graph creation flow.
+/// </summary>
+public sealed class TourServiceTests
+{
+    private readonly ITourRepository _tourRepository = Substitute.For<ITourRepository>();
+    private readonly IUser _user = Substitute.For<IUser>();
+    private readonly IUnitOfWork _unitOfWork = Substitute.For<IUnitOfWork>();
+    private readonly IMapper _mapper = Substitute.For<IMapper>();
+
+    private TourService CreateService() => new(_tourRepository, _user, _unitOfWork, _mapper);
+
+    #region Helper Methods
+
+    private ImageInputDto CreateValidImage() => new(
+        FileId: "file-123",
+        OriginalFileName: "image.jpg",
+        FileName: "image.jpg",
+        PublicURL: "https://cdn.example.com/image.jpg");
+
+    private CreateTourCommand CreateBaseValidCommand() => new(
+        TourName: "Da Nang Beach Tour",
+        ShortDescription: "Beach vacation",
+        LongDescription: "5-day beach tour",
+        SEOTitle: null,
+        SEODescription: null,
+        Status: Domain.Enums.TourStatus.Active,
+        Thumbnail: CreateValidImage(),
+        Images: [CreateValidImage()],
+        Classifications: null);
+
+    #endregion
+
+    #region TC01: Create with valid basic command returns tour ID
+
+    [Fact]
+    public async Task Create_WithValidBasicCommand_ShouldReturnTourId()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.Create(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand();
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.IsType<Guid>(result.Value);
+        await _tourRepository.Received(1).Create(Arg.Any<TourEntity>());
+        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
+    }
+
+    #endregion
+
+    #region TC02: Tour code is auto-generated in TOUR-YYYYMMDD-NNNNN format
+
+    [Fact]
+    public async Task Create_ShouldAutoGenerateTourCode()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.Create(Arg.Do<TourEntity>(t => Assert.StartsWith("TOUR-", t.TourCode)))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand();
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+    }
+
+    #endregion
+
+    #region TC03: Tour entity has correct basic fields set
+
+    [Fact]
+    public async Task Create_ShouldSetCorrectBasicFields()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand();
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.NotNull(capturedTour);
+        Assert.Equal("Da Nang Beach Tour", capturedTour!.TourName);
+        Assert.Equal("Beach vacation", capturedTour.ShortDescription);
+        Assert.Equal("5-day beach tour", capturedTour.LongDescription);
+        Assert.Equal(Domain.Enums.TourStatus.Active, capturedTour.Status);
+        Assert.Equal("admin@test.com", capturedTour.CreatedBy);
+    }
+
+    #endregion
+
+    #region TC04: Translations dictionary is normalized (keys lowercased)
+
+    [Fact]
+    public async Task Create_WithTranslations_ShouldNormalizeKeysToLowercase()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Translations = new Dictionary<string, TourTranslationData>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["VI"] = new TourTranslationData { TourName = "Tour Da Nang", ShortDescription = "Mieu ta", LongDescription = "Mo ta dai" },
+                ["EN"] = new TourTranslationData { TourName = "Da Nang Tour", ShortDescription = "Short", LongDescription = "Long" }
+            }
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.NotNull(capturedTour);
+        Assert.Equal(2, capturedTour!.Translations.Count);
+        Assert.True(capturedTour.Translations.ContainsKey("vi"));
+        Assert.True(capturedTour.Translations.ContainsKey("en"));
+        Assert.Equal("Tour Da Nang", capturedTour.Translations["vi"].TourName);
+    }
+
+    #endregion
+
+    #region TC05: Classification with Plans, Activities, Routes, and Accommodation
+
+    [Fact]
+    public async Task Create_WithClassificationAndNestedEntities_ShouldBuildCorrectEntityGraph()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(
+                    Name: "Standard Package",
+                    Description: "Standard 3-day package",
+                    AdultPrice: 1000,
+                    ChildPrice: 500,
+                    InfantPrice: 100,
+                    NumberOfDay: 3,
+                    NumberOfNight: 2,
+                    Plans:
+                    [
+                        new DayPlanDto(
+                            DayNumber: 1,
+                            Title: "Day 1",
+                            Description: "Arrival",
+                            Activities:
+                            [
+                                new ActivityDto(
+                                    ActivityType: "Transport",
+                                    Title: "Airport Pickup",
+                                    Description: "Pick up from airport",
+                                    Note: "Driver will wait",
+                                    EstimatedCost: 50,
+                                    IsOptional: false,
+                                    StartTime: "08:00",
+                                    EndTime: "10:00",
+                                    Routes:
+                                    [
+                                        new RouteDto(
+                                            FromLocationName: "Airport",
+                                            ToLocationName: "Hotel",
+                                            TransportationType: "Car",
+                                            TransportationName: "Sedan",
+                                            DurationMinutes: 60,
+                                            PricingType: null,
+                                            Price: 30,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null)
+                                    ],
+                                    Accommodation: new AccommodationDto(
+                                        AccommodationName: "Hotel ABC",
+                                        Address: "123 Main St",
+                                        ContactPhone: "0123456789",
+                                        CheckInTime: "14:00",
+                                        CheckOutTime: "12:00",
+                                        Note: "Late check-in available",
+                                        Translations: null),
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances:
+                    [
+                        new InsuranceDto(
+                            InsuranceName: "Travel Insurance",
+                            InsuranceType: "Basic",
+                            InsuranceProvider: "ABC Insurance",
+                            CoverageDescription: "Basic coverage",
+                            CoverageAmount: 10000,
+                            CoverageFee: 50,
+                            IsOptional: true,
+                            Note: null,
+                            Translations: null)
+                    ],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(capturedTour);
+        Assert.Single(capturedTour!.Classifications);
+        var cls = capturedTour.Classifications[0];
+        Assert.Equal("Standard Package", cls.Name);
+        Assert.Equal(1000, cls.AdultPrice);
+        Assert.Single(cls.Plans);
+        Assert.Single(cls.Plans[0].Activities);
+        Assert.Equal("Airport Pickup", cls.Plans[0].Activities[0].Title);
+        Assert.Single(cls.Plans[0].Activities[0].Routes);
+        Assert.Equal("Airport", cls.Plans[0].Activities[0].Routes[0].FromLocation.LocationName);
+        Assert.Equal("Hotel ABC", cls.Plans[0].Activities[0].Accommodation!.AccommodationName);
+        Assert.Single(cls.Insurances);
+        Assert.Equal("Travel Insurance", cls.Insurances[0].InsuranceName);
+    }
+
+    #endregion
+
+    #region TC06: Activity time parsing (valid time strings)
+
+    [Fact]
+    public async Task Create_WithActivityTimeStrings_ShouldParseTimeOnly()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(
+                    Name: "Test",
+                    Description: "",
+                    AdultPrice: 0,
+                    ChildPrice: 0,
+                    InfantPrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(
+                                    ActivityType: "Sightseeing",
+                                    Title: "Visit Temple",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: "09:30",
+                                    EndTime: "17:45",
+                                    Routes: [],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        var activity = capturedTour!.Classifications[0].Plans[0].Activities[0];
+        Assert.NotNull(activity.StartTime);
+        Assert.Equal(9, activity.StartTime.Value.Hour);
+        Assert.Equal(30, activity.StartTime.Value.Minute);
+        Assert.NotNull(activity.EndTime);
+        Assert.Equal(17, activity.EndTime.Value.Hour);
+        Assert.Equal(45, activity.EndTime.Value.Minute);
+    }
+
+    #endregion
+
+    #region TC07: Activity time parsing (invalid time strings become null)
+
+    [Fact]
+    public async Task Create_WithInvalidActivityTimeStrings_ShouldBeNull()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(
+                    Name: "Test",
+                    Description: "",
+                    AdultPrice: 0,
+                    ChildPrice: 0,
+                    InfantPrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(
+                                    ActivityType: "Sightseeing",
+                                    Title: "Visit",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: "not-a-time",
+                                    EndTime: "",
+                                    Routes: [],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        var activity = capturedTour!.Classifications[0].Plans[0].Activities[0];
+        Assert.Null(activity.StartTime);
+        Assert.Null(activity.EndTime);
+    }
+
+    #endregion
+
+    #region TC08: Activity type enum fallback to Other
+
+    [Fact]
+    public async Task Create_WithUnknownActivityType_ShouldFallbackToOther()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(
+                    Name: "Test",
+                    Description: "",
+                    AdultPrice: 0,
+                    ChildPrice: 0,
+                    InfantPrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(
+                                    ActivityType: "UnknownActivityType",
+                                    Title: "Activity",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes: [],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.Equal(
+            Domain.Enums.TourDayActivityType.Other,
+            capturedTour!.Classifications[0].Plans[0].Activities[0].ActivityType);
+    }
+
+    #endregion
+
+    #region TC09: Route transportation type enum fallback to Other
+
+    [Fact]
+    public async Task Create_WithUnknownTransportationType_ShouldFallbackToOther()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(
+                    Name: "Test",
+                    Description: "",
+                    AdultPrice: 0,
+                    ChildPrice: 0,
+                    InfantPrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(
+                                    ActivityType: "Transport",
+                                    Title: "Transfer",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes:
+                                    [
+                                        new RouteDto(
+                                            FromLocationName: "A",
+                                            ToLocationName: "B",
+                                            TransportationType: "UnknownTransport",
+                                            TransportationName: null,
+                                            DurationMinutes: 30,
+                                            PricingType: null,
+                                            Price: 10,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null)
+                                    ],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.Equal(
+            Domain.Enums.TransportationType.Other,
+            capturedTour!.Classifications[0].Plans[0].Activities[0].Routes[0].TransportationType);
+    }
+
+    #endregion
+
+    #region TC10: Standalone accommodations/locations/transportations logged (not persisted)
+
+    [Fact]
+    public async Task Create_WithStandaloneAccommodationsLocationsTransportations_ShouldNotThrow()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.Create(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Accommodations =
+            [
+                new AccommodationDto(
+                    AccommodationName: "Hotel 1",
+                    Address: "123 St",
+                    ContactPhone: null,
+                    CheckInTime: null,
+                    CheckOutTime: null,
+                    Note: null,
+                    Translations: null)
+            ],
+            Locations =
+            [
+                new LocationDto(
+                    LocationName: "Museum",
+                    LocationType: "Museum",
+                    Description: null,
+                    City: "Da Nang",
+                    Country: "Vietnam",
+                    EntranceFee: 0,
+                    Address: null,
+                    Translations: null)
+            ],
+            Transportations =
+            [
+                new TransportationDto(
+                    FromLocation: "Hotel",
+                    ToLocation: "Beach",
+                    TransportationType: "Bus",
+                    TransportationName: null,
+                    DurationMinutes: 30,
+                    PricingType: null,
+                    Price: 5,
+                    RequiresIndividualTicket: false,
+                    TicketInfo: null,
+                    Note: null,
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+    }
+
+    #endregion
+
+    #region TC11: Policy IDs are set on tour entity
+
+    [Fact]
+    public async Task Create_WithPolicyIds_ShouldSetOnTourEntity()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var visaPolicyId = Guid.CreateVersion7();
+        var depositPolicyId = Guid.CreateVersion7();
+        var pricingPolicyId = Guid.CreateVersion7();
+        var cancellationPolicyId = Guid.CreateVersion7();
+
+        var command = CreateBaseValidCommand() with
+        {
+            VisaPolicyId = visaPolicyId,
+            DepositPolicyId = depositPolicyId,
+            PricingPolicyId = pricingPolicyId,
+            CancellationPolicyId = cancellationPolicyId
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.NotNull(capturedTour);
+        Assert.Equal(visaPolicyId, capturedTour!.VisaPolicyId);
+        Assert.Equal(depositPolicyId, capturedTour.DepositPolicyId);
+        Assert.Equal(pricingPolicyId, capturedTour.PricingPolicyId);
+        Assert.Equal(cancellationPolicyId, capturedTour.CancellationPolicyId);
+    }
+
+    #endregion
+
+    #region TC12: Nested entity translations are normalized
+
+    [Fact]
+    public async Task Create_WithNestedTranslations_ShouldNormalizeKeysToLowercase()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(
+                    Name: "Pkg",
+                    Description: "Desc",
+                    AdultPrice: 0,
+                    ChildPrice: 0,
+                    InfantPrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(
+                                    ActivityType: "Sightseeing",
+                                    Title: "Act",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes: [],
+                                    Accommodation: null,
+                                    Translations: new Dictionary<string, TourDayActivityTranslationData>(StringComparer.OrdinalIgnoreCase)
+                                    {
+                                        ["EN"] = new TourDayActivityTranslationData { Title = "Activity EN", Description = "Desc EN" },
+                                        ["VI"] = new TourDayActivityTranslationData { Title = "Activity VI", Description = "Desc VI" }
+                                    })
+                            ],
+                            Translations: new Dictionary<string, TourDayTranslationData>(StringComparer.OrdinalIgnoreCase)
+                            {
+                                ["EN"] = new TourDayTranslationData { Title = "Day EN", Description = "Desc EN" }
+                            })
+                    ],
+                    Insurances: [],
+                    Translations: new Dictionary<string, TourClassificationTranslationData>(StringComparer.OrdinalIgnoreCase)
+                    {
+                        ["EN"] = new TourClassificationTranslationData { Name = "Pkg EN", Description = "Desc EN" }
+                    })
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        var cls = capturedTour!.Classifications[0];
+        // Classification translations: EN key added, VI key added
+        // Classification translations: only EN provided
+        Assert.Single(cls.Translations);
+        Assert.True(cls.Translations.ContainsKey("en"));
+        Assert.False(cls.Translations.ContainsKey("vi"));
+        // DayPlan translations: only EN key added
+        Assert.Single(cls.Plans[0].Translations);
+        Assert.True(cls.Plans[0].Translations.ContainsKey("en"));
+        Assert.Equal("Day EN", cls.Plans[0].Translations["en"].Title);
+        // Activity translations: EN and VI keys added
+        Assert.True(cls.Plans[0].Activities[0].Translations.ContainsKey("en"));
+        Assert.True(cls.Plans[0].Activities[0].Translations.ContainsKey("vi"));
+        Assert.Equal("Activity EN", cls.Plans[0].Activities[0].Translations["en"].Title);
+        Assert.Equal("Activity VI", cls.Plans[0].Activities[0].Translations["vi"].Title);
+    }
+
+    #endregion
+}
