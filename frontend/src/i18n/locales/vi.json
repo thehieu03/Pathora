@@ -3312,15 +3312,84 @@
     }
   },
   "landing": {
+    "nav": {
+      "home": "Trang chủ",
+      "aboutUs": "Về chúng tôi",
+      "tourPackages": "Gói tour",
+      "ourPolicies": "Chính sách"
+    },
+    "menu": "Menu",
     "hero": {
+      "title": "Việt Nam Đang Chờ Đón Bạn",
+      "subtitle": "Khám phá cảnh quan tuyệt đẹp và di sản văn hóa phong phú khắp Việt Nam và hơn thế nữa",
       "eyebrow": "Nền tảng Du lịch hàng đầu Việt Nam",
-      "searchPlaceholder": "Bạn muốn đi đâu?"
+      "searchPlaceholder": "Bạn muốn đi đâu?",
+      "exploreTours": "Khám phá Tour"
+    },
+    "stats": {
+      "items": {
+        "totalTours": "Tour",
+        "totalTravellers": "Du khách",
+        "support": "Hỗ trợ"
+      }
     },
     "destinations": {
       "eyebrow": "Khám phá",
       "title": "Điểm đến nổi bật",
       "viewAll": "Xem tất cả điểm đến",
       "tours": "tour"
+    },
+    "aboutUs": {
+      "ourStory": "Câu Chuyện Của Chúng Tôi",
+      "weAre": "Chúng Tôi Là",
+      "heroSubtitle": "Chúng tôi đam mê tạo ra những trải nghiệm du lịch khó quên kết nối con người với những điểm đến đặc biệt.",
+      "whoWeAre": "Chúng Tôi Là Ai",
+      "yearsExperience": "Năm Kinh Nghiệm",
+      "passionateTravelers": "Những Người Đam Mê Du Lịch &",
+      "expertGuides": "Hướng Dẫn Viên Chuyên Nghiệp",
+      "whoWeAreDesc1": "Pathora được thành lập năm 2010 với sứ mệnh đơn giản: làm cho du lịch trở nên dễ tiếp cận, thú vị và có ý nghĩa. Đội ngũ địa phương đam mê và chuyên gia giàu kinh nghiệm của chúng tôi cùng nhau tạo ra những tour khám phá tinh thần thực sự của mỗi điểm đến.",
+      "whoWeAreDesc2": "Từ thành phố nhộn nhịp đến phong cảnh yên bình, chúng tôi xử lý mọi chi tiết để bạn có thể tập trung vào điều quan trọng nhất — tạo ra những kỷ niệm. Với hơn 92.000 du khách hạnh phúc và tỷ lệ hài lòng 98%, chúng tôi tiếp tục đặt ra tiêu chuẩn cho chất lượng trải nghiệm du lịch.",
+      "exploreOurTours": "Khám Phá Tour Của Chúng Tôi",
+      "whyChooseUs": "Tại Sao Chọn Chúng Tôi",
+      "valuesTitle": "Giá Trị Cốt Lõi Của Chúng Tôi",
+      "ourJourney": "Hành Trình Của Chúng Tôi",
+      "journeyTitle": "Câu Chuyện Pathora",
+      "teamSubtitle": "Gặp Gỡ Đội Ngũ",
+      "teamTitle": "Những Bậc Thầy Đằng Sau Cuộc Phiêu Lưu Của Bạn",
+      "toursLed": "tour đã dẫn",
+      "readyToExplore": "Sẵn Sàng Khám Phá?",
+      "ctaTitle": "Bắt Đầu Cuộc Phiêu Lưu Với",
+      "ctaTitleWith": "cùng",
+      "ctaDescription": "Duyệt qua các gói tour được tuyển chọn và tìm cuộc phiêu lưu hoàn hảo cho chuyến đi tiếp theo của bạn.",
+      "browsePackageTours": "Duyệt Tour Trọn Gói",
+      "stats": {
+        "destinations": "Điểm đến",
+        "happyTravelers": "Du khách Hài lòng",
+        "toursOffered": "Tour Đang Cung Cấp",
+        "satisfactionRate": "Tỷ lệ Hài lòng"
+      },
+      "values": {
+        "globalExpertise": "Chuyên Môn Toàn Cầu",
+        "globalExpertiseDesc": "Với kiến thức sâu về văn hóa và cảnh quan địa phương, chúng tôi mang đến những trải nghiệm chân thực cho mọi hành trình.",
+        "safeTrusted": "An Toàn & Đáng Tin Cậy",
+        "safeTrustedDesc": "Nhà điều hành được cấp phép, hướng dẫn viên đã kiểm tra, và bảo hiểm du lịch toàn diện cho sự yên tâm của bạn.",
+        "tailoredForYou": "Tùy Chỉnh Cho Bạn",
+        "tailoredForYouDesc": "Từ du khách solo đến nhóm gia đình, chúng tôi tùy chỉnh lịch trình phù hợp với sở thích và nhịp độ của bạn.",
+        "seamlessExperience": "Trải Nghiệm Liền Mạch",
+        "seamlessExperienceDesc": "Hỗ trợ từ đầu đến cuối từ đặt tour đến khi hoàn thành, để bạn có thể tập trung vào cuộc phiêu lưu."
+      },
+      "timeline": {
+        "founded": "Thành Lập Pathora",
+        "foundedDesc": "Bắt đầu như một công ty lữ hành nhỏ tại Hà Nội với ước mơ chia sẻ vẻ đẹp của Việt Nam với thế giới.",
+        "first10k": "Mốc 10.000 Du Khách",
+        "first10kDesc": "Đạt mốc quan trọng đầu tiên với 10.000 du khách hài lòng và mở rộng hoạt động đến 3 thành phố lớn.",
+        "expanded60": "Mở Rộng 60+ Điểm Đến",
+        "expanded60Desc": "Phát triển mạng lưới lên 60+ điểm đến khắp Việt Nam, Lào, Campuchia, Thái Lan và hơn thế nữa.",
+        "digitalFirst": "Ra Mắt Nền Tảng Số",
+        "digitalFirstDesc": "Ra mắt nền tảng đặt tour trực tuyến giúp khám phá và đặt tour dễ dàng hơn bao giờ hết.",
+        "happy92k": "92.000 Du Khách Hài Lòng",
+        "happy92kDesc": "Ăn mừng phục vụ hơn 92.000 du khách với tỷ lệ hài lòng 98% và tiếp tục tăng."
+      }
     },
     "videoShowcase": {
       "label": "Trải nghiệm Việt Nam",
@@ -3373,6 +3442,55 @@
       "copyright": "Mọi quyền được bảo lưu.",
       "privacy": "Quyền riêng tư",
       "terms": "Điều khoản"
+    },
+    "policies": {
+      "transparencyFirst": "Hướng dẫn Du lịch",
+      "our": "Chính sách",
+      "policy": "Của Chúng tôi",
+      "heroSubtitle": "Đọc các chính sách của chúng tôi để hiểu cách chúng tôi hoạt động và những gì bạn có thể mong đợi từ dịch vụ.",
+      "lastUpdated": "Cập nhật lần cuối:",
+      "lastUpdatedDate": "24 tháng 3, 2026",
+      "policiesApplyNote": "Các chính sách này áp dụng cho tất cả dịch vụ do Pathora cung cấp.",
+      "introPrefix": "Tại Pathora, chúng tôi tin tưởng vào sự minh bạch hoàn toàn. Tài liệu này trình bày các chính sách về đặt tour, thanh toán, hủy tour và hơn thế nữa để đảm bảo trải nghiệm suôn sẻ cho tất cả du khách.",
+      "introSuffix": " Chúng tôi cam kết cung cấp các điều khoản rõ ràng và công bằng cho mỗi chuyến đi bạn đặt với chúng tôi.",
+      "ctaTitle": "Bạn có câu hỏi?",
+      "ctaDescription": "Đội ngũ hỗ trợ của chúng tôi hoạt động 24/7 để giúp bạn giải đáp mọi thắc mắc liên quan đến chính sách.",
+      "contactSupport": "Liên hệ Hỗ trợ",
+      "sections": {
+        "bookingPayment": "Đặt tour & Thanh toán",
+        "cancellationRefund": "Hủy tour & Hoàn tiền",
+        "modificationRescheduling": "Thay đổi & Đổi lịch",
+        "healthSafety": "Sức khỏe & An toàn",
+        "privacyPolicy": "Chính sách Quyền riêng tư",
+        "liabilityDisclaimer": "Miễn trách Nghĩa vụ"
+      },
+      "items": {
+        "bookingPaymentItem1": "Tất cả đặt tour phải được xác nhận bằng phương thức thanh toán hợp lệ. Tour chỉ được xác nhận khi nhận đủ hoặc một phần thanh toán theo quy định.",
+        "bookingPaymentItem2": "Giá niêm yết bằng USD và đã bao gồm thuế áp dụng trừ khi có thông báo khác. Phí chuyển đổi ngoại tệ có thể áp dụng cho thanh toán quốc tế.",
+        "bookingPaymentItem3": "Đặt tour nhóm yêu cầu tối thiểu 2 người tham gia. Tour riêng có thể đặt cho cá nhân với mức giá khác.",
+        "bookingPaymentItem4": "Thanh toán phải hoàn tất ít nhất 48 giờ trước ngày bắt đầu tour. Thanh toán trễ có thể dẫn đến hủy tour tự động.",
+        "cancellationRefundItem1": "Hủy tour từ 7 ngày trở lên trước ngày tour được hoàn tiền 100%.",
+        "cancellationRefundItem2": "Hủy tour từ 3-6 ngày trước ngày tour được hoàn 50% tiền.",
+        "cancellationRefundItem3": "Hủy tour dưới 72 giờ trước ngày tour không được hoàn tiền.",
+        "cancellationRefundItem4": "Không hiện và đến muộn sẽ bị tính phí đầy đủ mà không hoàn tiền.",
+        "cancellationRefundItem5": "Hoàn tiền được xử lý trong 7-14 ngày làm việc qua phương thức thanh toán ban đầu.",
+        "modificationItem1": "Yêu cầu thay đổi tour được chấp nhận đến 48 giờ trước ngày bắt đầu, tùy thuộc vào tình trạng còn chỗ.",
+        "modificationItem2": "Đổi lịch sang ngày khác miễn phí nếu yêu cầu từ 7 ngày trước.",
+        "modificationItem3": "Đổi lịch trong 3-6 ngày trước ngày tour chịu phí đổi lịch 20%.",
+        "modificationItem4": "Thay đổi số lượng người tham gia phải được thông báo ít nhất 24 giờ trước. Phí bổ sung áp dụng cho người thêm.",
+        "healthSafetyItem1": "Tất cả du khách phải thông báo các tình trạng sức khỏe có sẵn có thể ảnh hưởng đến khả năng tham gia các hoạt động tour.",
+        "healthSafetyItem2": "Người tham gia có hạn chế về khả năng vận động nên thông báo trước để chúng tôi sắp xếp tiện nghi phù hợp.",
+        "healthSafetyItem3": "Thông tin liên hệ khẩn cấp phải được cung cấp khi đặt tour. Thông tin này được bảo mật và chỉ sử dụng trong trường hợp khẩn cấp.",
+        "healthSafetyItem4": "Bảo hiểm du lịch được khuyến khích cho tất cả tour quốc tế. Bảo hiểm cơ bản được bao gồm trong một số gói tour.",
+        "privacyPolicyItem1": "Chúng tôi thu thập thông tin cá nhân (tên, email, điện thoại, thông tin thanh toán) chỉ cho mục đích đặt tour và dịch vụ.",
+        "privacyPolicyItem2": "Dữ liệu của bạn được mã hóa và lưu trữ an toàn. Chúng tôi không bán hoặc chia sẻ thông tin cá nhân với bên thứ ba cho mục đích tiếp thị.",
+        "privacyPolicyItem3": "Bạn có quyền yêu cầu truy cập, chỉnh sửa hoặc xóa dữ liệu cá nhân bất cứ lúc nào bằng cách liên hệ đội ngũ hỗ trợ.",
+        "privacyPolicyItem4": "Cookie được sử dụng để cải thiện trải nghiệm duyệt web và phân tích lưu lượng trang. Bạn có thể quản lý tùy chọn cookie qua cài đặt trình duyệt.",
+        "liabilityItem1": "Pathora hoạt động như người trung gian giữa du khách và nhà cung cấp dịch vụ địa phương. Chúng tôi không chịu trách nhiệm cho hành động hoặc sơ suất của các nhà cung cấp bên thứ ba.",
+        "liabilityItem2": "Trong trường hợp bất khả kháng (thiên tai, bất ổn chính trị, dịch bệnh), Pathora giữ quyền thay đổi hoặc hủy tour mà không chịu trách nhiệm.",
+        "liabilityItem3": "Du khách chịu trách nhiệm hoàn toàn về tài sản cá nhân trong tour. Pathora không chịu trách nhiệm về đồ bị mất hoặc bị đánh cắp.",
+        "liabilityItem4": "Trách nhiệm của chúng tôi giới hạn ở tổng số tiền đã thanh toán cho đặt tour. Các thiệt hại gián tiếp, ngẫu nhiên hoặc phát sinh không được bao gồm."
+      }
     }
   }
 }

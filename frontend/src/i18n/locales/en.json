@@ -3311,15 +3311,84 @@
     }
   },
   "landing": {
+    "nav": {
+      "home": "Home",
+      "aboutUs": "About Us",
+      "tourPackages": "Tour Packages",
+      "ourPolicies": "Our Policies"
+    },
+    "menu": "Menu",
     "hero": {
+      "title": "Vietnam Awaits",
+      "subtitle": "Discover breathtaking landscapes and rich cultural heritage across Vietnam and beyond",
       "eyebrow": "Vietnam's Premier Travel Platform",
-      "searchPlaceholder": "Where do you want to go?"
+      "searchPlaceholder": "Where do you want to go?",
+      "exploreTours": "Explore Tours"
+    },
+    "stats": {
+      "items": {
+        "totalTours": "Tours",
+        "totalTravellers": "Travelers",
+        "support": "Support"
+      }
     },
     "destinations": {
       "eyebrow": "Explore",
       "title": "Trending Destinations",
       "viewAll": "View all destinations",
       "tours": "tours"
+    },
+    "aboutUs": {
+      "ourStory": "Our Story",
+      "weAre": "We Are",
+      "heroSubtitle": "We are passionate about creating unforgettable travel experiences that connect people with extraordinary destinations.",
+      "whoWeAre": "Who We Are",
+      "yearsExperience": "Years of Experience",
+      "passionateTravelers": "Passionate Travelers &",
+      "expertGuides": "Expert Guides",
+      "whoWeAreDesc1": "Pathora was founded in 2010 with a simple mission: to make travel accessible, enjoyable, and meaningful. Our team of passionate locals and seasoned professionals work together to craft tours that reveal the true soul of each destination.",
+      "whoWeAreDesc2": "From bustling cities to serene landscapes, we handle every detail so you can focus on what matters most — creating memories. With over 92,000 happy travelers and a 98% satisfaction rate, we continue to set the standard for quality travel experiences.",
+      "exploreOurTours": "Explore Our Tours",
+      "whyChooseUs": "Why Choose Us",
+      "valuesTitle": "Our Core Values",
+      "ourJourney": "Our Journey",
+      "journeyTitle": "The Pathora Story",
+      "teamSubtitle": "Meet the Team",
+      "teamTitle": "The Masters Behind Your Adventure",
+      "toursLed": "tours led",
+      "readyToExplore": "Ready to Explore?",
+      "ctaTitle": "Start Your Adventure With",
+      "ctaTitleWith": "with",
+      "ctaDescription": "Browse our curated tour packages and find the perfect journey for your next adventure.",
+      "browsePackageTours": "Browse Package Tours",
+      "stats": {
+        "destinations": "Destinations",
+        "happyTravelers": "Happy Travelers",
+        "toursOffered": "Tours Offered",
+        "satisfactionRate": "Satisfaction Rate"
+      },
+      "values": {
+        "globalExpertise": "Global Expertise",
+        "globalExpertiseDesc": "With deep knowledge of local cultures and landscapes, we bring authentic experiences to every journey.",
+        "safeTrusted": "Safe & Trusted",
+        "safeTrustedDesc": "Licensed operators, vetted guides, and comprehensive travel insurance for your peace of mind.",
+        "tailoredForYou": "Tailored For You",
+        "tailoredForYouDesc": "From solo travelers to family groups, we customize itineraries to match your interests and pace.",
+        "seamlessExperience": "Seamless Experience",
+        "seamlessExperienceDesc": "End-to-end support from booking to completion, so you can focus on the adventure."
+      },
+      "timeline": {
+        "founded": "Pathora Founded",
+        "foundedDesc": "Started as a small local tour operator in Hanoi with a dream to share Vietnam's beauty with the world.",
+        "first10k": "10,000 Travelers Milestone",
+        "first10kDesc": "Reached our first major milestone of 10,000 happy travelers and expanded operations to 3 major cities.",
+        "expanded60": "Expanded to 60+ Destinations",
+        "expanded60Desc": "Grew our network to cover 60+ destinations across Vietnam, Laos, Cambodia, Thailand, and beyond.",
+        "digitalFirst": "Digital-First Platform Launch",
+        "digitalFirstDesc": "Launched our online booking platform making it easier than ever to discover and book tours instantly.",
+        "happy92k": "92,000 Happy Travelers",
+        "happy92kDesc": "Celebrated serving over 92,000 travelers with a 98% satisfaction rating and counting."
+      }
     },
     "videoShowcase": {
       "label": "Experience Vietnam",
@@ -3372,6 +3441,55 @@
       "copyright": "All rights reserved.",
       "privacy": "Privacy",
       "terms": "Terms"
+    },
+    "policies": {
+      "transparencyFirst": "Travel Guidelines",
+      "our": "Our",
+      "policy": "Policies",
+      "heroSubtitle": "Read our policies to understand how we operate and what you can expect from our services.",
+      "lastUpdated": "Last updated:",
+      "lastUpdatedDate": "March 24, 2026",
+      "policiesApplyNote": "These policies apply to all services provided by Pathora.",
+      "introPrefix": "At Pathora, we believe in complete transparency. This document outlines our policies for bookings, payments, cancellations, and more to ensure a smooth experience for all travelers.",
+      "introSuffix": " We are committed to providing clear and fair terms for every journey you book with us.",
+      "ctaTitle": "Have Questions?",
+      "ctaDescription": "Our support team is available 24/7 to assist you with any policy-related questions.",
+      "contactSupport": "Contact Support",
+      "sections": {
+        "bookingPayment": "Booking & Payment",
+        "cancellationRefund": "Cancellation & Refund",
+        "modificationRescheduling": "Modification & Rescheduling",
+        "healthSafety": "Health & Safety",
+        "privacyPolicy": "Privacy Policy",
+        "liabilityDisclaimer": "Liability Disclaimer"
+      },
+      "items": {
+        "bookingPaymentItem1": "All bookings must be confirmed with a valid payment method. Tours are confirmed only upon receipt of full or partial payment as specified.",
+        "bookingPaymentItem2": "Prices are listed in USD and include applicable taxes unless otherwise stated. Currency conversion fees may apply for international payments.",
+        "bookingPaymentItem3": "Group bookings require a minimum of 2 participants. Private tours can be booked for individual travelers at a different rate.",
+        "bookingPaymentItem4": "Payment must be completed at least 48 hours before the tour start date. Late payments may result in automatic cancellation.",
+        "cancellationRefundItem1": "Cancellations made 7 or more days before the tour date are eligible for a full refund.",
+        "cancellationRefundItem2": "Cancellations made 3-6 days before the tour date qualify for a 50% refund.",
+        "cancellationRefundItem3": "Cancellations made less than 72 hours before the tour are non-refundable.",
+        "cancellationRefundItem4": "No-shows and late arrivals will be charged the full tour price without refund.",
+        "cancellationRefundItem5": "Refunds are processed within 7-14 business days to the original payment method.",
+        "modificationItem1": "Tour modifications can be requested up to 48 hours before the scheduled start date, subject to availability.",
+        "modificationItem2": "Rescheduling to a different date is free of charge if requested at least 7 days in advance.",
+        "modificationItem3": "Rescheduling within 3-6 days of the tour date incurs a 20% rescheduling fee.",
+        "modificationItem4": "Changes to group size must be communicated at least 24 hours before the tour. Additional charges apply for extra participants.",
+        "healthSafetyItem1": "All travelers must disclose any pre-existing medical conditions that may affect their ability to participate in tour activities.",
+        "healthSafetyItem2": "Participants with mobility limitations should inform us in advance so we can arrange appropriate accommodations.",
+        "healthSafetyItem3": "Emergency contact information must be provided at the time of booking. This information is kept confidential and used only in emergencies.",
+        "healthSafetyItem4": "Travel insurance is strongly recommended for all international tours. Basic insurance coverage is included with select tour packages.",
+        "privacyPolicyItem1": "We collect personal information (name, email, phone, payment details) solely for booking and service purposes.",
+        "privacyPolicyItem2": "Your data is encrypted and stored securely. We do not sell or share your personal information with third parties for marketing purposes.",
+        "privacyPolicyItem3": "You have the right to request access to, correction of, or deletion of your personal data at any time by contacting our support team.",
+        "privacyPolicyItem4": "Cookies are used to enhance your browsing experience and analyze site traffic. You can manage cookie preferences through your browser settings.",
+        "liabilityItem1": "Pathora acts as an intermediary between travelers and local service providers. We are not liable for the actions or negligence of third-party suppliers.",
+        "liabilityItem2": "In the event of force majeure (natural disasters, political unrest, pandemics), Pathora reserves the right to modify or cancel tours without liability.",
+        "liabilityItem3": "Travelers assume full responsibility for their personal belongings during tours. Pathora is not responsible for lost or stolen items.",
+        "liabilityItem4": "Our liability is limited to the total amount paid for the tour booking. Indirect, incidental, or consequential damages are excluded."
+      }
     }
   }
 }

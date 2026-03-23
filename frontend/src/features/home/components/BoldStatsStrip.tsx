@@ -11,7 +11,7 @@ const stats = [
   { value: 24, suffix: "/7", labelKey: "landing.stats.items.support" },
 ];
 
-function StatItem({ stat, isVisible }: { stat: typeof stats[0]; isVisible: boolean }) {
+function StatItem({ stat, isVisible, t }: { stat: typeof stats[0]; isVisible: boolean; t: (key: string) => string }) {
   const countValue = useCountUp(
     { end: stat.value, duration: 2000, suffix: stat.suffix },
     isVisible
@@ -26,7 +26,7 @@ function StatItem({ stat, isVisible }: { stat: typeof stats[0]; isVisible: boole
         {stat.isDecimal ? stat.value + stat.suffix : countValue}
       </span>
       <span className="text-sm text-white/40 uppercase tracking-wider">
-        {stat.labelKey}
+        {t(stat.labelKey)}
       </span>
     </div>
   );
@@ -46,7 +46,7 @@ export const BoldStatsStrip = () => {
           }`}
         >
           {stats.map((stat, idx) => (
-            <StatItem key={idx} stat={stat} isVisible={isVisible} />
+            <StatItem key={idx} stat={stat} isVisible={isVisible} t={t} />
           ))}
         </div>
       </div>
