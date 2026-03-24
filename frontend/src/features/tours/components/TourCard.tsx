@@ -84,30 +84,14 @@ export const TourCard = ({ tour }: TourCardProps) => {
 
           {/* Price */}
           <div className="flex flex-col gap-0.5 mt-2">
-            {tour.salePrice > 0 && tour.salePrice < tour.price ? (
-              <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
-                  {formatCurrency(tour.salePrice)}
-                </span>
-                <span className="text-sm line-through text-gray-400">
-                  {formatCurrency(tour.price)}
-                </span>
-              </div>
-            ) : (
-              <div className="flex items-baseline gap-2">
-                <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
-                  {formatCurrency(tour.price)}
-                </span>
-                <span className="text-sm text-gray-400">
-                   {t("tourInstance.perPersonShort", "/person")}
-                </span>
-              </div>
-            )}
-            {tour.salePrice > 0 && tour.salePrice < tour.price && (
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
+                {formatCurrency(tour.basePrice)}
+              </span>
               <span className="text-sm text-gray-400">
                 {t("tourInstance.perPersonShort", "/person")}
               </span>
-            )}
+            </div>
           </div>
         </div>
       </div>

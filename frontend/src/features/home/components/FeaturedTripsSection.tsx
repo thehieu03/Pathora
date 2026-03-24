@@ -95,7 +95,7 @@ const mapFeaturedTourToTrip = (tour: FeaturedTour): FallbackTrip => ({
   title: tour.tourName || "Tour",
   rating: Math.round(normalizePositiveNumber(tour.rating, 5)),
   days: Math.round(normalizePositiveNumber(tour.durationDays, 1)),
-  price: resolveTripPrice(tour.salePrice, tour.price),
+  price: resolveTripPrice(0, tour.basePrice),
 });
 
 const mapSearchTourToTrip = (tour: SearchTour): FallbackTrip => ({
@@ -104,7 +104,7 @@ const mapSearchTourToTrip = (tour: SearchTour): FallbackTrip => ({
   title: tour.tourName || "Tour",
   rating: Math.round(normalizePositiveNumber(tour.rating, 5)),
   days: Math.round(normalizePositiveNumber(tour.durationDays, 1)),
-  price: resolveTripPrice(tour.salePrice, tour.price),
+  price: resolveTripPrice(0, tour.basePrice),
 });
 
 const TripCard = ({

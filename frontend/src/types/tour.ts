@@ -282,7 +282,6 @@ export interface TourInstanceVm {
   maxParticipation: number;
   minParticipation: number;
   basePrice: number;
-  sellingPrice: number;
   depositPerPerson: number;
   status: string;
   instanceType: string;
@@ -327,8 +326,6 @@ export interface TourInstanceDto {
   maxParticipation: number;
   minParticipation: number;
   basePrice: number;
-  sellingPrice: number;
-  operatingCost: number;
   depositPerPerson: number;
   status: string;
   instanceType: string;

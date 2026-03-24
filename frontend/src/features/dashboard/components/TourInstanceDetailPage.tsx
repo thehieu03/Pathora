@@ -33,8 +33,6 @@ type EditForm = {
   minParticipation: string;
   maxParticipation: string;
   basePrice: string;
-  sellingPrice: string;
-  operatingCost: string;
   depositPerPerson: string;
   location: string;
   confirmationDeadline: string;
@@ -72,8 +70,6 @@ const toEditForm = (data: NormalizedTourInstanceDto): EditForm => ({
   minParticipation: String(data.minParticipation ?? 0),
   maxParticipation: String(data.maxParticipation ?? 0),
   basePrice: String(data.basePrice ?? 0),
-  sellingPrice: String(data.sellingPrice ?? 0),
-  operatingCost: String(data.operatingCost ?? 0),
   depositPerPerson: String(data.depositPerPerson ?? 0),
   location: data.location ?? "",
   confirmationDeadline: toDateInput(data.confirmationDeadline),
@@ -126,16 +122,6 @@ const updateSchema = yup.object({
     .typeError("Base price is required")
     .min(0, "Base price cannot be negative")
     .required("Base price is required"),
-  sellingPrice: yup
-    .number()
-    .typeError("Selling price is required")
-    .min(0, "Selling price cannot be negative")
-    .required("Selling price is required"),
-  operatingCost: yup
-    .number()
-    .typeError("Operating cost is required")
-    .min(0, "Operating cost cannot be negative")
-    .required("Operating cost is required"),
   depositPerPerson: yup
     .number()
     .typeError("Deposit per person is required")
@@ -390,8 +376,6 @@ export default function TourInstanceDetailPage() {
         minParticipation: Number(form.minParticipation),
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
-        sellingPrice: Number(form.sellingPrice),
-        operatingCost: Number(form.operatingCost),
         depositPerPerson: Number(form.depositPerPerson),
       };
 
@@ -424,8 +408,6 @@ export default function TourInstanceDetailPage() {
         minParticipation: Number(form.minParticipation),
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
-        sellingPrice: Number(form.sellingPrice),
-        operatingCost: Number(form.operatingCost),
         depositPerPerson: Number(form.depositPerPerson),
         location: form.location.trim() || undefined,
         confirmationDeadline: form.confirmationDeadline || undefined,
@@ -605,14 +587,6 @@ export default function TourInstanceDetailPage() {
               </article>
               <article className="rounded-[2.5rem] border border-stone-200 bg-white p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
                 <p className="text-xs uppercase tracking-wide text-stone-500">
-                  {t("tourInstance.form.sellingPrice", "Selling price")}
-                </p>
-                <p className="mt-2 text-xl font-bold text-orange-500">
-                  {formatCurrency(data.sellingPrice)}
-                </p>
-              </article>
-              <article className="rounded-[2.5rem] border border-stone-200 bg-white p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-                <p className="text-xs uppercase tracking-wide text-stone-500">
                   {t("tourInstance.form.depositPerPerson", "Deposit per person")}
                 </p>
                 <p className="mt-2 text-xl font-bold text-orange-500">
@@ -666,10 +640,6 @@ export default function TourInstanceDetailPage() {
                   <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
                     <dt className="text-stone-500">{t("tourInstance.form.currentParticipation", "Current participants")}</dt>
                     <dd className="font-semibold text-stone-900">{data.currentParticipation}</dd>
-                  </div>
-                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-                    <dt className="text-stone-500">{t("tourInstance.form.operatingCost", "Operating cost")}</dt>
-                    <dd className="font-semibold text-stone-900">{formatCurrency(data.operatingCost)}</dd>
                   </div>
                   <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
                     <dt className="text-stone-500">{t("tourInstance.confirmationDeadline", "Confirmation Deadline")}</dt>
@@ -896,38 +866,6 @@ export default function TourInstanceDetailPage() {
                 />
                 {errors.basePrice && (
                   <p className="text-xs text-red-600">{errors.basePrice}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700">
-                  {t("tourInstance.form.sellingPrice", "Selling price")} *
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  className={inputClassName}
-                  value={form.sellingPrice}
-                  onChange={(event) => updateField("sellingPrice", event.target.value)}
-                />
-                {errors.sellingPrice && (
-                  <p className="text-xs text-red-600">{errors.sellingPrice}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700">
-                  {t("tourInstance.form.operatingCost", "Operating cost")} *
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  className={inputClassName}
-                  value={form.operatingCost}
-                  onChange={(event) =>
-                    updateField("operatingCost", event.target.value)
-                  }
-                />
-                {errors.operatingCost && (
-                  <p className="text-xs text-red-600">{errors.operatingCost}</p>
                 )}
               </div>
               <div className="space-y-2">

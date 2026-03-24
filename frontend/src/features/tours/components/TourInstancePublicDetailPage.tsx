@@ -606,13 +606,13 @@ export function TourInstancePublicDetailPage() {
                 {children > 0 && (
                   <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                     <span className="text-sm text-gray-500">{t("landing.tourDetail.children", "Children")} × {children}</span>
-                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.sellingPrice * children, formatterLocale)}</span>
+                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.basePrice * children, formatterLocale)}</span>
                   </div>
                 )}
                 {infants > 0 && (
                   <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                     <span className="text-sm text-gray-500">{t("landing.tourDetail.infants", "Infants")} × {infants}</span>
-                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.operatingCost * infants, formatterLocale)}</span>
+                    <span className="text-base font-bold text-[#05073c]">{formatCurrency(data.basePrice * infants, formatterLocale)}</span>
                   </div>
                 )}
               </div>
