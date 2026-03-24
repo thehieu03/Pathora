@@ -176,9 +176,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Standard Package",
                     Description: "Standard 3-day package",
-                    AdultPrice: 1000,
-                    ChildPrice: 500,
-                    InfantPrice: 100,
+                    BasePrice: 1000,
                     NumberOfDay: 3,
                     NumberOfNight: 2,
                     Plans:
@@ -221,6 +219,8 @@ public sealed class TourServiceTests
                                         CheckInTime: "14:00",
                                         CheckOutTime: "12:00",
                                         Note: "Late check-in available",
+                                        RoomType: null,
+                                        RoomCapacity: null,
                                         Translations: null),
                                     Translations: null)
                             ],
@@ -253,7 +253,7 @@ public sealed class TourServiceTests
         Assert.Single(capturedTour!.Classifications);
         var cls = capturedTour.Classifications[0];
         Assert.Equal("Standard Package", cls.Name);
-        Assert.Equal(1000, cls.AdultPrice);
+        Assert.Equal(1000, cls.BasePrice);
         Assert.Single(cls.Plans);
         Assert.Single(cls.Plans[0].Activities);
         Assert.Equal("Airport Pickup", cls.Plans[0].Activities[0].Title);
@@ -285,9 +285,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -353,9 +351,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -417,9 +413,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -481,9 +475,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -562,6 +554,8 @@ public sealed class TourServiceTests
                     CheckInTime: null,
                     CheckOutTime: null,
                     Note: null,
+                    RoomType: null,
+                    RoomCapacity: null,
                     Translations: null)
             ],
             Locations =
@@ -579,8 +573,8 @@ public sealed class TourServiceTests
             Transportations =
             [
                 new TransportationDto(
-                    FromLocation: "Hotel",
-                    ToLocation: "Beach",
+                    FromLocationName: "Hotel",
+                    ToLocationName: "Beach",
                     TransportationType: "Bus",
                     TransportationName: null,
                     DurationMinutes: 30,
@@ -661,9 +655,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Pkg",
                     Description: "Desc",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -724,6 +716,83 @@ public sealed class TourServiceTests
         Assert.True(cls.Plans[0].Activities[0].Translations.ContainsKey("vi"));
         Assert.Equal("Activity EN", cls.Plans[0].Activities[0].Translations["en"].Title);
         Assert.Equal("Activity VI", cls.Plans[0].Activities[0].Translations["vi"].Title);
+    }
+
+    #endregion
+
+    #region TC13: Services are persisted as TourResource entities
+
+    [Fact]
+    public async Task Create_WithServices_ShouldPersistAsTourResources()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Services =
+            [
+                new ServiceDto(
+                    ServiceName: "Guide Service",
+                    PricingType: "Per Person",
+                    Price: 50,
+                    SalePrice: 45,
+                    Email: "guide@tour.com",
+                    ContactNumber: "0123456789")
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(capturedTour);
+        Assert.Single(capturedTour!.Resources);
+        var resource = capturedTour.Resources[0];
+        Assert.Equal(Domain.Entities.TourResourceType.Service, resource.Type);
+        Assert.Equal("Guide Service", resource.Name);
+        Assert.Equal(50, resource.Price);
+        Assert.Equal("Per Person", resource.PricingType);
+        Assert.Equal("guide@tour.com", resource.ContactEmail);
+        Assert.Equal("0123456789", resource.ContactPhone);
+    }
+
+    [Fact]
+    public async Task Create_WithServices_UsesSalePriceWhenBothPriceAndSalePriceProvided()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Services =
+            [
+                new ServiceDto(
+                    ServiceName: "Guide",
+                    PricingType: null,
+                    Price: 100,
+                    SalePrice: 80,
+                    Email: null,
+                    ContactNumber: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert - TourService uses Price when both are provided, falls back to SalePrice
+        Assert.Equal(100, capturedTour!.Resources[0].Price);
     }
 
     #endregion

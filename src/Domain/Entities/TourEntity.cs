@@ -109,6 +109,7 @@ public class TourEntity : Aggregate<Guid>
     /// (ví dụ: Phiêu lưu, Văn hóa, Biển). Dùng để lọc và duyệt tour.
     /// </summary>
     public virtual List<TourClassificationEntity> Classifications { get; set; } = [];
+    public virtual List<TourResourceEntity> Resources { get; set; } = [];
 
     /// <summary>
     /// Khóa ngoại tham chiếu đến chính sách visa áp dụng cho tour quốc

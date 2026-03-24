@@ -125,3 +125,13 @@ public sealed class CancellationPolicyTranslationData
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 }
+
+public sealed class TourResourceTranslationData
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
+}

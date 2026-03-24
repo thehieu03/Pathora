@@ -6,9 +6,7 @@ namespace Application.Features.Tour.Commands;
 public sealed record ClassificationDto(
     string Name,
     string Description,
-    decimal AdultPrice,
-    decimal ChildPrice,
-    decimal InfantPrice,
+    decimal BasePrice,
     int NumberOfDay,
     int NumberOfNight,
     List<DayPlanDto> Plans,
@@ -72,6 +70,8 @@ public sealed record AccommodationDto(
     string? CheckInTime,
     string? CheckOutTime,
     string? Note,
+    string? RoomType,
+    int? RoomCapacity,
     Dictionary<string, TourPlanAccommodationTranslationData>? Translations = null
 );
 
@@ -96,8 +96,8 @@ public sealed record ServiceDto(
 );
 
 public sealed record TransportationDto(
-    string FromLocation,
-    string ToLocation,
+    string FromLocationName,
+    string ToLocationName,
     string TransportationType,
     string? TransportationName,
     int? DurationMinutes,

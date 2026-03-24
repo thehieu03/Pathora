@@ -26,10 +26,13 @@ public sealed record CreateTourCommand(
     List<AccommodationDto>? Accommodations = null,
     List<LocationDto>? Locations = null,
     List<TransportationDto>? Transportations = null,
+    List<ServiceDto>? Services = null,
     Guid? VisaPolicyId = null,
     Guid? DepositPolicyId = null,
     Guid? PricingPolicyId = null,
-    Guid? CancellationPolicyId = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+    Guid? CancellationPolicyId = null,
+    TourScope TourScope = TourScope.Domestic,
+    CustomerSegment CustomerSegment = CustomerSegment.Group) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
 }
@@ -67,10 +70,27 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage(ValidationMessages.TourStatusInvalid);
 
+        // TourScope - Optional with default
+        RuleFor(x => x.TourScope)
+            .IsInEnum().WithMessage("Tour scope must be a valid value.");
+
+        // CustomerSegment - Optional with default
+        RuleFor(x => x.CustomerSegment)
+            .IsInEnum().WithMessage("Customer segment must be a valid value.");
+
         // Thumbnail - Required
         RuleFor(x => x.Thumbnail)
             .NotNull().WithMessage(ValidationMessages.ThumbnailRequired)
             .SetValidator(new ImageInputDtoValidator()!);
+
+        // Classifications - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Classifications)
+            .Must(cls => cls == null || cls.Count > 0)
+            .WithMessage("At least one classification is required when Classifications are provided.");
+
+        RuleForEach(x => x.Classifications)
+            .SetValidator(new ClassificationDtoValidator())
+            .When(x => x.Classifications != null && x.Classifications.Any());
 
         // Images - Required, at least 1 image
         RuleFor(x => x.Images)
@@ -82,10 +102,41 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
             .SetValidator(new ImageInputDtoValidator()!)
             .When(x => x.Images != null);
 
-        // Classifications - Optional but must be valid
-        RuleForEach(x => x.Classifications)
-            .SetValidator(new ClassificationDtoValidator())
-            .When(x => x.Classifications != null && x.Classifications.Any());
+        // Accommodations - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Accommodations)
+            .Must(acc => acc == null || acc.Count > 0)
+            .WithMessage("At least one accommodation is required when Accommodations are provided.");
+
+        RuleForEach(x => x.Accommodations)
+            .SetValidator(new AccommodationDtoValidator())
+            .When(x => x.Accommodations != null && x.Accommodations.Any());
+
+        // Locations - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Locations)
+            .Must(loc => loc == null || loc.Count > 0)
+            .WithMessage("At least one location is required when Locations are provided.");
+
+        RuleForEach(x => x.Locations)
+            .SetValidator(new LocationDtoValidator())
+            .When(x => x.Locations != null && x.Locations.Any());
+
+        // Transportations - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Transportations)
+            .Must(tr => tr == null || tr.Count > 0)
+            .WithMessage("At least one transportation is required when Transportations are provided.");
+
+        RuleForEach(x => x.Transportations)
+            .SetValidator(new TransportationDtoValidator())
+            .When(x => x.Transportations != null && x.Transportations.Any());
+
+        // Services - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Services)
+            .Must(svc => svc == null || svc.Count > 0)
+            .WithMessage("At least one service is required when Services are provided.");
+
+        RuleForEach(x => x.Services)
+            .SetValidator(new ServiceDtoValidator())
+            .When(x => x.Services != null && x.Services.Any());
     }
 }
 

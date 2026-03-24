@@ -26,7 +26,7 @@ internal static class SeedFileManifest
         new("SupplierContextSeed", "supplier.json", ["Id", "SupplierCode", "SupplierType", "Name"], "Id", null),
         new("SupplierPayableContextSeed", "supplier-payable.json", ["Id", "BookingId", "SupplierId", "ExpectedAmount", "Status"], "Id", ["BookingId", "SupplierId"]),
         new("SupplierReceiptContextSeed", "supplier-receipt.json", ["Id", "SupplierPayableId", "Amount", "PaymentMethod", "PaidAt"], "Id", ["SupplierPayableId"]),
-        new("TourClassificationContextSeed", "tour-classification.json", ["Id", "TourId", "Name", "AdultPrice", "ChildPrice", "InfantPrice"], "Id", ["TourId"]),
+        new("TourClassificationContextSeed", "tour-classification.json", ["Id", "TourId", "Name", "BasePrice", "NumberOfDay", "NumberOfNight"], "Id", ["TourId"]),
         new("TourContextSeed", "tour.json", ["Id", "TourCode", "TourName", "Status"], "Id", null),
         new("TourDayActivityContextSeed", "tour-day-activity.json", ["Id", "TourDayId", "ActivityType", "Title"], "Id", ["TourDayId"]),
         new("TourDayActivityGuideContextSeed", "tour-day-activity-guide.json", ["Id", "TourDayActivityStatusId", "TourGuideId", "Role"], "Id", ["TourDayActivityStatusId", "TourGuideId"]),

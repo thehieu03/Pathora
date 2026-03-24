@@ -272,9 +272,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard Tour",
                 Description: "Standard package",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -297,9 +295,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -323,9 +319,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: -100,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: -100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -334,7 +328,7 @@ public class CreateTourCommandValidatorTests
         };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName.Contains("AdultPrice"));
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("BasePrice"));
     }
 
     #endregion
@@ -349,9 +343,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 0,
                 NumberOfNight: 2,
                 Plans: [],
@@ -375,9 +367,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -404,9 +394,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -434,9 +422,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -473,9 +459,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -513,9 +497,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -538,7 +520,9 @@ public class CreateTourCommandValidatorTests
                             ContactPhone: "0123456789",
                             CheckInTime: "14:00",
                             CheckOutTime: "12:00",
-                            Note: null))])],
+                            Note: null,
+                            RoomType: null,
+                            RoomCapacity: null))])],
                 Insurances: [])
             ]
         };
@@ -558,9 +542,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -583,7 +565,9 @@ public class CreateTourCommandValidatorTests
                             ContactPhone: null,
                             CheckInTime: null,
                             CheckOutTime: null,
-                            Note: null))])],
+                            Note: null,
+                            RoomType: null,
+                            RoomCapacity: null))])],
                 Insurances: [])
             ]
         };
@@ -604,9 +588,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -629,7 +611,9 @@ public class CreateTourCommandValidatorTests
                             ContactPhone: "invalid-phone!",
                             CheckInTime: null,
                             CheckOutTime: null,
-                            Note: null))])],
+                            Note: null,
+                            RoomType: null,
+                            RoomCapacity: null))])],
                 Insurances: [])
             ]
         };
@@ -650,9 +634,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -699,9 +681,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -749,9 +729,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -799,9 +777,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -832,9 +808,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -866,9 +840,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -975,6 +947,388 @@ public class CreateTourCommandValidatorTests
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName == "LongDescription");
+    }
+
+    #endregion
+
+    #region TC41: BasePrice Zero - Boundary (allowed)
+
+    [Fact]
+    public void Validate_TC41_BasePriceZero_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Free Tour",
+                Description: "Free tour",
+                BasePrice: 0,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC42: BasePrice Negative - Abnormal
+
+    [Fact]
+    public void Validate_TC42_BasePriceNegative_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Invalid",
+                Description: "Bad",
+                BasePrice: -1,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("BasePrice"));
+    }
+
+    #endregion
+
+    #region TC43: Empty Classifications List - Abnormal
+
+    [Fact]
+    public void Validate_TC43_EmptyClassificationsList_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = []
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Classifications"));
+    }
+
+    #endregion
+
+    #region TC44: Null Classifications - Valid (optional)
+
+    [Fact]
+    public void Validate_TC44_NullClassifications_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with { Classifications = null };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC45: Route DurationMinutes Zero - Boundary (allowed)
+
+    [Fact]
+    public void Validate_TC45_RouteDurationMinutesZero_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(
+                        ActivityType: "Transport",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            FromLocationName: "A",
+                            ToLocationName: "B",
+                            TransportationType: "Bus",
+                            TransportationName: null,
+                            DurationMinutes: 0,
+                            PricingType: null,
+                            Price: 0,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC46-TC48: LocationDto Validation
+
+    [Fact]
+    public void Validate_TC46_LocationNameEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "",
+                LocationType: "Museum",
+                Description: "Description",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 10,
+                Address: "123 Main St")]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("LocationName"));
+    }
+
+    [Fact]
+    public void Validate_TC47_LocationNameTooLong_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: CreateString(201),
+                LocationType: "Museum",
+                Description: "Description",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 10,
+                Address: "123 Main St")]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("LocationName"));
+    }
+
+    [Fact]
+    public void Validate_TC48_LocationValid_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "Hanoi Opera House",
+                LocationType: "Museum",
+                Description: "Historic building",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 10,
+                Address: "1 Rue de la Paix")]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC49-TC51: TransportationDto Validation
+
+    [Fact]
+    public void Validate_TC49_TransportationFromLocationEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                FromLocationName: "",
+                ToLocationName: "Airport",
+                TransportationType: "Bus",
+                TransportationName: "Airport Shuttle",
+                DurationMinutes: 60,
+                PricingType: "Per person",
+                Price: 5,
+                RequiresIndividualTicket: false,
+                TicketInfo: null,
+                Note: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("FromLocationName"));
+    }
+
+    [Fact]
+    public void Validate_TC50_TransportationToLocationEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                FromLocationName: "Hotel",
+                ToLocationName: "",
+                TransportationType: "Bus",
+                TransportationName: "Airport Shuttle",
+                DurationMinutes: 60,
+                PricingType: "Per person",
+                Price: 5,
+                RequiresIndividualTicket: false,
+                TicketInfo: null,
+                Note: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("ToLocationName"));
+    }
+
+    [Fact]
+    public void Validate_TC51_TransportationValid_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                FromLocationName: "Hotel",
+                ToLocationName: "Airport",
+                TransportationType: "Bus",
+                TransportationName: "Airport Shuttle",
+                DurationMinutes: 60,
+                PricingType: "Per person",
+                Price: 5,
+                RequiresIndividualTicket: false,
+                TicketInfo: null,
+                Note: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC52-TC54: ServiceDto Validation
+
+    [Fact]
+    public void Validate_TC52_ServiceNameEmpty_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Services = [new ServiceDto(
+                ServiceName: "",
+                PricingType: "Per booking",
+                Price: 100,
+                SalePrice: 80,
+                Email: "guide@example.com",
+                ContactNumber: "0123456789")]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("ServiceName"));
+    }
+
+    [Fact]
+    public void Validate_TC53_ServiceNameTooLong_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Services = [new ServiceDto(
+                ServiceName: CreateString(201),
+                PricingType: "Per booking",
+                Price: 100,
+                SalePrice: 80,
+                Email: "guide@example.com",
+                ContactNumber: "0123456789")]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("ServiceName"));
+    }
+
+    [Fact]
+    public void Validate_TC54_ServiceValid_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Services = [new ServiceDto(
+                ServiceName: "Tour Guide Service",
+                PricingType: "Per booking",
+                Price: 100,
+                SalePrice: 80,
+                Email: "guide@example.com",
+                ContactNumber: "0123456789")]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC55: Service Negative Price
+
+    [Fact]
+    public void Validate_TC55_ServiceNegativePrice_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Services = [new ServiceDto(
+                ServiceName: "Guide",
+                PricingType: "Per booking",
+                Price: -50,
+                SalePrice: null,
+                Email: null,
+                ContactNumber: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Price"));
+    }
+
+    #endregion
+
+    #region TC56: Empty Locations List
+
+    [Fact]
+    public void Validate_TC56_EmptyLocationsList_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { Locations = [] };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Locations"));
+    }
+
+    #endregion
+
+    #region TC57: Empty Transportations List
+
+    [Fact]
+    public void Validate_TC57_EmptyTransportationsList_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { Transportations = [] };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Transportations"));
+    }
+
+    #endregion
+
+    #region TC58: Empty Services List
+
+    [Fact]
+    public void Validate_TC58_EmptyServicesList_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { Services = [] };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Services"));
+    }
+
+    #endregion
+
+    #region TC59: Empty Accommodations List
+
+    [Fact]
+    public void Validate_TC59_EmptyAccommodationsList_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with { Accommodations = [] };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("Accommodations"));
     }
 
     #endregion

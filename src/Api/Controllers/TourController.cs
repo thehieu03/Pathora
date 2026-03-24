@@ -76,10 +76,13 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] string? accommodations = null,
         [FromForm] string? locations = null,
         [FromForm] string? transportations = null,
+        [FromForm] string? services = null,
         [FromForm] Guid? visaPolicyId = null,
         [FromForm] Guid? depositPolicyId = null,
         [FromForm] Guid? pricingPolicyId = null,
-        [FromForm] Guid? cancellationPolicyId = null)
+        [FromForm] Guid? cancellationPolicyId = null,
+        [FromForm] TourScope tourScope = TourScope.Domestic,
+        [FromForm] CustomerSegment customerSegment = CustomerSegment.Group)
     {
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
@@ -90,6 +93,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         var accommodationData = ParseAccommodations(accommodations);
         var locationData = ParseLocations(locations);
         var transportationData = ParseTransportations(transportations);
+        var serviceData = ParseServices(services);
 
         // Collect all uploaded object names for rollback on failure
         var uploadedObjectNames = new List<string>();
@@ -114,10 +118,13 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
                 accommodationData,
                 locationData,
                 transportationData,
+                serviceData,
                 visaPolicyId,
                 depositPolicyId,
                 pricingPolicyId,
-                cancellationPolicyId);
+                cancellationPolicyId,
+                tourScope,
+                customerSegment);
 
             var result = await Sender.Send(command);
             return HandleResult(result);
@@ -351,6 +358,25 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         {
             return JsonSerializer.Deserialize<List<TransportationDto>>(
                 transportations,
+                TranslationJsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    private static List<ServiceDto>? ParseServices(string? services)
+    {
+        if (string.IsNullOrWhiteSpace(services))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<ServiceDto>>(
+                services,
                 TranslationJsonOptions);
         }
         catch (JsonException)

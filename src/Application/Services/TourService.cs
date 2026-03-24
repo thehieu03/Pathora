@@ -11,6 +11,7 @@ using Domain.Entities.Translations;
 using Domain.Enums;
 using Domain.UnitOfWork;
 using ErrorOr;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
@@ -28,12 +29,14 @@ public class TourService(
     IUser user,
     IUnitOfWork unitOfWork,
     IMapper mapper,
+    ILogger<TourService>? logger = null,
     ILanguageContext? languageContext = null) : ITourService
 {
     private readonly ITourRepository _tourRepository = tourRepository;
     private readonly IUser _user = user;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IMapper _mapper = mapper;
+    private readonly ILogger<TourService>? _logger = logger;
     private readonly ILanguageContext _languageContext = languageContext ?? new FallbackLanguageContext();
 
     private static ImageEntity ToImageEntity(ImageInputDto dto) =>
@@ -67,6 +70,8 @@ public class TourService(
             request.LongDescription,
             _user.Id ?? string.Empty,
             request.Status,
+            tourScope: request.TourScope,
+            customerSegment: request.CustomerSegment,
             seoTitle: request.SEOTitle,
             seoDescription: request.SEODescription,
             thumbnail: thumbnail,
@@ -85,9 +90,7 @@ public class TourService(
                 var classification = TourClassificationEntity.Create(
                     tour.Id,
                     cls.Name,
-                    cls.AdultPrice,
-                    cls.ChildPrice,
-                    cls.InfantPrice,
+                    cls.BasePrice,
                     cls.Description,
                     cls.NumberOfDay,
                     cls.NumberOfNight,
@@ -181,10 +184,15 @@ public class TourService(
                         // Add Accommodation
                         if (act.Accommodation != null)
                         {
+                            var parsedRoomType = !string.IsNullOrWhiteSpace(act.Accommodation.RoomType)
+                                && Enum.TryParse<Domain.Enums.RoomType>(act.Accommodation.RoomType, ignoreCase: true, out var rt)
+                                ? rt
+                                : Domain.Enums.RoomType.Double;
+
                             var accommodation = TourPlanAccommodationEntity.Create(
                                 act.Accommodation.AccommodationName,
-                                Domain.Enums.RoomType.Double,
-                                2, // default roomCapacity
+                                parsedRoomType,
+                                act.Accommodation.RoomCapacity ?? 2,
                                 Domain.Enums.MealType.None,
                                 _user.Id ?? string.Empty,
                                 act.Accommodation.CheckInTime != null && TimeOnly.TryParse(act.Accommodation.CheckInTime, out var cit) ? cit : null,
@@ -237,28 +245,75 @@ public class TourService(
             }
         }
 
-        // Standalone Accommodations, Locations, and Transportations from wizard Steps 3-5
-        // are accepted at the API layer for future persistence. Currently logged for observability.
-        // The TourEntity does not yet have shared entity collections for these resource pools.
+        // Standalone Accommodations, Locations, Transportations and Services are persisted as TourResources
         if (request.Accommodations?.Count > 0)
         {
             foreach (var acc in request.Accommodations)
             {
-                Console.WriteLine($"[DEBUG] Accommodation: {acc.AccommodationName}");
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Accommodation,
+                    acc.AccommodationName,
+                    _user.Id ?? string.Empty,
+                    address: acc.Address,
+                    contactPhone: acc.ContactPhone,
+                    checkInTime: acc.CheckInTime,
+                    checkOutTime: acc.CheckOutTime,
+                    note: acc.Note);
+                tour.Resources.Add(resource);
             }
         }
         if (request.Locations?.Count > 0)
         {
             foreach (var loc in request.Locations)
             {
-                Console.WriteLine($"[DEBUG] Location: {loc.LocationName}");
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Location,
+                    loc.LocationName,
+                    _user.Id ?? string.Empty,
+                    description: loc.Description,
+                    address: loc.Address,
+                    city: loc.City,
+                    country: loc.Country,
+                    entranceFee: loc.EntranceFee);
+                tour.Resources.Add(resource);
             }
         }
         if (request.Transportations?.Count > 0)
         {
             foreach (var tr in request.Transportations)
             {
-                Console.WriteLine($"[DEBUG] Transportation: {tr.FromLocation} -> {tr.ToLocation}");
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Transportation,
+                    $"{tr.FromLocationName} -> {tr.ToLocationName}",
+                    _user.Id ?? string.Empty,
+                    transportationType: tr.TransportationType,
+                    transportationName: tr.TransportationName,
+                    durationMinutes: tr.DurationMinutes,
+                    price: tr.Price,
+                    pricingType: tr.PricingType,
+                    requiresIndividualTicket: tr.RequiresIndividualTicket,
+                    ticketInfo: tr.TicketInfo,
+                    note: tr.Note);
+                tour.Resources.Add(resource);
+            }
+        }
+        if (request.Services?.Count > 0)
+        {
+            foreach (var svc in request.Services)
+            {
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Service,
+                    svc.ServiceName,
+                    _user.Id ?? string.Empty,
+                    contactEmail: svc.Email,
+                    contactPhone: svc.ContactNumber,
+                    price: svc.Price ?? svc.SalePrice,
+                    pricingType: svc.PricingType);
+                tour.Resources.Add(resource);
             }
         }
 

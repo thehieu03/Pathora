@@ -35,14 +35,8 @@ public sealed class ClassificationDtoValidator : AbstractValidator<Classificatio
         RuleFor(x => x.Description)
             .MaximumLength(1000).WithMessage("Classification description must not exceed 1000 characters.");
 
-        RuleFor(x => x.AdultPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Adult price must be greater than or equal to 0.");
-
-        RuleFor(x => x.ChildPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Child price must be greater than or equal to 0.");
-
-        RuleFor(x => x.InfantPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Infant price must be greater than or equal to 0.");
+        RuleFor(x => x.BasePrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Base price must be greater than or equal to 0.");
 
         RuleFor(x => x.NumberOfDay)
             .GreaterThan(0).WithMessage("Number of days must be greater than 0.");
@@ -121,7 +115,7 @@ public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
             .NotEmpty().WithMessage("Transportation type is required.");
 
         RuleFor(x => x.DurationMinutes)
-            .GreaterThan(0).WithMessage("Duration must be greater than 0.");
+            .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.");
 
         RuleFor(x => x.Price)
             .GreaterThanOrEqualTo(0).WithMessage("Route price must be greater than or equal to 0.");
@@ -148,6 +142,14 @@ public sealed class AccommodationDtoValidator : AbstractValidator<AccommodationD
 
         RuleFor(x => x.CheckOutTime)
             .MaximumLength(50).WithMessage("Check-out time must not exceed 50 characters.");
+
+        RuleFor(x => x.RoomType)
+            .MaximumLength(50).WithMessage("Room type must not exceed 50 characters.")
+            .When(x => x.RoomType != null);
+
+        RuleFor(x => x.RoomCapacity)
+            .GreaterThan(0).WithMessage("Room capacity must be greater than 0.")
+            .When(x => x.RoomCapacity.HasValue);
     }
 }
 
@@ -173,5 +175,87 @@ public sealed class InsuranceDtoValidator : AbstractValidator<InsuranceDto>
 
         RuleFor(x => x.CoverageFee)
             .GreaterThanOrEqualTo(0).WithMessage("Coverage fee must be greater than or equal to 0.");
+    }
+}
+
+public sealed class LocationDtoValidator : AbstractValidator<LocationDto>
+{
+    public LocationDtoValidator()
+    {
+        RuleFor(x => x.LocationName)
+            .NotEmpty().WithMessage("Location name is required.")
+            .MaximumLength(200).WithMessage("Location name must not exceed 200 characters.");
+
+        RuleFor(x => x.LocationType)
+            .NotEmpty().WithMessage("Location type is required.");
+
+        RuleFor(x => x.Description)
+            .MaximumLength(1000).WithMessage("Location description must not exceed 1000 characters.")
+            .When(x => x.Description != null);
+
+        RuleFor(x => x.City)
+            .MaximumLength(200).WithMessage("City must not exceed 200 characters.")
+            .When(x => x.City != null);
+
+        RuleFor(x => x.Country)
+            .MaximumLength(200).WithMessage("Country must not exceed 200 characters.")
+            .When(x => x.Country != null);
+
+        RuleFor(x => x.EntranceFee)
+            .GreaterThanOrEqualTo(0).WithMessage("Entrance fee must be greater than or equal to 0.")
+            .When(x => x.EntranceFee.HasValue);
+
+        RuleFor(x => x.Address)
+            .MaximumLength(500).WithMessage("Address must not exceed 500 characters.")
+            .When(x => x.Address != null);
+    }
+}
+
+public sealed class TransportationDtoValidator : AbstractValidator<TransportationDto>
+{
+    public TransportationDtoValidator()
+    {
+        RuleFor(x => x.FromLocationName)
+            .NotEmpty().WithMessage("From location is required.");
+
+        RuleFor(x => x.ToLocationName)
+            .NotEmpty().WithMessage("To location is required.");
+
+        RuleFor(x => x.TransportationType)
+            .NotEmpty().WithMessage("Transportation type is required.");
+
+        RuleFor(x => x.DurationMinutes)
+            .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.")
+            .When(x => x.DurationMinutes.HasValue);
+
+        RuleFor(x => x.Price)
+            .GreaterThanOrEqualTo(0).WithMessage("Route price must be greater than or equal to 0.")
+            .When(x => x.Price.HasValue);
+    }
+}
+
+public sealed class ServiceDtoValidator : AbstractValidator<ServiceDto>
+{
+    public ServiceDtoValidator()
+    {
+        RuleFor(x => x.ServiceName)
+            .NotEmpty().WithMessage("Service name is required.")
+            .MaximumLength(200).WithMessage("Service name must not exceed 200 characters.");
+
+        RuleFor(x => x.Price)
+            .GreaterThanOrEqualTo(0).WithMessage("Price must be greater than or equal to 0.")
+            .When(x => x.Price.HasValue);
+
+        RuleFor(x => x.SalePrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Sale price must be greater than or equal to 0.")
+            .When(x => x.SalePrice.HasValue);
+
+        RuleFor(x => x.Email)
+            .EmailAddress().WithMessage("Invalid email format.")
+            .When(x => !string.IsNullOrEmpty(x.Email));
+
+        RuleFor(x => x.ContactNumber)
+            .Matches(@"^[\d\s\-\+\(\)]+$").WithMessage("Invalid phone number format.")
+            .When(x => !string.IsNullOrEmpty(x.ContactNumber));
     }
 }

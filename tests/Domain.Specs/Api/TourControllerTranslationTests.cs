@@ -540,8 +540,8 @@ public sealed class TourControllerTranslationTests
         var transportationsJson = """
                                   [
                                     {
-                                      "fromLocation": "From VI",
-                                      "toLocation": "To VI",
+                                      "fromLocationName": "From VI",
+                                      "toLocationName": "To VI",
                                       "transportationType": "Bus",
                                       "transportationName": "Name VI",
                                       "durationMinutes": 120,
@@ -572,7 +572,7 @@ public sealed class TourControllerTranslationTests
         Assert.NotNull(probe.CapturedRequest.Transportations);
         Assert.Single(probe.CapturedRequest.Transportations!);
         var tr = probe.CapturedRequest.Transportations![0];
-        Assert.Equal("From VI", tr.FromLocation);
+        Assert.Equal("From VI", tr.FromLocationName);
         Assert.NotNull(tr.Translations);
         Assert.True(tr.Translations!.ContainsKey("vi"));
         Assert.True(tr.Translations.ContainsKey("en"));

@@ -96,6 +96,7 @@ public class AppDbContext : DbContext
     public DbSet<PricingPolicy> PricingPolicies => Set<PricingPolicy>();
     public DbSet<TaxConfigEntity> TaxConfigs => Set<TaxConfigEntity>();
     public DbSet<CancellationPolicyEntity> CancellationPolicies => Set<CancellationPolicyEntity>();
+    public DbSet<TourResourceEntity> TourResources => Set<TourResourceEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
