@@ -1400,15 +1400,38 @@
       "tourPackages": "Tour Packages",
       "ourPolicies": "Our Policies"
     },
+    "menu": "Menu",
     "hero": {
-      "title": "Enjoy in the best way!",
-      "subtitle": "Enjoy our services for your trip anytime",
-      "publicTours": "Public Tours",
+      "title": "Vietnam Awaits",
+      "subtitle": "Discover breathtaking landscapes and rich cultural heritage across Vietnam and beyond",
+      "eyebrow": "Vietnam's Premier Travel Platform",
+      "searchPlaceholder": "Where do you want to go?",
+      "exploreTours": "Explore Tours",
+      "fields": {
+        "people": {
+          "label": "Number of people",
+          "placeholder": "Choose number",
+          "single": "person",
+          "plural": "people"
+        },
+        "date": {
+          "label": "Date",
+          "placeholder": "Choose Date"
+        },
+        "destination": {
+          "label": "Destination",
+          "placeholder": "Select Location"
+        },
+        "classification": {
+          "label": "Classification",
+          "placeholder": "Select Classification"
+        }
+      },
       "privateTours": "Private Tours",
+      "publicTours": "Public Tours",
       "backgroundAlt": "Travel destination with beautiful scenery",
       "searchAria": "Search tours",
       "searchAlt": "Search",
-      "exploreTours": "Explore Tours",
       "weekdays": [
         "Mon",
         "Tue",
@@ -1434,27 +1457,88 @@
       "calendar": {
         "previousMonth": "Previous month",
         "nextMonth": "Next month"
-      },
-      "fields": {
-        "people": {
-          "label": "Number of people",
-          "placeholder": "Choose number",
-          "single": "person",
-          "plural": "people"
-        },
-        "date": {
-          "label": "Date",
-          "placeholder": "Choose Date"
-        },
-        "destination": {
-          "label": "Destination",
-          "placeholder": "Select Location"
-        },
-        "classification": {
-          "label": "Classification",
-          "placeholder": "Select Classification"
-        }
       }
+    },
+    "stats": {
+      "items": {
+        "totalTours": "Tours",
+        "totalTravellers": "Travelers",
+        "support": "Support"
+      },
+      "titleLine1": "We Make",
+      "titleLine2": "World Travel Easy",
+      "description": "",
+      "exploreImageAlt": "Travel",
+      "backgroundImageAlt": "Travel background"
+    },
+    "destinations": {
+      "eyebrow": "Explore",
+      "title": "Trending Destinations",
+      "viewAll": "View all destinations",
+      "tours": "tours",
+      "topAttractionsTitle": "Top Attractions",
+      "trendingTitle": "Trending Destination"
+    },
+    "aboutUs": {
+      "ourStory": "Our Story",
+      "weAre": "We Are",
+      "heroSubtitle": "We are passionate about creating unforgettable travel experiences that connect people with extraordinary destinations.",
+      "whoWeAre": "Who We Are",
+      "yearsExperience": "Years of Experience",
+      "passionateTravelers": "Passionate Travelers &",
+      "expertGuides": "Expert Guides",
+      "whoWeAreDesc1": "Pathora was founded in 2010 with a simple mission: to make travel accessible, enjoyable, and meaningful. Our team of passionate locals and seasoned professionals work together to craft tours that reveal the true soul of each destination.",
+      "whoWeAreDesc2": "From bustling cities to serene landscapes, we handle every detail so you can focus on what matters most — creating memories. With over 92,000 happy travelers and a 98% satisfaction rate, we continue to set the standard for quality travel experiences.",
+      "exploreOurTours": "Explore Our Tours",
+      "whyChooseUs": "Why Choose Us",
+      "valuesTitle": "Our Core Values",
+      "ourJourney": "Our Journey",
+      "journeyTitle": "The Pathora Story",
+      "teamSubtitle": "Meet the Team",
+      "teamTitle": "The Masters Behind Your Adventure",
+      "toursLed": "tours led",
+      "readyToExplore": "Ready to Explore?",
+      "ctaTitle": "Start Your Adventure With",
+      "ctaTitleWith": "with",
+      "ctaDescription": "Browse our curated tour packages and find the perfect journey for your next adventure.",
+      "browsePackageTours": "Browse Package Tours",
+      "stats": {
+        "destinations": "Destinations",
+        "happyTravelers": "Happy Travelers",
+        "toursOffered": "Tours Offered",
+        "satisfactionRate": "Satisfaction Rate"
+      },
+      "values": {
+        "globalExpertise": "Global Expertise",
+        "globalExpertiseDesc": "With deep knowledge of local cultures and landscapes, we bring authentic experiences to every journey.",
+        "safeTrusted": "Safe & Trusted",
+        "safeTrustedDesc": "Licensed operators, vetted guides, and comprehensive travel insurance for your peace of mind.",
+        "tailoredForYou": "Tailored For You",
+        "tailoredForYouDesc": "From solo travelers to family groups, we customize itineraries to match your interests and pace.",
+        "seamlessExperience": "Seamless Experience",
+        "seamlessExperienceDesc": "End-to-end support from booking to completion, so you can focus on the adventure."
+      },
+      "timeline": {
+        "founded": "Pathora Founded",
+        "foundedDesc": "Started as a small local tour operator in Hanoi with a dream to share Vietnam's beauty with the world.",
+        "first10k": "10,000 Travelers Milestone",
+        "first10kDesc": "Reached our first major milestone of 10,000 happy travelers and expanded operations to 3 major cities.",
+        "expanded60": "Expanded to 60+ Destinations",
+        "expanded60Desc": "Grew our network to cover 60+ destinations across Vietnam, Laos, Cambodia, Thailand, and beyond.",
+        "digitalFirst": "Digital-First Platform Launch",
+        "digitalFirstDesc": "Launched our online booking platform making it easier than ever to discover and book tours instantly.",
+        "happy92k": "92,000 Happy Travelers",
+        "happy92kDesc": "Celebrated serving over 92,000 travelers with a 98% satisfaction rating and counting."
+      }
+    },
+    "videoShowcase": {
+      "label": "Experience Vietnam",
+      "caption": "Vietnam Awaits",
+      "subcaption": "Discover breathtaking landscapes and rich cultural heritage"
+    },
+    "featured": {
+      "eyebrow": "Handpicked",
+      "title": "Featured Adventures"
     },
     "auth": {
       "closeModal": "Close modal",
@@ -1481,7 +1565,6 @@
       "and": "and",
       "privacy": "Privacy",
       "or": "or",
-      "google": "Google",
       "signUpWithGoogle": "Sign Up with Google",
       "signInWithGoogle": "Sign In with Google",
       "alreadyHaveAccount": "Already have an account?",
@@ -1495,121 +1578,153 @@
       "resetLinkSentTo": "We sent a password reset link to",
       "backToLogin": "Back to Login"
     },
-    "featured": {
-      "title": "Featured Trips",
-      "days": "{{count}} days",
-      "from": "From"
-    },
-    "destinations": {
-      "trendingTitle": "Trending Destination",
-      "topAttractionsTitle": "Top Attractions",
-      "tours": "{{count}} Tours"
-    },
-    "latestTours": {
-      "title": "Our Latest Tours",
-      "seeAll": "See all",
-      "avatarAlt": "Tour avatar",
-      "items": [
-        {
-          "date": "Last Day is March 13!",
-          "title": "A classic European highlights itinerary."
-        },
-        {
-          "date": "Last Day is March 13!",
-          "title": "Signature city highlights."
-        },
-        {
-          "date": "Last Day is March 13!",
-          "title": "In Hotels Near Cities A Short Break!"
-        },
-        {
-          "date": "Last Day is March 13!",
-          "title": "Discover Iceland Kayaking Tours"
-        },
-        {
-          "date": "Last Day is March 13!",
-          "title": "Safari Adventure Tanzania"
-        }
-      ]
-    },
-    "reviews": {
-      "title": "Customer Reviews",
-      "subtitle": "What our travellers say",
-      "previousReview": "Previous review",
-      "nextReview": "Next review",
-      "reviewSlides": "Review slides",
-      "goToReview": "Go to review {{number}}",
-      "items": [
-        {
-          "role": "Traveller",
-          "text": "The trip was absolutely amazing! The knowledge of destinations was impressive and made the journey doubly enjoyable. I'll definitely book again with Pathora."
-        },
-        {
-          "role": "Adventure Traveller",
-          "text": "Outstanding service from start to finish. The personalized attention and expertise were exceptional. I've never had such a seamless travel experience."
-        },
-        {
-          "role": "Family Traveler",
-          "text": "Pathora made our family vacation unforgettable. Every detail was perfectly planned and our guide was knowledgeable and friendly."
-        }
-      ]
-    },
-    "stats": {
-      "titleLine1": "We Make",
-      "titleLine2": "World Travel Easy",
-      "description": "Travel your way—discover new destinations, choose the tour that fits your style, and let Pathora handle the details from booking to documents and visa support.",
-      "exploreImageAlt": "Travel",
-      "backgroundImageAlt": "Travel background",
-      "items": {
-        "totalTravellers": "Total Travellers",
-        "totalTours": "Total Tours",
-        "milesCovered": "Miles Covered"
-      }
-    },
-    "cta": {
-      "title": "Keep things flexible",
-      "description": "Go ahead and take that trip — we know how important it is to travel on your schedule.",
-      "exploreNow": "Explore Now",
-      "backgroundAlt": "Mountain landscape"
+    "latest": {
+      "eyebrow": "Just Added",
+      "title": "Latest Tours",
+      "viewAll": "View all"
     },
     "whyChoose": {
-      "title": "Why choose Tour",
-      "subtitle": "We offer the best travel experience every time",
-      "features": [
-        {
-          "title": "Easy Relaxed & Transparent Pricing",
-          "desc": "We provide transparent pricing with no hidden fees so you can travel worry-free."
+      "eyebrow": "Why Pathora",
+      "title": "Why Choose Us",
+      "items": {
+        "price": {
+          "title": "Best Price",
+          "desc": "Guaranteed lowest prices on all tours"
         },
-        {
-          "title": "Stress & Discounted Booking",
-          "desc": "Book your tours at discounted prices with our easy and stress-free booking process."
+        "guides": {
+          "title": "Expert Guides",
+          "desc": "Local experts with deep knowledge"
         },
-        {
-          "title": "Full Payment & Visa Support",
-          "desc": "We handle all payment processing and provide full visa support for your journey."
+        "support": {
+          "title": "24/7 Support",
+          "desc": "Always here when you need us"
         },
-        {
-          "title": "Reliable Top Services",
-          "desc": "Our experienced team ensures top-notch service throughout your entire travel experience."
+        "flexible": {
+          "title": "Flexible Booking",
+          "desc": "Free cancellation up to 24 hours"
         }
-      ]
+      },
+      "subtitle": "We offer the best travel experience every time"
+    },
+    "cta": {
+      "title": "Ready for Your Next Adventure?",
+      "subtitle": "Join thousands of travelers discovering Vietnam's hidden gems with Pathora.",
+      "ctaButton": "Explore Tours",
+      "secondaryButton": "Learn More",
+      "description": "Go ahead and take that trip -- we know how important it is to travel on your schedule.",
+      "exploreNow": "Explore Now"
+    },
+    "reviews": {
+      "eyebrow": "Testimonials",
+      "title": "What Travelers Say",
+      "rating": "Rating",
+      "nextReview": "Next review",
+      "previousReview": "Previous review",
+      "reviewSlides": "Review slides",
+      "subtitle": "What our travellers say"
+    },
+    "footer": {
+      "about": "About",
+      "tours": "Tours",
+      "blog": "Blog",
+      "careers": "Careers",
+      "help": "Help Center",
+      "contact": "Contact",
+      "faq": "FAQ",
+      "policies": "Policies",
+      "destinations": "Destinations",
+      "tagline": "Vietnam's premier travel platform. Discover hidden gems, curated tours, and unforgettable adventures.",
+      "newsletter": "Stay Updated",
+      "newsletterDesc": "Get the latest travel deals and updates.",
+      "copyright": "All rights reserved.",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "contactNested": {
+        "title": "Contact",
+        "address": "328 Queensberry Street, North Melbourne VIC 3051, Australia."
+      },
+      "company": {
+        "title": "Company"
+      },
+      "support": {
+        "title": "Support"
+      },
+      "mobileApps": {
+        "title": "Mobile Apps",
+        "ios": "iOS App",
+        "android": "Android App"
+      },
+      "followUs": "Follow Us",
+      "speakToExpert": "Speak to our expert at",
+      "backgroundAlt": "Footer background",
+      "links": {
+        "company": {
+          "aboutUs": "About Us",
+          "reviews": "Tourz Reviews",
+          "contactUs": "Contact Us",
+          "travelGuides": "Travel Guides",
+          "dataPolicy": "Data Policy",
+          "cookiePolicy": "Cookie Policy",
+          "legal": "Legal",
+          "sitemap": "Sitemap"
+        },
+        "support": {
+          "getInTouch": "Get in Touch",
+          "helpCenter": "Help center",
+          "liveChat": "Live chat",
+          "howItWorks": "How it works"
+        }
+      },
+      "newsletterNested": {
+        "title": "Newsletter",
+        "description": "Subscribe to the free newsletter and stay up to date",
+        "placeholder": "Your email address",
+        "send": "Send"
+      }
+    },
+    "policies": {
+      "transparencyFirst": "Travel Guidelines",
+      "our": "Our",
+      "policy": "Policies",
+      "heroSubtitle": "Read our policies to understand how we operate and what you can expect from our services.",
+      "lastUpdated": "Last updated:",
+      "lastUpdatedDate": "March 24, 2026",
+      "policiesApplyNote": "These policies apply to all services provided by Pathora.",
+      "introPrefix": "At Pathora, we believe in complete transparency. This document outlines our policies for bookings, payments, cancellations, and more to ensure a smooth experience for all travelers.",
+      "introSuffix": " We are committed to providing clear and fair terms for every journey you book with us.",
+      "ctaTitle": "Have Questions?",
+      "ctaDescription": "Our support team is available 24/7 to assist you with any policy-related questions.",
+      "contactSupport": "Contact Support",
+      "sections": {
+        "bookingPayment": "Booking & Payment",
+        "cancellationRefund": "Cancellation & Refund",
+        "modificationRescheduling": "Modification & Rescheduling",
+        "healthSafety": "Health & Safety",
+        "privacyPolicy": "Privacy Policy",
+        "liabilityDisclaimer": "Liability Disclaimer"
+      },
+      "items": {
+        "_deprecated": "// content served by backend API"
+      },
+      "noContentTitle": "No policies available",
+      "noContentDesc": "Policy content will appear here once added by the administrator.",
+      "errorTitle": "Failed to load policies"
+    },
+    "a11y": {
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "changeLanguage": "Change language",
+      "closeNavigationMenu": "Close navigation menu",
+      "notificationsAria": "{{count}} unread notifications"
     },
     "trustedBrands": {
       "title": "Trusted by all the largest travel brands",
       "brandAlt": "Brand"
     },
-    "sidebar": {
-      "dashboard": "Dashboard",
-      "user": "User",
-      "userProfile": "User Profile",
-      "profile": "Profile",
-      "bookingHistory": "Booking History",
-      "tourDiscovery": "Tour Discovery"
-    },
     "customTour": {
       "backToHome": "Back to Home",
       "title": "Custom Tour Request",
-      "subtitle": "Design your perfect journey — tell us your preferences and we'll craft a personalized tour just for you.",
+      "subtitle": "Design your perfect journey -- tell us your preferences and we'll craft a personalized tour just for you.",
       "intro": "Share your preferences and our team will contact you with a tailored proposal.",
       "viewMyRequests": "View My Requests"
     },
@@ -1618,7 +1733,7 @@
       "tours": "Tours",
       "availableDepartures": "Available Departures",
       "searchPlaceholder": "Search tours",
-      "searchFullPlaceholder": "Search tours, destinations, activities…",
+      "searchFullPlaceholder": "Search tours, destinations, activities...",
       "resultsCount": "{{count}} results",
       "sortBy": "Sort by",
       "sortFeatured": "Featured",
@@ -1715,9 +1830,7 @@
       "guests": "Guests",
       "availability": "Availability",
       "overview": "Overview",
-      "itinerary": {
-        "empty": "No itinerary available for this package."
-      },
+      "itinerary": "Itinerary",
       "aboutThisTour": "About This Tour",
       "itineraryComingSoon": "Detailed itinerary will be available soon. Please contact us for more information.",
       "youMightAlsoLike": "You Might Also Like",
@@ -1775,7 +1888,8 @@
       "noReviewsCta": "Be the first to share your experience!",
       "perPerson": "/person",
       "selectDateFirst": "Please select a departure date first",
-      "morePhotos": "+{{count}} photos"
+      "morePhotos": "+{{count}} photos",
+      "itineraryEmpty": "No itinerary available for this package."
     },
     "checkout": {
       "backToTour": "Back to Tour",
@@ -1825,7 +1939,7 @@
       "bankingAccepted": "Banking app or e-wallet accepted",
       "remainingBalance": "Remaining balance",
       "confirmBooking": "Confirm Booking",
-      "secureBookingNote": "Secure booking • No hidden fees",
+      "secureBookingNote": "Secure booking - No hidden fees",
       "secureBooking": "Secure Booking",
       "dataProtected": "Your data is protected",
       "sslEncrypted": "SSL encrypted connection",
@@ -1880,9 +1994,8 @@
       "tourBooking": "Tour Booking",
       "public": "Public",
       "private": "Private",
-      "adultsCount": "{{count}} Adults",
-      "childrenCount": ", {{count}} Children",
-      "infantsCount": ", {{count}} Infants"
+      "copied": "Copied to clipboard!",
+      "paymentConfirmedDesc": "Payment confirmed. You will receive an email shortly."
     },
     "visa": {
       "title": "Visa Applications",
@@ -1946,67 +2059,6 @@
       "viewDetails": "View Details",
       "noResults": "No bookings found."
     },
-    "cancellationPolicy": {
-      "pageTitle": "Cancellation Policies",
-      "pageSubtitle": "Manage cancellation refund rules for tours",
-      "empty": {
-        "title": "No cancellation policies found",
-        "description": "Create one to get started"
-      },
-      "error": {
-        "title": "Could not load policies",
-        "loadFailed": "Failed to load cancellation policies",
-        "deleteFailed": "Failed to delete cancellation policy",
-        "saveFailed": "An error occurred while saving the cancellation policy"
-      },
-      "column": {
-        "policyCode": "Policy Code",
-        "tourScope": "Tour Scope",
-        "minDays": "Min Days",
-        "maxDays": "Max Days",
-        "penalty": "Penalty %",
-        "applyOn": "Apply On",
-        "status": "Status",
-        "actions": "Actions"
-      },
-      "applyOn": {
-        "FullAmount": "Full Amount",
-        "DepositOnly": "Deposit Only"
-      },
-      "form": {
-        "titleCreate": "Create Cancellation Policy",
-        "titleEdit": "Edit Cancellation Policy",
-        "tourScope": "Tour Scope",
-        "minDays": "Min Days Before Departure",
-        "maxDays": "Max Days Before Departure",
-        "penaltyPercentage": "Penalty Percentage",
-        "applyOn": "Apply On",
-        "translations": "Translations"
-      },
-      "validation": {
-        "minDaysRequired": "Min days is required",
-        "maxDaysRequired": "Max days is required",
-        "penaltyRequired": "Penalty percentage is required",
-        "cannotBeNegative": "Cannot be negative",
-        "cannotExceed100": "Cannot exceed 100%",
-        "minDaysGreaterThanMax": "Min days cannot be greater than Max days"
-      },
-      "action": {
-        "addPolicy": "Add Policy",
-        "edit": "Edit",
-        "delete": "Delete",
-        "cancel": "Cancel",
-        "update": "Update",
-        "create": "Create",
-        "saving": "Saving..."
-      },
-      "confirm": {
-        "delete": "Are you sure you want to delete this cancellation policy?"
-      },
-      "unit": {
-        "days": "days"
-      }
-    },
     "bookingDetail": {
       "backToBookings": "Back to Bookings",
       "bookingInformation": "Booking Information",
@@ -2063,155 +2115,6 @@
       "tierLuxury": "Luxury",
       "tierPremium": "Premium"
     },
-    "aboutUs": {
-      "ourStory": "Our Story",
-      "weAre": "We Are",
-      "heroSubtitle": "Turning ordinary moments into extraordinary journeys since 2010. Every trip is a story — let us help you write yours.",
-      "stats": {
-        "destinations": "Destinations",
-        "happyTravelers": "Happy Travelers",
-        "toursOffered": "Tours Offered",
-        "satisfactionRate": "Satisfaction Rate"
-      },
-      "whoWeAre": "Who We Are",
-      "passionateTravelers": "Passionate Travelers,",
-      "expertGuides": "Expert Guides",
-      "whoWeAreDesc1": "Pathora was born from a simple belief: travel should transform you. We started as two friends with backpacks and big dreams, and grew into a team of over 120 specialists spread across five continents.",
-      "whoWeAreDesc2": "Today, we design meticulously crafted tours — from budget adventures to VIP luxury retreats — all united by our commitment to authentic, meaningful experiences.",
-      "yearsExperience": "Years of Experience",
-      "exploreOurTours": "Explore Our Tours",
-      "whyChooseUs": "Why Choose Us",
-      "valuesTitle": "Built on Values That Matter",
-      "values": {
-        "globalExpertise": "Global Expertise",
-        "globalExpertiseDesc": "Our local partners in 80+ countries give you genuine, on-the-ground knowledge you can't get from a guidebook.",
-        "safeTrusted": "Safe & Trusted",
-        "safeTrustedDesc": "Every itinerary is rigorously vetted. Your safety and comfort are our first priority, always.",
-        "tailoredForYou": "Tailored for You",
-        "tailoredForYouDesc": "From solo backpackers to luxury honeymoons, we craft every trip around your unique story.",
-        "seamlessExperience": "Seamless Experience",
-        "seamlessExperienceDesc": "Book, plan, and travel — all in one place. We handle the details so you can focus on the memories."
-      },
-      "ourJourney": "Our Journey",
-      "journeyTitle": "From a Dream to the World",
-      "timeline": {
-        "founded": "Founded in Hanoi",
-        "foundedDesc": "Pathora started as a small passion project by two avid travelers who wanted to share the world.",
-        "first10k": "First 10,000 Travelers",
-        "first10kDesc": "Reached our first milestone with curated tours across Southeast Asia and Europe.",
-        "expanded60": "Expanded to 60 Countries",
-        "expanded60Desc": "Launched luxury and private tour lines, bringing tailored experiences to every continent.",
-        "digitalFirst": "Digital-First Platform",
-        "digitalFirstDesc": "Redesigned for the modern traveler — real-time booking, instant support, and personalized AI recommendations.",
-        "happy92k": "92,000+ Happy Travelers",
-        "happy92kDesc": "Over 92,000 adventures completed. Still counting — and still passionate about every single trip."
-      },
-      "teamSubtitle": "The People Behind the Magic",
-      "teamTitle": "Meet Our Team",
-      "toursLed": "Tours Led",
-      "readyToExplore": "Ready to Explore?",
-      "ctaTitle": "Start Your Next Adventure",
-      "ctaTitleWith": "with",
-      "ctaDescription": "Browse our curated packages, find the perfect tour for you, and let us handle every detail.",
-      "browsePackageTours": "Browse Package Tours"
-    },
-    "policies": {
-      "transparencyFirst": "Transparency First",
-      "our": "Our",
-      "policy": "Policy",
-      "heroSubtitle": "Everything you need to know before booking — clear, fair, and no hidden surprises.",
-      "lastUpdated": "Last updated:",
-      "lastUpdatedDate": "February 27, 2026",
-      "policiesApplyNote": "These policies apply to all tours booked through Pathora.",
-      "introPrefix": "At",
-      "introSuffix": ", we believe in clear, honest communication. These policies are designed to protect both our travelers and our team. Please read them carefully before completing your booking. By booking with us, you agree to the terms outlined below.",
-      "sections": {
-        "bookingPayment": "Booking & Payment Policy",
-        "cancellationRefund": "Cancellation & Refund Policy",
-        "modificationRescheduling": "Modification & Rescheduling",
-        "healthSafety": "Health & Safety Policy",
-        "privacyPolicy": "Privacy Policy",
-        "liabilityDisclaimer": "Liability Disclaimer"
-      },
-      "items": {
-        "bookingPaymentItem1": "A non-refundable deposit of 20% is required to secure your booking.",
-        "bookingPaymentItem2": "Full payment is due 30 days before the tour departure date.",
-        "bookingPaymentItem3": "Payments accepted via bank transfer, credit/debit card, and major digital wallets.",
-        "bookingPaymentItem4": "All prices are listed in USD and include applicable taxes unless stated otherwise.",
-        "cancellationRefundItem1": "Cancellations made 30+ days before departure: full refund minus the deposit.",
-        "cancellationRefundItem2": "Cancellations 15–29 days before departure: 50% refund of the total tour price.",
-        "cancellationRefundItem3": "Cancellations within 14 days of departure: no refund.",
-        "cancellationRefundItem4": "Pathora-initiated cancellations: full refund or free rebooking offered.",
-        "cancellationRefundItem5": "Travel insurance is strongly recommended for all bookings.",
-        "modificationItem1": "One free date change is allowed per booking if requested 21+ days before departure.",
-        "modificationItem2": "Subsequent changes or changes made within 20 days will incur a $50 admin fee.",
-        "modificationItem3": "Tour itinerary changes due to weather or safety are at Pathora's discretion.",
-        "modificationItem4": "We will notify you of any significant changes at the earliest opportunity.",
-        "healthSafetyItem1": "All travelers must disclose relevant health conditions at the time of booking.",
-        "healthSafetyItem2": "Pathora reserves the right to exclude travelers who pose a safety risk.",
-        "healthSafetyItem3": "Our guides are certified in first aid and emergency procedures.",
-        "healthSafetyItem4": "Compliance with local health regulations is mandatory on all tours.",
-        "privacyPolicyItem1": "We collect only the information necessary to process your booking.",
-        "privacyPolicyItem2": "Personal data is never sold to or shared with third parties without consent.",
-        "privacyPolicyItem3": "Payment details are encrypted and processed through PCI-compliant gateways.",
-        "privacyPolicyItem4": "You may request deletion of your data at any time by contacting us.",
-        "liabilityItem1": "Pathora acts as an intermediary between travelers and local service providers.",
-        "liabilityItem2": "We are not liable for delays, losses, or damages caused by third-party providers.",
-        "liabilityItem3": "Force majeure events (natural disasters, political unrest, etc.) are exempt from liability.",
-        "liabilityItem4": "All travelers participate in adventure activities at their own risk."
-      },
-      "ctaTitle": "Have Questions?",
-      "ctaDescription": "Our support team is available 24/7. Don't hesitate to reach out before or after your booking.",
-      "contactSupport": "Contact Support"
-    },
-    "footer": {
-      "backgroundAlt": "Footer background",
-      "speakToExpert": "Speak to our expert at",
-      "followUs": "Follow Us",
-      "contact": {
-        "title": "Contact",
-        "address": "328 Queensberry Street, North Melbourne VIC 3051, Australia."
-      },
-      "company": {
-        "title": "Company"
-      },
-      "support": {
-        "title": "Support"
-      },
-      "newsletter": {
-        "title": "Newsletter",
-        "description": "Subscribe to the free newsletter and stay up to date",
-        "placeholder": "Your email address",
-        "send": "Send"
-      },
-      "mobileApps": {
-        "title": "Mobile Apps",
-        "ios": "iOS App",
-        "android": "Android App"
-      },
-      "links": {
-        "company": {
-          "aboutUs": "About Us",
-          "reviews": "Tourz Reviews",
-          "contactUs": "Contact Us",
-          "travelGuides": "Travel Guides",
-          "dataPolicy": "Data Policy",
-          "cookiePolicy": "Cookie Policy",
-          "legal": "Legal",
-          "sitemap": "Sitemap"
-        },
-        "support": {
-          "getInTouch": "Get in Touch",
-          "helpCenter": "Help center",
-          "liveChat": "Live chat",
-          "howItWorks": "How it works"
-        }
-      },
-      "copyright": "© {{year}} Pathora. All rights reserved."
-    },
-    "common": {
-      "starsAria": "{{count}} out of 5 stars"
-    },
     "language": {
       "title": "Language"
     },
@@ -2219,12 +2122,9 @@
       "profile": "My Profile",
       "changePassword": "Change Password"
     },
-    "a11y": {
-      "openMenu": "Open menu",
-      "closeMenu": "Close menu",
-      "changeLanguage": "Change language",
-      "closeNavigationMenu": "Close navigation menu",
-      "notificationsAria": "{{count}} unread notifications"
+    "latestTours": {
+      "title": "Our Latest Tours",
+      "seeAll": "See all"
     }
   },
   "booking": {
@@ -2323,7 +2223,33 @@
     "required": "Required",
     "invalidPrice": "Invalid price",
     "invalidDuration": "Invalid duration",
-    "basicInfo": "Basic Information",
+    "basicInfo": {
+      "sectionTitle": "Basic Tour Information",
+      "sectionSubtitle": "Fill in the basic details for this package tour",
+      "tourName": "Tour Name",
+      "shortDescription": "Short Description",
+      "longDescription": "Long Description",
+      "ecoDescription": "ECO Description",
+      "seoTitle": "SEO Title",
+      "seoDescription": "SEO Description",
+      "thumbnailFile": "Thumbnail File",
+      "galleryImages": "Gallery Images",
+      "selectedFile": "Selected: {name}",
+      "selectedFiles": "{count} file(s) selected",
+      "uploadThumbnail": "Upload Thumbnail",
+      "uploadGallery": "Upload Gallery",
+      "addMoreImages": "Add More Images",
+      "imagesSelected": "image(s) selected",
+      "replace": "Replace",
+      "pricingPolicy": "Pricing Policy",
+      "depositPolicy": "Deposit Policy",
+      "cancellationPolicy": "Cancellation Policy",
+      "visaPolicy": "Visa Policy",
+      "searchPricingPolicy": "Search pricing policy…",
+      "searchDepositPolicy": "Search deposit policy…",
+      "searchCancellationPolicy": "Search cancellation policy…",
+      "searchVisaPolicy": "Search visa policy…"
+    },
     "shortDescription": "Short Description",
     "longDescription": "Long Description",
     "seoTitle": "SEO Title",
@@ -2361,7 +2287,24 @@
     "endTime": "End",
     "cost": "Est. Cost ($)",
     "optional": "Optional",
-    "insurance": "Insurance",
+    "insurance": {
+      "sectionTitle": "Insurance Packages",
+      "sectionSubtitle": "Select insurance packages available for this tour (filtered by classification)",
+      "addInsurance": "Add Insurance",
+      "noInsuranceYet": "No insurance added. Click \"Add Insurance\" to create one.",
+      "coverage": "Coverage",
+      "durationOfTour": "Duration of tour",
+      "fee": "Fee",
+      "editInsurance": "Edit: {insuranceName} — {packageName}",
+      "insuranceName": "Name",
+      "insuranceType": "Type",
+      "provider": "Provider",
+      "coverageDescription": "Coverage Description",
+      "coverageAmount": "Coverage ($)",
+      "coverageFee": "Fee ($)",
+      "optional": "Optional",
+      "noInsuranceSelected": "No insurance selected. Consider adding insurance packages for customer protection."
+    },
     "addInsurance": "Add",
     "noInsurance": "No insurance options.",
     "insuranceName": "Name",
@@ -2413,33 +2356,6 @@
       "addRoute": "Add Route",
       "addInsurance": "Add Insurance",
       "addLink": "Add link"
-    },
-    "basicInfo": {
-      "sectionTitle": "Basic Tour Information",
-      "sectionSubtitle": "Fill in the basic details for this package tour",
-      "tourName": "Tour Name",
-      "shortDescription": "Short Description",
-      "longDescription": "Long Description",
-      "ecoDescription": "ECO Description",
-      "seoTitle": "SEO Title",
-      "seoDescription": "SEO Description",
-      "thumbnailFile": "Thumbnail File",
-      "galleryImages": "Gallery Images",
-      "selectedFile": "Selected: {name}",
-      "selectedFiles": "{count} file(s) selected",
-      "uploadThumbnail": "Upload Thumbnail",
-      "uploadGallery": "Upload Gallery",
-      "addMoreImages": "Add More Images",
-      "imagesSelected": "image(s) selected",
-      "replace": "Replace",
-      "pricingPolicy": "Pricing Policy",
-      "depositPolicy": "Deposit Policy",
-      "cancellationPolicy": "Cancellation Policy",
-      "visaPolicy": "Visa Policy",
-      "searchPricingPolicy": "Search pricing policy…",
-      "searchDepositPolicy": "Search deposit policy…",
-      "searchCancellationPolicy": "Search cancellation policy…",
-      "searchVisaPolicy": "Search visa policy…"
     },
     "packages": {
       "sectionTitle": "Package Classifications",
@@ -2547,24 +2463,6 @@
     "services": {
       "sectionTitle": "Other Services",
       "notAvailable": "Configuration for services will be available soon."
-    },
-    "insurance": {
-      "sectionTitle": "Insurance Packages",
-      "sectionSubtitle": "Select insurance packages available for this tour (filtered by classification)",
-      "addInsurance": "Add Insurance",
-      "noInsuranceYet": "No insurance added. Click \"Add Insurance\" to create one.",
-      "coverage": "Coverage",
-      "durationOfTour": "Duration of tour",
-      "fee": "Fee",
-      "editInsurance": "Edit: {insuranceName} — {packageName}",
-      "insuranceName": "Name",
-      "insuranceType": "Type",
-      "provider": "Provider",
-      "coverageDescription": "Coverage Description",
-      "coverageAmount": "Coverage ($)",
-      "coverageFee": "Fee ($)",
-      "optional": "Optional",
-      "noInsuranceSelected": "No insurance selected. Consider adding insurance packages for customer protection."
     },
     "review": {
       "sectionTitle": "Review Tour Package",
@@ -3161,7 +3059,6 @@
       "cancellationPolicies": "Cancellation Policies",
       "visaPolicies": "Visa Policies",
       "depositPolicies": "Deposit Policies",
-      "cancellationPolicies": "Cancellation Policies",
       "notifications": "Notifications",
       "security": "Security",
       "billing": "Billing",
@@ -3308,226 +3205,6 @@
     },
     "filter": {
       "all": "All"
-    }
-  },
-  "landing": {
-    "nav": {
-      "home": "Home",
-      "aboutUs": "About Us",
-      "tourPackages": "Tour Packages",
-      "ourPolicies": "Our Policies"
-    },
-    "menu": "Menu",
-    "hero": {
-      "title": "Vietnam Awaits",
-      "subtitle": "Discover breathtaking landscapes and rich cultural heritage across Vietnam and beyond",
-      "eyebrow": "Vietnam's Premier Travel Platform",
-      "searchPlaceholder": "Where do you want to go?",
-      "exploreTours": "Explore Tours"
-    },
-    "stats": {
-      "items": {
-        "totalTours": "Tours",
-        "totalTravellers": "Travelers",
-        "support": "Support"
-      }
-    },
-    "destinations": {
-      "eyebrow": "Explore",
-      "title": "Trending Destinations",
-      "viewAll": "View all destinations",
-      "tours": "tours"
-    },
-    "aboutUs": {
-      "ourStory": "Our Story",
-      "weAre": "We Are",
-      "heroSubtitle": "We are passionate about creating unforgettable travel experiences that connect people with extraordinary destinations.",
-      "whoWeAre": "Who We Are",
-      "yearsExperience": "Years of Experience",
-      "passionateTravelers": "Passionate Travelers &",
-      "expertGuides": "Expert Guides",
-      "whoWeAreDesc1": "Pathora was founded in 2010 with a simple mission: to make travel accessible, enjoyable, and meaningful. Our team of passionate locals and seasoned professionals work together to craft tours that reveal the true soul of each destination.",
-      "whoWeAreDesc2": "From bustling cities to serene landscapes, we handle every detail so you can focus on what matters most — creating memories. With over 92,000 happy travelers and a 98% satisfaction rate, we continue to set the standard for quality travel experiences.",
-      "exploreOurTours": "Explore Our Tours",
-      "whyChooseUs": "Why Choose Us",
-      "valuesTitle": "Our Core Values",
-      "ourJourney": "Our Journey",
-      "journeyTitle": "The Pathora Story",
-      "teamSubtitle": "Meet the Team",
-      "teamTitle": "The Masters Behind Your Adventure",
-      "toursLed": "tours led",
-      "readyToExplore": "Ready to Explore?",
-      "ctaTitle": "Start Your Adventure With",
-      "ctaTitleWith": "with",
-      "ctaDescription": "Browse our curated tour packages and find the perfect journey for your next adventure.",
-      "browsePackageTours": "Browse Package Tours",
-      "stats": {
-        "destinations": "Destinations",
-        "happyTravelers": "Happy Travelers",
-        "toursOffered": "Tours Offered",
-        "satisfactionRate": "Satisfaction Rate"
-      },
-      "values": {
-        "globalExpertise": "Global Expertise",
-        "globalExpertiseDesc": "With deep knowledge of local cultures and landscapes, we bring authentic experiences to every journey.",
-        "safeTrusted": "Safe & Trusted",
-        "safeTrustedDesc": "Licensed operators, vetted guides, and comprehensive travel insurance for your peace of mind.",
-        "tailoredForYou": "Tailored For You",
-        "tailoredForYouDesc": "From solo travelers to family groups, we customize itineraries to match your interests and pace.",
-        "seamlessExperience": "Seamless Experience",
-        "seamlessExperienceDesc": "End-to-end support from booking to completion, so you can focus on the adventure."
-      },
-      "timeline": {
-        "founded": "Pathora Founded",
-        "foundedDesc": "Started as a small local tour operator in Hanoi with a dream to share Vietnam's beauty with the world.",
-        "first10k": "10,000 Travelers Milestone",
-        "first10kDesc": "Reached our first major milestone of 10,000 happy travelers and expanded operations to 3 major cities.",
-        "expanded60": "Expanded to 60+ Destinations",
-        "expanded60Desc": "Grew our network to cover 60+ destinations across Vietnam, Laos, Cambodia, Thailand, and beyond.",
-        "digitalFirst": "Digital-First Platform Launch",
-        "digitalFirstDesc": "Launched our online booking platform making it easier than ever to discover and book tours instantly.",
-        "happy92k": "92,000 Happy Travelers",
-        "happy92kDesc": "Celebrated serving over 92,000 travelers with a 98% satisfaction rating and counting."
-      }
-    },
-    "videoShowcase": {
-      "label": "Experience Vietnam",
-      "caption": "Vietnam Awaits",
-      "subcaption": "Discover breathtaking landscapes and rich cultural heritage"
-    },
-    "featured": {
-      "eyebrow": "Handpicked",
-      "title": "Featured Adventures"
-    },
-    "auth": {
-      "closeModal": "Close modal",
-      "close": "Close",
-      "createAccount": "Create Account",
-      "username": "Username",
-      "enterUsername": "Enter your username",
-      "login": "Login",
-      "nameAndSurname": "Name and Surname",
-      "enterNameAndSurname": "Enter your name and surname",
-      "emailAddress": "Email Address",
-      "enterEmailAddress": "Enter your email address",
-      "password": "Password",
-      "enterPassword": "Enter your password",
-      "showPassword": "Show password",
-      "hidePassword": "Hide password",
-      "agreeWith": "I agree with",
-      "mustAgreeToTerms": "You must agree to the terms and privacy policy",
-      "registrationSuccess": "Registration successful! You can now log in.",
-      "registrationFailed": "Registration failed. Please try again.",
-      "emailTemporarilyLocked": "Too many failed attempts. Please try again in {{minutes}} minutes.",
-      "loginSuccess": "Welcome back! You are now logged in.",
-      "terms": "Terms",
-      "and": "and",
-      "privacy": "Privacy",
-      "or": "or",
-      "signUpWithGoogle": "Sign Up with Google",
-      "signInWithGoogle": "Sign In with Google",
-      "alreadyHaveAccount": "Already have an account?",
-      "dontHaveAccount": "Don't have an account?",
-      "logIn": "Log In",
-      "forgotYourPassword": "Forgot your password?",
-      "forgotPassword": "Forgot Password",
-      "forgotPasswordHelp": "No worries, we'll send you reset instructions.",
-      "resetPassword": "Reset Password",
-      "checkYourEmail": "Check your email",
-      "resetLinkSentTo": "We sent a password reset link to",
-      "backToLogin": "Back to Login"
-    },
-    "latest": {
-      "eyebrow": "Just Added",
-      "title": "Latest Tours",
-      "viewAll": "View all"
-    },
-    "whyChoose": {
-      "eyebrow": "Why Pathora",
-      "title": "Why Choose Us",
-      "items": {
-        "price": { "title": "Best Price", "desc": "Guaranteed lowest prices on all tours" },
-        "guides": { "title": "Expert Guides", "desc": "Local experts with deep knowledge" },
-        "support": { "title": "24/7 Support", "desc": "Always here when you need us" },
-        "flexible": { "title": "Flexible Booking", "desc": "Free cancellation up to 24 hours" }
-      }
-    },
-    "cta": {
-      "title": "Ready for Your Next Adventure?",
-      "subtitle": "Join thousands of travelers discovering Vietnam's hidden gems with Pathora.",
-      "ctaButton": "Explore Tours",
-      "secondaryButton": "Learn More"
-    },
-    "reviews": {
-      "eyebrow": "Testimonials",
-      "title": "What Travelers Say",
-      "rating": "Rating"
-    },
-    "footer": {
-      "about": "About",
-      "tours": "Tours",
-      "blog": "Blog",
-      "careers": "Careers",
-      "help": "Help Center",
-      "contact": "Contact",
-      "faq": "FAQ",
-      "policies": "Policies",
-      "destinations": "Destinations",
-      "tagline": "Vietnam's premier travel platform. Discover hidden gems, curated tours, and unforgettable adventures.",
-      "newsletter": "Stay Updated",
-      "newsletterDesc": "Get the latest travel deals and updates.",
-      "copyright": "All rights reserved.",
-      "privacy": "Privacy",
-      "terms": "Terms"
-    },
-    "policies": {
-      "transparencyFirst": "Travel Guidelines",
-      "our": "Our",
-      "policy": "Policies",
-      "heroSubtitle": "Read our policies to understand how we operate and what you can expect from our services.",
-      "lastUpdated": "Last updated:",
-      "lastUpdatedDate": "March 24, 2026",
-      "policiesApplyNote": "These policies apply to all services provided by Pathora.",
-      "introPrefix": "At Pathora, we believe in complete transparency. This document outlines our policies for bookings, payments, cancellations, and more to ensure a smooth experience for all travelers.",
-      "introSuffix": " We are committed to providing clear and fair terms for every journey you book with us.",
-      "ctaTitle": "Have Questions?",
-      "ctaDescription": "Our support team is available 24/7 to assist you with any policy-related questions.",
-      "contactSupport": "Contact Support",
-      "sections": {
-        "bookingPayment": "Booking & Payment",
-        "cancellationRefund": "Cancellation & Refund",
-        "modificationRescheduling": "Modification & Rescheduling",
-        "healthSafety": "Health & Safety",
-        "privacyPolicy": "Privacy Policy",
-        "liabilityDisclaimer": "Liability Disclaimer"
-      },
-      "items": {
-        "bookingPaymentItem1": "All bookings must be confirmed with a valid payment method. Tours are confirmed only upon receipt of full or partial payment as specified.",
-        "bookingPaymentItem2": "Prices are listed in USD and include applicable taxes unless otherwise stated. Currency conversion fees may apply for international payments.",
-        "bookingPaymentItem3": "Group bookings require a minimum of 2 participants. Private tours can be booked for individual travelers at a different rate.",
-        "bookingPaymentItem4": "Payment must be completed at least 48 hours before the tour start date. Late payments may result in automatic cancellation.",
-        "cancellationRefundItem1": "Cancellations made 7 or more days before the tour date are eligible for a full refund.",
-        "cancellationRefundItem2": "Cancellations made 3-6 days before the tour date qualify for a 50% refund.",
-        "cancellationRefundItem3": "Cancellations made less than 72 hours before the tour are non-refundable.",
-        "cancellationRefundItem4": "No-shows and late arrivals will be charged the full tour price without refund.",
-        "cancellationRefundItem5": "Refunds are processed within 7-14 business days to the original payment method.",
-        "modificationItem1": "Tour modifications can be requested up to 48 hours before the scheduled start date, subject to availability.",
-        "modificationItem2": "Rescheduling to a different date is free of charge if requested at least 7 days in advance.",
-        "modificationItem3": "Rescheduling within 3-6 days of the tour date incurs a 20% rescheduling fee.",
-        "modificationItem4": "Changes to group size must be communicated at least 24 hours before the tour. Additional charges apply for extra participants.",
-        "healthSafetyItem1": "All travelers must disclose any pre-existing medical conditions that may affect their ability to participate in tour activities.",
-        "healthSafetyItem2": "Participants with mobility limitations should inform us in advance so we can arrange appropriate accommodations.",
-        "healthSafetyItem3": "Emergency contact information must be provided at the time of booking. This information is kept confidential and used only in emergencies.",
-        "healthSafetyItem4": "Travel insurance is strongly recommended for all international tours. Basic insurance coverage is included with select tour packages.",
-        "privacyPolicyItem1": "We collect personal information (name, email, phone, payment details) solely for booking and service purposes.",
-        "privacyPolicyItem2": "Your data is encrypted and stored securely. We do not sell or share your personal information with third parties for marketing purposes.",
-        "privacyPolicyItem3": "You have the right to request access to, correction of, or deletion of your personal data at any time by contacting our support team.",
-        "privacyPolicyItem4": "Cookies are used to enhance your browsing experience and analyze site traffic. You can manage cookie preferences through your browser settings.",
-        "liabilityItem1": "Pathora acts as an intermediary between travelers and local service providers. We are not liable for the actions or negligence of third-party suppliers.",
-        "liabilityItem2": "In the event of force majeure (natural disasters, political unrest, pandemics), Pathora reserves the right to modify or cancel tours without liability.",
-        "liabilityItem3": "Travelers assume full responsibility for their personal belongings during tours. Pathora is not responsible for lost or stolen items.",
-        "liabilityItem4": "Our liability is limited to the total amount paid for the tour booking. Indirect, incidental, or consequential damages are excluded."
-      }
     }
   }
 }

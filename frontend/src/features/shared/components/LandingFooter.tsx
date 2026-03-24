@@ -123,10 +123,10 @@ export const LandingFooter = () => {
           {/* Contact */}
           <div>
             <h4 className="text-white font-semibold text-xl mb-5">
-              {t("landing.footer.contact.title")}
+              {t("landing.footer.contactNested.title")}
             </h4>
             <p className="text-white/60 text-sm leading-relaxed">
-              {t("landing.footer.contact.address")}
+              {t("landing.footer.contactNested.address")}
             </p>
             <p className="text-white/60 text-sm mt-3">
               <a
@@ -179,10 +179,10 @@ export const LandingFooter = () => {
           {/* Newsletter */}
           <div>
             <h4 className="text-white font-semibold text-xl mb-5">
-              {t("landing.footer.newsletter.title")}
+              {t("landing.footer.newsletterNested.title")}
             </h4>
             <p className="text-white/60 text-sm leading-relaxed mb-5">
-              {t("landing.footer.newsletter.description")}
+              {t("landing.footer.newsletterNested.description")}
             </p>
             <form className="flex gap-2" onSubmit={handleSubscribe} noValidate>
               <TextInput
@@ -190,14 +190,14 @@ export const LandingFooter = () => {
                 name="newsletterEmail"
                 type="email"
                 autocomplete="email"
-                label={t("landing.footer.newsletter.title")}
+                label={t("landing.footer.newsletterNested.title")}
                 classLabel="sr-only"
-                placeholder={t("landing.footer.newsletter.placeholder")}
+                placeholder={t("landing.footer.newsletterNested.placeholder")}
                 className="flex-1 bg-white! border-white/20! rounded-xl! min-h-11! px-4! py-3! text-landing-heading! text-sm! placeholder:text-gray-400!"
               />
               <Button
                 type="submit"
-                text={t("landing.footer.newsletter.send")}
+                text={t("landing.footer.newsletterNested.send")}
                 className="bg-landing-accent text-white min-h-11 px-5 py-3 rounded-xl text-sm font-semibold hover:bg-landing-accent-hover transition-colors shrink-0"
               />
             </form>
