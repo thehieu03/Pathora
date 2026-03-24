@@ -6,9 +6,7 @@ namespace Application.Features.Tour.Commands;
 public sealed record ClassificationDto(
     string Name,
     string Description,
-    decimal AdultPrice,
-    decimal ChildPrice,
-    decimal InfantPrice,
+    decimal BasePrice,
     int NumberOfDay,
     int NumberOfNight,
     List<DayPlanDto> Plans,

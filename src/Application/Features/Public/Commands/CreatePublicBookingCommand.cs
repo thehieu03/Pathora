@@ -144,7 +144,7 @@ public sealed class CreatePublicBookingCommandHandler(
             NumberAdult: request.NumberAdult,
             NumberChild: request.NumberChild,
             NumberInfant: request.NumberInfant,
-            AdultPrice: adultPrice,
+            BasePrice: adultPrice,
             ChildPrice: childPrice,
             InfantPrice: infantPrice,
             AdultSubtotal: adultSubtotal,

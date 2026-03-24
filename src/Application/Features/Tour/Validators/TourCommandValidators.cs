@@ -35,14 +35,8 @@ public sealed class ClassificationDtoValidator : AbstractValidator<Classificatio
         RuleFor(x => x.Description)
             .MaximumLength(1000).WithMessage("Classification description must not exceed 1000 characters.");
 
-        RuleFor(x => x.AdultPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Adult price must be greater than or equal to 0.");
-
-        RuleFor(x => x.ChildPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Child price must be greater than or equal to 0.");
-
-        RuleFor(x => x.InfantPrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Infant price must be greater than or equal to 0.");
+        RuleFor(x => x.BasePrice)
+            .GreaterThanOrEqualTo(0).WithMessage("Base price must be greater than or equal to 0.");
 
         RuleFor(x => x.NumberOfDay)
             .GreaterThan(0).WithMessage("Number of days must be greater than 0.");
