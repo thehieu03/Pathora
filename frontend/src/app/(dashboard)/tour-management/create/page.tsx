@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
@@ -133,6 +133,8 @@ interface BasicInfoForm {
   seoTitle: string;
   seoDescription: string;
   status: string;
+  tourScope: string;
+  customerSegment: string;
 }
 
 interface TranslationFields {
@@ -500,6 +502,8 @@ export default function CreateTourPage() {
     seoTitle: "",
     seoDescription: "",
     status: "3",
+    tourScope: "1",
+    customerSegment: "2",
   });
   const [enTranslation, setEnTranslation] = useState<TranslationFields>({
     tourName: "",
@@ -549,6 +553,63 @@ export default function CreateTourPage() {
   const [selectedCancellationPolicyId, setSelectedCancellationPolicyId] = useState<string>("");
   const [selectedVisaPolicyId, setSelectedVisaPolicyId] = useState<string>("");
 
+  /* ── Auto-save draft ────────────────────────────────────────── */
+  const AUTOSAVE_KEY = "tour_create_draft";
+
+  const saveDraft = useCallback(() => {
+    try {
+      const draftData = {
+        basicInfo,
+        classifications,
+        dayPlans,
+        insurances,
+        services,
+        accommodations,
+        locations,
+        transportations,
+        selectedPricingPolicyId,
+        selectedDepositPolicyId,
+        selectedCancellationPolicyId,
+        selectedVisaPolicyId,
+        currentStep,
+        thumbnail: thumbnail ? { name: thumbnail.name, size: thumbnail.size, type: thumbnail.type } : null,
+        imagesCount: images.length,
+      };
+      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(draftData));
+    } catch {
+      // localStorage full or unavailable
+    }
+  }, [basicInfo, classifications, dayPlans, insurances, services,
+      accommodations, locations, transportations,
+      selectedPricingPolicyId, selectedDepositPolicyId,
+      selectedCancellationPolicyId, selectedVisaPolicyId,
+      currentStep, thumbnail, images.length]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(saveDraft, 2000);
+    return () => clearTimeout(timeoutId);
+  }, [saveDraft]);
+
+  // Load draft on mount
+  useEffect(() => {
+    const saved = localStorage.getItem(AUTOSAVE_KEY);
+    if (saved) {
+      try {
+        const draft = JSON.parse(saved);
+        if (draft.basicInfo) setBasicInfo(draft.basicInfo);
+        if (draft.selectedPricingPolicyId) setSelectedPricingPolicyId(draft.selectedPricingPolicyId);
+        if (draft.selectedDepositPolicyId) setSelectedDepositPolicyId(draft.selectedDepositPolicyId);
+        if (draft.selectedCancellationPolicyId) setSelectedCancellationPolicyId(draft.selectedCancellationPolicyId);
+        if (draft.selectedVisaPolicyId) setSelectedVisaPolicyId(draft.selectedVisaPolicyId);
+        if (draft.currentStep !== undefined) setCurrentStep(draft.currentStep);
+        toast.info(t("toast.draftRestored", "Draft restored from previous session"));
+      } catch {
+        // Invalid draft data
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ── Validation ───────────────────────────────────────────── */
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [thumbnailError, setThumbnailError] = useState<string>();
@@ -587,8 +648,11 @@ export default function CreateTourPage() {
         newErrors.tourName = t("tourAdmin.required", "Required");
       if (!basicInfo.shortDescription.trim())
         newErrors.shortDescription = t("tourAdmin.required", "Required");
+      if (!basicInfo.longDescription.trim())
+        newErrors.longDescription = t("tourAdmin.required", "Required");
       if (thumbnailError) newErrors.thumbnail = thumbnailError;
-      if (imagesError) newErrors.images = imagesError;
+      if (images.length === 0) newErrors.images = t("tourAdmin.validation.atLeastOneImage", "At least one image is required");
+      else if (imagesError) newErrors.images = imagesError;
     }
 
     if (step === 1) {
@@ -1085,6 +1149,7 @@ export default function CreateTourPage() {
         classifications,
         dayPlans,
         insurances,
+        services,
         accommodations,
         locations,
         transportations,
@@ -1095,12 +1160,17 @@ export default function CreateTourPage() {
       });
 
       await tourService.createTour(formData);
+      localStorage.removeItem(AUTOSAVE_KEY);
       toast.success(t("tourAdmin.createSuccess", "Tour created successfully!"));
       router.push("/tour-management");
     } catch (error: unknown) {
       const handledError = handleApiError(error);
-      console.error("Failed to create tour:", handledError.message);
-      toast.error(t("tourAdmin.createError", "Failed to create tour"));
+      const errorDetail = handledError.details || handledError.message;
+      const displayMsg = errorDetail && errorDetail !== "DEFAULT_ERROR"
+        ? errorDetail
+        : t("tourAdmin.createError", "Failed to create tour");
+      console.error("Failed to create tour:", errorDetail);
+      toast.error(displayMsg);
     } finally {
       setSaving(false);
     }
@@ -1152,9 +1222,8 @@ export default function CreateTourPage() {
               </button>
               <button
                 onClick={() => {
-                  toast.info(
-                    t("toast.draftNotImplemented", "Draft saving not yet implemented"),
-                  );
+                  saveDraft();
+                  toast.success(t("toast.draftSaved", "Draft saved"));
                 }}
                 className="px-4 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
                 {t("tourAdmin.createPage.saveDraft")}
@@ -3518,9 +3587,8 @@ export default function CreateTourPage() {
                 <button
                   type="button"
                   onClick={() => {
-                    toast.info(
-                      t("toast.draftNotImplemented", "Draft saving not yet implemented"),
-                    );
+                    saveDraft();
+                    toast.success(t("toast.draftSaved", "Draft saved"));
                   }}
                   disabled={saving}
                   className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-50">

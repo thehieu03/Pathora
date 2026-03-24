@@ -2245,7 +2245,9 @@
     "required": "Required",
     "invalidPrice": "Invalid price",
     "validation": {
-      "invalidBasePrice": "Invalid base price"
+      "invalidBasePrice": "Invalid base price",
+      "atLeastOneImage": "At least one image is required",
+      "atLeastOnePackage": "At least one package is required"
     },
     "invalidDuration": "Invalid duration",
     "basicInfo": {

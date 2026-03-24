@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCreateTourFormData } from "../tourCreatePayload";
+import { buildCreateTourFormData, buildServicesPayload } from "../tourCreatePayload";
 
 describe("buildCreateTourFormData", () => {
   // =========================================================================
@@ -724,6 +724,250 @@ describe("buildCreateTourFormData", () => {
         ticketInfo: "Info EN",
         note: "Note EN",
       });
+    });
+  });
+
+  describe("services payload", () => {
+    // TC-FE15: Services are appended as JSON when provided
+    it("appends services as JSON when services are provided", () => {
+      const formData = buildCreateTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        classifications: [],
+        dayPlans: [],
+        insurances: [],
+        services: [
+          {
+            serviceName: "Guide Service",
+            pricingType: "0",
+            price: "100",
+            salePrice: "80",
+            email: "guide@example.com",
+            contactNumber: "123456",
+          },
+        ],
+        accommodations: [],
+        locations: [],
+        transportations: [],
+      });
+
+      const services = JSON.parse(String(formData.get("services")));
+      expect(services).toHaveLength(1);
+      expect(services[0].serviceName).toBe("Guide Service");
+      expect(services[0].pricingType).toBe("0");
+      expect(services[0].price).toBe(100);
+      expect(services[0].salePrice).toBe(80);
+      expect(services[0].email).toBe("guide@example.com");
+      expect(services[0].contactNumber).toBe("123456");
+    });
+
+    // TC-FE16: Services with empty serviceName are filtered out
+    it("filters out services with empty serviceName", () => {
+      const formData = buildCreateTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        classifications: [],
+        dayPlans: [],
+        insurances: [],
+        services: [
+          {
+            serviceName: "",
+            pricingType: "0",
+            price: "100",
+            salePrice: "",
+            email: "",
+            contactNumber: "",
+          },
+          {
+            serviceName: "Valid Service",
+            pricingType: "1",
+            price: "50",
+            salePrice: "",
+            email: "",
+            contactNumber: "",
+          },
+        ],
+        accommodations: [],
+        locations: [],
+        transportations: [],
+      });
+
+      const services = JSON.parse(String(formData.get("services")));
+      expect(services).toHaveLength(1);
+      expect(services[0].serviceName).toBe("Valid Service");
+    });
+
+    // TC-FE17: Services omitted from FormData when array is empty
+    it("omits services field when array is empty", () => {
+      const formData = buildCreateTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        classifications: [],
+        dayPlans: [],
+        insurances: [],
+        services: [],
+        accommodations: [],
+        locations: [],
+        transportations: [],
+      });
+
+      expect(formData.get("services")).toBeNull();
+    });
+
+    // TC-FE18: Services omitted when all entries have empty serviceName
+    it("omits services field when all services have empty serviceName", () => {
+      const formData = buildCreateTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "",
+          shortDescription: "",
+          longDescription: "",
+          seoTitle: "",
+          seoDescription: "",
+        },
+        classifications: [],
+        dayPlans: [],
+        insurances: [],
+        services: [
+          {
+            serviceName: "",
+            pricingType: "",
+            price: "",
+            salePrice: "",
+            email: "",
+            contactNumber: "",
+          },
+        ],
+        accommodations: [],
+        locations: [],
+        transportations: [],
+      });
+
+      expect(formData.get("services")).toBeNull();
+    });
+  });
+
+  // Direct unit tests for buildServicesPayload
+  describe("buildServicesPayload", () => {
+    // TC-FE19: Filters out empty services, maps optional fields correctly
+    it("maps service fields and filters empty names", () => {
+      const result = buildServicesPayload([
+        {
+          serviceName: "Guide",
+          pricingType: "0",
+          price: "200",
+          salePrice: "150",
+          email: "guide@test.com",
+          contactNumber: "999",
+        },
+      ]);
+      expect(result[0].serviceName).toBe("Guide");
+      expect(result[0].pricingType).toBe("0");
+      expect(result[0].price).toBe(200);
+      expect(result[0].salePrice).toBe(150);
+      expect(result[0].email).toBe("guide@test.com");
+      expect(result[0].contactNumber).toBe("999");
+    });
+
+    // TC-FE20: Empty optional fields become null
+    it("converts empty optional fields to null", () => {
+      const result = buildServicesPayload([
+        {
+          serviceName: "Guide",
+          pricingType: "",
+          price: "",
+          salePrice: "",
+          email: "",
+          contactNumber: "",
+        },
+      ]);
+      expect(result[0].pricingType).toBeNull();
+      expect(result[0].price).toBe(0);
+      expect(result[0].salePrice).toBe(0);
+      expect(result[0].email).toBeNull();
+      expect(result[0].contactNumber).toBeNull();
     });
   });
 });

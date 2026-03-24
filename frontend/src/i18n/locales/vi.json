@@ -2223,7 +2223,9 @@
     "required": "Bắt buộc",
     "invalidPrice": "Giá không hợp lệ",
     "validation": {
-      "invalidBasePrice": "Giá gốc không hợp lệ"
+      "invalidBasePrice": "Giá gốc không hợp lệ",
+      "atLeastOneImage": "Cần ít nhất một hình ảnh",
+      "atLeastOnePackage": "Cần ít nhất một gói tour"
     },
     "invalidDuration": "Thời lượng không hợp lệ",
     "basicInfo": {

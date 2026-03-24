@@ -10,6 +10,8 @@ interface BasicInfoPayload {
   seoTitle: string;
   seoDescription: string;
   status: string;
+  tourScope: string;
+  customerSegment: string;
 }
 
 // Bilingual input types for nested entities
@@ -106,6 +108,15 @@ interface TransportationPayloadInput {
   enNote: string;
 }
 
+interface ServicePayloadInput {
+  serviceName: string;
+  pricingType: string;
+  price: string;
+  salePrice: string;
+  email: string;
+  contactNumber: string;
+}
+
 interface CreateTourPayloadOptions {
   basicInfo: BasicInfoPayload;
   thumbnail: File | null;
@@ -115,6 +126,7 @@ interface CreateTourPayloadOptions {
   classifications: ClassificationPayloadInput[];
   dayPlans: DayPlanPayloadInput[][];
   insurances: InsurancePayloadInput[][];
+  services?: ServicePayloadInput[];
   accommodations?: AccommodationPayloadInput[];
   locations?: LocationPayloadInput[];
   transportations?: TransportationPayloadInput[];
@@ -392,6 +404,18 @@ const buildTransportationsPayload = (
     },
   }));
 
+export const buildServicesPayload = (services: ServicePayloadInput[]) =>
+  services
+    .filter((svc) => svc.serviceName.trim().length > 0)
+    .map((svc) => ({
+      serviceName: svc.serviceName,
+      pricingType: toOptionalString(svc.pricingType),
+      price: parseDecimal(svc.price, 0),
+      salePrice: parseDecimal(svc.salePrice, 0),
+      email: toOptionalString(svc.email),
+      contactNumber: toOptionalString(svc.contactNumber),
+    }));
+
 // ── Main export ─────────────────────────────────────────────────────
 
 export const buildCreateTourFormData = ({
@@ -403,6 +427,7 @@ export const buildCreateTourFormData = ({
   classifications,
   dayPlans,
   insurances,
+  services = [],
   accommodations = [],
   locations = [],
   transportations = [],
@@ -419,6 +444,8 @@ export const buildCreateTourFormData = ({
   formData.append("seoTitle", basicInfo.seoTitle);
   formData.append("seoDescription", basicInfo.seoDescription);
   formData.append("status", basicInfo.status);
+  formData.append("tourScope", basicInfo.tourScope);
+  formData.append("customerSegment", basicInfo.customerSegment);
 
   if (thumbnail) {
     formData.append("thumbnail", thumbnail);
@@ -458,6 +485,13 @@ export const buildCreateTourFormData = ({
 
   if (classificationsPayload.length > 0) {
     formData.append("classifications", JSON.stringify(classificationsPayload));
+  }
+
+  if (services.length > 0) {
+    const servicesPayload = buildServicesPayload(services);
+    if (servicesPayload.length > 0) {
+      formData.append("services", JSON.stringify(servicesPayload));
+    }
   }
 
   if (accommodations.length > 0) {
