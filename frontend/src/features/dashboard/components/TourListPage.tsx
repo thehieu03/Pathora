@@ -154,23 +154,8 @@ export function TourListPage() {
         }
       } catch (error: unknown) {
         if (!active) return;
-        // ── DEBUG: log full error details ──────────────────────
-        console.group("🔍 [TourListPage] fetch error");
-        console.log("error:", error);
-        if (error && typeof error === "object" && "isAxiosError" in error) {
-          const axiosErr = error as { isAxiosError: boolean; response?: { data: unknown; status: number; statusText: string }; config?: { url: string; baseURL: string; method: string }; message: string };
-          console.log("isAxiosError:", axiosErr.isAxiosError);
-          console.log("status:", axiosErr.response?.status, axiosErr.response?.statusText);
-          console.log("response.data:", axiosErr.response?.data);
-          console.log("request URL:", `${axiosErr.config?.baseURL}${axiosErr.config?.url}`);
-          console.log("method:", axiosErr.config?.method);
-          console.log("message:", axiosErr.message);
-        }
-        console.groupEnd();
-        // ───────────────────────────────────────────────────────
-
         const handledError = handleApiError(error);
-        console.error("Failed to fetch tours:", handledError);
+        console.error("Failed to fetch tours:", handledError.message);
         setTours([]);
         setDataState("error");
         setErrorMessage(handledError.message);

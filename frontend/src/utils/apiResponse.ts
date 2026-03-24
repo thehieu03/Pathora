@@ -126,14 +126,6 @@ const shouldUseDetailsAsErrorCode = (details: string | undefined): boolean => {
 const extractBackendErrorPayload = (
   payload: unknown,
 ): { rawMessage: string; rawCode: string; rawDetails?: string } => {
-  // Handle plain string response (ASP.NET Core often returns this)
-  if (typeof payload === "string" && payload.trim().length > 0) {
-    return {
-      rawMessage: payload,
-      rawCode: "UNKNOWN_ERROR",
-    };
-  }
-
   if (!payload || typeof payload !== "object") {
     return {
       rawMessage: "DEFAULT_ERROR",
@@ -157,9 +149,7 @@ const extractBackendErrorPayload = (
 
 export const handleApiError = (error: unknown): ApiError => {
   if (isAxiosError(error)) {
-    const { rawMessage, rawCode, rawDetails } = extractBackendErrorPayload(
-      error.response?.data,
-    );
+    const { rawMessage, rawCode, rawDetails } = extractBackendErrorPayload(error.response?.data);
     const rawMappingCandidate = shouldUseDetailsAsErrorCode(rawDetails)
       ? rawDetails
       : rawMessage;
@@ -167,35 +157,9 @@ export const handleApiError = (error: unknown): ApiError => {
     // Map to translation key for specific error types
     const translationKey = mapToTranslationKey(rawMappingCandidate);
 
-    // Determine a meaningful display message:
-    // - If rawMessage was "DEFAULT_ERROR" (i.e. empty/unparseable response), use HTTP status
-    // - If rawMessage is a raw backend string, show it directly
-    // - Otherwise show the translation key
-    let displayMessage: string;
-    if (rawMessage === "DEFAULT_ERROR") {
-      const status = error.response?.status;
-      displayMessage =
-        status === 401
-          ? "Unauthorized — please log in again"
-          : status === 403
-          ? "Forbidden — you don't have permission"
-          : status === 404
-          ? "Not Found"
-          : status === 500
-          ? "Server error — please try again later"
-          : status != null
-          ? `HTTP Error ${status}`
-          : "DEFAULT_ERROR";
-    } else {
-      displayMessage = rawMessage;
-    }
-
     return {
-      code:
-        rawCode !== "UNKNOWN_ERROR"
-          ? rawCode
-          : String(error.response?.status ?? "UNKNOWN_ERROR"),
-      message: displayMessage,
+      code: rawCode !== "UNKNOWN_ERROR" ? rawCode : String(error.response?.status ?? "UNKNOWN_ERROR"),
+      message: translationKey,
       details: rawDetails,
     };
   }
