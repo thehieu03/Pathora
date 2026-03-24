@@ -17,8 +17,11 @@ public sealed record GetClassificationPricingTiersQuery(Guid ClassificationId)
 public sealed class GetClassificationPricingTiersQueryHandler(IDynamicPricingService dynamicPricingService)
     : IQueryHandler<GetClassificationPricingTiersQuery, ErrorOr<List<DynamicPricingDto>>>
 {
-    public async Task<ErrorOr<List<DynamicPricingDto>>> Handle(GetClassificationPricingTiersQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<List<DynamicPricingDto>>> Handle(
+        GetClassificationPricingTiersQuery request,
+        CancellationToken cancellationToken)
     {
         return await dynamicPricingService.GetClassificationTiers(request.ClassificationId);
     }
 }
+

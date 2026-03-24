@@ -43,7 +43,7 @@ public sealed class CreateSupplierPayableCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateSupplierPayableCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
@@ -106,7 +106,7 @@ public sealed class UpdateSupplierPayableCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateSupplierPayableCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await supplierPayableRepository.GetByIdAsync(request.SupplierPayableId);
         if (entity is null)
         {
@@ -158,7 +158,7 @@ public sealed class RecordSupplierPaymentCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(RecordSupplierPaymentCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var payable = await supplierPayableRepository.GetByIdAsync(request.SupplierPayableId);
         if (payable is null)
         {

@@ -47,7 +47,7 @@ public sealed class CreateParticipantCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateParticipantCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
@@ -135,7 +135,7 @@ public sealed class UpdateParticipantCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateParticipantCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await bookingParticipantRepository.GetByIdAsync(request.ParticipantId);
         if (entity is null)
         {
@@ -233,7 +233,7 @@ public sealed class CreatePassportCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreatePassportCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var participant = await bookingParticipantRepository.GetByIdAsync(request.BookingParticipantId);
         if (participant is null)
         {
@@ -314,7 +314,7 @@ public sealed class UpdatePassportCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdatePassportCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await passportRepository.GetByIdAsync(request.PassportId);
         if (entity is null)
         {
@@ -391,7 +391,7 @@ public sealed class CreateVisaApplicationCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateVisaApplicationCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var participant = await bookingParticipantRepository.GetByIdAsync(request.BookingParticipantId);
         if (participant is null)
         {
@@ -453,7 +453,7 @@ public sealed class UpdateVisaApplicationCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateVisaApplicationCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await visaApplicationRepository.GetByIdAsync(request.VisaApplicationId);
         if (entity is null)
         {
@@ -538,7 +538,7 @@ public sealed class CreateVisaCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateVisaCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var visaApplication = await visaApplicationRepository.GetByIdAsync(request.VisaApplicationId);
         if (visaApplication is null)
         {
@@ -711,7 +711,7 @@ public sealed class GetParticipantPassportQueryHandler(
 {
     public async Task<ErrorOr<PassportDto>> Handle(GetParticipantPassportQuery request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var passport = await passportRepository.GetByBookingParticipantIdAsync(request.ParticipantId);
         if (passport is null)
         {

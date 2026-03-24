@@ -9,6 +9,14 @@ using Domain.Entities.Translations;
 using Domain.UnitOfWork;
 using ErrorOr;
 using NSubstitute;
+using ApplicationClassificationDto = Application.Features.Tour.Commands.ClassificationDto;
+using ApplicationDayPlanDto = Application.Features.Tour.Commands.DayPlanDto;
+using ApplicationActivityDto = Application.Features.Tour.Commands.ActivityDto;
+using ApplicationRouteDto = Application.Features.Tour.Commands.RouteDto;
+using ApplicationAccommodationDto = Application.Features.Tour.Commands.AccommodationDto;
+using ApplicationInsuranceDto = Application.Features.Tour.Commands.InsuranceDto;
+using ApplicationTransportationDto = Application.Features.Tour.Commands.TransportationDto;
+using ApplicationLocationDto = Application.Features.Tour.Commands.LocationDto;
 
 namespace Domain.Specs.Application.Services;
 
@@ -173,7 +181,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ApplicationClassificationDto(
                     Name: "Standard Package",
                     Description: "Standard 3-day package",
                     AdultPrice: 1000,
@@ -183,13 +191,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 2,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new ApplicationDayPlanDto(
                             DayNumber: 1,
                             Title: "Day 1",
                             Description: "Arrival",
                             Activities:
                             [
-                                new ActivityDto(
+                                new ApplicationActivityDto(
                                     ActivityType: "Transport",
                                     Title: "Airport Pickup",
                                     Description: "Pick up from airport",
@@ -200,7 +208,7 @@ public sealed class TourServiceTests
                                     EndTime: "10:00",
                                     Routes:
                                     [
-                                        new RouteDto(
+                                        new ApplicationRouteDto(
                                             FromLocationName: "Airport",
                                             ToLocationName: "Hotel",
                                             TransportationType: "Car",
@@ -214,7 +222,7 @@ public sealed class TourServiceTests
                                             Translations: null,
                                             RouteTranslations: null)
                                     ],
-                                    Accommodation: new AccommodationDto(
+                                    Accommodation: new ApplicationAccommodationDto(
                                         AccommodationName: "Hotel ABC",
                                         Address: "123 Main St",
                                         ContactPhone: "0123456789",
@@ -228,7 +236,7 @@ public sealed class TourServiceTests
                     ],
                     Insurances:
                     [
-                        new InsuranceDto(
+                        new ApplicationInsuranceDto(
                             InsuranceName: "Travel Insurance",
                             InsuranceType: "Basic",
                             InsuranceProvider: "ABC Insurance",
@@ -282,7 +290,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ApplicationClassificationDto(
                     Name: "Test",
                     Description: "",
                     AdultPrice: 0,
@@ -292,13 +300,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new ApplicationDayPlanDto(
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ApplicationActivityDto(
                                     ActivityType: "Sightseeing",
                                     Title: "Visit Temple",
                                     Description: null,
@@ -350,7 +358,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ApplicationClassificationDto(
                     Name: "Test",
                     Description: "",
                     AdultPrice: 0,
@@ -360,13 +368,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new ApplicationDayPlanDto(
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ApplicationActivityDto(
                                     ActivityType: "Sightseeing",
                                     Title: "Visit",
                                     Description: null,
@@ -414,7 +422,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ApplicationClassificationDto(
                     Name: "Test",
                     Description: "",
                     AdultPrice: 0,
@@ -424,13 +432,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new ApplicationDayPlanDto(
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ApplicationActivityDto(
                                     ActivityType: "UnknownActivityType",
                                     Title: "Activity",
                                     Description: null,
@@ -478,7 +486,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ApplicationClassificationDto(
                     Name: "Test",
                     Description: "",
                     AdultPrice: 0,
@@ -488,13 +496,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new ApplicationDayPlanDto(
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ApplicationActivityDto(
                                     ActivityType: "Transport",
                                     Title: "Transfer",
                                     Description: null,
@@ -505,7 +513,7 @@ public sealed class TourServiceTests
                                     EndTime: null,
                                     Routes:
                                     [
-                                        new RouteDto(
+                                        new ApplicationRouteDto(
                                             FromLocationName: "A",
                                             ToLocationName: "B",
                                             TransportationType: "UnknownTransport",
@@ -555,7 +563,7 @@ public sealed class TourServiceTests
         {
             Accommodations =
             [
-                new AccommodationDto(
+                new ApplicationAccommodationDto(
                     AccommodationName: "Hotel 1",
                     Address: "123 St",
                     ContactPhone: null,
@@ -566,19 +574,19 @@ public sealed class TourServiceTests
             ],
             Locations =
             [
-                new LocationDto(
+                new ApplicationLocationDto(
                     LocationName: "Museum",
                     LocationType: "Museum",
                     Description: null,
                     City: "Da Nang",
                     Country: "Vietnam",
-                    EntranceFee: 0,
+                    EntranceFee: null,
                     Address: null,
                     Translations: null)
             ],
             Transportations =
             [
-                new TransportationDto(
+                new ApplicationTransportationDto(
                     FromLocation: "Hotel",
                     ToLocation: "Beach",
                     TransportationType: "Bus",
@@ -588,8 +596,7 @@ public sealed class TourServiceTests
                     Price: 5,
                     RequiresIndividualTicket: false,
                     TicketInfo: null,
-                    Note: null,
-                    Translations: null)
+                    Note: null)
             ]
         };
         var service = CreateService();
@@ -658,7 +665,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ApplicationClassificationDto(
                     Name: "Pkg",
                     Description: "Desc",
                     AdultPrice: 0,
@@ -668,13 +675,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new ApplicationDayPlanDto(
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ApplicationActivityDto(
                                     ActivityType: "Sightseeing",
                                     Title: "Act",
                                     Description: null,

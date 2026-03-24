@@ -47,7 +47,7 @@ public sealed class CreateSupplierCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateSupplierCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var existing = await supplierRepository.GetByCodeAsync(request.SupplierCode);
         if (existing is not null)
         {
@@ -114,7 +114,7 @@ public sealed class UpdateSupplierCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateSupplierCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (entity is null)
         {
@@ -163,7 +163,7 @@ public sealed class DeleteSupplierCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(DeleteSupplierCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (entity is null)
         {

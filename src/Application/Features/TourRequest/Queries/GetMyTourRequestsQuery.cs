@@ -36,14 +36,17 @@ public sealed class GetMyTourRequestsQueryHandler(
     ITourRequestRepository tourRequestRepository)
     : IQueryHandler<GetMyTourRequestsQuery, ErrorOr<PaginatedList<TourRequestVm>>>
 {
-    public async Task<ErrorOr<PaginatedList<TourRequestVm>>> Handle(GetMyTourRequestsQuery request, CancellationToken cancellationToken)
+    public async Task<ErrorOr<PaginatedList<TourRequestVm>>> Handle(
+        GetMyTourRequestsQuery request,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(user.Id) || !Guid.TryParse(user.Id, out var currentUserId))
         {
             return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
         }
 
-        var entities = await tourRequestRepository.GetByUserIdAsync(currentUserId, request.PageNumber, request.PageSize, asNoTracking: true);
+        var entities = await tourRequestRepository.GetByUserIdAsync(
+            currentUserId, request.PageNumber, request.PageSize, asNoTracking: true);
         var total = await tourRequestRepository.CountByUserIdAsync(currentUserId);
 
         return new PaginatedList<TourRequestVm>(total, entities.Select(x => x.ToVm()).ToList());

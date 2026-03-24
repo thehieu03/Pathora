@@ -5,18 +5,17 @@ using Application.Common.Constant;
 using Application.Common.Interfaces;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
-using Application.Features.Tour.Queries;
 using Application.Services;
+using Application.Features.Tour.Queries;
 using Domain.Entities.Translations;
-using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [Authorize(Roles = RoleConstants.SuperAdmin_Admin_TourManager_TourOperator)]
-[Route(TourEndpoint.Base)]
-public class TourController(IFileService fileService, IFileManager fileManager) : BaseApiController
+[Route(AdminTourEndpoints.Base)]
+public class AdminTourController(IFileService fileService, IFileManager fileManager) : BaseApiController
 {
     private static readonly JsonSerializerOptions TranslationJsonOptions = new()
     {
@@ -39,22 +38,24 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         return HandleResult(result);
     }
 
-    [HttpGet(TourEndpoint.Id)]
-    public async Task<IActionResult> GetDetail(Guid id)
+    [HttpGet(AdminTourEndpoints.Id)]
+    public async Task<IActionResult> GetById(Guid id)
     {
         var result = await Sender.Send(new GetTourDetailQuery(id));
         return HandleResult(result);
     }
 
-    [HttpGet(TourEndpoint.ClassificationPricingTiers)]
+    [HttpGet("classifications/{classificationId:guid}/pricing-tiers")]
     public async Task<IActionResult> GetClassificationPricingTiers(Guid classificationId)
     {
         var result = await Sender.Send(new GetClassificationPricingTiersQuery(classificationId));
         return HandleResult(result);
     }
 
-    [HttpPut(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> UpsertClassificationPricingTiers(Guid classificationId, [FromBody] List<DynamicPricingDto> tiers)
+    [HttpPut("classifications/{classificationId:guid}/pricing-tiers")]
+    public async Task<IActionResult> UpsertClassificationPricingTiers(
+        Guid classificationId,
+        [FromBody] List<DynamicPricingDto> tiers)
     {
         var result = await Sender.Send(new UpsertClassificationPricingTiersCommand(classificationId, tiers));
         return HandleUpdated(result);
@@ -68,7 +69,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] string longDescription,
         [FromForm] string? seoTitle,
         [FromForm] string? seoDescription,
-        [FromForm] TourStatus status,
+        [FromForm] Domain.Enums.TourStatus status,
         IFormFile? thumbnail,
         [FromForm] List<IFormFile>? images,
         [FromForm] string? translations = null,
@@ -91,7 +92,6 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         var locationData = ParseLocations(locations);
         var transportationData = ParseTransportations(transportations);
 
-        // Collect all uploaded object names for rollback on failure
         var uploadedObjectNames = new List<string>();
         if (thumbnailDto?.FileId is not null)
             uploadedObjectNames.Add(thumbnailDto.FileId);
@@ -120,27 +120,20 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
                 cancellationPolicyId);
 
             var result = await Sender.Send(command);
-            return HandleResult(result);
+            return HandleCreated(result);
         }
         catch
         {
-            // Rollback: delete any files that were uploaded before the command failed
             if (uploadedObjectNames.Count > 0)
             {
-                try
-                {
-                    await fileManager.DeleteUploadedFilesAsync(uploadedObjectNames);
-                }
-                catch
-                {
-                    // Log but don't mask the original exception
-                }
+                try { await fileManager.DeleteUploadedFilesAsync(uploadedObjectNames); }
+                catch { /* log but don't mask the original exception */ }
             }
             throw;
         }
     }
 
-    [HttpPut]
+    [HttpPut(AdminTourEndpoints.Id)]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Update(
         [FromForm] Guid id,
@@ -149,7 +142,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] string longDescription,
         [FromForm] string? seoTitle,
         [FromForm] string? seoDescription,
-        [FromForm] TourStatus status,
+        [FromForm] Domain.Enums.TourStatus status,
         IFormFile? thumbnail,
         [FromForm] List<IFormFile>? images,
         [FromForm] string? translations = null)
@@ -165,14 +158,14 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
             seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData);
 
         var result = await Sender.Send(command);
-        return HandleResult(result);
+        return HandleUpdated(result);
     }
 
-    [HttpDelete(TourEndpoint.Id)]
+    [HttpDelete(AdminTourEndpoints.Id)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await Sender.Send(new DeleteTourCommand(id));
-        return HandleResult(result);
+        return HandleDeleted(result);
     }
 
     private async Task<ImageInputDto> UploadSingleFile(IFormFile file)
@@ -197,26 +190,20 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     private static Dictionary<string, TourTranslationData>? ParseTranslations(string? translations)
     {
         if (string.IsNullOrWhiteSpace(translations))
-        {
             return null;
-        }
 
         try
         {
             using var document = JsonDocument.Parse(translations);
             if (document.RootElement.ValueKind != JsonValueKind.Object)
-            {
                 return null;
-            }
 
             var result = new Dictionary<string, TourTranslationData>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var languageProperty in document.RootElement.EnumerateObject())
             {
                 if (languageProperty.Value.ValueKind != JsonValueKind.Object)
-                {
                     continue;
-                }
 
                 var translation = new TourTranslationData
                 {
@@ -238,31 +225,22 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         }
     }
 
-    private static string GetStringProperty(JsonElement element, params string[] propertyNames)
-    {
-        return GetNullableStringProperty(element, propertyNames) ?? string.Empty;
-    }
+    private static string GetStringProperty(JsonElement element, params string[] propertyNames) =>
+        GetNullableStringProperty(element, propertyNames) ?? string.Empty;
 
     private static string? GetNullableStringProperty(JsonElement element, params string[] propertyNames)
     {
         foreach (var propertyName in propertyNames)
         {
             if (!TryGetPropertyIgnoreCase(element, propertyName, out var propertyValue))
-            {
                 continue;
-            }
 
             if (propertyValue.ValueKind == JsonValueKind.Null)
-            {
                 return null;
-            }
 
-            if (propertyValue.ValueKind == JsonValueKind.String)
-            {
-                return propertyValue.GetString();
-            }
-
-            return propertyValue.ToString();
+            return propertyValue.ValueKind == JsonValueKind.String
+                ? propertyValue.GetString()
+                : propertyValue.ToString();
         }
 
         return null;
@@ -287,6 +265,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         if (string.IsNullOrWhiteSpace(classifications))
             return null;
+
         try
         {
             return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.ClassificationDto>>(
@@ -303,6 +282,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         if (string.IsNullOrWhiteSpace(accommodations))
             return null;
+
         try
         {
             return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.AccommodationDto>>(
@@ -319,6 +299,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         if (string.IsNullOrWhiteSpace(locations))
             return null;
+
         try
         {
             return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.LocationDto>>(
@@ -335,6 +316,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         if (string.IsNullOrWhiteSpace(transportations))
             return null;
+
         try
         {
             return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.TransportationDto>>(

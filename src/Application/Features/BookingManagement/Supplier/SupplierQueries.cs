@@ -23,7 +23,7 @@ public sealed class GetSupplierByIdQueryHandler(
 {
     public async Task<ErrorOr<SupplierDto>> Handle(GetSupplierByIdQuery request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await supplierRepository.GetByIdAsync(request.SupplierId);
         if (entity is null)
         {

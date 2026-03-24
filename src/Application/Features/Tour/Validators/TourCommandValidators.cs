@@ -1,10 +1,8 @@
-using Application.Dtos;
-using Application.Features.Tour.Commands;
 using FluentValidation;
 
 namespace Application.Features.Tour.Validators;
 
-public sealed class ImageInputDtoValidator : AbstractValidator<ImageInputDto>
+public sealed class ImageInputDtoValidator : AbstractValidator<Application.Dtos.ImageInputDto>
 {
     public ImageInputDtoValidator()
     {
@@ -24,7 +22,7 @@ public sealed class ImageInputDtoValidator : AbstractValidator<ImageInputDto>
     }
 }
 
-public sealed class ClassificationDtoValidator : AbstractValidator<ClassificationDto>
+public sealed class ClassificationDtoValidator : AbstractValidator<Commands.ClassificationDto>
 {
     public ClassificationDtoValidator()
     {
@@ -60,7 +58,7 @@ public sealed class ClassificationDtoValidator : AbstractValidator<Classificatio
     }
 }
 
-public sealed class DayPlanDtoValidator : AbstractValidator<DayPlanDto>
+public sealed class DayPlanDtoValidator : AbstractValidator<Commands.DayPlanDto>
 {
     public DayPlanDtoValidator()
     {
@@ -80,7 +78,7 @@ public sealed class DayPlanDtoValidator : AbstractValidator<DayPlanDto>
     }
 }
 
-public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
+public sealed class ActivityDtoValidator : AbstractValidator<Commands.ActivityDto>
 {
     public ActivityDtoValidator()
     {
@@ -107,7 +105,7 @@ public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
     }
 }
 
-public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
+public sealed class RouteDtoValidator : AbstractValidator<Commands.RouteDto>
 {
     public RouteDtoValidator()
     {
@@ -128,7 +126,7 @@ public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
     }
 }
 
-public sealed class AccommodationDtoValidator : AbstractValidator<AccommodationDto>
+public sealed class AccommodationDtoValidator : AbstractValidator<Commands.AccommodationDto>
 {
     public AccommodationDtoValidator()
     {
@@ -151,7 +149,7 @@ public sealed class AccommodationDtoValidator : AbstractValidator<AccommodationD
     }
 }
 
-public sealed class InsuranceDtoValidator : AbstractValidator<InsuranceDto>
+public sealed class InsuranceDtoValidator : AbstractValidator<Commands.InsuranceDto>
 {
     public InsuranceDtoValidator()
     {

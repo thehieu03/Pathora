@@ -54,7 +54,7 @@ public sealed class CreateBookingActivityReservationCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateBookingActivityReservationCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
@@ -125,7 +125,7 @@ public sealed class UpdateBookingActivityReservationCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateBookingActivityReservationCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await bookingActivityReservationRepository.GetByIdAsync(request.BookingActivityReservationId);
         if (entity is null)
         {

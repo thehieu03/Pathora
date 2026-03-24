@@ -61,7 +61,7 @@ public sealed class CreateAccommodationDetailCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateAccommodationDetailCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var activity = await bookingActivityReservationRepository.GetByIdAsync(request.BookingActivityReservationId);
         if (activity is null)
         {
@@ -159,7 +159,7 @@ public sealed class UpdateAccommodationDetailCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateAccommodationDetailCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var entity = await bookingAccommodationDetailRepository.GetByIdAsync(request.BookingAccommodationDetailId);
         if (entity is null)
         {

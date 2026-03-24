@@ -49,7 +49,7 @@ public sealed class LanguageResolutionMiddleware(RequestDelegate next)
             return normalizedFromHeader;
         }
 
-        return ILanguageContext.DefaultLanguage;
+        return "vi";
     }
 
     private static string? NormalizeLanguage(string? language)

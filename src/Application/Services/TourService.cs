@@ -394,6 +394,7 @@ public class TourService(
 
     private sealed class FallbackLanguageContext : ILanguageContext
     {
-        public string CurrentLanguage { get; set; } = ILanguageContext.DefaultLanguage;
+        public string CurrentLanguage { get; set; } = "vi";
+        public string DefaultLanguage => "vi";
     }
 }

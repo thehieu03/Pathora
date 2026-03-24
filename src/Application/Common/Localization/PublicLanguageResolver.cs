@@ -14,7 +14,7 @@ public static class PublicLanguageResolver
     {
         if (string.IsNullOrWhiteSpace(language))
         {
-            return ILanguageContext.DefaultLanguage;
+            return "vi";
         }
 
         var firstToken = language.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -28,6 +28,6 @@ public static class PublicLanguageResolver
 
         return SupportedLanguages.Contains(languageCode)
             ? languageCode
-            : ILanguageContext.DefaultLanguage;
+            : "vi";
     }
 }

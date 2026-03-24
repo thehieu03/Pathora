@@ -35,7 +35,7 @@ public sealed class InitializeActivityStatusCommandHandler(
 {
     public async Task<ErrorOr<int>> Handle(InitializeActivityStatusCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
@@ -101,7 +101,7 @@ public sealed class StartActivityCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(StartActivityCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
@@ -149,7 +149,7 @@ public sealed class CompleteActivityCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(CompleteActivityCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
@@ -198,7 +198,7 @@ public sealed class CancelActivityCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(CancelActivityCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
@@ -307,7 +307,7 @@ public sealed class GetActivityStatusByTourDayQueryHandler(
             return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
         }
 
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
@@ -374,7 +374,7 @@ public sealed class AssignGuideToActivityCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(AssignGuideToActivityCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
+        var lang = languageContext?.CurrentLanguage ?? "vi";
         var status = await tourDayActivityStatusRepository.GetByBookingIdAndTourDayIdAsync(request.BookingId, request.TourDayId);
         if (status is null)
         {
