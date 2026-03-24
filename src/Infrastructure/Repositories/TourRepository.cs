@@ -298,8 +298,8 @@ public class TourRepository(AppDbContext context) : ITourRepository
         if (minPrice.HasValue || maxPrice.HasValue || minDays.HasValue || maxDays.HasValue)
         {
             query = query.Where(t => t.Classifications.Any(c =>
-                (!minPrice.HasValue || c.AdultPrice >= minPrice.Value) &&
-                (!maxPrice.HasValue || c.AdultPrice <= maxPrice.Value) &&
+                (!minPrice.HasValue || c.BasePrice >= minPrice.Value) &&
+                (!maxPrice.HasValue || c.BasePrice <= maxPrice.Value) &&
                 (!minDays.HasValue || c.NumberOfDay >= minDays.Value) &&
                 (!maxDays.HasValue || c.NumberOfDay <= maxDays.Value)));
         }

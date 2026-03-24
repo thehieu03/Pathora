@@ -1980,10 +1980,7 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("AdultPrice")
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<decimal>("ChildPrice")
+                    b.Property<decimal>("BasePrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("CreatedBy")
@@ -1995,9 +1992,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<decimal>("InfantPrice")
-                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");

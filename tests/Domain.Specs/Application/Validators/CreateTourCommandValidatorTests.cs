@@ -272,9 +272,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard Tour",
                 Description: "Standard package",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -297,9 +295,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -323,9 +319,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: -100,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: -100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -334,7 +328,7 @@ public class CreateTourCommandValidatorTests
         };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.PropertyName.Contains("AdultPrice"));
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("BasePrice"));
     }
 
     #endregion
@@ -349,9 +343,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 0,
                 NumberOfNight: 2,
                 Plans: [],
@@ -375,9 +367,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -404,9 +394,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -434,9 +422,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -473,9 +459,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -513,9 +497,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -558,9 +540,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -604,9 +584,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -650,9 +628,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -699,9 +675,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -749,9 +723,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [new DayPlanDto(
@@ -799,9 +771,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -832,9 +802,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
@@ -866,9 +834,7 @@ public class CreateTourCommandValidatorTests
             Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
-                AdultPrice: 1000,
-                ChildPrice: 500,
-                InfantPrice: 100,
+                BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],

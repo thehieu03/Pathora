@@ -55,8 +55,7 @@ public sealed class GetPublicToursQueryHandler(ITourRepository tourRepository)
                 t.ShortDescription,
                 GetMainLocation(t),
                 classification?.NumberOfDay ?? 0,
-                classification?.AdultPrice ?? 0,
-                classification?.ChildPrice ?? 0,
+                classification?.BasePrice ?? 0,
                 classification?.Name,
                 null);
         }).ToList();

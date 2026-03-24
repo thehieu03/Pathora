@@ -7,8 +7,7 @@ public sealed record FeaturedTourVm(
     string? Location,
     decimal? Rating,
     int DurationDays,
-    decimal Price,
-    decimal SalePrice,
+    decimal BasePrice,
     string? ClassificationName);
 
 public sealed record LatestTourVm(
@@ -51,7 +50,6 @@ public sealed record SearchTourVm(
     string? ShortDescription,
     string? Location,
     int DurationDays,
-    decimal Price,
-    decimal SalePrice,
+    decimal BasePrice,
     string? ClassificationName,
     decimal? Rating);

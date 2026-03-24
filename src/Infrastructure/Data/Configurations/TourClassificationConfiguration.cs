@@ -19,15 +19,7 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(c => c.AdultPrice)
-            .IsRequired()
-            .HasColumnType("numeric(18,2)");
-
-        builder.Property(c => c.ChildPrice)
-            .IsRequired()
-            .HasColumnType("numeric(18,2)");
-
-        builder.Property(c => c.InfantPrice)
+        builder.Property(c => c.BasePrice)
             .IsRequired()
             .HasColumnType("numeric(18,2)");
 

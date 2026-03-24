@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.src.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260324100405_ReplaceTourClassificationTierPricesWithBasePrice")]
+    [Migration("20260324104713_ReplaceTourClassificationTierPricesWithBasePrice")]
     partial class ReplaceTourClassificationTierPricesWithBasePrice
     {
         /// <inheritdoc />

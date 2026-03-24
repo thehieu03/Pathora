@@ -176,9 +176,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Standard Package",
                     Description: "Standard 3-day package",
-                    AdultPrice: 1000,
-                    ChildPrice: 500,
-                    InfantPrice: 100,
+                    BasePrice: 1000,
                     NumberOfDay: 3,
                     NumberOfNight: 2,
                     Plans:
@@ -253,7 +251,7 @@ public sealed class TourServiceTests
         Assert.Single(capturedTour!.Classifications);
         var cls = capturedTour.Classifications[0];
         Assert.Equal("Standard Package", cls.Name);
-        Assert.Equal(1000, cls.AdultPrice);
+        Assert.Equal(1000, cls.BasePrice);
         Assert.Single(cls.Plans);
         Assert.Single(cls.Plans[0].Activities);
         Assert.Equal("Airport Pickup", cls.Plans[0].Activities[0].Title);
@@ -285,9 +283,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -353,9 +349,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -417,9 +411,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -481,9 +473,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Test",
                     Description: "",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:
@@ -661,9 +651,7 @@ public sealed class TourServiceTests
                 new ClassificationDto(
                     Name: "Pkg",
                     Description: "Desc",
-                    AdultPrice: 0,
-                    ChildPrice: 0,
-                    InfantPrice: 0,
+                    BasePrice: 0,
                     NumberOfDay: 1,
                     NumberOfNight: 0,
                     Plans:

@@ -36,14 +36,13 @@ public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository)
         {
             var classification = t.Classifications.FirstOrDefault();
             return new FeaturedTourVm(
-t.Id,
+                t.Id,
                 t.TourName,
                 t.Thumbnail?.PublicURL,
                 GetMainLocation(t),
                 null,
                 classification?.NumberOfDay ?? 0,
-                classification?.AdultPrice ?? 0,
-                classification?.ChildPrice ?? 0,
+                classification?.BasePrice ?? 0,
                 classification?.Name);
         }).ToList();
 

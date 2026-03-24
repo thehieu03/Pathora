@@ -85,9 +85,7 @@ public class TourService(
                 var classification = TourClassificationEntity.Create(
                     tour.Id,
                     cls.Name,
-                    cls.AdultPrice,
-                    cls.ChildPrice,
-                    cls.InfantPrice,
+                    cls.BasePrice,
                     cls.Description,
                     cls.NumberOfDay,
                     cls.NumberOfNight,
