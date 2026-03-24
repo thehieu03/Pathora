@@ -8,82 +8,12 @@ import { LandingHeader } from "@/features/shared/components/LandingHeader";
 import { LandingFooter } from "@/features/shared/components/LandingFooter";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import type { PolicySection } from "@/types/siteContent";
+import { normalizePolicySections } from "../utils/normalizePolicySections";
 
-/* ── Image Assets ──────────────────────────────────────────── */
+// ── Image Assets ────────────────────────────────────────────
 const HERO_BG =
   "https://www.figma.com/api/mcp/asset/31a73fdb-dc1a-4937-9980-024dcb89ba42";
-
-/* ── Policy Sections Data ──────────────────────────────────── */
-interface PolicySection {
-  icon: string;
-  titleKey: string;
-  items: string[];
-}
-
-const POLICY_SECTIONS: PolicySection[] = [
-  {
-    icon: "heroicons-outline:document-text",
-    titleKey: "bookingPayment",
-    items: [
-      "bookingPaymentItem1",
-      "bookingPaymentItem2",
-      "bookingPaymentItem3",
-      "bookingPaymentItem4",
-    ],
-  },
-  {
-    icon: "heroicons-outline:arrow-path",
-    titleKey: "cancellationRefund",
-    items: [
-      "cancellationRefundItem1",
-      "cancellationRefundItem2",
-      "cancellationRefundItem3",
-      "cancellationRefundItem4",
-      "cancellationRefundItem5",
-    ],
-  },
-  {
-    icon: "heroicons-outline:arrow-path",
-    titleKey: "modificationRescheduling",
-    items: [
-      "modificationItem1",
-      "modificationItem2",
-      "modificationItem3",
-      "modificationItem4",
-    ],
-  },
-  {
-    icon: "heroicons-outline:shield-check",
-    titleKey: "healthSafety",
-    items: [
-      "healthSafetyItem1",
-      "healthSafetyItem2",
-      "healthSafetyItem3",
-      "healthSafetyItem4",
-    ],
-  },
-  {
-    icon: "heroicons-outline:lock-closed",
-    titleKey: "privacyPolicy",
-    items: [
-      "privacyPolicyItem1",
-      "privacyPolicyItem2",
-      "privacyPolicyItem3",
-      "privacyPolicyItem4",
-    ],
-  },
-  {
-    icon: "heroicons-outline:exclamation-circle",
-    titleKey: "liabilityDisclaimer",
-    items: [
-      "liabilityItem1",
-      "liabilityItem2",
-      "liabilityItem3",
-      "liabilityItem4",
-    ],
-  },
-];
-
 /* ═══════════════════════════════════════════════════════════ */
 /*  Hero Banner                                                */
 /* ═══════════════════════════════════════════════════════════ */
@@ -185,7 +115,6 @@ const IntroBox = () => {
 /*  Policy Card                                                */
 /* ═══════════════════════════════════════════════════════════ */
 const PolicyCard = ({ section }: { section: PolicySection }) => {
-  const { t } = useTranslation();
   return (
     <div className="bg-white border border-[#f3f4f6] rounded-2xl shadow-sm overflow-hidden">
       {/* Header */}
@@ -194,21 +123,82 @@ const PolicyCard = ({ section }: { section: PolicySection }) => {
           <Icon icon={section.icon} className="w-5 h-5 text-[#fa8b02]" />
         </div>
         <h2 className="text-base font-bold text-[#05073c]">
-          {t(`landing.policies.sections.${section.titleKey}`)}
+          {section.title}
         </h2>
       </div>
 
       {/* Bullet list */}
       <ul className="flex flex-col gap-3 px-7 py-5">
-        {section.items.map((itemKey) => (
-          <li key={itemKey} className="flex items-start gap-[18px]">
+        {section.items.map((item, idx) => (
+          <li key={idx} className="flex items-start gap-[18px]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#fa8b02] mt-[7px] flex-shrink-0" />
             <p className="text-sm leading-[22.75px] text-[#4a5565]">
-              {t(`landing.policies.items.${itemKey}`)}
+              {item}
             </p>
           </li>
         ))}
       </ul>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════════════════════ */
+/*  Policy Content States                                      */
+/* ═══════════════════════════════════════════════════════════ */
+const PolicyContentLoading = () => (
+  <div className="flex flex-col gap-8 animate-pulse">
+    {[1, 2, 3, 4, 5, 6].map((i) => (
+      <div
+        key={i}
+        className="bg-white border border-[#f3f4f6] rounded-2xl shadow-sm overflow-hidden p-7"
+      >
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-[14px] bg-[#f3f4f6]" />
+          <div className="h-5 bg-[#f3f4f6] rounded w-40" />
+        </div>
+        <div className="flex flex-col gap-3">
+          <div className="h-4 bg-[#f3f4f6] rounded w-full" />
+          <div className="h-4 bg-[#f3f4f6] rounded w-5/6" />
+          <div className="h-4 bg-[#f3f4f6] rounded w-4/5" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const PolicyContentEmpty = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="w-16 h-16 rounded-full bg-[#fff7ed] flex items-center justify-center mb-4">
+        <Icon icon="heroicons-outline:document-text" className="w-8 h-8 text-[#fa8b02]" />
+      </div>
+      <h3 className="text-lg font-semibold text-[#05073c] mb-2">
+        {t("landing.policies.noContentTitle") || "No policies available"}
+      </h3>
+      <p className="text-sm text-[#6a7282] max-w-sm">
+        {t("landing.policies.noContentDesc") || "Policy content will appear here once added."}
+      </p>
+    </div>
+  );
+};
+
+const PolicyContentError = ({ message }: { message: string }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-4">
+        <Icon icon="heroicons-outline:exclamation-circle" className="w-8 h-8 text-red-500" />
+      </div>
+      <h3 className="text-lg font-semibold text-red-600 mb-2">
+        {t("landing.policies.errorTitle") || "Failed to load policies"}
+      </h3>
+      <p className="text-sm text-[#6a7282] max-w-sm mb-6">{message}</p>
+      <Button
+        onClick={() => window.location.reload()}
+        text={t("common.retry") || "Retry"}
+        className="px-6 py-2.5 bg-[#fa8b02] text-white rounded-xl font-semibold"
+      />
     </div>
   );
 };
@@ -271,24 +261,20 @@ const FloatingButtons = () => (
 );
 
 /* ═══════════════════════════════════════════════════════════ */
-/*  Main Policy Page with Dynamic Content                      */
+/*  Main Policy Page                                          */
 /* ═══════════════════════════════════════════════════════════ */
 export const PolicyPage = () => {
   const { content, loading, error } = useSiteContent("policies");
 
-  // Parse dynamic content or use fallback to static data
-  const policySections = (content?.["policy-sections"] as PolicySection[] | undefined) || POLICY_SECTIONS;
-
-  if (error) {
-    console.warn("Failed to load dynamic policies content, using static fallback:", error);
-  }
+  const raw = content?.["policy-sections"];
+  const { sections: policySections } = normalizePolicySections(raw);
 
   return (
     <main
       id="main-content"
       tabIndex={-1}
       className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
-      {/* Header + Hero (overlay like Home) */}
+      {/* Header + Hero */}
       <div className="relative">
         <LandingHeader />
         <HeroBanner />
@@ -305,9 +291,17 @@ export const PolicyPage = () => {
 
           {/* Policy Sections */}
           <div className="flex flex-col gap-8">
-            {policySections.map((section) => (
-              <PolicyCard key={section.titleKey} section={section} />
-            ))}
+            {loading ? (
+              <PolicyContentLoading />
+            ) : error ? (
+              <PolicyContentError message={error} />
+            ) : policySections.length === 0 ? (
+              <PolicyContentEmpty />
+            ) : (
+              policySections.map((section, idx) => (
+                <PolicyCard key={section.id ?? idx} section={section} />
+              ))
+            )}
           </div>
 
           {/* CTA */}
