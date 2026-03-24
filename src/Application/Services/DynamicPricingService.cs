@@ -132,7 +132,8 @@ public sealed class DynamicPricingService(
             return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
         }
 
-        var instanceTier = instance.DynamicPricingTiers
+        var instanceTiers = await _dynamicPricingTierRepository.GetByTourInstanceId(tourInstanceId, asNoTracking: true);
+        var instanceTier = instanceTiers
             .OrderBy(tier => tier.MinParticipants)
             .ThenBy(tier => tier.MaxParticipants)
             .FirstOrDefault(tier => tier.Matches(participants));
@@ -153,7 +154,7 @@ public sealed class DynamicPricingService(
         }
 
         return new DynamicPricingResolutionDto(
-            ResolvedPricePerPerson: instance.AdultPrice,
+            ResolvedPricePerPerson: instance.BasePrice,
             PricingSource: DynamicPricingSource.Fallback.ToString().ToLowerInvariant(),
             MinParticipants: null,
             MaxParticipants: null);

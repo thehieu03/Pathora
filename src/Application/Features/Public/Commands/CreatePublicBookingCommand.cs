@@ -95,9 +95,9 @@ public sealed class CreatePublicBookingCommandHandler(
         }
 
         // Calculate total price
-        var adultPrice = tourInstance.AdultPrice;
-        var childPrice = tourInstance.ChildPrice;
-        var infantPrice = tourInstance.InfantPrice;
+        var adultPrice = tourInstance.BasePrice;
+        var childPrice = tourInstance.BasePrice;
+        var infantPrice = tourInstance.BasePrice;
 
         var adultSubtotal = adultPrice * request.NumberAdult;
         var childSubtotal = childPrice * request.NumberChild;

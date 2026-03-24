@@ -3,6 +3,7 @@ using Application.Common.Constant;
 using Application.Dtos;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
+using Domain.Entities;
 using ErrorOr;
 using FluentValidation;
 using Application.Services;
@@ -14,17 +15,15 @@ public sealed record UpdateTourInstanceCommand(
     string Title,
     DateTimeOffset StartDate,
     DateTimeOffset EndDate,
-    int MinParticipation,
     int MaxParticipation,
     decimal BasePrice,
-    decimal SellingPrice,
-    decimal OperatingCost,
-    decimal DepositPerPerson,
     string? Location = null,
     DateTimeOffset? ConfirmationDeadline = null,
     List<string>? IncludedServices = null,
-    TourInstanceGuideDto? Guide = null,
-    List<DynamicPricingDto>? DynamicPricing = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+    List<Guid>? GuideUserIds = null,
+    List<Guid>? ManagerUserIds = null,
+    ImageEntity? Thumbnail = null,
+    List<ImageEntity>? Images = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.TourInstance];
 }
@@ -49,63 +48,23 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
         RuleFor(x => x.MaxParticipation)
             .GreaterThan(0).WithMessage(ValidationMessages.TourInstanceMaxParticipantsGreaterThanZero);
 
-        RuleFor(x => x.MinParticipation)
-            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceMinParticipantsNonNegative);
-
         RuleFor(x => x.BasePrice)
             .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceBasePriceNonNegative);
 
-        RuleFor(x => x.SellingPrice)
-            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceSellingPriceNonNegative);
+        RuleFor(x => x.GuideUserIds)
+            .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
+            .WithMessage("Guide IDs không được trùng nhau")
+            .When(x => x.GuideUserIds is { Count: > 0 });
 
-        RuleFor(x => x.OperatingCost)
-            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceOperatingCostNonNegative);
+        RuleFor(x => x.ManagerUserIds)
+            .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
+            .WithMessage("Manager IDs không được trùng nhau")
+            .When(x => x.ManagerUserIds is { Count: > 0 });
 
-        RuleFor(x => x.DepositPerPerson)
-            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceDepositPerPersonNonNegative);
-
-        RuleForEach(x => x.DynamicPricing)
-            .ChildRules(tier =>
-            {
-                tier.RuleFor(x => x.MinParticipants)
-                    .GreaterThan(0).WithMessage(ValidationMessages.DynamicPricingMinParticipantsGreaterThanZero);
-
-                tier.RuleFor(x => x.MaxParticipants)
-                    .GreaterThanOrEqualTo(x => x.MinParticipants)
-                    .WithMessage(ValidationMessages.DynamicPricingMaxParticipantsGreaterThanOrEqualMin);
-
-                tier.RuleFor(x => x.PricePerPerson)
-                    .GreaterThanOrEqualTo(0)
-                    .WithMessage(ValidationMessages.DynamicPricingPricePerPersonNonNegative);
-            });
-
-        RuleFor(x => x.DynamicPricing)
-            .Must(HaveNoOverlappingRanges)
-            .WithMessage(ValidationMessages.DynamicPricingRangeMustNotOverlap)
-            .When(x => x.DynamicPricing is { Count: > 1 });
-    }
-
-    private static bool HaveNoOverlappingRanges(List<DynamicPricingDto>? tiers)
-    {
-        if (tiers is null || tiers.Count <= 1)
-        {
-            return true;
-        }
-
-        var ordered = tiers
-            .OrderBy(tier => tier.MinParticipants)
-            .ThenBy(tier => tier.MaxParticipants)
-            .ToList();
-
-        for (var index = 1; index < ordered.Count; index++)
-        {
-            if (ordered[index].MinParticipants <= ordered[index - 1].MaxParticipants)
-            {
-                return false;
-            }
-        }
-
-        return true;
+        RuleFor(x => x)
+            .Must(x => x.GuideUserIds == null || x.ManagerUserIds == null ||
+                       !x.GuideUserIds.Any(g => x.ManagerUserIds.Contains(g)))
+            .WithMessage("Một user không thể vừa là Guide vừa là Manager");
     }
 }
 

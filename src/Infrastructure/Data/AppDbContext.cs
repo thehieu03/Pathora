@@ -67,7 +67,6 @@ public class AppDbContext : DbContext
     public DbSet<ReviewEntity> Reviews => Set<ReviewEntity>();
     public DbSet<TourInstanceEntity> TourInstances => Set<TourInstanceEntity>();
     public DbSet<DynamicPricingTierEntity> DynamicPricingTiers => Set<DynamicPricingTierEntity>();
-    public DbSet<DynamicPricingTierEntity> TourInstancePricingTiers => Set<DynamicPricingTierEntity>();
     public DbSet<TourRequestEntity> TourRequests => Set<TourRequestEntity>();
     public DbSet<BookingEntity> Bookings => Set<BookingEntity>();
     public DbSet<BookingActivityReservationEntity> BookingActivityReservations => Set<BookingActivityReservationEntity>();
@@ -97,6 +96,7 @@ public class AppDbContext : DbContext
     public DbSet<TaxConfigEntity> TaxConfigs => Set<TaxConfigEntity>();
     public DbSet<CancellationPolicyEntity> CancellationPolicies => Set<CancellationPolicyEntity>();
     public DbSet<TourResourceEntity> TourResources => Set<TourResourceEntity>();
+    public DbSet<TourInstanceManagerEntity> TourInstanceManagers => Set<TourInstanceManagerEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

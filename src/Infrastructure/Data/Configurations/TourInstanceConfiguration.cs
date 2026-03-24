@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -57,27 +58,13 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
         builder.Property(t => t.DurationDays).IsRequired();
 
         // Participants
-        builder.Property(t => t.MinParticipation).IsRequired();
         builder.Property(t => t.MaxParticipation).IsRequired();
         builder.Property(t => t.CurrentParticipation).HasDefaultValue(0);
 
-        // Pricing
-        builder.Property(t => t.AdultPrice)
+        // BasePrice
+        builder.Property(t => t.BasePrice)
             .HasColumnType("numeric(18,2)")
             .IsRequired();
-
-        builder.Property(t => t.ChildPrice)
-            .HasColumnType("numeric(18,2)")
-            .IsRequired();
-
-        builder.Property(t => t.InfantPrice)
-            .HasColumnType("numeric(18,2)")
-            .IsRequired();
-
-        // Ignore computed backward-compat aliases (no backing field)
-        builder.Ignore(t => t.BasePrice);
-        builder.Ignore(t => t.SellingPrice);
-        builder.Ignore(t => t.OperatingCost);
 
         // Soft delete
         builder.Property(t => t.IsDeleted)
@@ -90,12 +77,6 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
         // Translations as JSONB column
         builder.Property(t => t.Translations)
             .ConfigureTranslationsJsonb();
-
-        // Guide as owned JSON column
-        builder.OwnsOne(t => t.Guide, guide =>
-        {
-            guide.ToJson();
-        });
 
         // Thumbnail as owned inline
         builder.OwnsOne(t => t.Thumbnail, thumb =>
@@ -138,9 +119,7 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
             .HasForeignKey(t => t.ClassificationId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(t => t.DynamicPricingTiers)
-            .WithOne(d => d.TourInstance)
-            .HasForeignKey(d => d.TourInstanceId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Managers (TourInstanceManagers) — configured via separate configuration class
+        builder.Navigation(t => t.Managers);
     }
 }

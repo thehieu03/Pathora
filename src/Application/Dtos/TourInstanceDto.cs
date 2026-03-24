@@ -17,11 +17,7 @@ public sealed record TourInstanceDto(
     int DurationDays,
     int CurrentParticipation,
     int MaxParticipation,
-    int MinParticipation,
     decimal BasePrice,
-    decimal SellingPrice,
-    decimal OperatingCost,
-    decimal DepositPerPerson,
     string Status,
     string InstanceType,
     string? CancellationReason,
@@ -29,6 +25,5 @@ public sealed record TourInstanceDto(
     int TotalBookings,
     decimal Revenue,
     DateTimeOffset? ConfirmationDeadline,
-    TourInstanceGuideDto? Guide,
-    List<string> IncludedServices,
-    List<DynamicPricingDto> DynamicPricing);
+    List<TourInstanceManagerDto> Managers,
+    List<string> IncludedServices);

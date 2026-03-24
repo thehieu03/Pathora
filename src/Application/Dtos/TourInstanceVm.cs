@@ -16,9 +16,6 @@ public sealed record TourInstanceVm(
     int DurationDays,
     int CurrentParticipation,
     int MaxParticipation,
-    int MinParticipation,
     decimal BasePrice,
-    decimal SellingPrice,
-    decimal DepositPerPerson,
     string Status,
     string InstanceType);

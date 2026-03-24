@@ -51,46 +51,42 @@ public class TourInstanceService(
 
         var performedBy = _user.Id ?? string.Empty;
 
-        var guide = request.Guide is not null
-            ? new TourInstanceGuide
-            {
-                Name = request.Guide.Name,
-                AvatarUrl = request.Guide.AvatarUrl,
-                Languages = request.Guide.Languages ?? [],
-                Experience = request.Guide.Experience
-            }
-            : null;
-
+        // BasePrice là snapshot từ Classification tại thời điểm tạo instance
         var entity = TourInstanceEntity.Create(
             tourId: request.TourId,
             classificationId: request.ClassificationId,
-title: request.Title,
+            title: request.Title,
             tourName: tour.TourName,
             tourCode: tour.TourCode,
             classificationName: classification.Name,
             instanceType: request.InstanceType,
             startDate: request.StartDate,
             endDate: request.EndDate,
-            minParticipation: request.MinParticipation,
             maxParticipation: request.MaxParticipation,
-            adultPrice: request.BasePrice,
-            childPrice: request.SellingPrice,
-            infantPrice: request.OperatingCost,
-            depositPerPerson: request.DepositPerPerson,
+            basePrice: classification.BasePrice,
             performedBy: performedBy,
             location: request.Location,
-            thumbnail: tour.Thumbnail,
-            images: tour.Images,
+            thumbnail: null,
+            images: null,
             confirmationDeadline: request.ConfirmationDeadline,
-            includedServices: request.IncludedServices,
-            guide: guide);
+            includedServices: request.IncludedServices);
 
-        if (request.DynamicPricing is not null)
+        // Add managers (guides)
+        if (request.GuideUserIds?.Count > 0)
         {
-            foreach (var tier in request.DynamicPricing)
+            foreach (var userId in request.GuideUserIds)
             {
-                entity.DynamicPricingTiers.Add(DynamicPricingTierEntity.CreateForTourInstance(
-                    entity.Id, tier.MinParticipants, tier.MaxParticipants, tier.PricePerPerson, performedBy));
+                entity.Managers.Add(TourInstanceManagerEntity.Create(
+                    entity.Id, userId, TourInstanceManagerRole.Guide, performedBy));
+            }
+        }
+        // Add managers (tour managers)
+        if (request.ManagerUserIds?.Count > 0)
+        {
+            foreach (var userId in request.ManagerUserIds)
+            {
+                entity.Managers.Add(TourInstanceManagerEntity.Create(
+                    entity.Id, userId, TourInstanceManagerRole.Manager, performedBy));
             }
         }
 
@@ -106,41 +102,37 @@ title: request.Title,
 
         var performedBy = _user.Id ?? string.Empty;
 
-        var guide = request.Guide is not null
-            ? new TourInstanceGuide
+        // Update Managers
+        entity.Managers.Clear();
+        if (request.GuideUserIds?.Count > 0)
+        {
+            foreach (var userId in request.GuideUserIds)
             {
-                Name = request.Guide.Name,
-                AvatarUrl = request.Guide.AvatarUrl,
-                Languages = request.Guide.Languages ?? [],
-                Experience = request.Guide.Experience
+                entity.Managers.Add(TourInstanceManagerEntity.Create(
+                    entity.Id, userId, TourInstanceManagerRole.Guide, performedBy));
             }
-            : null;
+        }
+        if (request.ManagerUserIds?.Count > 0)
+        {
+            foreach (var userId in request.ManagerUserIds)
+            {
+                entity.Managers.Add(TourInstanceManagerEntity.Create(
+                    entity.Id, userId, TourInstanceManagerRole.Manager, performedBy));
+            }
+        }
 
         entity.Update(
             title: request.Title,
             startDate: request.StartDate,
             endDate: request.EndDate,
-            minParticipation: request.MinParticipation,
             maxParticipation: request.MaxParticipation,
-            adultPrice: request.BasePrice,
-            childPrice: request.SellingPrice,
-            infantPrice: request.OperatingCost,
-            depositPerPerson: request.DepositPerPerson,
+            basePrice: request.BasePrice,
             performedBy: performedBy,
             location: request.Location,
+            thumbnail: request.Thumbnail,
+            images: request.Images,
             confirmationDeadline: request.ConfirmationDeadline,
-            includedServices: request.IncludedServices,
-            guide: guide);
-
-        if (request.DynamicPricing is not null)
-        {
-            entity.DynamicPricingTiers.Clear();
-            foreach (var tier in request.DynamicPricing)
-            {
-                entity.DynamicPricingTiers.Add(DynamicPricingTierEntity.CreateForTourInstance(
-                    entity.Id, tier.MinParticipants, tier.MaxParticipants, tier.PricePerPerson, performedBy));
-            }
-        }
+            includedServices: request.IncludedServices);
 
         await _tourInstanceRepository.Update(entity);
         return Result.Success;
@@ -214,7 +206,6 @@ title: request.Title,
             return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.PublicNotFoundDescription);
 
         entity.ApplyResolvedTranslation(PublicLanguageResolver.Resolve(language));
-
         return _mapper.Map<TourInstanceDto>(entity);
     }
 }

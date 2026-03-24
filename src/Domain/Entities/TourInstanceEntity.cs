@@ -1,7 +1,6 @@
 namespace Domain.Entities;
 
 using Domain.Entities.Translations;
-using Domain.ValueObjects;
 
 public class TourInstanceEntity : Aggregate<Guid>
 {
@@ -32,41 +31,26 @@ public class TourInstanceEntity : Aggregate<Guid>
     public DateTimeOffset? ConfirmationDeadline { get; set; }
 
     // Participants
-    public int MinParticipation { get; set; }
     public int MaxParticipation { get; set; }
     public int CurrentParticipation { get; set; }
 
-    // Pricing
-    public decimal AdultPrice { get; set; }
-    public decimal ChildPrice { get; set; }
-    public decimal InfantPrice { get; set; }
-    public decimal DepositPerPerson { get; set; }
-
-    // Aliases for backward compatibility
-    public decimal BasePrice => AdultPrice;
-    public decimal SellingPrice => ChildPrice;
-    public decimal OperatingCost => InfantPrice;
+    // BasePrice — snapshot tại thời điểm tạo instance
+    public decimal BasePrice { get; set; }
 
     // Media & Location
     public string? Location { get; set; }
     public ImageEntity Thumbnail { get; set; } = null!;
     public List<ImageEntity> Images { get; set; } = [];
 
-    // Services & Guide
+    // Services & Managers
     public List<string> IncludedServices { get; set; } = [];
-    public TourInstanceGuide? Guide { get; set; }
+    public virtual List<TourInstanceManagerEntity> Managers { get; set; } = [];
+
+    // Dynamic pricing tiers owned by this instance (override classification tiers)
     public virtual List<DynamicPricingTierEntity> DynamicPricingTiers { get; set; } = [];
 
     // Soft delete
     public bool IsDeleted { get; set; }
-
-    // Visa policy for international tours
-    public Guid? VisaPolicyId { get; set; }
-    public virtual VisaPolicyEntity? VisaPolicy { get; set; }
-
-    // Deposit policy
-    public Guid? DepositPolicyId { get; set; }
-    public virtual DepositPolicyEntity? DepositPolicy { get; set; }
 
     // Translations (vi/en)
     public Dictionary<string, TourInstanceTranslationData> Translations { get; set; } = [];
@@ -84,33 +68,26 @@ public class TourInstanceEntity : Aggregate<Guid>
     }
 
     public static TourInstanceEntity Create(
-            Guid tourId,
-            Guid classificationId,
-            string title,
-            string tourName,
-            string tourCode,
-            string classificationName,
-            TourType instanceType,
-            DateTimeOffset startDate,
-            DateTimeOffset endDate,
-            int minParticipation,
-            int maxParticipation,
-            decimal adultPrice,
-            decimal childPrice,
-            decimal infantPrice,
-            decimal depositPerPerson,
-            string performedBy,
-            string? location = null,
-            ImageEntity? thumbnail = null,
-            List<ImageEntity>? images = null,
-            DateTimeOffset? confirmationDeadline = null,
-            List<string>? includedServices = null,
-            TourInstanceGuide? guide = null,
-            Guid? visaPolicyId = null,
-            Guid? depositPolicyId = null)
+        Guid tourId,
+        Guid classificationId,
+        string title,
+        string tourName,
+        string tourCode,
+        string classificationName,
+        TourType instanceType,
+        DateTimeOffset startDate,
+        DateTimeOffset endDate,
+        int maxParticipation,
+        decimal basePrice,
+        string performedBy,
+        string? location = null,
+        ImageEntity? thumbnail = null,
+        List<ImageEntity>? images = null,
+        DateTimeOffset? confirmationDeadline = null,
+        List<string>? includedServices = null)
     {
         EnsureValidDateRange(startDate, endDate);
-        EnsureValidParticipants(minParticipation, maxParticipation);
+        EnsureValidMaxParticipation(maxParticipation);
 
         return new TourInstanceEntity
         {
@@ -127,21 +104,14 @@ public class TourInstanceEntity : Aggregate<Guid>
             StartDate = startDate,
             EndDate = endDate,
             DurationDays = CalculateDurationDays(startDate, endDate),
-            MinParticipation = minParticipation,
             MaxParticipation = maxParticipation,
             CurrentParticipation = 0,
-            AdultPrice = adultPrice,
-            ChildPrice = childPrice,
-            InfantPrice = infantPrice,
-            DepositPerPerson = depositPerPerson,
+            BasePrice = basePrice,
             Location = location,
             Thumbnail = thumbnail ?? new ImageEntity(),
             Images = images ?? [],
             ConfirmationDeadline = confirmationDeadline,
             IncludedServices = includedServices ?? [],
-            Guide = guide,
-            VisaPolicyId = visaPolicyId,
-            DepositPolicyId = depositPolicyId,
             IsDeleted = false,
             CreatedBy = performedBy,
             LastModifiedBy = performedBy,
@@ -154,33 +124,24 @@ public class TourInstanceEntity : Aggregate<Guid>
         string title,
         DateTimeOffset startDate,
         DateTimeOffset endDate,
-        int minParticipation,
         int maxParticipation,
-        decimal adultPrice,
-        decimal childPrice,
-        decimal infantPrice,
-        decimal depositPerPerson,
+        decimal basePrice,
         string performedBy,
         string? location = null,
         ImageEntity? thumbnail = null,
         List<ImageEntity>? images = null,
         DateTimeOffset? confirmationDeadline = null,
-        List<string>? includedServices = null,
-        TourInstanceGuide? guide = null)
+        List<string>? includedServices = null)
     {
         EnsureValidDateRange(startDate, endDate);
-        EnsureValidParticipants(minParticipation, maxParticipation);
+        EnsureValidMaxParticipation(maxParticipation);
 
         Title = title;
         StartDate = startDate;
         EndDate = endDate;
         DurationDays = CalculateDurationDays(startDate, endDate);
-        MinParticipation = minParticipation;
         MaxParticipation = maxParticipation;
-        AdultPrice = adultPrice;
-        ChildPrice = childPrice;
-        InfantPrice = infantPrice;
-        DepositPerPerson = depositPerPerson;
+        BasePrice = basePrice;
         Location = location;
         ConfirmationDeadline = confirmationDeadline;
         if (thumbnail is not null)
@@ -198,7 +159,6 @@ public class TourInstanceEntity : Aggregate<Guid>
         }
         if (includedServices is not null)
             IncludedServices = includedServices;
-        Guide = guide;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
@@ -253,14 +213,10 @@ public class TourInstanceEntity : Aggregate<Guid>
             throw new ArgumentException("Ngày bắt đầu phải trước ngày kết thúc.");
     }
 
-    private static void EnsureValidParticipants(int minParticipation, int maxParticipation)
+    private static void EnsureValidMaxParticipation(int maxParticipation)
     {
-        if (minParticipation < 0)
-            throw new ArgumentOutOfRangeException(nameof(minParticipation), "Số người tối thiểu không được âm.");
         if (maxParticipation <= 0)
             throw new ArgumentOutOfRangeException(nameof(maxParticipation), "Số người tối đa phải lớn hơn 0.");
-        if (minParticipation > maxParticipation)
-            throw new ArgumentOutOfRangeException(nameof(minParticipation), "Số người tối thiểu phải nhỏ hơn hoặc bằng số người tối đa.");
     }
 
     private static void EnsureValidTransition(TourInstanceStatus current, TourInstanceStatus next)

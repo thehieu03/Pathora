@@ -28,10 +28,7 @@ public sealed class PublicTourInstanceControllerTests
             DurationDays: 4,
             CurrentParticipation: 2,
             MaxParticipation: 20,
-            MinParticipation: 5,
             BasePrice: 1000m,
-            SellingPrice: 900m,
-            DepositPerPerson: 200m,
             Status: "Available",
             InstanceType: "Public");
 
@@ -73,11 +70,7 @@ public sealed class PublicTourInstanceControllerTests
             DurationDays: 4,
             CurrentParticipation: 2,
             MaxParticipation: 20,
-            MinParticipation: 5,
             BasePrice: 1000m,
-            SellingPrice: 900m,
-            OperatingCost: 700m,
-            DepositPerPerson: 200m,
             Status: "Available",
             InstanceType: "Public",
             CancellationReason: null,
@@ -85,9 +78,8 @@ public sealed class PublicTourInstanceControllerTests
             TotalBookings: 0,
             Revenue: 0,
             ConfirmationDeadline: null,
-            Guide: null,
-            IncludedServices: [],
-            DynamicPricing: []);
+            Managers: [],
+            IncludedServices: []);
 
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<PublicTourInstanceController, GetPublicTourInstanceDetailQuery, TourInstanceDto>(

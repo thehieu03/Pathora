@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260324211350_CreateTourInstanceManagerEntity")]
+    partial class CreateTourInstanceManagerEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2467,12 +2470,15 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("BasePrice")
+                    b.Property<decimal>("AdultPrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("CancellationReason")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal>("ChildPrice")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<Guid>("ClassificationId")
                         .HasColumnType("uuid");
@@ -2496,6 +2502,12 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
+                    b.Property<decimal>("DepositPerPerson")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("DepositPolicyId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("DurationDays")
                         .HasColumnType("integer");
 
@@ -2505,6 +2517,9 @@ namespace Infrastructure.Data.Migrations
                     b.PrimitiveCollection<string>("IncludedServices")
                         .IsRequired()
                         .HasColumnType("jsonb");
+
+                    b.Property<decimal>("InfantPrice")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("InstanceType")
                         .IsRequired()
@@ -2527,6 +2542,9 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<int>("MaxParticipation")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinParticipation")
                         .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("StartDate")
@@ -2564,9 +2582,14 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<Guid?>("VisaPolicyId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClassificationId");
+
+                    b.HasIndex("DepositPolicyId");
 
                     b.HasIndex("IsDeleted")
                         .HasFilter("\"IsDeleted\" = false");
@@ -2577,6 +2600,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("TourInstanceCode")
                         .IsUnique();
+
+                    b.HasIndex("VisaPolicyId");
 
                     b.HasIndex("Status", "InstanceType");
 
@@ -3672,7 +3697,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasOne("Domain.Entities.TourInstanceEntity", "TourInstance")
                         .WithMany("DynamicPricingTiers")
-                        .HasForeignKey("TourInstanceId");
+                        .HasForeignKey("TourInstanceId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("TourClassification");
 
@@ -3942,11 +3968,19 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.DepositPolicyEntity", "DepositPolicy")
+                        .WithMany()
+                        .HasForeignKey("DepositPolicyId");
+
                     b.HasOne("Domain.Entities.TourEntity", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.VisaPolicyEntity", "VisaPolicy")
+                        .WithMany()
+                        .HasForeignKey("VisaPolicyId");
 
                     b.OwnsOne("Domain.Entities.ImageEntity", "Thumbnail", b1 =>
                         {
@@ -3976,6 +4010,30 @@ namespace Infrastructure.Data.Migrations
                             b1.HasKey("TourInstanceEntityId");
 
                             b1.ToTable("TourInstances");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TourInstanceEntityId");
+                        });
+
+                    b.OwnsOne("Domain.ValueObjects.TourInstanceGuide", "Guide", b1 =>
+                        {
+                            b1.Property<Guid>("TourInstanceEntityId");
+
+                            b1.Property<string>("AvatarUrl");
+
+                            b1.Property<string>("Experience");
+
+                            b1.PrimitiveCollection<string>("Languages")
+                                .IsRequired();
+
+                            b1.Property<string>("Name")
+                                .IsRequired();
+
+                            b1.HasKey("TourInstanceEntityId");
+
+                            b1.ToTable("TourInstances");
+
+                            b1.ToJson("Guide");
 
                             b1.WithOwner()
                                 .HasForeignKey("TourInstanceEntityId");
@@ -4020,12 +4078,18 @@ namespace Infrastructure.Data.Migrations
 
                     b.Navigation("Classification");
 
+                    b.Navigation("DepositPolicy");
+
+                    b.Navigation("Guide");
+
                     b.Navigation("Images");
 
                     b.Navigation("Thumbnail")
                         .IsRequired();
 
                     b.Navigation("Tour");
+
+                    b.Navigation("VisaPolicy");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourInstanceManagerEntity", b =>
