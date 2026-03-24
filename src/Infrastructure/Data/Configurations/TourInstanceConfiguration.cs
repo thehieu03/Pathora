@@ -61,23 +61,10 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
         builder.Property(t => t.MaxParticipation).IsRequired();
         builder.Property(t => t.CurrentParticipation).HasDefaultValue(0);
 
-        // Pricing
-        builder.Property(t => t.AdultPrice)
+        // Pricing — single BasePrice
+        builder.Property(t => t.BasePrice)
             .HasColumnType("numeric(18,2)")
             .IsRequired();
-
-        builder.Property(t => t.ChildPrice)
-            .HasColumnType("numeric(18,2)")
-            .IsRequired();
-
-        builder.Property(t => t.InfantPrice)
-            .HasColumnType("numeric(18,2)")
-            .IsRequired();
-
-        // Ignore computed backward-compat aliases (no backing field)
-        builder.Ignore(t => t.BasePrice);
-        builder.Ignore(t => t.SellingPrice);
-        builder.Ignore(t => t.OperatingCost);
 
         // Soft delete
         builder.Property(t => t.IsDeleted)

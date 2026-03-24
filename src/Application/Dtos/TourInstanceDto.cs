@@ -19,8 +19,6 @@ public sealed record TourInstanceDto(
     int MaxParticipation,
     int MinParticipation,
     decimal BasePrice,
-    decimal SellingPrice,
-    decimal OperatingCost,
     decimal DepositPerPerson,
     string Status,
     string InstanceType,

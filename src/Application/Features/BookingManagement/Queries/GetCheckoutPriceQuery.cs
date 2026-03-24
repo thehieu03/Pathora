@@ -31,15 +31,17 @@ public sealed class GetCheckoutPriceQueryHandler(
         var pricingPolicy = await pricingPolicyRepository.GetActivePolicyByTourType(tourInstance.InstanceType)
             ?? await pricingPolicyRepository.GetDefaultPolicy();
 
-        decimal adultPrice = tourInstance.AdultPrice;
-        decimal childPrice = tourInstance.ChildPrice;
-        decimal infantPrice = tourInstance.InfantPrice;
+        var basePrice = tourInstance.BasePrice;
+
+        decimal adultPrice = basePrice;
+        decimal childPrice = basePrice;
+        decimal infantPrice = basePrice;
 
         if (pricingPolicy != null)
         {
-            adultPrice = ApplyPricingTier(tourInstance.AdultPrice, pricingPolicy.Tiers, 18);
-            childPrice = ApplyPricingTier(tourInstance.AdultPrice, pricingPolicy.Tiers, 5);
-            infantPrice = ApplyPricingTier(tourInstance.AdultPrice, pricingPolicy.Tiers, 1);
+            adultPrice = ApplyPricingTier(basePrice, pricingPolicy.Tiers, 18);
+            childPrice = ApplyPricingTier(basePrice, pricingPolicy.Tiers, 5);
+            infantPrice = ApplyPricingTier(basePrice, pricingPolicy.Tiers, 1);
         }
 
         var adultSubtotal = adultPrice * booking.NumberAdult;
@@ -68,9 +70,9 @@ public sealed class GetCheckoutPriceQueryHandler(
             NumberAdult: booking.NumberAdult,
             NumberChild: booking.NumberChild,
             NumberInfant: booking.NumberInfant,
-            BasePrice: tourInstance.AdultPrice,
-            ChildPrice: booking.NumberChild > 0 ? tourInstance.ChildPrice : null,
-            InfantPrice: booking.NumberInfant > 0 ? tourInstance.InfantPrice : null,
+            BasePrice: basePrice,
+            ChildPrice: booking.NumberChild > 0 ? childPrice : null,
+            InfantPrice: booking.NumberInfant > 0 ? infantPrice : null,
             AdultSubtotal: adultSubtotal,
             ChildSubtotal: childSubtotal,
             InfantSubtotal: infantSubtotal,

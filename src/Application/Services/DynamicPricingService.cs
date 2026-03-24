@@ -153,7 +153,7 @@ public sealed class DynamicPricingService(
         }
 
         return new DynamicPricingResolutionDto(
-            ResolvedPricePerPerson: instance.AdultPrice,
+            ResolvedPricePerPerson: instance.BasePrice,
             PricingSource: DynamicPricingSource.Fallback.ToString().ToLowerInvariant(),
             MinParticipants: null,
             MaxParticipants: null);

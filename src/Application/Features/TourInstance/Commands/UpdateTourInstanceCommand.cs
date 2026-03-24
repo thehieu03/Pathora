@@ -17,8 +17,6 @@ public sealed record UpdateTourInstanceCommand(
     int MinParticipation,
     int MaxParticipation,
     decimal BasePrice,
-    decimal SellingPrice,
-    decimal OperatingCost,
     decimal DepositPerPerson,
     string? Location = null,
     DateTimeOffset? ConfirmationDeadline = null,
@@ -54,12 +52,6 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
 
         RuleFor(x => x.BasePrice)
             .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceBasePriceNonNegative);
-
-        RuleFor(x => x.SellingPrice)
-            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceSellingPriceNonNegative);
-
-        RuleFor(x => x.OperatingCost)
-            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceOperatingCostNonNegative);
 
         RuleFor(x => x.DepositPerPerson)
             .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceDepositPerPersonNonNegative);

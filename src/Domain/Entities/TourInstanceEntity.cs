@@ -37,15 +37,8 @@ public class TourInstanceEntity : Aggregate<Guid>
     public int CurrentParticipation { get; set; }
 
     // Pricing
-    public decimal AdultPrice { get; set; }
-    public decimal ChildPrice { get; set; }
-    public decimal InfantPrice { get; set; }
+    public decimal BasePrice { get; set; }
     public decimal DepositPerPerson { get; set; }
-
-    // Aliases for backward compatibility
-    public decimal BasePrice => AdultPrice;
-    public decimal SellingPrice => ChildPrice;
-    public decimal OperatingCost => InfantPrice;
 
     // Media & Location
     public string? Location { get; set; }
@@ -95,9 +88,7 @@ public class TourInstanceEntity : Aggregate<Guid>
             DateTimeOffset endDate,
             int minParticipation,
             int maxParticipation,
-            decimal adultPrice,
-            decimal childPrice,
-            decimal infantPrice,
+            decimal basePrice,
             decimal depositPerPerson,
             string performedBy,
             string? location = null,
@@ -130,9 +121,7 @@ public class TourInstanceEntity : Aggregate<Guid>
             MinParticipation = minParticipation,
             MaxParticipation = maxParticipation,
             CurrentParticipation = 0,
-            AdultPrice = adultPrice,
-            ChildPrice = childPrice,
-            InfantPrice = infantPrice,
+            BasePrice = basePrice,
             DepositPerPerson = depositPerPerson,
             Location = location,
             Thumbnail = thumbnail ?? new ImageEntity(),
@@ -156,9 +145,7 @@ public class TourInstanceEntity : Aggregate<Guid>
         DateTimeOffset endDate,
         int minParticipation,
         int maxParticipation,
-        decimal adultPrice,
-        decimal childPrice,
-        decimal infantPrice,
+        decimal basePrice,
         decimal depositPerPerson,
         string performedBy,
         string? location = null,
@@ -177,9 +164,7 @@ public class TourInstanceEntity : Aggregate<Guid>
         DurationDays = CalculateDurationDays(startDate, endDate);
         MinParticipation = minParticipation;
         MaxParticipation = maxParticipation;
-        AdultPrice = adultPrice;
-        ChildPrice = childPrice;
-        InfantPrice = infantPrice;
+        BasePrice = basePrice;
         DepositPerPerson = depositPerPerson;
         Location = location;
         ConfirmationDeadline = confirmationDeadline;

@@ -86,6 +86,12 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         RuleForEach(x => x.Classifications)
             .SetValidator(new ClassificationDtoValidator())
             .When(x => x.Classifications != null && x.Classifications.Any());
+
+        // PricingPolicyId - Required
+        RuleFor(x => x.PricingPolicyId)
+            .NotNull().WithMessage("PricingPolicy is required")
+            .Must(id => id.HasValue && id.Value != Guid.Empty)
+            .WithMessage("PricingPolicy is required");
     }
 }
 

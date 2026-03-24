@@ -18,6 +18,7 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
 
         return await query
             .Include(t => t.DynamicPricingTiers)
+            .Include(t => t.Tour)
             .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 
@@ -118,8 +119,8 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
 
         query = sortBy switch
         {
-            "price-low" => query.OrderBy(t => t.SellingPrice).ThenBy(t => t.BasePrice),
-            "price-high" => query.OrderByDescending(t => t.SellingPrice).ThenByDescending(t => t.BasePrice),
+            "price-low" => query.OrderBy(t => t.BasePrice),
+            "price-high" => query.OrderByDescending(t => t.BasePrice),
             "duration-short" => query.OrderBy(t => (t.EndDate - t.StartDate).TotalDays),
             "duration-long" => query.OrderByDescending(t => (t.EndDate - t.StartDate).TotalDays),
             "recommended" or _ => query.OrderBy(t => t.StartDate),
