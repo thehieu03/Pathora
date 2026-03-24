@@ -2222,6 +2222,9 @@
     "notFound": "Tour not found",
     "required": "Required",
     "invalidPrice": "Invalid price",
+    "validation": {
+      "invalidBasePrice": "Invalid base price"
+    },
     "invalidDuration": "Invalid duration",
     "basicInfo": {
       "sectionTitle": "Basic Tour Information",
@@ -2266,8 +2269,7 @@
     "addClassification": "Add",
     "classification": "Classification",
     "name": "Name",
-    "price": "Price ($)",
-    "salePrice": "Sale Price ($)",
+    "basePrice": "Base Price ($)",
     "durationDays": "Duration (days)",
     "description": "Description",
     "dayPlans": "Day Plans",
@@ -2364,9 +2366,11 @@
       "packageType": "Package Type",
       "durationDays": "Duration (Days)",
       "description": "Description",
+      "basePrice": "Base Price",
       "removePackage": "Remove package",
       "placeholderPackageType": "e.g. Standard, Luxury, Premium",
       "placeholderDuration": "e.g. 5",
+      "placeholderBasePrice": "e.g. 199",
       "placeholderDescription": "Describe what this package includes"
     },
     "itineraries": {
@@ -2636,9 +2640,6 @@
     "location": "Location",
     "pricingDetails": "Pricing Details",
     "tourInstanceCode": "Tour Instance Code",
-    "adultPrice": "Adult price",
-    "childPrice": "Child price",
-    "infantPrice": "Infant price",
     "userPricingBreakdown": "Pricing breakdown",
     "depositRequiredNote": "Deposit is required to secure your booking. The remaining balance is due prior to departure.",
     "userNotAssigned": "Not assigned",

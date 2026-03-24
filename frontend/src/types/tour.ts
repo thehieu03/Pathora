@@ -105,9 +105,7 @@ export interface TourClassificationDto {
   id: string;
   tourId: string;
   name: string;
-  adultPrice?: number;
-  childPrice?: number;
-  infantPrice?: number;
+  basePrice?: number;
   price: number;
   salePrice: number;
   description: string;

@@ -28,8 +28,7 @@ interface ClassificationForm {
   enName: string;
   description: string;
   enDescription: string;
-  price: string;
-  salePrice: string;
+  basePrice: string;
   durationDays: string;
 }
 
@@ -286,8 +285,7 @@ const emptyClassification = (): ClassificationForm => ({
   enName: "",
   description: "",
   enDescription: "",
-  price: "",
-  salePrice: "",
+  basePrice: "",
   durationDays: "",
 });
 
@@ -581,11 +579,11 @@ export default function CreateTourPage() {
             "tourAdmin.invalidDuration",
             "Invalid duration",
           );
-        const price = Number(cls.price);
-        if (!cls.price.trim() || isNaN(price) || price < 0)
-          newErrors[`cls_${i}_price`] = t(
-            "tourAdmin.validation.invalidPrice",
-            "Invalid price",
+        const basePrice = Number(cls.basePrice);
+        if (!cls.basePrice.trim() || isNaN(basePrice) || basePrice < 0)
+          newErrors[`cls_${i}_basePrice`] = t(
+            "tourAdmin.validation.invalidBasePrice",
+            "Invalid base price",
           );
       });
     }
@@ -1536,24 +1534,44 @@ export default function CreateTourPage() {
                       )}
                     </div>
 
-                    {/* Duration — shared field */}
-                    <div className="mb-5">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-                        {t("tourAdmin.packages.durationDays")} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={cls.durationDays}
-                        onChange={(e) =>
-                          updateClassification(clsI, "durationDays", e.target.value)
-                        }
-                        placeholder={t("tourAdmin.packages.placeholderDuration")}
-                        className="w-full md:w-48 px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                      />
-                      {errors[`cls_${clsI}_duration`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_duration`]}</p>
-                      )}
+                    {/* Duration & Base Price — shared fields */}
+                    <div className="mb-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                          {t("tourAdmin.packages.durationDays")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={cls.durationDays}
+                          onChange={(e) =>
+                            updateClassification(clsI, "durationDays", e.target.value)
+                          }
+                          placeholder={t("tourAdmin.packages.placeholderDuration")}
+                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`cls_${clsI}_duration`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_duration`]}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                          {t("tourAdmin.packages.basePrice")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={cls.basePrice}
+                          onChange={(e) =>
+                            updateClassification(clsI, "basePrice", e.target.value)
+                          }
+                          placeholder={t("tourAdmin.packages.placeholderBasePrice")}
+                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`cls_${clsI}_basePrice`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_basePrice`]}</p>
+                        )}
+                      </div>
                     </div>
 
                     {/* VI / EN parallel columns */}

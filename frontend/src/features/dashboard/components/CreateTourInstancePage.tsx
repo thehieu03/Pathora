@@ -1031,25 +1031,22 @@ export function CreateTourInstancePage() {
 
     setForm((current) => {
       const next = { ...current };
-      const fallbackPrice = selectedClassification.price ?? 0;
-      const adultPrice = selectedClassification.adultPrice ?? fallbackPrice;
-      const childPrice = selectedClassification.childPrice ?? adultPrice;
-      const infantPrice = selectedClassification.infantPrice ?? 0;
+      const fallbackPrice = selectedClassification.basePrice ?? selectedClassification.price ?? 0;
 
       if (!next.title.trim()) {
         next.title = `${selectedTour?.tourName ?? "Tour"} - ${selectedClassification.name}`;
       }
 
       if (!next.basePrice) {
-        next.basePrice = adultPrice.toString();
+        next.basePrice = fallbackPrice.toString();
       }
 
       if (!next.sellingPrice) {
-        next.sellingPrice = childPrice.toString();
+        next.sellingPrice = fallbackPrice.toString();
       }
 
       if (!next.operatingCost) {
-        next.operatingCost = infantPrice.toString();
+        next.operatingCost = "0";
       }
 
       return next;

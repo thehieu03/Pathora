@@ -7,9 +7,9 @@ describe("buildCreateTourFormData", () => {
   // Helper function edge cases
   // =========================================================================
 
-  describe("price parsing and fallback", () => {
-    // TC-FE06: salePrice falls back to price when empty
-    it("falls back to price when salePrice is empty string", () => {
+  describe("base price parsing", () => {
+    // TC-FE06: basePrice is mapped directly to payload basePrice
+    it("maps classification basePrice into payload", () => {
       const formData = buildCreateTourFormData({
         basicInfo: {
           tourName: "Tour",
@@ -41,8 +41,7 @@ describe("buildCreateTourFormData", () => {
             enName: "",
             description: "Desc VI",
             enDescription: "",
-            price: "1000",
-            salePrice: "", // empty - should fallback to price
+            basePrice: "1000",
             durationDays: "3",
           },
         ],
@@ -54,8 +53,10 @@ describe("buildCreateTourFormData", () => {
       });
 
       const classifications = JSON.parse(String(formData.get("classifications")));
-      expect(classifications[0].adultPrice).toBe(1000);
-      expect(classifications[0].childPrice).toBe(1000); // salePrice fallback
+      expect(classifications[0].basePrice).toBe(1000);
+      expect(classifications[0].adultPrice).toBeUndefined();
+      expect(classifications[0].childPrice).toBeUndefined();
+      expect(classifications[0].infantPrice).toBeUndefined();
     });
 
     // TC-FE07: NumberOfDay must be at least 1
@@ -91,8 +92,7 @@ describe("buildCreateTourFormData", () => {
             enName: "",
             description: "",
             enDescription: "",
-            price: "500",
-            salePrice: "",
+            basePrice: "500",
             durationDays: "0", // less than 1
           },
         ],
@@ -141,8 +141,7 @@ describe("buildCreateTourFormData", () => {
             enName: "",
             description: "",
             enDescription: "",
-            price: "1000",
-            salePrice: "",
+            basePrice: "1000",
             durationDays: "5",
           },
         ],
@@ -417,8 +416,7 @@ describe("buildCreateTourFormData", () => {
             enName: "Standard Package EN",
             description: "Package VI",
             enDescription: "Package EN",
-            price: "1000",
-            salePrice: "800",
+            basePrice: "1000",
             durationDays: "3",
           },
         ],
@@ -539,8 +537,7 @@ describe("buildCreateTourFormData", () => {
             enName: "",
             description: "Desc VI",
             enDescription: "",
-            price: "500",
-            salePrice: "400",
+            basePrice: "500",
             durationDays: "2",
           },
         ],

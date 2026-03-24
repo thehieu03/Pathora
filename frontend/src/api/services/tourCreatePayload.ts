@@ -18,8 +18,7 @@ interface ClassificationPayloadInput {
   enName: string;
   description: string;
   enDescription: string;
-  price: string;
-  salePrice: string;
+  basePrice: string;
   durationDays: string;
 }
 
@@ -218,18 +217,12 @@ const buildClassificationsPayload = (
 ) => {
   return classifications.map((classification, classificationIndex) => {
     const numberOfDay = Math.max(parseIntValue(classification.durationDays, 1), 1);
-    const adultPrice = parseDecimal(classification.price, 0);
-    const childPrice = parseDecimal(
-      classification.salePrice || classification.price,
-      adultPrice,
-    );
+    const basePrice = parseDecimal(classification.basePrice, 0);
 
     return {
       name: classification.name,
       description: classification.description,
-      adultPrice,
-      childPrice,
-      infantPrice: 0,
+      basePrice,
       numberOfDay,
       numberOfNight: Math.max(numberOfDay - 1, 0),
       translations: buildClassificationTranslations(

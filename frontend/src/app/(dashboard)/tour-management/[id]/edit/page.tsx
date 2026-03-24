@@ -23,8 +23,7 @@ interface ClassificationForm {
   id?: string;
   name: string;
   description: string;
-  price: string;
-  salePrice: string;
+  basePrice: string;
   durationDays: string;
 }
 
@@ -120,8 +119,7 @@ const STEPS = [
 const emptyClassification = (): ClassificationForm => ({
   name: "",
   description: "",
-  price: "",
-  salePrice: "",
+  basePrice: "",
   durationDays: "",
 });
 
@@ -241,8 +239,7 @@ export default function EditTourPage() {
             id: cls.id,
             name: cls.name ?? "",
             description: cls.description ?? "",
-            price: String(cls.price ?? ""),
-            salePrice: String(cls.salePrice ?? ""),
+            basePrice: String(cls.basePrice ?? cls.price ?? ""),
             durationDays: String(cls.durationDays ?? ""),
           }),
         );
@@ -313,10 +310,11 @@ export default function EditTourPage() {
       classifications.forEach((cls, i) => {
         if (!cls.name.trim())
           newErrors[`cls_${i}_name`] = t("tourAdmin.required", "Required");
-        if (!cls.price || Number(cls.price) <= 0)
-          newErrors[`cls_${i}_price`] = t(
-            "tourAdmin.invalidPrice",
-            "Invalid price",
+        const basePrice = Number(cls.basePrice);
+        if (!cls.basePrice.trim() || isNaN(basePrice) || basePrice < 0)
+          newErrors[`cls_${i}_basePrice`] = t(
+            "tourAdmin.validation.invalidBasePrice",
+            "Invalid base price",
           );
         if (!cls.durationDays || Number(cls.durationDays) <= 0)
           newErrors[`cls_${i}_duration`] = t(
@@ -533,8 +531,7 @@ export default function EditTourPage() {
         if (cls.id) formData.append(`${prefix}.id`, cls.id);
         formData.append(`${prefix}.name`, cls.name);
         formData.append(`${prefix}.description`, cls.description);
-        formData.append(`${prefix}.price`, cls.price);
-        formData.append(`${prefix}.salePrice`, cls.salePrice || cls.price);
+        formData.append(`${prefix}.basePrice`, cls.basePrice);
         formData.append(`${prefix}.durationDays`, cls.durationDays);
 
         const plans = dayPlans[ci] ?? [];
@@ -932,26 +929,18 @@ export default function EditTourPage() {
                   <div>
                     <TextInput
                       type="number"
-                      label={t("tourAdmin.price", "Price ($)")}
-                      value={cls.price}
+                      label={t("tourAdmin.basePrice", "Base Price ($)")}
+                      value={cls.basePrice}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        updateClassification(ci, "price", e.target.value)
+                        updateClassification(ci, "basePrice", e.target.value)
                       }
                     />
-                    {errors[`cls_${ci}_price`] && (
+                    {errors[`cls_${ci}_basePrice`] && (
                       <p className="text-danger-500 text-sm mt-1">
-                        {errors[`cls_${ci}_price`]}
+                        {errors[`cls_${ci}_basePrice`]}
                       </p>
                     )}
                   </div>
-                  <TextInput
-                    type="number"
-                    label={t("tourAdmin.salePrice", "Sale Price ($)")}
-                    value={cls.salePrice}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      updateClassification(ci, "salePrice", e.target.value)
-                    }
-                  />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
                   <div>
