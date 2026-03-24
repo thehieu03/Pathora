@@ -108,6 +108,14 @@ const INSURANCE_TYPE_OPTIONS = [
   { value: "6", label: "Adventure Sports" },
 ];
 
+const PACKAGE_TYPE_OPTIONS = [
+  { value: "Standard", label: "Standard" },
+  { value: "Premium", label: "Premium" },
+  { value: "Luxury", label: "Luxury" },
+  { value: "Budget", label: "Budget" },
+  { value: "VIP", label: "VIP" },
+];
+
 const STEPS = [
   { key: "basic", icon: "heroicons:information-circle" },
   { key: "classifications", icon: "heroicons:tag" },
@@ -913,12 +921,13 @@ export default function EditTourPage() {
                 </h5>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <TextInput
-                      label={t("tourAdmin.name", "Name")}
+                    <Select
+                      label={t("tourAdmin.packages.packageType", "Package Type")}
                       value={cls.name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                         updateClassification(ci, "name", e.target.value)
                       }
+                      options={PACKAGE_TYPE_OPTIONS}
                     />
                     {errors[`cls_${ci}_name`] && (
                       <p className="text-danger-500 text-sm mt-1">

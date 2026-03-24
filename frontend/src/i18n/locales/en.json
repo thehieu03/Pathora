@@ -2466,7 +2466,21 @@
     },
     "services": {
       "sectionTitle": "Other Services",
-      "notAvailable": "Configuration for services will be available soon."
+      "infoBanner": "Add optional services like airport pickup, equipment rental, or special activities.",
+      "serviceNumber": "Service #{{number}}",
+      "removeService": "Remove service",
+      "serviceName": "Service Name",
+      "placeholderServiceName": "e.g. Airport Pickup, Kayak Rental",
+      "pricingType": "Pricing Type",
+      "placeholderPricingType": "Select pricing type",
+      "price": "Price ($)",
+      "placeholderPrice": "e.g. 30",
+      "salePrice": "Sale Price ($)",
+      "placeholderSalePrice": "e.g. 25",
+      "email": "Contact Email",
+      "placeholderEmail": "e.g. booking@example.com",
+      "contactNumber": "Contact Number",
+      "placeholderContactNumber": "e.g. +84-123-456-789"
     },
     "review": {
       "sectionTitle": "Review Tour Package",

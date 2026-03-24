@@ -2444,7 +2444,21 @@
     },
     "services": {
       "sectionTitle": "Dịch vụ khác",
-      "notAvailable": "Cấu hình dịch vụ sẽ sớm có."
+      "infoBanner": "Thêm dịch vụ tùy chọn như đón sân bay, thuê thiết bị, hoặc hoạt động đặc biệt.",
+      "serviceNumber": "Dịch vụ #{{number}}",
+      "removeService": "Xóa dịch vụ",
+      "serviceName": "Tên dịch vụ",
+      "placeholderServiceName": "VD: Đón sân bay, Thuê kayak",
+      "pricingType": "Loại giá",
+      "placeholderPricingType": "Chọn loại giá",
+      "price": "Giá ($)",
+      "placeholderPrice": "VD: 30",
+      "salePrice": "Giá khuyến mãi ($)",
+      "placeholderSalePrice": "VD: 25",
+      "email": "Email liên hệ",
+      "placeholderEmail": "VD: booking@example.com",
+      "contactNumber": "Số điện thoại",
+      "placeholderContactNumber": "VD: +84-123-456-789"
     },
     "review": {
       "sectionTitle": "Xem lại Tour Trọn Gói",
