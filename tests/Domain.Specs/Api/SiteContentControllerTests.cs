@@ -79,6 +79,178 @@ public sealed class SiteContentControllerTests
     }
 
     [Fact]
+    public async Task GetByPage_WhenPoliciesPage_ShouldReturnPolicySectionsAsLocalizedArray()
+    {
+        var repository = Substitute.For<ISiteContentRepository>();
+        var enContent = new[]
+        {
+            new { id = "booking", icon = "heroicons-outline:document-text", title = new { en = "Booking & Payment", vi = "Dat cho" }, items = new { en = new[] { "Pay now" }, vi = new[] { "Thanh toan ngay" } } }
+        };
+
+        Domain.Entities.SiteContentValueCodec.TryCreateLocalizedContentValue(
+            JsonSerializer.Serialize(enContent),
+            JsonSerializer.Serialize(enContent),
+            out var localizedValue,
+            out _);
+
+        repository.GetByPageKeyAsync("policies").Returns(
+        [
+            SiteContentEntity.Create("policies", "policy-sections", localizedValue, "seed")
+        ]);
+
+        var controller = BuildController(repository);
+
+        var actionResult = await controller.GetByPage("policies", new TestLanguageContext("vi"));
+
+        var okResult = Assert.IsType<OkObjectResult>(actionResult);
+        var payload = ToJsonElement(okResult.Value);
+        var sections = payload.GetProperty("items").GetProperty("policy-sections");
+
+        Assert.Equal(JsonValueKind.Array, sections.ValueKind);
+        Assert.Equal(1, sections.GetArrayLength());
+
+        var firstSection = sections[0];
+        Assert.Equal("booking", firstSection.GetProperty("id").GetString());
+        Assert.Equal("heroicons-outline:document-text", firstSection.GetProperty("icon").GetString());
+        Assert.Equal("Dat cho", firstSection.GetProperty("title").GetString());
+        var items = firstSection.GetProperty("items");
+        Assert.Equal(JsonValueKind.Array, items.ValueKind);
+        Assert.Equal("Thanh toan ngay", items[0].GetString());
+    }
+
+    [Fact]
+    public async Task GetByPage_WhenPoliciesPageEnglishFallback_ShouldReturnEnglishContent()
+    {
+        var repository = Substitute.For<ISiteContentRepository>();
+        var enContent = new[]
+        {
+            new { id = "booking", icon = "heroicons-outline:document-text", title = new { en = "Booking & Payment", vi = "Dat cho" }, items = new { en = new[] { "Pay now" }, vi = new[] { "Thanh toan ngay" } } }
+        };
+
+        Domain.Entities.SiteContentValueCodec.TryCreateLocalizedContentValue(
+            JsonSerializer.Serialize(enContent),
+            JsonSerializer.Serialize(enContent),
+            out var localizedValue,
+            out _);
+
+        repository.GetByPageKeyAsync("policies").Returns(
+        [
+            SiteContentEntity.Create("policies", "policy-sections", localizedValue, "seed")
+        ]);
+
+        var controller = BuildController(repository);
+
+        var actionResult = await controller.GetByPage("policies", new TestLanguageContext("de"));
+
+        var okResult = Assert.IsType<OkObjectResult>(actionResult);
+        var payload = ToJsonElement(okResult.Value);
+        var sections = payload.GetProperty("items").GetProperty("policy-sections");
+
+        Assert.Equal("booking", sections[0].GetProperty("id").GetString());
+        Assert.Equal("Booking & Payment", sections[0].GetProperty("title").GetString());
+        Assert.Equal("Pay now", sections[0].GetProperty("items")[0].GetString());
+    }
+
+    [Fact]
+    public async Task GetByPage_WhenPoliciesPage_ShouldReturnValidJsonArrayNotRawString()
+    {
+        var repository = Substitute.For<ISiteContentRepository>();
+        var enContent = new[]
+        {
+            new { id = "booking", icon = "heroicons-outline:document-text", title = new { en = "Booking", vi = "Dat cho" }, items = new { en = new[] { "Item 1" }, vi = new[] { "Muc 1" } } }
+        };
+
+        Domain.Entities.SiteContentValueCodec.TryCreateLocalizedContentValue(
+            JsonSerializer.Serialize(enContent),
+            JsonSerializer.Serialize(enContent),
+            out var localizedValue,
+            out _);
+
+        repository.GetByPageKeyAsync("policies").Returns(
+        [
+            SiteContentEntity.Create("policies", "policy-sections", localizedValue, "seed")
+        ]);
+
+        var controller = BuildController(repository);
+
+        var actionResult = await controller.GetByPage("policies", new TestLanguageContext("en"));
+
+        var okResult = Assert.IsType<OkObjectResult>(actionResult);
+        var payload = ToJsonElement(okResult.Value);
+        var sections = payload.GetProperty("items").GetProperty("policy-sections");
+
+        Assert.Equal(JsonValueKind.Array, sections.ValueKind);
+        Assert.Equal(JsonValueKind.String, sections[0].GetProperty("id").ValueKind);
+        Assert.Equal(JsonValueKind.String, sections[0].GetProperty("icon").ValueKind);
+        Assert.Equal(JsonValueKind.String, sections[0].GetProperty("title").ValueKind);
+        Assert.Equal(JsonValueKind.Array, sections[0].GetProperty("items").ValueKind);
+    }
+
+    [Fact]
+    public async Task GetByPage_WhenNoContentForPage_ShouldReturnEmptyItems()
+    {
+        var repository = Substitute.For<ISiteContentRepository>();
+        repository.GetByPageKeyAsync("policies").Returns([]);
+
+        var controller = BuildController(repository);
+
+        var actionResult = await controller.GetByPage("policies", new TestLanguageContext("en"));
+
+        var okResult = Assert.IsType<OkObjectResult>(actionResult);
+        var payload = ToJsonElement(okResult.Value);
+        Assert.Equal(JsonValueKind.Object, payload.GetProperty("items").ValueKind);
+        Assert.Empty(payload.GetProperty("items").EnumerateObject().Select(p => p.Name).ToList());
+    }
+
+    [Fact]
+    public async Task GetByPage_WhenPoliciesSeedData_ShouldHaveSixSectionsWithCorrectStructure()
+    {
+        var repository = Substitute.For<ISiteContentRepository>();
+        var enContent = new[]
+        {
+            new { id = "booking-payment", icon = "heroicons-outline:document-text", title = new { en = "Booking & Payment", vi = "Dat cho" }, items = new { en = new[] { "Item1" }, vi = new[] { "Muc 1" } } },
+            new { id = "cancellation-refund", icon = "heroicons-outline:arrow-path", title = new { en = "Cancellation & Refund", vi = "Huy bo" }, items = new { en = new[] { "Item1" }, vi = new[] { "Muc 1" } } },
+            new { id = "modification-rescheduling", icon = "heroicons-outline:clock", title = new { en = "Modification & Rescheduling", vi = "Thay doi" }, items = new { en = new[] { "Item1" }, vi = new[] { "Muc 1" } } },
+            new { id = "health-safety", icon = "heroicons-outline:shield-check", title = new { en = "Health & Safety", vi = "Suc khoe" }, items = new { en = new[] { "Item1" }, vi = new[] { "Muc 1" } } },
+            new { id = "privacy-policy", icon = "heroicons-outline:lock-closed", title = new { en = "Privacy Policy", vi = "Bao mat" }, items = new { en = new[] { "Item1" }, vi = new[] { "Muc 1" } } },
+            new { id = "liability-disclaimer", icon = "heroicons-outline:exclamation-circle", title = new { en = "Liability Disclaimer", vi = "Mien trac" }, items = new { en = new[] { "Item1" }, vi = new[] { "Muc 1" } } }
+        };
+
+        Domain.Entities.SiteContentValueCodec.TryCreateLocalizedContentValue(
+            JsonSerializer.Serialize(enContent),
+            JsonSerializer.Serialize(enContent),
+            out var localizedValue,
+            out _);
+
+        repository.GetByPageKeyAsync("policies").Returns(
+        [
+            SiteContentEntity.Create("policies", "policy-sections", localizedValue, "seed")
+        ]);
+
+        var controller = BuildController(repository);
+
+        var actionResult = await controller.GetByPage("policies", new TestLanguageContext("vi"));
+
+        var okResult = Assert.IsType<OkObjectResult>(actionResult);
+        var payload = ToJsonElement(okResult.Value);
+        var sections = payload.GetProperty("items").GetProperty("policy-sections");
+
+        Assert.Equal(6, sections.GetArrayLength());
+
+        var expectedIds = new[] { "booking-payment", "cancellation-refund", "modification-rescheduling", "health-safety", "privacy-policy", "liability-disclaimer" };
+
+        for (var i = 0; i < 6; i++)
+        {
+            var section = sections[i];
+            Assert.Equal(expectedIds[i], section.GetProperty("id").GetString());
+            Assert.Equal(JsonValueKind.String, section.GetProperty("icon").ValueKind);
+            Assert.Equal(JsonValueKind.String, section.GetProperty("title").ValueKind);
+            Assert.Equal(JsonValueKind.Array, section.GetProperty("items").ValueKind);
+            Assert.True(section.GetProperty("items").GetArrayLength() > 0);
+        }
+    }
+
+    [Fact]
     public async Task Upsert_WhenLocalizedPayloadInvalid_ShouldReturnBadRequest()
     {
         var repository = Substitute.For<ISiteContentRepository>();
