@@ -17,6 +17,21 @@ public sealed class LanguageResolutionMiddleware(RequestDelegate next)
 
         languageContext.CurrentLanguage = ResolveLanguage(requestedLanguage, headerLanguage);
 
+        // If Accept-Language header is used (no ?lang=), embed it into the request path
+        // so ResponseCache middleware varies the cache key by language header.
+        if (string.IsNullOrWhiteSpace(requestedLanguage) && !string.IsNullOrWhiteSpace(headerLanguage))
+        {
+            var normalizedHeader = NormalizeLanguage(headerLanguage);
+            if (normalizedHeader is not null)
+            {
+                // Embed language into query so cache key includes it
+                var queryPart = context.Request.QueryString.HasValue
+                    ? $"{context.Request.QueryString.Value}&lang={normalizedHeader}"
+                    : $"?lang={normalizedHeader}";
+                context.Request.QueryString = new QueryString(queryPart);
+            }
+        }
+
         await next(context);
     }
 

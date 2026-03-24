@@ -66,10 +66,10 @@ app.UseResponseCompression();
 
 app.UseResponseCaching();
 
+app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
 
 app.UseCors("DefaultCorsPolicy");
-app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

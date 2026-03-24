@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ErrorOr;
@@ -42,9 +43,79 @@ public class SiteContentController : ControllerBase
         var language = languageContext?.CurrentLanguage;
         var result = content.ToDictionary(
             c => c.ContentKey,
-            c => (object)SiteContentValueCodec.ResolveContentElement(c.ContentValue, language));
+            c => ResolveLocalizedJson(SiteContentValueCodec.ResolveContentElement(c.ContentValue, language), language));
 
         return Ok(new { items = result });
+    }
+
+    private static JsonElement ResolveLocalizedJson(JsonElement element, string? language)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            if (element.TryGetProperty("en", out _) && element.TryGetProperty("vi", out _))
+            {
+                var normalizedLang = NormalizeLanguage(language);
+
+                if (element.TryGetProperty(normalizedLang, out var resolved))
+                {
+                    return ResolveLocalizedJson(resolved, normalizedLang);
+                }
+
+                if (element.TryGetProperty("en", out var fallback))
+                {
+                    return ResolveLocalizedJson(fallback, "en");
+                }
+            }
+
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+            writer.WriteStartObject();
+            foreach (var prop in element.EnumerateObject())
+            {
+                writer.WritePropertyName(prop.Name);
+                ResolveLocalizedJson(prop.Value, language).WriteTo(writer);
+            }
+            writer.WriteEndObject();
+            writer.Flush();
+            stream.Position = 0;
+            using var doc = JsonDocument.Parse(stream);
+            return doc.RootElement.Clone();
+        }
+
+        if (element.ValueKind == JsonValueKind.Array)
+        {
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+            writer.WriteStartArray();
+            foreach (var item in element.EnumerateArray())
+            {
+                ResolveLocalizedJson(item, language).WriteTo(writer);
+            }
+            writer.WriteEndArray();
+            writer.Flush();
+            stream.Position = 0;
+            using var doc = JsonDocument.Parse(stream);
+            return doc.RootElement.Clone();
+        }
+
+        return element;
+    }
+
+    private static string NormalizeLanguage(string? language)
+    {
+        if (string.IsNullOrWhiteSpace(language))
+            return "en";
+
+        var firstToken = language.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault();
+        var languageValue = firstToken ?? language;
+        var qualityTrimmed = languageValue.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault() ?? languageValue;
+        var normalizedLanguage = qualityTrimmed.Split('-', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .FirstOrDefault() ?? qualityTrimmed;
+        var languageCode = normalizedLanguage.ToLowerInvariant();
+
+        return languageCode is "vi" or "en" ? languageCode : "en";
     }
 
     /// <summary>
@@ -137,11 +208,16 @@ public class SiteContentController : ControllerBase
     /// </summary>
     [HttpPut(SiteContentEndpoint.ByKey)]
     [Authorize]
-    public async Task<IActionResult> Upsert(string pageKey, string contentKey, [FromBody] UpsertSiteContentRequest request)
+    public async Task<IActionResult> Upsert(string pageKey, string contentKey, [FromBody] UpsertSiteContentRequest? request)
     {
         if (string.IsNullOrWhiteSpace(pageKey) || string.IsNullOrWhiteSpace(contentKey))
         {
             return BadRequest(new { error = "pageKey and contentKey are required" });
+        }
+
+        if (request is null)
+        {
+            return BadRequest(new { error = "request body is required" });
         }
 
         string contentValueToPersist;
@@ -179,9 +255,21 @@ public class SiteContentController : ControllerBase
             pageKey, contentKey, CurrentUserId);
 
         var result = await _repository.UpsertAsync(pageKey, contentKey, contentValueToPersist, CurrentUserId);
-        return result.IsError
-            ? BadRequest(new { error = result.FirstError.Description })
-            : Ok(result.Value);
+        if (result.IsError)
+            return BadRequest(new { error = result.FirstError.Description });
+
+        var entity = result.Value;
+        return Ok(new
+        {
+            entity.PageKey,
+            entity.ContentKey,
+            entity.ContentValue,
+            entity.Id,
+            entity.CreatedOnUtc,
+            entity.CreatedBy,
+            entity.LastModifiedOnUtc,
+            entity.LastModifiedBy
+        });
     }
 
     /// <summary>
@@ -215,7 +303,9 @@ public class SiteContentController : ControllerBase
         return Ok(result.Value);
     }
 
-    private string CurrentUserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "system";
+    private string CurrentUserId => User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? User.FindFirst("sub")?.Value
+        ?? "system";
 }
 
 public sealed record UpsertSiteContentRequest(
