@@ -60,7 +60,7 @@ public sealed class CreateTransportDetailCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateTransportDetailCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var activity = await bookingActivityReservationRepository.GetByIdAsync(request.BookingActivityReservationId);
         if (activity is null)
         {
@@ -159,7 +159,7 @@ public sealed class UpdateTransportDetailCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTransportDetailCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await bookingTransportDetailRepository.GetByIdAsync(request.BookingTransportDetailId);
         if (entity is null)
         {

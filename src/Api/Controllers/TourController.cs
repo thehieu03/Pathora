@@ -283,13 +283,16 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         return false;
     }
 
-    private static List<Application.Features.Tour.Commands.ClassificationDto>? ParseClassifications(string? classifications)
+    private static List<ClassificationDto>? ParseClassifications(string? classifications)
     {
         if (string.IsNullOrWhiteSpace(classifications))
+        {
             return null;
+        }
+
         try
         {
-            return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.ClassificationDto>>(
+            return JsonSerializer.Deserialize<List<ClassificationDto>>(
                 classifications,
                 ClassificationJsonOptions);
         }
@@ -299,13 +302,16 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         }
     }
 
-    private static List<Application.Features.Tour.Commands.AccommodationDto>? ParseAccommodations(string? accommodations)
+    private static List<AccommodationDto>? ParseAccommodations(string? accommodations)
     {
         if (string.IsNullOrWhiteSpace(accommodations))
+        {
             return null;
+        }
+
         try
         {
-            return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.AccommodationDto>>(
+            return JsonSerializer.Deserialize<List<AccommodationDto>>(
                 accommodations,
                 TranslationJsonOptions);
         }
@@ -315,13 +321,16 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         }
     }
 
-    private static List<Application.Features.Tour.Commands.LocationDto>? ParseLocations(string? locations)
+    private static List<LocationDto>? ParseLocations(string? locations)
     {
         if (string.IsNullOrWhiteSpace(locations))
+        {
             return null;
+        }
+
         try
         {
-            return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.LocationDto>>(
+            return JsonSerializer.Deserialize<List<LocationDto>>(
                 locations,
                 TranslationJsonOptions);
         }
@@ -331,13 +340,16 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         }
     }
 
-    private static List<Application.Features.Tour.Commands.TransportationDto>? ParseTransportations(string? transportations)
+    private static List<TransportationDto>? ParseTransportations(string? transportations)
     {
         if (string.IsNullOrWhiteSpace(transportations))
+        {
             return null;
+        }
+
         try
         {
-            return JsonSerializer.Deserialize<List<Application.Features.Tour.Commands.TransportationDto>>(
+            return JsonSerializer.Deserialize<List<TransportationDto>>(
                 transportations,
                 TranslationJsonOptions);
         }

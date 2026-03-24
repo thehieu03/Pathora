@@ -16,7 +16,7 @@ public abstract class BaseApiController : ControllerBase
     protected ISender Sender => _sender ??= HttpContext.RequestServices.GetRequiredService<ISender>();
     protected string CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
     protected string CurrentLanguage =>
-        HttpContext.RequestServices.GetService<ILanguageContext>()?.CurrentLanguage ?? "vi";
+        HttpContext.RequestServices.GetService<ILanguageContext>()?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
 
     protected IActionResult HandleResult<T>(
         ErrorOr<T> result,

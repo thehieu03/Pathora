@@ -32,3 +32,4 @@ public sealed class GetAllToursQueryHandler(ITourService tourService)
         return await tourService.GetAll(request);
     }
 }
+

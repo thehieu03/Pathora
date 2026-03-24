@@ -42,7 +42,6 @@ public static class DependencyInjection
         services.AddScoped<IOwnershipValidator, OwnershipValidator>();
         services.AddScoped<IPricingPolicyService, PricingPolicyService>();
         services.AddScoped<ICancellationPolicyService, CancellationPolicyService>();
-        services.AddScoped<ILanguageContext, LanguageContext>();
 
         return services;
     }

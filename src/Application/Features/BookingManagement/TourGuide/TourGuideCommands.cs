@@ -54,7 +54,7 @@ public sealed class CreateTourGuideCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(CreateTourGuideCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var existing = await tourGuideRepository.GetByLicenseNumberAsync(request.LicenseNumber);
         if (existing is not null)
         {
@@ -133,7 +133,7 @@ public sealed class UpdateTourGuideCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTourGuideCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (entity is null || entity.IsDeleted)
         {
@@ -190,7 +190,7 @@ public sealed class DeleteTourGuideCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(DeleteTourGuideCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (entity is null || entity.IsDeleted)
         {
@@ -220,7 +220,7 @@ public sealed class GetTourGuideByIdQueryHandler(
 {
     public async Task<ErrorOr<TourGuideDto>> Handle(GetTourGuideByIdQuery request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var entity = await tourGuideRepository.GetByIdAsync(request.TourGuideId);
         if (entity is null || entity.IsDeleted)
         {
@@ -330,7 +330,7 @@ public sealed class AssignTourGuideToBookingCommandHandler(
 {
     public async Task<ErrorOr<Guid>> Handle(AssignTourGuideToBookingCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var booking = await bookingRepository.GetByIdAsync(request.BookingId);
         if (booking is null)
         {
@@ -432,7 +432,7 @@ public sealed class UpdateTourGuideAssignmentStatusCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTourGuideAssignmentStatusCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
@@ -538,7 +538,7 @@ public sealed class GetBookingTourManagerQueryHandler(
             return Error.NotFound(ErrorConstants.Booking.NotFoundCode, ErrorConstants.Booking.NotFoundDescription);
         }
 
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignments = await bookingTourGuideRepository.GetByBookingIdAsync(request.BookingId);
         var manager = assignments.FirstOrDefault(x => x.AssignedRole == AssignedRole.TourManager);
         if (manager is null)
@@ -678,7 +678,7 @@ public sealed class UpdateTeamMemberAssignmentCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(UpdateTeamMemberAssignmentCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
@@ -750,7 +750,7 @@ public sealed class DeleteTeamMemberAssignmentCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(DeleteTeamMemberAssignmentCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {
@@ -789,7 +789,7 @@ public sealed class ConfirmTeamMemberAssignmentCommandHandler(
 {
     public async Task<ErrorOr<Success>> Handle(ConfirmTeamMemberAssignmentCommand request, CancellationToken cancellationToken)
     {
-        var lang = languageContext?.CurrentLanguage ?? "vi";
+        var lang = languageContext?.CurrentLanguage ?? ILanguageContext.DefaultLanguage;
         var assignment = await bookingTourGuideRepository.GetByBookingIdAndUserIdAsync(request.BookingId, request.UserId);
         if (assignment is null)
         {

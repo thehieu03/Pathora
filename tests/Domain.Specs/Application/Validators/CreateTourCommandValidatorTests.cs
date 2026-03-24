@@ -2,12 +2,6 @@ using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Validators;
 using Domain.Enums;
-using ApplicationClassificationDto = Application.Features.Tour.Commands.ClassificationDto;
-using ApplicationDayPlanDto = Application.Features.Tour.Commands.DayPlanDto;
-using ApplicationActivityDto = Application.Features.Tour.Commands.ActivityDto;
-using ApplicationRouteDto = Application.Features.Tour.Commands.RouteDto;
-using ApplicationAccommodationDto = Application.Features.Tour.Commands.AccommodationDto;
-using ApplicationInsuranceDto = Application.Features.Tour.Commands.InsuranceDto;
 
 namespace Domain.Specs.Application.Validators;
 
@@ -275,7 +269,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard Tour",
                 Description: "Standard package",
                 AdultPrice: 1000,
@@ -300,7 +294,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -326,7 +320,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: -100,
@@ -352,7 +346,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -378,7 +372,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -386,7 +380,7 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1 Title",
                     Description: "Day 1 description",
@@ -407,7 +401,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -415,7 +409,7 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "",
                     Description: "Description",
@@ -437,7 +431,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -445,11 +439,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Visit Temple",
                         Description: "Visit ancient temple",
@@ -476,7 +470,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -484,11 +478,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "",
                         Title: "Activity",
                         Description: null,
@@ -516,7 +510,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -524,11 +518,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -538,7 +532,7 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [],
-                        Accommodation: new ApplicationAccommodationDto(
+                        Accommodation: new AccommodationDto(
                             AccommodationName: "Hotel ABC",
                             Address: "123 Main St",
                             ContactPhone: "0123456789",
@@ -561,7 +555,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -569,11 +563,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -583,7 +577,7 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [],
-                        Accommodation: new ApplicationAccommodationDto(
+                        Accommodation: new AccommodationDto(
                             AccommodationName: "",
                             Address: "123 Main St",
                             ContactPhone: null,
@@ -607,7 +601,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -615,11 +609,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -629,7 +623,7 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [],
-                        Accommodation: new ApplicationAccommodationDto(
+                        Accommodation: new AccommodationDto(
                             AccommodationName: "Hotel ABC",
                             Address: null,
                             ContactPhone: "invalid-phone!",
@@ -653,7 +647,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -661,11 +655,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -674,7 +668,7 @@ public class CreateTourCommandValidatorTests
                         IsOptional: false,
                         StartTime: null,
                         EndTime: null,
-                        Routes: [new ApplicationRouteDto(
+                        Routes: [new RouteDto(
                             FromLocationName: "Hotel",
                             ToLocationName: "Temple",
                             TransportationType: "Bus",
@@ -702,7 +696,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -710,11 +704,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -723,7 +717,7 @@ public class CreateTourCommandValidatorTests
                         IsOptional: false,
                         StartTime: null,
                         EndTime: null,
-                        Routes: [new ApplicationRouteDto(
+                        Routes: [new RouteDto(
                             FromLocationName: "",
                             ToLocationName: "Temple",
                             TransportationType: "Bus",
@@ -752,7 +746,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -760,11 +754,11 @@ public class CreateTourCommandValidatorTests
                 InfantPrice: 100,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new ApplicationDayPlanDto(
+                Plans: [new DayPlanDto(
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ApplicationActivityDto(
+                    Activities: [new ActivityDto(
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -773,7 +767,7 @@ public class CreateTourCommandValidatorTests
                         IsOptional: false,
                         StartTime: null,
                         EndTime: null,
-                        Routes: [new ApplicationRouteDto(
+                        Routes: [new RouteDto(
                             FromLocationName: "Hotel",
                             ToLocationName: "Temple",
                             TransportationType: "Bus",
@@ -802,7 +796,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -811,7 +805,7 @@ public class CreateTourCommandValidatorTests
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
-                Insurances: [new ApplicationInsuranceDto(
+                Insurances: [new InsuranceDto(
                     InsuranceName: "Travel Insurance",
                     InsuranceType: "Basic",
                     InsuranceProvider: "ABC Insurance",
@@ -835,7 +829,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -844,7 +838,7 @@ public class CreateTourCommandValidatorTests
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
-                Insurances: [new ApplicationInsuranceDto(
+                Insurances: [new InsuranceDto(
                     InsuranceName: "",
                     InsuranceType: "Basic",
                     InsuranceProvider: "ABC Insurance",
@@ -869,7 +863,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ApplicationClassificationDto(
+            Classifications = [new ClassificationDto(
                 Name: "Standard",
                 Description: "Description",
                 AdultPrice: 1000,
@@ -878,7 +872,7 @@ public class CreateTourCommandValidatorTests
                 NumberOfDay: 3,
                 NumberOfNight: 2,
                 Plans: [],
-                Insurances: [new ApplicationInsuranceDto(
+                Insurances: [new InsuranceDto(
                     InsuranceName: "Insurance",
                     InsuranceType: "Basic",
                     InsuranceProvider: "ABC Insurance",
