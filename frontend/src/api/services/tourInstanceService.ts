@@ -22,8 +22,6 @@ interface BaseTourInstancePayload {
   minParticipation: number;
   maxParticipation: number;
   basePrice: number;
-  sellingPrice: number;
-  operatingCost: number;
   depositPerPerson: number;
   location?: string;
   confirmationDeadline?: string;
@@ -91,19 +89,18 @@ const stripOptionalFields = <T extends Record<string, unknown>>(payload: T): T =
 
 const normalizeInstanceVm = (item: TourInstanceVm): NormalizedTourInstanceVm => {
   const registeredParticipants = item.currentParticipation ?? 0;
-  const price = item.basePrice ?? item.sellingPrice ?? 0;
+  const basePrice = item.basePrice ?? 0;
 
   return {
     ...item,
     location: item.location ?? null,
     images: item.images ?? [],
     currentParticipation: registeredParticipants,
-    basePrice: item.basePrice ?? price,
-    sellingPrice: item.sellingPrice ?? price,
+    basePrice,
     depositPerPerson: item.depositPerPerson ?? 0,
     status: normalizeStatus(item.status),
     registeredParticipants,
-    price,
+    price: basePrice,
   };
 };
 
@@ -112,7 +109,6 @@ const normalizeInstanceDetail = (
 ): NormalizedTourInstanceDto => {
   const registeredParticipants = item.currentParticipation ?? 0;
   const basePrice = item.basePrice ?? 0;
-  const sellingPrice = item.sellingPrice ?? basePrice;
 
   return {
     ...item,
@@ -122,8 +118,6 @@ const normalizeInstanceDetail = (
     maxParticipation: item.maxParticipation ?? 0,
     minParticipation: item.minParticipation ?? 0,
     basePrice,
-    sellingPrice,
-    operatingCost: item.operatingCost ?? 0,
     depositPerPerson: item.depositPerPerson ?? 0,
     includedServices: item.includedServices ?? [],
     dynamicPricing: item.dynamicPricing ?? [],

@@ -61,8 +61,7 @@ export const mapTourVmToSearchTour = (tour: TourVm): SearchTour => {
     shortDescription: tour.shortDescription,
     location: null, // Not available in TourVm
     durationDays: 0, // Not available in TourVm
-    price: 0, // Not available in TourVm
-    salePrice: 0, // Not available in TourVm
+    basePrice: 0, // Not available in TourVm
     classificationName: null, // Not available in TourVm
     rating: null, // Not available in TourVm
   };

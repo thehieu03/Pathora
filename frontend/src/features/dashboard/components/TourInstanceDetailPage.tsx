@@ -12,16 +12,10 @@ import {
   tourInstanceService,
   UpdateTourInstancePayload,
 } from "@/api/services/tourInstanceService";
-import { tourService } from "@/api/services/tourService";
 import {
-  ActivityTypeMap,
   DynamicPricingDto,
   ImageDto,
   NormalizedTourInstanceDto,
-  TourClassificationDto,
-  TourDayActivityDto,
-  TourDayDto,
-  TourDto,
   TourInstanceStatusMap,
 } from "@/types/tour";
 import { handleApiError } from "@/utils/apiResponse";
@@ -39,8 +33,6 @@ type EditForm = {
   minParticipation: string;
   maxParticipation: string;
   basePrice: string;
-  sellingPrice: string;
-  operatingCost: string;
   depositPerPerson: string;
   location: string;
   confirmationDeadline: string;
@@ -78,8 +70,6 @@ const toEditForm = (data: NormalizedTourInstanceDto): EditForm => ({
   minParticipation: String(data.minParticipation ?? 0),
   maxParticipation: String(data.maxParticipation ?? 0),
   basePrice: String(data.basePrice ?? 0),
-  sellingPrice: String(data.sellingPrice ?? 0),
-  operatingCost: String(data.operatingCost ?? 0),
   depositPerPerson: String(data.depositPerPerson ?? 0),
   location: data.location ?? "",
   confirmationDeadline: toDateInput(data.confirmationDeadline),
@@ -132,16 +122,6 @@ const updateSchema = yup.object({
     .typeError("Base price is required")
     .min(0, "Base price cannot be negative")
     .required("Base price is required"),
-  sellingPrice: yup
-    .number()
-    .typeError("Selling price is required")
-    .min(0, "Selling price cannot be negative")
-    .required("Selling price is required"),
-  operatingCost: yup
-    .number()
-    .typeError("Operating cost is required")
-    .min(0, "Operating cost cannot be negative")
-    .required("Operating cost is required"),
   depositPerPerson: yup
     .number()
     .typeError("Deposit per person is required")
@@ -231,597 +211,7 @@ function StatusBadge({ status }: { status: string }) {
 const formatCurrency = (value: number): string =>
   `${new Intl.NumberFormat("vi-VN").format(value)} VND`;
 
-const formatDateDisplay = (value?: string | null): string => {
-  if (!value) return "—";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-};
-
-const formatTimeDisplay = (value?: string | null): string => {
-  if (!value) return "";
-  const date = new Date(value);
-  if (!Number.isNaN(date.getTime())) {
-    return date.toLocaleTimeString("vi-VN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    });
-  }
-
-  const match = value.match(/(\d{2}:\d{2})/);
-  if (match) {
-    return match[1];
-  }
-
-  return "";
-};
-
-const toWeekdayKey = (dateValue?: string | null): string => {
-  if (!dateValue) return "";
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "";
-
-  const day = date.getDay();
-  const keys = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-  ];
-  return keys[day] ?? "";
-};
-
-const getActivityTimeRange = (activity: TourDayActivityDto): string => {
-  const start = formatTimeDisplay(activity.startTime);
-  const end = formatTimeDisplay(activity.endTime);
-
-  if (start && end) return `${start} - ${end}`;
-  if (start) return start;
-  if (end) return end;
-
-  return "";
-};
-
-const isPublicUrl = (url?: string | null): boolean => {
-  if (!url) return false;
-  return /^https?:\/\//i.test(url);
-};
-
-type TourContextDataState = "idle" | "loading" | "ready" | "error";
 type InstanceDetailDataState = "loading" | "ready" | "error";
-
-function ItineraryActivityItem({
-  activity,
-}: {
-  activity: TourDayActivityDto;
-}) {
-  const { t } = useTranslation();
-
-  const activityTime = getActivityTimeRange(activity);
-  const activityTypeLabel =
-    ActivityTypeMap[activity.activityType] ??
-    t("tourInstance.activityTypeFallback", "Activity");
-
-  return (
-    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-orange-100 px-2.5 py-1 text-[11px] font-semibold text-orange-700">
-          {activityTypeLabel}
-        </span>
-        {activity.isOptional && (
-          <span className="rounded-full bg-blue-100 px-2.5 py-1 text-[11px] font-semibold text-blue-700">
-            {t("tourInstance.optional", "Optional")}
-          </span>
-        )}
-        {activityTime && (
-          <span className="rounded-full bg-stone-200 px-2.5 py-1 text-[11px] font-semibold text-stone-700">
-            {activityTime}
-          </span>
-        )}
-      </div>
-
-      <h4 className="mt-3 text-sm font-semibold text-stone-900">{activity.title}</h4>
-
-      {activity.description && (
-        <p className="mt-1 text-sm leading-relaxed text-stone-600">{activity.description}</p>
-      )}
-
-      {activity.note && (
-        <p className="mt-2 text-xs italic text-stone-500">{activity.note}</p>
-      )}
-    </div>
-  );
-}
-
-function ItineraryDayCard({
-  day,
-  index,
-  startDate,
-}: {
-  day: TourDayDto;
-  index: number;
-  startDate?: string;
-}) {
-  const { t } = useTranslation();
-
-  const normalizedActivities = (day.activities ?? []).slice().sort((a, b) => a.order - b.order);
-
-  const dateValue = useMemo(() => {
-    if (!startDate) return null;
-    const start = new Date(startDate);
-    if (Number.isNaN(start.getTime())) return null;
-
-    const offsetDate = new Date(start);
-    offsetDate.setDate(start.getDate() + index);
-    return offsetDate;
-  }, [startDate, index]);
-
-  const weekdayLabel = useMemo(() => {
-    if (!dateValue) return "";
-    const key = toWeekdayKey(dateValue.toISOString());
-    if (!key) return "";
-    return t(`tourInstance.weekdays.${key}`, key);
-  }, [dateValue, t]);
-
-  const dateLabel = useMemo(() => {
-    if (!dateValue) return "";
-    return formatDateDisplay(dateValue.toISOString());
-  }, [dateValue]);
-
-  return (
-    <article className="rounded-[2rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.12)]">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
-            {t("tourInstance.dayLabel", "Day")} {day.dayNumber}
-          </p>
-          <h3 className="mt-1 text-base font-bold text-stone-900">{day.title}</h3>
-          {day.description && (
-            <p className="mt-1 text-sm text-stone-600">{day.description}</p>
-          )}
-        </div>
-
-        {(weekdayLabel || dateLabel) && (
-          <div className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-right">
-            {weekdayLabel && (
-              <p className="text-xs font-semibold text-stone-700">{weekdayLabel}</p>
-            )}
-            {dateLabel && (
-              <p className="text-xs text-stone-500">{dateLabel}</p>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="mt-4 space-y-3">
-        {normalizedActivities.length > 0 ? (
-          normalizedActivities.map((activity) => (
-            <ItineraryActivityItem key={activity.id} activity={activity} />
-          ))
-        ) : (
-          <p className="rounded-xl border border-dashed border-stone-300 px-3 py-3 text-sm text-stone-500">
-            {t("tourInstance.emptyActivities", "No activities for this day")}
-          </p>
-        )}
-      </div>
-    </article>
-  );
-}
-
-function TourContextSection({
-  state,
-  error,
-  tour,
-  activeClassification,
-  instance,
-}: {
-  state: TourContextDataState;
-  error: string | null;
-  tour: TourDto | null;
-  activeClassification: TourClassificationDto | null;
-  instance: NormalizedTourInstanceDto;
-}) {
-  const { t } = useTranslation();
-
-  const itineraryDays = useMemo(
-    () => (activeClassification?.plans ?? []).slice().sort((a, b) => a.dayNumber - b.dayNumber),
-    [activeClassification?.plans],
-  );
-
-  return (
-    <section className="space-y-6">
-      <article className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-        <h2 className="text-base font-bold text-stone-900">
-          {t("tourInstance.relatedTour", "Related Tour")}
-        </h2>
-
-        {state === "loading" && (
-          <div className="mt-4 space-y-3 animate-pulse">
-            <div className="h-4 w-56 rounded bg-stone-200" />
-            <div className="h-4 w-72 rounded bg-stone-200" />
-            <div className="h-4 w-48 rounded bg-stone-200" />
-          </div>
-        )}
-
-        {state === "error" && (
-          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-            <p className="text-sm font-medium text-red-700">
-              {t("tourInstance.relatedTourError", "Could not load related tour details")}
-            </p>
-            {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
-          </div>
-        )}
-
-        {state === "ready" && tour && activeClassification && (
-          <dl className="mt-4 space-y-2 text-sm">
-            <div className="flex flex-wrap justify-between gap-3 border-b border-stone-100 pb-2">
-              <dt className="text-stone-500">{t("tourInstance.relatedTourName", "Tour name")}</dt>
-              <dd className="font-semibold text-stone-900">{tour.tourName}</dd>
-            </div>
-            <div className="flex flex-wrap justify-between gap-3 border-b border-stone-100 pb-2">
-              <dt className="text-stone-500">{t("tourInstance.relatedTourCode", "Tour code")}</dt>
-              <dd className="font-semibold text-stone-900">{tour.tourCode}</dd>
-            </div>
-            <div className="flex flex-wrap justify-between gap-3 border-b border-stone-100 pb-2">
-              <dt className="text-stone-500">{t("tourInstance.classification", "Classification")}</dt>
-              <dd className="font-semibold text-stone-900">{activeClassification.name}</dd>
-            </div>
-            <div className="flex flex-wrap justify-between gap-3 border-b border-stone-100 pb-2">
-              <dt className="text-stone-500">{t("tourInstance.relatedDuration", "Duration")}</dt>
-              <dd className="font-semibold text-stone-900">
-                {activeClassification.durationDays} {t("tourInstance.days", "days")}
-              </dd>
-            </div>
-            <div className="flex flex-wrap justify-between gap-3">
-              <dt className="text-stone-500">{t("tourInstance.relatedPlans", "Planned days")}</dt>
-              <dd className="font-semibold text-stone-900">{itineraryDays.length}</dd>
-            </div>
-          </dl>
-        )}
-
-        {state === "ready" && (!tour || !activeClassification) && (
-          <p className="mt-4 rounded-xl border border-dashed border-stone-300 px-3 py-3 text-sm text-stone-500">
-            {t("tourInstance.relatedTourEmpty", "No related tour details available")}
-          </p>
-        )}
-      </article>
-
-      <article className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-        <h2 className="text-base font-bold text-stone-900">
-          {t("tourInstance.dailyPlan", "Daily plan")}
-        </h2>
-
-        {state === "loading" && (
-          <div className="mt-4 space-y-4 animate-pulse">
-            <div className="h-28 rounded-2xl bg-stone-100" />
-            <div className="h-28 rounded-2xl bg-stone-100" />
-          </div>
-        )}
-
-        {state === "error" && (
-          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-            <p className="text-sm font-medium text-red-700">
-              {t("tourInstance.dailyPlanError", "Could not load itinerary from related tour")}
-            </p>
-          </div>
-        )}
-
-        {state === "ready" && itineraryDays.length > 0 && (
-          <div className="mt-4 space-y-4">
-            {itineraryDays.map((day, index) => (
-              <ItineraryDayCard
-                key={day.id}
-                day={day}
-                index={index}
-                startDate={instance.startDate}
-              />
-            ))}
-          </div>
-        )}
-
-        {state === "ready" && itineraryDays.length === 0 && (
-          <p className="mt-4 rounded-xl border border-dashed border-stone-300 px-3 py-3 text-sm text-stone-500">
-            {t("tourInstance.dailyPlanEmpty", "No itinerary days available for this instance")}
-          </p>
-        )}
-      </article>
-    </section>
-  );
-}
-
-const findMatchingClassification = (
-  tour: TourDto,
-  instance: NormalizedTourInstanceDto,
-): TourClassificationDto | null => {
-  const byId = (tour.classifications ?? []).find(
-    (classification) => classification.id === instance.classificationId,
-  );
-  if (byId) return byId;
-
-  const byName = (tour.classifications ?? []).find(
-    (classification) =>
-      classification.name.trim().toLowerCase() ===
-      (instance.classificationName ?? "").trim().toLowerCase(),
-  );
-
-  return byName ?? null;
-};
-
-function InstanceSummaryCards({
-  data,
-  participantRatio,
-}: {
-  data: NormalizedTourInstanceDto;
-  participantRatio: number;
-}) {
-  const { t } = useTranslation();
-
-  const cardClassName =
-    "rounded-[2.5rem] border border-stone-200 bg-white p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]";
-
-  return (
-    <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-      <article className={cardClassName}>
-        <p className="text-xs uppercase tracking-wide text-stone-500">
-          {t("tourInstance.summaryCode", "Instance code")}
-        </p>
-        <p className="mt-2 text-xl font-bold text-stone-900 break-all">{data.tourInstanceCode}</p>
-        <p className="mt-1 text-xs text-stone-500">
-          {t("tourInstance.instanceType", "Tour Instance Type")}: {data.instanceType || "—"}
-        </p>
-      </article>
-
-      <article className={cardClassName}>
-        <p className="text-xs uppercase tracking-wide text-stone-500">
-          {t("tourInstance.summarySchedule", "Schedule")}
-        </p>
-        <p className="mt-2 text-sm font-semibold text-stone-900">
-          {formatDateDisplay(data.startDate)} - {formatDateDisplay(data.endDate)}
-        </p>
-        <p className="mt-1 text-xs text-stone-500">
-          {data.durationDays} {t("tourInstance.days", "days")}
-        </p>
-      </article>
-
-      <article className={cardClassName}>
-        <p className="text-xs uppercase tracking-wide text-stone-500">
-          {t("tourInstance.summaryCapacity", "Capacity")}
-        </p>
-        <p className="mt-2 text-2xl font-bold text-stone-900">
-          {data.maxParticipation}
-        </p>
-        <p className="mt-1 text-xs text-stone-500">
-          {t("tourInstance.form.minParticipation", "Minimum participants")}: {data.minParticipation}
-        </p>
-      </article>
-
-      <article className={cardClassName}>
-        <p className="text-xs uppercase tracking-wide text-stone-500">
-          {t("tourInstance.summaryBooked", "Booked")}
-        </p>
-        <p className="mt-2 text-2xl font-bold text-stone-900">
-          {data.currentParticipation}
-        </p>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-stone-200">
-          <div className="h-full rounded-full bg-orange-500" style={{ width: `${participantRatio}%` }} />
-        </div>
-      </article>
-    </section>
-  );
-}
-
-function TourInstanceOverviewSection({
-  data,
-}: {
-  data: NormalizedTourInstanceDto;
-}) {
-  const { t } = useTranslation();
-
-  return (
-    <section className="grid gap-6 lg:grid-cols-2">
-      <article className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-        <h2 className="text-base font-bold text-stone-900">
-          {t("tourInstance.instanceSummary", "Instance Summary")}
-        </h2>
-        <dl className="mt-4 space-y-2 text-sm">
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.form.title", "Title")}</dt>
-            <dd className="font-semibold text-stone-900">{data.title}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.status", "Status")}</dt>
-            <dd className="font-semibold text-stone-900">
-              {t(`tourInstance.statusLabels.${data.status}`, data.status)}
-            </dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.location", "Location")}</dt>
-            <dd className="font-semibold text-stone-900">{data.location || "—"}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.startDate", "Start Date")}</dt>
-            <dd className="font-semibold text-stone-900">{formatDateDisplay(data.startDate)}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.endDate", "End Date")}</dt>
-            <dd className="font-semibold text-stone-900">{formatDateDisplay(data.endDate)}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.form.currentParticipation", "Current participants")}</dt>
-            <dd className="font-semibold text-stone-900">{data.currentParticipation}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.maxParticipants", "Maximum Participants")}</dt>
-            <dd className="font-semibold text-stone-900">{data.maxParticipation}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.basePrice", "Base Price")}</dt>
-            <dd className="font-semibold text-stone-900">{formatCurrency(data.basePrice)}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.form.sellingPrice", "Selling price")}</dt>
-            <dd className="font-semibold text-stone-900">{formatCurrency(data.sellingPrice)}</dd>
-          </div>
-          <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
-            <dt className="text-stone-500">{t("tourInstance.form.depositPerPerson", "Deposit per person")}</dt>
-            <dd className="font-semibold text-stone-900">{formatCurrency(data.depositPerPerson)}</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-stone-500">{t("tourInstance.confirmationDeadline", "Confirmation Deadline")}</dt>
-            <dd className="font-semibold text-stone-900">
-              {formatDateDisplay(data.confirmationDeadline)}
-            </dd>
-          </div>
-        </dl>
-      </article>
-
-      <article className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-        <h2 className="text-base font-bold text-stone-900">
-          {t("tourInstance.tourGuide", "Tour Guide")}
-        </h2>
-        {data.guide ? (
-          <div className="mt-4 space-y-2 text-sm">
-            <p className="font-semibold text-stone-900">{data.guide.name}</p>
-            <p className="text-stone-600">
-              {t("tourInstance.languages", "Languages")}: {data.guide.languages.join(", ") || "—"}
-            </p>
-            <p className="text-stone-600">
-              {t("tourInstance.experience", "Experience")}: {data.guide.experience || "—"}
-            </p>
-          </div>
-        ) : (
-          <p className="mt-4 text-sm text-stone-500">{t("tourInstance.noGuide", "No guide assigned")}</p>
-        )}
-
-        <h3 className="mt-6 text-sm font-bold text-stone-900">
-          {t("tourInstance.includedServices", "Included Services")}
-        </h3>
-        {data.includedServices.length > 0 ? (
-          <ul className="mt-3 space-y-2">
-            {data.includedServices.map((service) => (
-              <li
-                key={service}
-                className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-                {service}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-2 text-sm text-stone-500">—</p>
-        )}
-      </article>
-    </section>
-  );
-}
-
-function DynamicPricingSection({ data }: { data: NormalizedTourInstanceDto }) {
-  const { t } = useTranslation();
-
-  return (
-    <section className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-      <h2 className="text-base font-bold text-stone-900">
-        {t("tourInstance.dynamicPricing", "Dynamic Pricing")}
-      </h2>
-      {data.dynamicPricing.length > 0 ? (
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="border-b border-stone-200 text-left text-stone-500">
-                <th className="px-2 py-2">{t("tourInstance.form.minParticipants", "Min participants")}</th>
-                <th className="px-2 py-2">{t("tourInstance.form.maxParticipants", "Max participants")}</th>
-                <th className="px-2 py-2">{t("tourInstance.form.pricePerPerson", "Price per person")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.dynamicPricing.map((tier, index) => (
-                <tr key={`${tier.minParticipants}-${tier.maxParticipants}-${index}`} className="border-b border-stone-100">
-                  <td className="px-2 py-2 text-stone-700">{tier.minParticipants}</td>
-                  <td className="px-2 py-2 text-stone-700">{tier.maxParticipants}</td>
-                  <td className="px-2 py-2 font-semibold text-orange-500">{formatCurrency(tier.pricePerPerson)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p className="mt-3 text-sm text-stone-500">—</p>
-      )}
-    </section>
-  );
-}
-
-function MediaSection({ data }: { data: NormalizedTourInstanceDto }) {
-  const { t } = useTranslation();
-
-  return (
-    <section className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
-      <h2 className="text-base font-bold text-stone-900">{t("tourInstance.form.media", "Media")}</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {data.images.length > 0 ? (
-          data.images.map((image, index) => (
-            <div
-              key={`${image.publicURL}-${index}`}
-              className="overflow-hidden rounded-xl border border-stone-200 bg-stone-100">
-              {isPublicUrl(image.publicURL) ? (
-                <img
-                  src={image.publicURL as string}
-                  alt={`${data.title} image ${index + 1}`}
-                  className="h-36 w-full object-cover"
-                />
-              ) : (
-                <div className="flex h-36 items-center justify-center text-stone-400">
-                  <Icon icon="heroicons:photo" className="size-6" />
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="text-sm text-stone-500">—</p>
-        )}
-      </div>
-    </section>
-  );
-}
-
-function TourInstanceReadOnlyContent({
-  data,
-  participantRatio,
-  tourState,
-  tourError,
-  relatedTour,
-  activeClassification,
-}: {
-  data: NormalizedTourInstanceDto;
-  participantRatio: number;
-  tourState: TourContextDataState;
-  tourError: string | null;
-  relatedTour: TourDto | null;
-  activeClassification: TourClassificationDto | null;
-}) {
-  return (
-    <>
-      <InstanceSummaryCards data={data} participantRatio={participantRatio} />
-      <TourInstanceOverviewSection data={data} />
-      <TourContextSection
-        state={tourState}
-        error={tourError}
-        tour={relatedTour}
-        activeClassification={activeClassification}
-        instance={data}
-      />
-      <DynamicPricingSection data={data} />
-      <MediaSection data={data} />
-    </>
-  );
-}
 
 export default function TourInstanceDetailPage() {
   const { t } = useTranslation();
@@ -837,11 +227,6 @@ export default function TourInstanceDetailPage() {
   const [data, setData] = useState<NormalizedTourInstanceDto | null>(null);
   const [form, setForm] = useState<EditForm | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
-  const [tourState, setTourState] = useState<TourContextDataState>("idle");
-  const [tourErrorMessage, setTourErrorMessage] = useState<string | null>(null);
-  const [relatedTour, setRelatedTour] = useState<TourDto | null>(null);
-  const [activeClassification, setActiveClassification] =
-    useState<TourClassificationDto | null>(null);
 
   const participantRatio = useMemo(() => {
     if (!data || data.maxParticipation <= 0) return 0;
@@ -875,10 +260,6 @@ export default function TourInstanceDetailPage() {
       try {
         setDataState("loading");
         setErrorMessage(null);
-        setTourState("idle");
-        setTourErrorMessage(null);
-        setRelatedTour(null);
-        setActiveClassification(null);
         const detail = await tourInstanceService.getInstanceDetail(id);
         if (!active) return;
         setData(detail);
@@ -895,59 +276,8 @@ export default function TourInstanceDetailPage() {
       }
     };
     void doLoad();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [id, t, reloadToken]);
-
-  useEffect(() => {
-    if (!data?.tourId) {
-      setTourState("idle");
-      setTourErrorMessage(null);
-      setRelatedTour(null);
-      setActiveClassification(null);
-      return;
-    }
-
-    let active = true;
-
-    const loadRelatedTour = async () => {
-      try {
-        setTourState("loading");
-        setTourErrorMessage(null);
-
-        const tour = await tourService.getTourDetail(data.tourId);
-        if (!active) return;
-
-        if (!tour) {
-          setRelatedTour(null);
-          setActiveClassification(null);
-          setTourState("ready");
-          return;
-        }
-
-        const matchedClassification = findMatchingClassification(tour, data);
-
-        setRelatedTour(tour);
-        setActiveClassification(matchedClassification);
-        setTourState("ready");
-      } catch (error: unknown) {
-        if (!active) return;
-
-        const apiError = handleApiError(error);
-        setRelatedTour(null);
-        setActiveClassification(null);
-        setTourState("error");
-        setTourErrorMessage(apiError.message || null);
-      }
-    };
-
-    void loadRelatedTour();
-
-    return () => {
-      active = false;
-    };
-  }, [data]);
 
   const updateField = <K extends keyof EditForm>(field: K, value: EditForm[K]) => {
     setForm((current) => (current ? { ...current, [field]: value } : current));
@@ -1046,8 +376,6 @@ export default function TourInstanceDetailPage() {
         minParticipation: Number(form.minParticipation),
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
-        sellingPrice: Number(form.sellingPrice),
-        operatingCost: Number(form.operatingCost),
         depositPerPerson: Number(form.depositPerPerson),
       };
 
@@ -1080,8 +408,6 @@ export default function TourInstanceDetailPage() {
         minParticipation: Number(form.minParticipation),
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
-        sellingPrice: Number(form.sellingPrice),
-        operatingCost: Number(form.operatingCost),
         depositPerPerson: Number(form.depositPerPerson),
         location: form.location.trim() || undefined,
         confirmationDeadline: form.confirmationDeadline || undefined,
@@ -1235,14 +561,201 @@ export default function TourInstanceDetailPage() {
         </header>
 
         {!isEditing ? (
-          <TourInstanceReadOnlyContent
-            data={data}
-            participantRatio={participantRatio}
-            tourState={tourState}
-            tourError={tourErrorMessage}
-            relatedTour={relatedTour}
-            activeClassification={activeClassification}
-          />
+          <>
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              <article className="rounded-[2.5rem] border border-stone-200 bg-white p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                <p className="text-xs uppercase tracking-wide text-stone-500">
+                  {t("tourInstance.participants", "Participants")}
+                </p>
+                <p className="mt-2 text-2xl font-bold text-stone-900">
+                  {data.currentParticipation}/{data.maxParticipation}
+                </p>
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-stone-200">
+                  <div
+                    className="h-full rounded-full bg-orange-500"
+                    style={{ width: `${participantRatio}%` }}
+                  />
+                </div>
+              </article>
+              <article className="rounded-[2.5rem] border border-stone-200 bg-white p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                <p className="text-xs uppercase tracking-wide text-stone-500">
+                  {t("tourInstance.basePrice", "Base Price")}
+                </p>
+                <p className="mt-2 text-xl font-bold text-orange-500">
+                  {formatCurrency(data.basePrice)}
+                </p>
+              </article>
+              <article className="rounded-[2.5rem] border border-stone-200 bg-white p-4 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                <p className="text-xs uppercase tracking-wide text-stone-500">
+                  {t("tourInstance.form.depositPerPerson", "Deposit per person")}
+                </p>
+                <p className="mt-2 text-xl font-bold text-orange-500">
+                  {formatCurrency(data.depositPerPerson)}
+                </p>
+              </article>
+            </section>
+
+            <section className="grid gap-6 lg:grid-cols-2">
+              <article className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                <h2 className="text-base font-bold text-stone-900">
+                  {t("tourInstance.tourInformation", "Tour Information")}
+                </h2>
+                <dl className="mt-4 space-y-2 text-sm">
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.form.title", "Title")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.title}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.tourInstanceCode", "Tour Instance Code")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.tourInstanceCode}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.instanceType", "Tour Instance Type")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.instanceType}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.classification", "Classification")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.classificationName}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.location", "Location")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.location || "—"}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.startDate", "Start Date")}</dt>
+                    <dd className="font-semibold text-stone-900">{toDateInput(data.startDate)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.endDate", "End Date")}</dt>
+                    <dd className="font-semibold text-stone-900">{toDateInput(data.endDate)}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.form.minParticipation", "Minimum participants")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.minParticipation}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.maxParticipants", "Maximum Participants")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.maxParticipation}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.form.currentParticipation", "Current participants")}</dt>
+                    <dd className="font-semibold text-stone-900">{data.currentParticipation}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3 border-b border-stone-100 pb-2">
+                    <dt className="text-stone-500">{t("tourInstance.confirmationDeadline", "Confirmation Deadline")}</dt>
+                    <dd className="font-semibold text-stone-900">{toDateInput(data.confirmationDeadline) || "—"}</dd>
+                  </div>
+                  {data.cancellationReason && (
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-stone-500">{t("tourInstance.form.cancellationReason", "Cancellation reason")}</dt>
+                      <dd className="text-right font-semibold text-stone-700">{data.cancellationReason}</dd>
+                    </div>
+                  )}
+                </dl>
+              </article>
+
+              <article className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+                <h2 className="text-base font-bold text-stone-900">
+                  {t("tourInstance.tourGuide", "Tour Guide")}
+                </h2>
+                {data.guide ? (
+                  <div className="mt-4 space-y-2 text-sm">
+                    <p className="font-semibold text-stone-900">{data.guide.name}</p>
+                    <p className="text-stone-600">
+                      {t("tourInstance.languages", "Languages")}: {" "}
+                      {data.guide.languages.join(", ") || "—"}
+                    </p>
+                    <p className="text-stone-600">
+                      {t("tourInstance.experience", "Experience")}: {" "}
+                      {data.guide.experience || "—"}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-4 text-sm text-stone-500">
+                    {t("tourInstance.noGuide", "No guide assigned")}
+                  </p>
+                )}
+
+                <h3 className="mt-6 text-sm font-bold text-stone-900">
+                  {t("tourInstance.includedServices", "Included Services")}
+                </h3>
+                {data.includedServices.length > 0 ? (
+                  <ul className="mt-3 space-y-2">
+                    {data.includedServices.map((service) => (
+                      <li
+                        key={service}
+                        className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                        {service}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-2 text-sm text-stone-500">—</p>
+                )}
+              </article>
+            </section>
+
+            <section className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+              <h2 className="text-base font-bold text-stone-900">
+                {t("tourInstance.dynamicPricing", "Dynamic Pricing")}
+              </h2>
+              {data.dynamicPricing.length > 0 ? (
+                <div className="mt-4 overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-stone-200 text-left text-stone-500">
+                        <th className="px-2 py-2">{t("tourInstance.form.minParticipants", "Min participants")}</th>
+                        <th className="px-2 py-2">{t("tourInstance.form.maxParticipants", "Max participants")}</th>
+                        <th className="px-2 py-2">{t("tourInstance.form.pricePerPerson", "Price per person")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.dynamicPricing.map((tier, index) => (
+                        <tr key={`${tier.minParticipants}-${tier.maxParticipants}-${index}`} className="border-b border-stone-100">
+                          <td className="px-2 py-2 text-stone-700">{tier.minParticipants}</td>
+                          <td className="px-2 py-2 text-stone-700">{tier.maxParticipants}</td>
+                          <td className="px-2 py-2 font-semibold text-orange-500">
+                            {formatCurrency(tier.pricePerPerson)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="mt-3 text-sm text-stone-500">—</p>
+              )}
+            </section>
+
+            <section className="rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
+              <h2 className="text-base font-bold text-stone-900">
+                {t("tourInstance.form.media", "Media")}
+              </h2>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {data.images.length > 0 ? (
+                  data.images.map((image, index) => (
+                    <div
+                      key={`${image.publicURL}-${index}`}
+                      className="overflow-hidden rounded-xl border border-stone-200 bg-stone-100">
+                      {image.publicURL ? (
+                        <img
+                          src={image.publicURL}
+                          alt={`${data.title} image ${index + 1}`}
+                          className="h-36 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-36 items-center justify-center text-stone-400">
+                          <Icon icon="heroicons:photo" className="size-6" />
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-stone-500">—</p>
+                )}
+              </div>
+            </section>
+          </>
         ) : (
           <section className="space-y-6 rounded-[2.5rem] border border-stone-200 bg-white p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
             <h2 className="text-base font-bold text-stone-900">
@@ -1353,38 +866,6 @@ export default function TourInstanceDetailPage() {
                 />
                 {errors.basePrice && (
                   <p className="text-xs text-red-600">{errors.basePrice}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700">
-                  {t("tourInstance.form.sellingPrice", "Selling price")} *
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  className={inputClassName}
-                  value={form.sellingPrice}
-                  onChange={(event) => updateField("sellingPrice", event.target.value)}
-                />
-                {errors.sellingPrice && (
-                  <p className="text-xs text-red-600">{errors.sellingPrice}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-stone-700">
-                  {t("tourInstance.form.operatingCost", "Operating cost")} *
-                </label>
-                <input
-                  type="number"
-                  min={0}
-                  className={inputClassName}
-                  value={form.operatingCost}
-                  onChange={(event) =>
-                    updateField("operatingCost", event.target.value)
-                  }
-                />
-                {errors.operatingCost && (
-                  <p className="text-xs text-red-600">{errors.operatingCost}</p>
                 )}
               </div>
               <div className="space-y-2">

@@ -14,12 +14,13 @@ import { ApiResponse } from "@/types/home";
 const normalizeClassification = (
   classification: TourClassificationDto,
 ): TourClassificationDto => {
-  const derivedPrice = classification.price ?? classification.adultPrice ?? 0;
+  const derivedPrice = classification.price ?? classification.basePrice ?? 0;
   const derivedSalePrice = classification.salePrice ?? derivedPrice;
   const durationDays = classification.durationDays ?? classification.numberOfDay ?? 0;
 
   return {
     ...classification,
+    basePrice: classification.basePrice ?? derivedPrice,
     price: derivedPrice,
     salePrice: derivedSalePrice,
     durationDays,

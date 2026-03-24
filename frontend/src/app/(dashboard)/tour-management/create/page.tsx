@@ -28,8 +28,7 @@ interface ClassificationForm {
   enName: string;
   description: string;
   enDescription: string;
-  price: string;
-  salePrice: string;
+  basePrice: string;
   durationDays: string;
 }
 
@@ -145,6 +144,36 @@ interface TranslationFields {
 }
 
 /* ── Constants ──────────────────────────────────────────────── */
+const PACKAGE_TYPE_OPTIONS = [
+  { value: "Standard", label: "Standard" },
+  { value: "Premium", label: "Premium" },
+  { value: "Luxury", label: "Luxury" },
+  { value: "Budget", label: "Budget" },
+  { value: "VIP", label: "VIP" },
+];
+
+const TRANSPORTATION_TYPE_OPTIONS = [
+  { value: "0", label: "Flight" },
+  { value: "1", label: "Train" },
+  { value: "2", label: "Bus" },
+  { value: "3", label: "Car" },
+  { value: "4", label: "Taxi" },
+  { value: "5", label: "Boat" },
+  { value: "6", label: "Ferry" },
+  { value: "7", label: "Motorbike" },
+  { value: "8", label: "Bicycle" },
+  { value: "9", label: "Walking" },
+  { value: "99", label: "Other" },
+];
+
+const PRICING_TYPE_OPTIONS = [
+  { value: "0", label: "Per Person" },
+  { value: "1", label: "Per Room" },
+  { value: "2", label: "Per Group" },
+  { value: "3", label: "Per Ride" },
+  { value: "4", label: "Fixed Price" },
+];
+
 const ACTIVITY_TYPE_OPTIONS = [
   { value: "0" },
   { value: "1" },
@@ -286,8 +315,7 @@ const emptyClassification = (): ClassificationForm => ({
   enName: "",
   description: "",
   enDescription: "",
-  price: "",
-  salePrice: "",
+  basePrice: "",
   durationDays: "",
 });
 
@@ -581,11 +609,11 @@ export default function CreateTourPage() {
             "tourAdmin.invalidDuration",
             "Invalid duration",
           );
-        const price = Number(cls.price);
-        if (!cls.price.trim() || isNaN(price) || price < 0)
-          newErrors[`cls_${i}_price`] = t(
-            "tourAdmin.validation.invalidPrice",
-            "Invalid price",
+        const basePrice = Number(cls.basePrice);
+        if (!cls.basePrice.trim() || isNaN(basePrice) || basePrice < 0)
+          newErrors[`cls_${i}_basePrice`] = t(
+            "tourAdmin.validation.invalidBasePrice",
+            "Invalid base price",
           );
       });
     }
@@ -632,19 +660,24 @@ export default function CreateTourPage() {
     }
 
     if (step === 5) {
+      // Transportation step is optional - skip validation if all routes are empty
+      const hasAnyData = transportations.some(
+        (tr) =>
+          tr.fromLocation.trim() ||
+          tr.toLocation.trim() ||
+          tr.transportationType.trim() ||
+          tr.transportationName.trim() ||
+          tr.price.trim(),
+      );
+      if (!hasAnyData) return true;
+
       transportations.forEach((tr, i) => {
         if (!tr.transportationType.trim())
           newErrors[`tr_${i}_type`] = t("tourAdmin.required", "Required");
-        if (!tr.enTransportationType.trim())
-          newErrors[`tr_${i}_enType`] = t("tourAdmin.required", "Required");
         if (!tr.fromLocation.trim())
           newErrors[`tr_${i}_from`] = t("tourAdmin.required", "Required");
-        if (!tr.enFromLocation.trim())
-          newErrors[`tr_${i}_enFrom`] = t("tourAdmin.required", "Required");
         if (!tr.toLocation.trim())
           newErrors[`tr_${i}_to`] = t("tourAdmin.required", "Required");
-        if (!tr.enToLocation.trim())
-          newErrors[`tr_${i}_enTo`] = t("tourAdmin.required", "Required");
         const price = Number(tr.price);
         if (!tr.price.trim() || isNaN(price) || price < 0)
           newErrors[`tr_${i}_price`] = t(
@@ -1536,24 +1569,44 @@ export default function CreateTourPage() {
                       )}
                     </div>
 
-                    {/* Duration — shared field */}
-                    <div className="mb-5">
-                      <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-                        {t("tourAdmin.packages.durationDays")} <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={cls.durationDays}
-                        onChange={(e) =>
-                          updateClassification(clsI, "durationDays", e.target.value)
-                        }
-                        placeholder={t("tourAdmin.packages.placeholderDuration")}
-                        className="w-full md:w-48 px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                      />
-                      {errors[`cls_${clsI}_duration`] && (
-                        <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_duration`]}</p>
-                      )}
+                    {/* Duration & Base Price — shared fields */}
+                    <div className="mb-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                          {t("tourAdmin.packages.durationDays")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={cls.durationDays}
+                          onChange={(e) =>
+                            updateClassification(clsI, "durationDays", e.target.value)
+                          }
+                          placeholder={t("tourAdmin.packages.placeholderDuration")}
+                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`cls_${clsI}_duration`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_duration`]}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                          {t("tourAdmin.packages.basePrice")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={cls.basePrice}
+                          onChange={(e) =>
+                            updateClassification(clsI, "basePrice", e.target.value)
+                          }
+                          placeholder={t("tourAdmin.packages.placeholderBasePrice")}
+                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`cls_${clsI}_basePrice`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_basePrice`]}</p>
+                        )}
+                      </div>
                     </div>
 
                     {/* VI / EN parallel columns */}
@@ -1570,13 +1623,15 @@ export default function CreateTourPage() {
                           <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1">
                             {t("tourAdmin.packages.packageType")} <span className="text-red-500">*</span>
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={cls.name}
                             onChange={(e) => updateClassification(clsI, "name", e.target.value)}
-                            placeholder={t("tourAdmin.packages.placeholderPackageType")}
-                            className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                          />
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
+                            <option value="">{t("tourAdmin.packages.placeholderPackageType")}</option>
+                            {PACKAGE_TYPE_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
                           {errors[`cls_${clsI}_name`] && (
                             <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_name`]}</p>
                           )}
@@ -1613,13 +1668,15 @@ export default function CreateTourPage() {
                           <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1">
                             {t("tourAdmin.packages.packageType")} / Type
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={cls.enName}
                             onChange={(e) => updateClassification(clsI, "enName", e.target.value)}
-                            placeholder="e.g. Standard, Premium, Luxury"
-                            className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                          />
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
+                            <option value="">Select type...</option>
+                            {PACKAGE_TYPE_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
                           {errors[`cls_${clsI}_enName`] && (
                             <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_enName`]}</p>
                           )}
@@ -1691,7 +1748,7 @@ export default function CreateTourPage() {
                           )}
                         </div>
                         <p className="text-xs font-medium text-slate-900 dark:text-white">
-                          {activeLang === "vi" ? (cls.name || t("tourAdmin.packages.packageType")) : (cls.enName || cls.name || t("tourAdmin.packages.packageType"))}
+                          {activeLang === "vi" ? (cls.name || t("tourAdmin.packages.packageNumber", { number: i + 1 })) : (cls.enName || cls.name || t("tourAdmin.packages.packageNumber", { number: i + 1 }))}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                           {t("tourAdmin.itineraries.daysProcessed", { processed: daysProcessed, total: totalDays })}
@@ -2749,8 +2806,7 @@ export default function CreateTourPage() {
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                             {t("tourAdmin.transportation.transportationType")}
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={tr.transportationType}
                             onChange={(e) =>
                               updateTransportation(
@@ -2759,9 +2815,12 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder={t("tourAdmin.transportation.placeholderTransportationType")}
-                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                          />
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
+                            <option value="">{t("tourAdmin.transportation.placeholderTransportationType")}</option>
+                            {TRANSPORTATION_TYPE_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
                           {errors[`tr_${trI}_type`] && (
                             <p className="text-red-500 text-xs mt-1">{errors[`tr_${trI}_type`]}</p>
                           )}
@@ -2839,8 +2898,7 @@ export default function CreateTourPage() {
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                             {t("tourAdmin.transportation.pricingType")}
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={tr.pricingType}
                             onChange={(e) =>
                               updateTransportation(
@@ -2849,9 +2907,12 @@ export default function CreateTourPage() {
                                 e.target.value,
                               )
                             }
-                            placeholder={t("tourAdmin.transportation.placeholderPricingType")}
-                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                          />
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
+                            <option value="">{t("tourAdmin.transportation.placeholderPricingType")}</option>
+                            {PRICING_TYPE_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                       {/* Price + Requires Ticket + Ticket Info */}
@@ -2979,20 +3040,148 @@ export default function CreateTourPage() {
             </div>
           )}
 
-          {/* ── Step 7: Services (placeholder) ───────────────── */}
+          {/* ── Step 7: Services ───────────────────────────────── */}
           {currentStep === 6 && (
             <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-              <div className="text-center py-12 text-slate-400">
-                <Icon
-                  icon="heroicons:wrench-screwdriver"
-                  className="size-10 mx-auto mb-3 opacity-40"
-                />
-                <h2 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  {t("tourAdmin.services.sectionTitle")}
-                </h2>
-                <p className="text-sm">
-                  {t("tourAdmin.services.notAvailable")}
-                </p>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <Icon
+                    icon="heroicons:wrench-screwdriver"
+                    className="size-5 text-orange-500"
+                  />
+                  <h2 className="text-base font-semibold text-slate-900 dark:text-white">
+                    {t("tourAdmin.services.sectionTitle")}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={addService}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                  <Icon icon="heroicons:plus" className="size-4" />
+                  {t("tourAdmin.buttons.addService")}
+                </button>
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+                {t("tourAdmin.services.infoBanner")}
+              </p>
+
+              <div className="space-y-4">
+                {services.map((svc, svcI) => (
+                  <div
+                    key={svcI}
+                    className="border border-slate-200 dark:border-slate-700 rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          {svcI + 1}
+                        </div>
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                          {t("tourAdmin.services.serviceNumber", { number: svcI + 1 })}
+                        </h3>
+                      </div>
+                      {services.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeService(svcI)}
+                          aria-label={t("tourAdmin.services.removeService")}
+                          className="text-red-400 hover:text-red-600 transition-colors">
+                          <Icon icon="heroicons:trash" className="size-4" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="space-y-4">
+                      {/* Service Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                          {t("tourAdmin.services.serviceName")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={svc.serviceName}
+                          onChange={(e) => updateService(svcI, "serviceName", e.target.value)}
+                          placeholder={t("tourAdmin.services.placeholderServiceName")}
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`svc_${svcI}_name`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`svc_${svcI}_name`]}</p>
+                        )}
+                      </div>
+                      {/* Pricing Type + Price + Sale Price */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            {t("tourAdmin.services.pricingType")} <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            value={svc.pricingType}
+                            onChange={(e) => updateService(svcI, "pricingType", e.target.value)}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
+                            <option value="">{t("tourAdmin.services.placeholderPricingType")}</option>
+                            {PRICING_TYPE_OPTIONS.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                          {errors[`svc_${svcI}_pricingType`] && (
+                            <p className="text-red-500 text-xs mt-1">{errors[`svc_${svcI}_pricingType`]}</p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            {t("tourAdmin.services.price")}
+                          </label>
+                          <input
+                            type="number"
+                            min={0}
+                            value={svc.price}
+                            onChange={(e) => updateService(svcI, "price", e.target.value)}
+                            placeholder={t("tourAdmin.services.placeholderPrice")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            {t("tourAdmin.services.salePrice")}
+                          </label>
+                          <input
+                            type="number"
+                            min={0}
+                            value={svc.salePrice}
+                            onChange={(e) => updateService(svcI, "salePrice", e.target.value)}
+                            placeholder={t("tourAdmin.services.placeholderSalePrice")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        </div>
+                      </div>
+                      {/* Email + Contact */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            {t("tourAdmin.services.email")}
+                          </label>
+                          <input
+                            type="email"
+                            value={svc.email}
+                            onChange={(e) => updateService(svcI, "email", e.target.value)}
+                            placeholder={t("tourAdmin.services.placeholderEmail")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                            {t("tourAdmin.services.contactNumber")}
+                          </label>
+                          <input
+                            type="text"
+                            value={svc.contactNumber}
+                            onChange={(e) => updateService(svcI, "contactNumber", e.target.value)}
+                            placeholder={t("tourAdmin.services.placeholderContactNumber")}
+                            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}

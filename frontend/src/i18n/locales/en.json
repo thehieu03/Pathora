@@ -2244,6 +2244,9 @@
     "notFound": "Tour not found",
     "required": "Required",
     "invalidPrice": "Invalid price",
+    "validation": {
+      "invalidBasePrice": "Invalid base price"
+    },
     "invalidDuration": "Invalid duration",
     "basicInfo": {
       "sectionTitle": "Basic Tour Information",
@@ -2288,8 +2291,7 @@
     "addClassification": "Add",
     "classification": "Classification",
     "name": "Name",
-    "price": "Price ($)",
-    "salePrice": "Sale Price ($)",
+    "basePrice": "Base Price ($)",
     "durationDays": "Duration (days)",
     "description": "Description",
     "dayPlans": "Day Plans",
@@ -2386,9 +2388,11 @@
       "packageType": "Package Type",
       "durationDays": "Duration (Days)",
       "description": "Description",
+      "basePrice": "Base Price",
       "removePackage": "Remove package",
       "placeholderPackageType": "e.g. Standard, Luxury, Premium",
       "placeholderDuration": "e.g. 5",
+      "placeholderBasePrice": "e.g. 199",
       "placeholderDescription": "Describe what this package includes"
     },
     "itineraries": {
@@ -2484,7 +2488,21 @@
     },
     "services": {
       "sectionTitle": "Other Services",
-      "notAvailable": "Configuration for services will be available soon."
+      "infoBanner": "Add optional services like airport pickup, equipment rental, or special activities.",
+      "serviceNumber": "Service #{{number}}",
+      "removeService": "Remove service",
+      "serviceName": "Service Name",
+      "placeholderServiceName": "e.g. Airport Pickup, Kayak Rental",
+      "pricingType": "Pricing Type",
+      "placeholderPricingType": "Select pricing type",
+      "price": "Price ($)",
+      "placeholderPrice": "e.g. 30",
+      "salePrice": "Sale Price ($)",
+      "placeholderSalePrice": "e.g. 25",
+      "email": "Contact Email",
+      "placeholderEmail": "e.g. booking@example.com",
+      "contactNumber": "Contact Number",
+      "placeholderContactNumber": "e.g. +84-123-456-789"
     },
     "review": {
       "sectionTitle": "Review Tour Package",
@@ -2658,9 +2676,6 @@
     "location": "Location",
     "pricingDetails": "Pricing Details",
     "tourInstanceCode": "Tour Instance Code",
-    "adultPrice": "Adult price",
-    "childPrice": "Child price",
-    "infantPrice": "Infant price",
     "userPricingBreakdown": "Pricing breakdown",
     "depositRequiredNote": "Deposit is required to secure your booking. The remaining balance is due prior to departure.",
     "userNotAssigned": "Not assigned",

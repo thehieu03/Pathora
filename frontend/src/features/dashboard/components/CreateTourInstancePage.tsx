@@ -30,8 +30,6 @@ type FormState = {
   minParticipation: string;
   maxParticipation: string;
   basePrice: string;
-  sellingPrice: string;
-  operatingCost: string;
   depositPerPerson: string;
   location: string;
   confirmationDeadline: string;
@@ -55,8 +53,6 @@ const INITIAL_FORM: FormState = {
   minParticipation: "",
   maxParticipation: "",
   basePrice: "",
-  sellingPrice: "",
-  operatingCost: "",
   depositPerPerson: "",
   location: "",
   confirmationDeadline: "",
@@ -119,16 +115,6 @@ const createSchema = yup.object({
     .typeError("Base price is required")
     .min(0, "Base price cannot be negative")
     .required("Base price is required"),
-  sellingPrice: yup
-    .number()
-    .typeError("Selling price is required")
-    .min(0, "Selling price cannot be negative")
-    .required("Selling price is required"),
-  operatingCost: yup
-    .number()
-    .typeError("Operating cost is required")
-    .min(0, "Operating cost cannot be negative")
-    .required("Operating cost is required"),
   depositPerPerson: yup
     .number()
     .typeError("Deposit per person is required")
@@ -578,41 +564,6 @@ function InstanceDetailsStep({
             </div>
             <div className="space-y-2">
               <label className="text-sm font-semibold text-stone-700">
-                {t("tourInstance.form.sellingPrice", "Selling price")} *
-              </label>
-              <input
-                type="number"
-                min={0}
-                className={inputClassName}
-                value={form.sellingPrice}
-                onChange={(event) => updateField("sellingPrice", event.target.value)}
-              />
-              {errors.sellingPrice && (
-                <p className="text-xs text-red-600">{errors.sellingPrice}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700">
-                {t("tourInstance.form.operatingCost", "Operating cost")} *
-              </label>
-              <input
-                type="number"
-                min={0}
-                className={inputClassName}
-                value={form.operatingCost}
-                onChange={(event) =>
-                  updateField("operatingCost", event.target.value)
-                }
-              />
-              {errors.operatingCost && (
-                <p className="text-xs text-red-600">{errors.operatingCost}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-stone-700">
                 {t("tourInstance.form.depositPerPerson", "Deposit per person")} *
               </label>
               <input
@@ -1031,25 +982,14 @@ export function CreateTourInstancePage() {
 
     setForm((current) => {
       const next = { ...current };
-      const fallbackPrice = selectedClassification.price ?? 0;
-      const adultPrice = selectedClassification.adultPrice ?? fallbackPrice;
-      const childPrice = selectedClassification.childPrice ?? adultPrice;
-      const infantPrice = selectedClassification.infantPrice ?? 0;
+      const fallbackPrice = selectedClassification.basePrice ?? selectedClassification.price ?? 0;
 
       if (!next.title.trim()) {
         next.title = `${selectedTour?.tourName ?? "Tour"} - ${selectedClassification.name}`;
       }
 
       if (!next.basePrice) {
-        next.basePrice = adultPrice.toString();
-      }
-
-      if (!next.sellingPrice) {
-        next.sellingPrice = childPrice.toString();
-      }
-
-      if (!next.operatingCost) {
-        next.operatingCost = infantPrice.toString();
+        next.basePrice = fallbackPrice.toString();
       }
 
       return next;
@@ -1131,8 +1071,6 @@ export function CreateTourInstancePage() {
         minParticipation: Number(form.minParticipation),
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
-        sellingPrice: Number(form.sellingPrice),
-        operatingCost: Number(form.operatingCost),
         depositPerPerson: Number(form.depositPerPerson),
       };
 
@@ -1164,8 +1102,6 @@ export function CreateTourInstancePage() {
         minParticipation: Number(form.minParticipation),
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
-        sellingPrice: Number(form.sellingPrice),
-        operatingCost: Number(form.operatingCost),
         depositPerPerson: Number(form.depositPerPerson),
         location: form.location.trim() || undefined,
         confirmationDeadline: form.confirmationDeadline || undefined,

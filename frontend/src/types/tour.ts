@@ -105,9 +105,7 @@ export interface TourClassificationDto {
   id: string;
   tourId: string;
   name: string;
-  adultPrice?: number;
-  childPrice?: number;
-  infantPrice?: number;
+  basePrice?: number;
   price: number;
   salePrice: number;
   description: string;
@@ -284,7 +282,6 @@ export interface TourInstanceVm {
   maxParticipation: number;
   minParticipation: number;
   basePrice: number;
-  sellingPrice: number;
   depositPerPerson: number;
   status: string;
   instanceType: string;
@@ -329,8 +326,6 @@ export interface TourInstanceDto {
   maxParticipation: number;
   minParticipation: number;
   basePrice: number;
-  sellingPrice: number;
-  operatingCost: number;
   depositPerPerson: number;
   status: string;
   instanceType: string;

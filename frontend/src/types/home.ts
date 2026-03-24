@@ -5,8 +5,7 @@ export interface FeaturedTour {
   location: string | null;
   rating: number | null;
   durationDays: number;
-  price: number;
-  salePrice: number;
+  basePrice: number;
   classificationName: string | null;
 }
 
@@ -55,8 +54,7 @@ export interface SearchTour {
   shortDescription: string | null;
   location: string | null;
   durationDays: number;
-  price: number;
-  salePrice: number;
+  basePrice: number;
   classificationName: string | null;
   rating: number | null;
 }

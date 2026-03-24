@@ -2222,6 +2222,9 @@
     "notFound": "Không tìm thấy tour",
     "required": "Bắt buộc",
     "invalidPrice": "Giá không hợp lệ",
+    "validation": {
+      "invalidBasePrice": "Giá gốc không hợp lệ"
+    },
     "invalidDuration": "Thời lượng không hợp lệ",
     "basicInfo": {
       "sectionTitle": "Thông Tin Tour Cơ Bản",
@@ -2266,8 +2269,7 @@
     "addClassification": "Thêm",
     "classification": "Phân loại",
     "name": "Tên",
-    "price": "Giá ($)",
-    "salePrice": "Giá khuyến mãi ($)",
+    "basePrice": "Giá gốc ($)",
     "durationDays": "Thời gian (ngày)",
     "description": "Mô tả",
     "dayPlans": "Lịch trình theo ngày",
@@ -2364,9 +2366,11 @@
       "packageType": "Loại gói",
       "durationDays": "Thời gian (ngày)",
       "description": "Mô tả",
+      "basePrice": "Giá gốc",
       "removePackage": "Xóa gói",
       "placeholderPackageType": "VD: Tiêu chuẩn, Cao cấp, VIP",
       "placeholderDuration": "VD: 5",
+      "placeholderBasePrice": "VD: 199",
       "placeholderDescription": "Mô tả những gì gói này bao gồm"
     },
     "itineraries": {
@@ -2462,7 +2466,21 @@
     },
     "services": {
       "sectionTitle": "Dịch vụ khác",
-      "notAvailable": "Cấu hình dịch vụ sẽ sớm có."
+      "infoBanner": "Thêm dịch vụ tùy chọn như đón sân bay, thuê thiết bị, hoặc hoạt động đặc biệt.",
+      "serviceNumber": "Dịch vụ #{{number}}",
+      "removeService": "Xóa dịch vụ",
+      "serviceName": "Tên dịch vụ",
+      "placeholderServiceName": "VD: Đón sân bay, Thuê kayak",
+      "pricingType": "Loại giá",
+      "placeholderPricingType": "Chọn loại giá",
+      "price": "Giá ($)",
+      "placeholderPrice": "VD: 30",
+      "salePrice": "Giá khuyến mãi ($)",
+      "placeholderSalePrice": "VD: 25",
+      "email": "Email liên hệ",
+      "placeholderEmail": "VD: booking@example.com",
+      "contactNumber": "Số điện thoại",
+      "placeholderContactNumber": "VD: +84-123-456-789"
     },
     "review": {
       "sectionTitle": "Xem lại Tour Trọn Gói",
@@ -2636,9 +2654,6 @@
     "location": "Địa điểm",
     "pricingDetails": "Chi Tiết Giá",
     "tourInstanceCode": "Mã lịch khởi hành",
-    "adultPrice": "Giá người lớn",
-    "childPrice": "Giá trẻ em",
-    "infantPrice": "Giá em bé",
     "userPricingBreakdown": "Chi tiết giá",
     "depositRequiredNote": "* Cần đặt cọc để giữ chỗ. Phần thanh toán còn lại sẽ được thanh toán trước ngày khởi hành.",
     "userNotAssigned": "Chưa phân công",
