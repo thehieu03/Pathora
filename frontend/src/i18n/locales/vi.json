@@ -2341,11 +2341,15 @@
       "packageNumber": "Gói #{number}",
       "packageType": "Loại gói",
       "durationDays": "Thời gian (ngày)",
+      "adultPrice": "Giá người lớn",
+      "childPrice": "Giá trẻ em",
       "description": "Mô tả",
       "removePackage": "Xóa gói",
       "placeholderPackageType": "VD: Tiêu chuẩn, Cao cấp, VIP",
       "placeholderDuration": "VD: 5",
-      "placeholderDescription": "Mô tả những gì gói này bao gồm"
+      "placeholderDescription": "Mô tả những gì gói này bao gồm",
+      "placeholderAdultPrice": "VD: 150",
+      "placeholderChildPrice": "VD: 75"
     },
     "itineraries": {
       "selectPackageTitle": "Chọn Gói để Chỉnh sửa Lịch trình",
@@ -3184,6 +3188,102 @@
         "effectiveDateRequired": "Ngày có hiệu lực là bắt buộc",
         "saveFailed": "Không thể lưu cấu hình thuế"
       }
+    }
+  },
+  "adminTour": {
+    "list": {
+      "pageTitle": "Tours",
+      "pageSubtitle": "Quản lý các gói tour và lịch trình",
+      "addNewTour": "Tạo Tour Mới",
+      "searchPlaceholder": "Tìm kiếm theo tên hoặc mã...",
+      "statusFilter": {
+        "all": "Tất cả",
+        "active": "Đang hoạt động",
+        "inactive": "Không hoạt động",
+        "draft": "Nháp",
+        "pending": "Đang chờ"
+      },
+      "stat": {
+        "totalTours": "Tổng số Tour",
+        "active": "Đang hoạt động",
+        "inactive": "Không hoạt động",
+        "draft": "Nháp"
+      },
+      "column": {
+        "tour": "Tour",
+        "code": "Mã",
+        "status": "Trạng thái",
+        "updated": "Cập nhật",
+        "actions": "Hành động"
+      },
+      "error": {
+        "title": "Không thể tải danh sách tour",
+        "fallback": "Không thể tải dữ liệu tour. Vui lòng thử lại."
+      },
+      "empty": {
+        "title": "Không tìm thấy tour",
+        "description": "Chưa có tour nào. Tạo tour đầu tiên để bắt đầu."
+      },
+      "pagination": {
+        "showing": "Hiển thị",
+        "of": "trong",
+        "perPage": "/ trang"
+      },
+      "actions": {
+        "view": "Xem",
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "duplicate": "Sao chép",
+        "toggleActive": "Đổi trạng thái"
+      },
+      "confirmDelete": "Bạn có chắc muốn xóa tour này? Hành động này không thể hoàn tác.",
+      "deleteSuccess": "Tour đã được xóa thành công.",
+      "deleteError": "Không thể xóa tour. Vui lòng thử lại.",
+      "toggleSuccess": "Trạng thái tour đã được cập nhật.",
+      "toggleError": "Không thể cập nhật trạng thái tour. Vui lòng thử lại."
+    },
+    "create": {
+      "pageTitle": "Tạo Tour",
+      "pageSubtitle": "Nhập thông tin để tạo gói tour mới",
+      "saveDraft": "Lưu Nháp",
+      "publishTour": "Xuất bản Tour",
+      "savingDraft": "Đang lưu nháp...",
+      "publishing": "Đang xuất bản...",
+      "createSuccess": "Tour đã được tạo thành công!",
+      "createError": "Không thể tạo tour. Vui lòng kiểm tra lại các trường bắt buộc.",
+      "validationError": "Vui lòng sửa lỗi validation trước khi xuất bản."
+    },
+    "edit": {
+      "pageTitle": "Sửa Tour",
+      "pageSubtitle": "Cập nhật thông tin và nội dung tour",
+      "saveChanges": "Lưu Thay đổi",
+      "saving": "Đang lưu...",
+      "publish": "Xuất bản",
+      "unpublish": "Hạ Tour",
+      "saveSuccess": "Tour đã được cập nhật thành công!",
+      "saveError": "Không thể lưu tour. Vui lòng thử lại.",
+      "loadError": "Không thể tải dữ liệu tour.",
+      "confirmLeave": "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời đi?"
+    },
+    "form": {
+      "step": "Bước",
+      "of": "trong",
+      "next": "Tiếp theo",
+      "previous": "Quay lại",
+      "required": "Bắt buộc",
+      "optional": "Tùy chọn",
+      "charactersLeft": "Còn {{count}} ký tự",
+      "selectOption": "Chọn một tùy chọn"
+    },
+    "wizard": {
+      "basic": "Thông tin cơ bản",
+      "packages": "Gói Tour",
+      "itineraries": "Lịch trình",
+      "accommodations": "Lưu trú",
+      "locations": "Địa điểm",
+      "transportation": "Vận chuyển",
+      "services": "Dịch vụ",
+      "insurance": "Bảo hiểm"
     }
   }
 }

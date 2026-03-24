@@ -111,10 +111,18 @@ export const resolveErrorToast = (
   const response = error.response;
   if (response) {
     const data = response.data;
+
+    // Handle plain string response body (ASP.NET Core often returns this)
+    if (typeof data === "string" && data.trim().length > 0) {
+      const mappedKey = mapBackendErrorCode(data);
+      return { key: mappedKey };
+    }
+
     const firstError = data?.errors?.[0];
 
     if (firstError?.errorMessage || firstError?.message) {
-      const rawKey = firstError.errorMessage ?? firstError.message ?? "DEFAULT_ERROR";
+      const rawKey =
+        firstError.errorMessage ?? firstError.message ?? "DEFAULT_ERROR";
       const mappedKey = mapBackendErrorCode(rawKey);
       return {
         key: mappedKey,

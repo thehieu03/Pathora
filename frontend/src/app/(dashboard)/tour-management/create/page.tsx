@@ -1556,6 +1556,42 @@ export default function CreateTourPage() {
                       )}
                     </div>
 
+                    {/* Adult Price / Child Price */}
+                    <div className="mb-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                          {t("tourAdmin.packages.adultPrice")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={cls.price}
+                          onChange={(e) => updateClassification(clsI, "price", e.target.value)}
+                          placeholder={t("tourAdmin.packages.placeholderAdultPrice")}
+                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`cls_${clsI}_price`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_price`]}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
+                          {t("tourAdmin.packages.childPrice")} <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={cls.salePrice}
+                          onChange={(e) => updateClassification(clsI, "salePrice", e.target.value)}
+                          placeholder={t("tourAdmin.packages.placeholderChildPrice")}
+                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
+                        {errors[`cls_${clsI}_salePrice`] && (
+                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_salePrice`]}</p>
+                        )}
+                      </div>
+                    </div>
+
                     {/* VI / EN parallel columns */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* ── VI Column ── */}
