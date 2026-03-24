@@ -32,7 +32,43 @@ export function AdminCustomTourRequestDetailPage() {
     return t(option.labelKey, option.defaultLabel);
   };
 
-  const loadRequest = useCallback(async () => {
+  useEffect(() => {
+    if (!requestId) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const doLoad = async () => {
+      setLoading(true);
+      setErrorMessage("");
+
+      const response = await customTourRequestService.getPublicRequestDetail(requestId);
+      if (cancelled) return;
+
+      if (!response.success || !response.data) {
+        setErrorMessage(
+          t(
+            "customTourRequest.admin.detail.loadError",
+            "Unable to load custom tour request detail.",
+          ),
+        );
+        setLoading(false);
+        return;
+      }
+
+      setRequest(response.data);
+      setLoading(false);
+    };
+
+    void doLoad();
+    return () => {
+      cancelled = true;
+    };
+  }, [requestId, t, languageKey]);
+
+  const handleRetry = useCallback(async () => {
+    if (!requestId) return;
     setLoading(true);
     setErrorMessage("");
 
@@ -51,13 +87,6 @@ export function AdminCustomTourRequestDetailPage() {
     setRequest(response.data);
     setLoading(false);
   }, [requestId, t]);
-
-  useEffect(() => {
-    if (!requestId) {
-      return;
-    }
-    loadRequest();
-  }, [requestId, loadRequest, languageKey]);
 
   return (
     <div className="min-h-screen bg-slate-50 p-4 sm:p-6">
@@ -83,7 +112,7 @@ export function AdminCustomTourRequestDetailPage() {
             <p className="text-sm text-rose-700">{errorMessage}</p>
             <button
               type="button"
-              onClick={loadRequest}
+              onClick={handleRetry}
               className="mt-2 inline-flex items-center px-3 py-2 rounded-lg border border-rose-300 text-sm text-rose-700 hover:bg-rose-50"
             >
               {t("customTourRequest.actions.retry", "Retry")}
@@ -245,7 +274,7 @@ export function AdminCustomTourRequestDetailPage() {
                 requestId={request.id}
                 currentStatus={request.status}
                 onReviewSuccess={() => {
-                  loadRequest();
+                  void handleRetry();
                 }}
               />
             </div>

@@ -136,6 +136,7 @@ function TourDetailSkeleton() {
 
 /* ── Itinerary Day Card ────────────────────────────────────── */
 function ItineraryDayCard({ day }: { day: TourDayDto }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -152,7 +153,8 @@ function ItineraryDayCard({ day }: { day: TourDayDto }) {
           </div>
           <div className="flex flex-col items-start">
             <span className="text-sm font-bold text-[#05073c]">
-              {day.title}
+              {day.title?.trim() ||
+                t("landing.tourDetail.dayLabel", { day: day.dayNumber })}
             </span>
             {day.description && (
               <span className="text-xs text-gray-400">{day.description}</span>
@@ -165,13 +167,19 @@ function ItineraryDayCard({ day }: { day: TourDayDto }) {
         />
       </Button>
 
-      {expanded && day.activities.length > 0 && (
+      {expanded && (
         <div className="px-5 pb-5 flex flex-col gap-3">
-          {day.activities
-            .sort((a, b) => a.order - b.order)
-            .map((activity) => (
-              <ActivityItem key={activity.id} activity={activity} />
-            ))}
+          {day.activities.length > 0 ? (
+            [...day.activities]
+              .sort((a, b) => a.order - b.order)
+              .map((activity) => (
+                <ActivityItem key={activity.id} activity={activity} />
+              ))
+          ) : (
+            <p className="text-xs text-gray-500">
+              {t("landing.tourDetail.noActivitiesInDay")}
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -180,97 +188,169 @@ function ItineraryDayCard({ day }: { day: TourDayDto }) {
 
 /* ── Activity Item ─────────────────────────────────────────── */
 function ActivityItem({ activity }: { activity: TourDayActivityDto }) {
-  const timeStr = [activity.startTime, activity.endTime]
+  const { t, i18n } = useTranslation();
+
+  const formatDateTimeLabel = (value: string | null | undefined) => {
+    if (!value) {
+      return "";
+    }
+
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime()) && value.includes("T")) {
+      return new Intl.DateTimeFormat(i18n.language, {
+        weekday: "short",
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(parsed);
+    }
+
+    if (value.length >= 5) {
+      return value.slice(0, 5);
+    }
+
+    return value;
+  };
+
+  const timeStr = [
+    formatDateTimeLabel(activity.startTime),
+    formatDateTimeLabel(activity.endTime),
+  ]
     .filter(Boolean)
     .join(" – ");
 
+  const activityTypeLabel =
+    ActivityTypeMap[activity.activityType] ?? t("landing.tourDetail.activity");
+
   return (
     <div className="flex gap-3 pl-3 border-l-2 border-orange-200">
-      <div className="flex flex-col gap-1 flex-1">
+      <div className="flex flex-col gap-1.5 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
-            {ActivityTypeMap[activity.activityType] ?? "Activity"}
+            {activityTypeLabel}
           </span>
           {activity.isOptional && (
             <span className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">
-              Optional
+              {t("landing.tourDetail.optional")}
             </span>
           )}
-          {timeStr && (
-            <span className="text-[10px] text-gray-400">{timeStr}</span>
-          )}
+          {timeStr && <span className="text-[10px] text-gray-400">{timeStr}</span>}
         </div>
+
         <span className="text-xs font-semibold text-[#05073c]">
           {activity.title}
         </span>
+
         {activity.description && (
           <p className="text-[11px] text-gray-500 leading-relaxed">
             {activity.description}
           </p>
         )}
 
-        {/* Routes */}
-        {activity.routes.length > 0 && (
-          <div className="mt-1 flex flex-col gap-1">
-            {activity.routes
+        {activity.routes.length > 0 ? (
+          <div className="mt-1 flex flex-col gap-2">
+            {[...activity.routes]
               .sort((a, b) => a.order - b.order)
-              .map((route) => (
-                <div
-                  key={route.id}
-                  className="flex items-center gap-1.5 text-[10px] text-gray-500">
-                  <Icon
-                    icon="heroicons:arrow-right"
-                    className="size-3 text-gray-400"
-                  />
-                  <span className="font-medium">
-                    {TransportationTypeMap[route.transportationType] ??
-                      "Transport"}
-                  </span>
-                  {route.fromLocation && route.toLocation && (
-                    <span>
-                      {route.fromLocation.locationName} →{" "}
-                      {route.toLocation.locationName}
-                    </span>
-                  )}
-                  {route.durationMinutes && (
-                    <span className="text-gray-400">
-                      ({route.durationMinutes} min)
-                    </span>
-                  )}
-                </div>
-              ))}
+              .map((route) => {
+                const departureTime = formatDateTimeLabel(
+                  route.estimatedDepartureTime,
+                );
+                const arrivalTime = formatDateTimeLabel(route.estimatedArrivalTime);
+                const routeTime = [departureTime, arrivalTime]
+                  .filter(Boolean)
+                  .join(" → ");
+
+                return (
+                  <div
+                    key={route.id}
+                    className="rounded-lg bg-gray-50 px-2.5 py-2 text-[10px] text-gray-600">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Icon
+                        icon="heroicons:arrow-right"
+                        className="size-3 text-gray-400"
+                      />
+                      <span className="font-semibold">
+                        {TransportationTypeMap[route.transportationType] ??
+                          t("landing.tourDetail.transport")}
+                      </span>
+                      {route.fromLocation?.locationName &&
+                        route.toLocation?.locationName && (
+                          <span>
+                            {route.fromLocation.locationName} →{" "}
+                            {route.toLocation.locationName}
+                          </span>
+                        )}
+                      {route.durationMinutes != null && (
+                        <span className="text-gray-400">
+                          ({route.durationMinutes} {t("landing.tourDetail.minutes")})
+                        </span>
+                      )}
+                    </div>
+                    {routeTime && (
+                      <div className="mt-1 text-gray-500">
+                        {t("landing.tourDetail.routeTime")}: {routeTime}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
+        ) : (
+          <p className="text-[10px] text-gray-400 mt-0.5">
+            {t("landing.tourDetail.transportation.empty")}
+          </p>
         )}
 
-        {/* Accommodation */}
-        {activity.accommodation && (
-          <div className="mt-1 flex items-center gap-1.5 text-[10px] text-gray-500">
-            <Icon
-              icon="heroicons:building-office"
-              className="size-3 text-gray-400"
-            />
-            <span className="font-medium">
-              {activity.accommodation.accommodationName}
-            </span>
-            <span>
-              ({RoomTypeMap[activity.accommodation.roomType] ?? "Room"})
-            </span>
-            {activity.accommodation.mealsIncluded > 0 && (
-              <span className="text-orange-500">
-                • {MealTypeMap[activity.accommodation.mealsIncluded] ?? ""}
+        {activity.accommodation ? (
+          <div className="mt-1 rounded-lg bg-blue-50/50 border border-blue-100 px-2.5 py-2 text-[10px] text-gray-600">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Icon
+                icon="heroicons:building-office"
+                className="size-3 text-gray-400"
+              />
+              <span className="font-semibold">
+                {activity.accommodation.accommodationName}
               </span>
+              <span>
+                ({RoomTypeMap[activity.accommodation.roomType] ??
+                  t("landing.tourDetail.room")})
+              </span>
+              {activity.accommodation.mealsIncluded > 0 && (
+                <span className="text-orange-500">
+                  •
+                  {` ${MealTypeMap[activity.accommodation.mealsIncluded] ?? t("landing.tourDetail.meal")}`}
+                </span>
+              )}
+            </div>
+            {(activity.accommodation.checkInTime ||
+              activity.accommodation.checkOutTime) && (
+              <div className="mt-1 text-gray-500">
+                {t("landing.tourDetail.checkInOut")}: {" "}
+                {[activity.accommodation.checkInTime, activity.accommodation.checkOutTime]
+                  .map((timeValue) => formatDateTimeLabel(timeValue))
+                  .filter(Boolean)
+                  .join(" – ")}
+              </div>
+            )}
+            {activity.accommodation.address && (
+              <div className="mt-1 text-gray-500 line-clamp-2">
+                {t("landing.tourDetail.location")}: {activity.accommodation.address}
+              </div>
             )}
           </div>
-        )}
+        ) : null}
 
         {activity.note && (
           <p className="text-[10px] text-gray-400 italic mt-0.5">
             {activity.note}
           </p>
         )}
+
         {activity.estimatedCost != null && activity.estimatedCost > 0 && (
           <span className="text-[10px] text-orange-500 font-medium">
-            ~{formatCurrency(activity.estimatedCost)}
+            {t("landing.tourDetail.estimatedCost")}: ~
+            {formatCurrency(activity.estimatedCost)}
           </span>
         )}
       </div>
@@ -280,7 +360,7 @@ function ActivityItem({ activity }: { activity: TourDayActivityDto }) {
 
 /* ── Reviews Section ──────────────────────────────────────── */
 function ReviewsSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [reviews, setReviews] = useState<TopReview[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -294,7 +374,13 @@ function ReviewsSection() {
           setReviews(data ?? []);
         }
       } catch {
-        // Ignore errors - component will show empty state
+        if (!cancelled) {
+          setReviews([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
@@ -396,7 +482,9 @@ function ReviewsSection() {
                         {review.userName}
                       </span>
                       <span className="text-[10px] text-gray-400">
-                        {new Date(review.createdAt).toLocaleDateString("vi-VN")}
+                        {new Date(review.createdAt).toLocaleDateString(
+                          i18n.language === "vi" ? "vi-VN" : "en-US",
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center gap-0.5">
@@ -454,7 +542,13 @@ function ScheduledDeparturesSection({
           setInstances(filtered);
         }
       } catch {
-        // Ignore errors - component will show empty state
+        if (!cancelled) {
+          setInstances([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
@@ -635,7 +729,7 @@ export function TourDetailPage() {
   const [tour, setTour] = useState<TourDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [, setRefetchTrigger] = useState(0);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   useEffect(() => {
     if (!tourId) return;
@@ -667,7 +761,7 @@ export function TourDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [tourId, apiLanguage]);
+  }, [tourId, apiLanguage, refetchTrigger]);
 
   /* ── UI State ────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState<"overview" | "itinerary">(
@@ -682,7 +776,6 @@ export function TourDetailPage() {
   /* ── Derived values ──────────────────────────────────────── */
   const classifications = tour?.classifications ?? [];
   const selectedClassification = classifications[selectedPackage] ?? null;
-  const totalGuests = adults + children;
 
   const pricePerPerson =
     selectedClassification?.salePrice ?? selectedClassification?.price ?? 0;
@@ -702,7 +795,7 @@ export function TourDetailPage() {
   );
 
   const duration = selectedClassification
-    ? `${selectedClassification.durationDays} Days`
+    ? `${selectedClassification.durationDays} ${t("landing.tourDetail.days")}`
     : "";
 
   const aboutParagraphs = useMemo(
@@ -1100,7 +1193,7 @@ export function TourDetailPage() {
                     </h3>
                     {itineraryDays.length > 0 ? (
                       <div className="flex flex-col gap-3">
-                        {itineraryDays
+                        {[...itineraryDays]
                           .sort((a, b) => a.dayNumber - b.dayNumber)
                           .map((day) => (
                             <ItineraryDayCard key={day.id} day={day} />
@@ -1146,7 +1239,7 @@ export function TourDetailPage() {
                       {t("landing.tourDetail.selectPackage")}
                     </span>
                     <div className="flex flex-col gap-3 mt-1">
-                      {classifications.map((cls, i) => (
+                      {[...classifications].map((cls, i) => (
                         <Button
                           key={cls.id}
                           type="button"
@@ -1276,14 +1369,15 @@ export function TourDetailPage() {
                     />
                     <GuestRow
                       label={t("landing.tourDetail.children")}
-                      subtitle="< 12 years"
+                      subtitle={t("landing.tourDetail.childrenAge")}
+
                       value={children}
                       onDecrement={() => setChildren(Math.max(0, children - 1))}
                       onIncrement={() => setChildren(children + 1)}
                     />
                     <GuestRow
                       label={t("landing.tourDetail.infants")}
-                      subtitle="< 2 years"
+                      subtitle={t("landing.tourDetail.infantsAge")}
                       value={infants}
                       onDecrement={() => setInfants(Math.max(0, infants - 1))}
                       onIncrement={() => setInfants(infants + 1)}

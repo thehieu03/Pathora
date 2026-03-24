@@ -374,7 +374,7 @@ export default function PaymentStatusPage() {
             </h3>
             <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
               <li>Open your mobile banking app</li>
-              <li>Select "Scan QR" and scan the code above</li>
+              <li>Select &ldquo;Scan QR&rdquo; and scan the code above</li>
               <li>Verify the payment amount and content</li>
               <li>Confirm the payment</li>
               <li>Wait for confirmation (this page will update automatically)</li>

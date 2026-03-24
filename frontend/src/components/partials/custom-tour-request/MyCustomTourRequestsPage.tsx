@@ -26,7 +26,38 @@ export function MyCustomTourRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const loadRequests = useCallback(async () => {
+  useEffect(() => {
+    let cancelled = false;
+
+    const doLoad = async () => {
+      setLoading(true);
+      setErrorMessage("");
+
+      const response = await customTourRequestService.getMyRequests();
+      if (cancelled) return;
+
+      if (!response.success) {
+        setErrorMessage(
+          t(
+            "customTourRequest.myRequests.loadError",
+            "Failed to load your requests.",
+          ),
+        );
+        setLoading(false);
+        return;
+      }
+
+      setRequests(response.data ?? []);
+      setLoading(false);
+    };
+
+    void doLoad();
+    return () => {
+      cancelled = true;
+    };
+  }, [t, languageKey]);
+
+  const handleRetry = useCallback(async () => {
     setLoading(true);
     setErrorMessage("");
 
@@ -45,10 +76,6 @@ export function MyCustomTourRequestsPage() {
     setRequests(response.data ?? []);
     setLoading(false);
   }, [t]);
-
-  useEffect(() => {
-    loadRequests();
-  }, [loadRequests, languageKey]);
 
   const sortedRequests = useMemo(() => {
     return [...requests].sort((a, b) => {
@@ -98,7 +125,7 @@ export function MyCustomTourRequestsPage() {
             <p className="text-sm text-rose-700">{errorMessage}</p>
             <button
               type="button"
-              onClick={loadRequests}
+              onClick={handleRetry}
               className="mt-3 inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-rose-300 text-rose-700 text-sm hover:bg-rose-50"
             >
               {t("customTourRequest.actions.retry", "Retry")}
