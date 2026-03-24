@@ -102,7 +102,7 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
           {/* Price */}
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
-              {formatCurrency(tour.price)}
+              {formatCurrency(tour.basePrice)}
             </span>
             <span className="text-sm text-gray-400">
               {t("tourInstance.perPersonShort", "/person")}

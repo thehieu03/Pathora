@@ -45,6 +45,8 @@ import type {
   CancellationPolicyEndpoints,
   TaxConfigEndpoints,
 } from "./policy";
+import type { UserEndpoints } from "./user";
+import { USER } from "./user";
 
 // Re-export types for external consumers
 export type {
@@ -157,6 +159,7 @@ export {
   SITE_CONTENT,
   COMMUNICATION,
 } from "./admin";
+export { USER } from "./user";
 
 // Composite interface
 export interface ApiEndpoints {
@@ -183,6 +186,7 @@ export interface ApiEndpoints {
   DEPOSIT_POLICY: DepositPolicyEndpoints;
   CANCELLATION_POLICY: CancellationPolicyEndpoints;
   TAX_CONFIG: TaxConfigEndpoints;
+  USER: UserEndpoints;
 }
 
 // Main endpoint object
@@ -210,6 +214,7 @@ export const API_ENDPOINTS: ApiEndpoints = {
   ADMIN,
   SITE_CONTENT,
   COMMUNICATION,
+  USER,
 };
 
 // Backwards-compatible default export

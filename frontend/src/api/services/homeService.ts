@@ -32,52 +32,29 @@ const normalizeStatus = (status: string): string =>
 
 const normalizePublicInstance = (
   item: TourInstanceVm,
-): NormalizedTourInstanceVm => {
-  const registeredParticipants = item.currentParticipation ?? 0;
-  const basePrice = item.basePrice ?? 0;
-
-  return {
-    ...item,
-    location: item.location ?? null,
-    images: item.images ?? [],
-    currentParticipation: registeredParticipants,
-    basePrice,
-    depositPerPerson: item.depositPerPerson ?? 0,
-    status: normalizeStatus(item.status),
-    registeredParticipants,
-    price: basePrice,
-  };
-};
+): NormalizedTourInstanceVm => ({
+  ...item,
+  location: item.location ?? null,
+  images: item.images ?? [],
+  currentParticipation: item.currentParticipation ?? 0,
+  maxParticipation: item.maxParticipation ?? 0,
+  status: normalizeStatus(item.status),
+  registeredParticipants: item.currentParticipation ?? 0,
+});
 
 const normalizePublicInstanceDetail = (
   item: TourInstanceDto,
-): NormalizedTourInstanceDto => {
-  const registeredParticipants = item.currentParticipation ?? 0;
-  const basePrice = item.basePrice ?? 0;
-
-  return {
-    ...item,
-    location: item.location ?? null,
-    images: item.images ?? [],
-    currentParticipation: registeredParticipants,
-    maxParticipation: item.maxParticipation ?? 0,
-    minParticipation: item.minParticipation ?? 0,
-    basePrice,
-    depositPerPerson: item.depositPerPerson ?? 0,
-    includedServices: item.includedServices ?? [],
-    dynamicPricing: item.dynamicPricing ?? [],
-    guide: item.guide
-      ? {
-          ...item.guide,
-          languages: item.guide.languages ?? [],
-          experience: item.guide.experience ?? null,
-        }
-      : null,
-    status: normalizeStatus(item.status),
-    registeredParticipants,
-    price: basePrice,
-  };
-};
+): NormalizedTourInstanceDto => ({
+  ...item,
+  location: item.location ?? null,
+  images: item.images ?? [],
+  currentParticipation: item.currentParticipation ?? 0,
+  maxParticipation: item.maxParticipation ?? 0,
+  includedServices: item.includedServices ?? [],
+  managers: item.managers ?? [],
+  status: normalizeStatus(item.status),
+  registeredParticipants: item.currentParticipation ?? 0,
+});
 
 export const homeService = {
   getFeaturedTours: async (limit = 8, language?: string) => {

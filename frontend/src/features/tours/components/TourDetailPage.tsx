@@ -665,7 +665,7 @@ function ScheduledDeparturesSection({
                       {/* Price */}
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-orange-500">
-                          {formatCurrency(instance.price)}
+                          {formatCurrency(instance.basePrice)}
                         </span>
                         <span className="text-[10px] text-gray-400">
                           {t("tourInstance.perPersonShort")}

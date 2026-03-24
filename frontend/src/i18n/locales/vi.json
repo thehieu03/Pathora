@@ -2591,6 +2591,8 @@
     "tourInformation": "Thông Tin Tour",
     "tourGuide": "Hướng Dẫn Viên",
     "noGuide": "Chưa có hướng dẫn viên",
+    "guidesAndManagers": "Hướng Dẫn Viên & Quản Lý",
+    "noGuidesOrManagers": "Chưa có hướng dẫn viên hoặc quản lý",
     "languages": "Ngôn Ngữ",
     "experience": "Kinh Nghiệm",
     "includedServices": "Dịch Vụ Bao Gồm",

@@ -4,42 +4,44 @@ import { ApiResponse } from "@/types/home";
 import {
   DynamicPricingDto,
   DynamicPricingResolutionDto,
-  ImageDto,
   NormalizedTourInstanceDto,
   NormalizedTourInstanceVm,
   PaginatedResponse,
   TourInstanceDto,
-  TourInstanceGuideDto,
   TourInstanceStats,
   TourInstanceVm,
 } from "@/types/tour";
 import { extractResult } from "@/utils/apiResponse";
 
-interface BaseTourInstancePayload {
+export interface CreateTourInstancePayload {
+  tourId: string;
+  classificationId: string;
   title: string;
+  instanceType: number;
   startDate: string;
   endDate: string;
-  minParticipation: number;
   maxParticipation: number;
-  basePrice: number;
-  depositPerPerson: number;
   location?: string;
   confirmationDeadline?: string;
   includedServices?: string[];
-  guide?: TourInstanceGuideDto;
-  dynamicPricing?: DynamicPricingDto[];
-  thumbnail?: ImageDto | null;
-  images?: ImageDto[];
+  guideUserIds?: string[];
+  managerUserIds?: string[];
 }
 
-export interface CreateTourInstancePayload extends BaseTourInstancePayload {
-  tourId: string;
-  classificationId: string;
-  instanceType: string | number;
-}
-
-export interface UpdateTourInstancePayload extends BaseTourInstancePayload {
+export interface UpdateTourInstancePayload {
   id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  maxParticipation: number;
+  basePrice: number;
+  location?: string;
+  confirmationDeadline?: string;
+  includedServices?: string[];
+  guideUserIds?: string[];
+  managerUserIds?: string[];
+  thumbnailUrl?: string | null;
+  imageUrls?: string[];
 }
 
 const normalizeStatus = (status: string): string =>
@@ -48,91 +50,29 @@ const normalizeStatus = (status: string): string =>
 const normalizeStringArray = (values?: string[]): string[] =>
   (values ?? []).map((value) => value.trim()).filter(Boolean);
 
-const normalizeGuide = (
-  guide?: TourInstanceGuideDto,
-): TourInstanceGuideDto | undefined => {
-  if (!guide) {
-    return undefined;
-  }
-
-  const name = guide.name?.trim();
-  if (!name) {
-    return undefined;
-  }
-
-  return {
-    name,
-    avatarUrl: guide.avatarUrl?.trim() || null,
-    languages: normalizeStringArray(guide.languages),
-    experience: guide.experience?.trim() || null,
-  };
-};
-
-const stripOptionalFields = <T extends Record<string, unknown>>(payload: T): T =>
-  Object.fromEntries(
-    Object.entries(payload).filter(([, value]) => {
-      if (value === undefined || value === null) {
-        return false;
-      }
-
-      if (typeof value === "string") {
-        return value.trim().length > 0;
-      }
-
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-
-      return true;
-    }),
-  ) as T;
-
-const normalizeInstanceVm = (item: TourInstanceVm): NormalizedTourInstanceVm => {
-  const registeredParticipants = item.currentParticipation ?? 0;
-  const basePrice = item.basePrice ?? 0;
-
-  return {
-    ...item,
-    location: item.location ?? null,
-    images: item.images ?? [],
-    currentParticipation: registeredParticipants,
-    basePrice,
-    depositPerPerson: item.depositPerPerson ?? 0,
-    status: normalizeStatus(item.status),
-    registeredParticipants,
-    price: basePrice,
-  };
-};
+const normalizeInstanceVm = (item: TourInstanceVm): NormalizedTourInstanceVm => ({
+  ...item,
+  location: item.location ?? null,
+  images: item.images ?? [],
+  currentParticipation: item.currentParticipation ?? 0,
+  maxParticipation: item.maxParticipation ?? 0,
+  status: normalizeStatus(item.status),
+  registeredParticipants: item.currentParticipation ?? 0,
+});
 
 const normalizeInstanceDetail = (
   item: TourInstanceDto,
-): NormalizedTourInstanceDto => {
-  const registeredParticipants = item.currentParticipation ?? 0;
-  const basePrice = item.basePrice ?? 0;
-
-  return {
-    ...item,
-    location: item.location ?? null,
-    images: item.images ?? [],
-    currentParticipation: registeredParticipants,
-    maxParticipation: item.maxParticipation ?? 0,
-    minParticipation: item.minParticipation ?? 0,
-    basePrice,
-    depositPerPerson: item.depositPerPerson ?? 0,
-    includedServices: item.includedServices ?? [],
-    dynamicPricing: item.dynamicPricing ?? [],
-    guide: item.guide
-      ? {
-          ...item.guide,
-          languages: item.guide.languages ?? [],
-          experience: item.guide.experience ?? null,
-        }
-      : null,
-    status: normalizeStatus(item.status),
-    registeredParticipants,
-    price: basePrice,
-  };
-};
+): NormalizedTourInstanceDto => ({
+  ...item,
+  location: item.location ?? null,
+  images: item.images ?? [],
+  currentParticipation: item.currentParticipation ?? 0,
+  maxParticipation: item.maxParticipation ?? 0,
+  includedServices: item.includedServices ?? [],
+  managers: item.managers ?? [],
+  status: normalizeStatus(item.status),
+  registeredParticipants: item.currentParticipation ?? 0,
+});
 
 export const tourInstanceService = {
   getAllInstances: async (
@@ -215,19 +155,20 @@ export const tourInstanceService = {
   },
 
   createInstance: async (data: CreateTourInstancePayload) => {
-    const payload = stripOptionalFields({
-      ...data,
-      location: data.location?.trim(),
-      confirmationDeadline: data.confirmationDeadline || undefined,
+    const payload = {
+      tourId: data.tourId,
+      classificationId: data.classificationId,
+      title: data.title.trim(),
+      instanceType: data.instanceType,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      maxParticipation: data.maxParticipation,
+      location: data.location?.trim() || null,
+      confirmationDeadline: data.confirmationDeadline || null,
       includedServices: normalizeStringArray(data.includedServices),
-      guide: normalizeGuide(data.guide),
-      dynamicPricing:
-        data.dynamicPricing && data.dynamicPricing.length > 0
-          ? data.dynamicPricing
-          : undefined,
-      thumbnail: data.thumbnail ?? undefined,
-      images: data.images && data.images.length > 0 ? data.images : undefined,
-    });
+      guideUserIds: data.guideUserIds ?? [],
+      managerUserIds: data.managerUserIds ?? [],
+    };
 
     const response = await api.post<ApiResponse<string>>(
       API_ENDPOINTS.TOUR_INSTANCE.CREATE,
@@ -237,19 +178,21 @@ export const tourInstanceService = {
   },
 
   updateInstance: async (data: UpdateTourInstancePayload) => {
-    const payload = stripOptionalFields({
-      ...data,
-      location: data.location?.trim(),
-      confirmationDeadline: data.confirmationDeadline || undefined,
+    const payload = {
+      id: data.id,
+      title: data.title.trim(),
+      startDate: data.startDate,
+      endDate: data.endDate,
+      maxParticipation: data.maxParticipation,
+      basePrice: data.basePrice,
+      location: data.location?.trim() || null,
+      confirmationDeadline: data.confirmationDeadline || null,
       includedServices: normalizeStringArray(data.includedServices),
-      guide: normalizeGuide(data.guide),
-      dynamicPricing:
-        data.dynamicPricing && data.dynamicPricing.length > 0
-          ? data.dynamicPricing
-          : undefined,
-      thumbnail: data.thumbnail ?? undefined,
-      images: data.images && data.images.length > 0 ? data.images : undefined,
-    });
+      guideUserIds: data.guideUserIds ?? [],
+      managerUserIds: data.managerUserIds ?? [],
+      thumbnailUrl: data.thumbnailUrl?.trim() || null,
+      imageUrls: normalizeStringArray(data.imageUrls),
+    };
 
     const response = await api.put<ApiResponse<string>>(
       API_ENDPOINTS.TOUR_INSTANCE.UPDATE,

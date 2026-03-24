@@ -2613,6 +2613,8 @@
     "tourInformation": "Tour Information",
     "tourGuide": "Tour Guide",
     "noGuide": "No guide assigned",
+    "guidesAndManagers": "Guides & Managers",
+    "noGuidesOrManagers": "No guides or managers assigned",
     "languages": "Languages",
     "experience": "Experience",
     "includedServices": "Included Services",

@@ -91,11 +91,9 @@ function StatusBadge({ status }: { status: string }) {
 function ParticipantsCell({
   registered,
   max,
-  min,
 }: {
   registered: number;
   max: number;
-  min: number;
 }) {
   const pct = max > 0 ? (registered / max) * 100 : 0;
   return (
@@ -112,7 +110,6 @@ function ParticipantsCell({
           style={{ width: `${Math.min(pct, 100)}%` }}
         />
       </div>
-      <p className="text-[11px] text-stone-400">Min: {min}</p>
     </div>
   );
 }
@@ -475,14 +472,13 @@ export function TourInstanceListPage() {
                           <ParticipantsCell
                             registered={inst.currentParticipation}
                             max={inst.maxParticipation}
-                            min={inst.minParticipation}
                           />
                         </td>
 
                         {/* Price */}
                         <td className="px-6 py-5">
                           <p className="text-sm font-semibold text-stone-900 tracking-tight">
-                            {formatCurrency(inst.price)}
+                            {formatCurrency(inst.basePrice)}
                           </p>
                           <p className="text-[11px] text-stone-400">{t("tourInstance.perPerson", "per person")}</p>
                         </td>

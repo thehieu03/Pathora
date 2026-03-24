@@ -264,6 +264,27 @@ export const LocationTypeMap: Record<number, string> = {
 
 // ── Tour Instance Types ────────────────────────────────────────
 
+export interface TourInstanceManagerDto {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string | null;
+  role: "Guide" | "Manager";
+}
+
+export interface DynamicPricingDto {
+  minParticipants: number;
+  maxParticipants: number;
+  pricePerPerson: number;
+}
+
+export interface DynamicPricingResolutionDto {
+  resolvedPricePerPerson: number;
+  pricingSource: "instance" | "classification" | "fallback";
+  minParticipants: number | null;
+  maxParticipants: number | null;
+}
+
 export interface TourInstanceVm {
   id: string;
   tourId: string;
@@ -280,31 +301,9 @@ export interface TourInstanceVm {
   durationDays: number;
   currentParticipation: number;
   maxParticipation: number;
-  minParticipation: number;
   basePrice: number;
-  depositPerPerson: number;
   status: string;
   instanceType: string;
-}
-
-export interface TourInstanceGuideDto {
-  name: string;
-  avatarUrl: string | null;
-  languages: string[];
-  experience: string | null;
-}
-
-export interface DynamicPricingDto {
-  minParticipants: number;
-  maxParticipants: number;
-  pricePerPerson: number;
-}
-
-export interface DynamicPricingResolutionDto {
-  resolvedPricePerPerson: number;
-  pricingSource: "instance" | "classification" | "fallback";
-  minParticipants: number | null;
-  maxParticipants: number | null;
 }
 
 export interface TourInstanceDto {
@@ -324,9 +323,7 @@ export interface TourInstanceDto {
   durationDays: number;
   currentParticipation: number;
   maxParticipation: number;
-  minParticipation: number;
   basePrice: number;
-  depositPerPerson: number;
   status: string;
   instanceType: string;
   cancellationReason?: string | null;
@@ -334,18 +331,15 @@ export interface TourInstanceDto {
   totalBookings: number;
   revenue: number;
   confirmationDeadline: string | null;
-  guide: TourInstanceGuideDto | null;
+  managers: TourInstanceManagerDto[];
   includedServices: string[];
-  dynamicPricing: DynamicPricingDto[];
 }
 
 export type NormalizedTourInstanceVm = TourInstanceVm & {
-  price: number;
   registeredParticipants: number;
 };
 
 export type NormalizedTourInstanceDto = TourInstanceDto & {
-  price: number;
   registeredParticipants: number;
 };
 
@@ -354,6 +348,22 @@ export interface TourInstanceStats {
   available: number;
   confirmed: number;
   soldOut: number;
+}
+
+export interface UserInfo {
+  id: string;
+  username?: string;
+  email: string;
+  fullName?: string;
+  avatar?: string;
+  forcePasswordChange?: boolean;
+  isDeleted?: boolean;
+}
+
+export interface DepositPolicyDisplayDto {
+  depositType: string;
+  depositValue: number;
+  description: string;
 }
 
 export const TourInstanceStatusMap: Record<string, { label: string; bg: string; text: string; dot: string }> = {

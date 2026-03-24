@@ -456,23 +456,40 @@ export function TourInstancePublicDetailPage() {
                     <article className="rounded-xl border border-slate-200 bg-white p-5">
                       <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                          <Icon icon="heroicons:user" className="size-5 text-orange-500" />
-                        {t("tourInstance.guide", "Guide")}
+                        {t("tourInstance.guidesAndManagers", "Guides & Managers")}
                       </h2>
-                      {data.guide ? (
+                      {data.managers && data.managers.length > 0 ? (
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
-                          <p className="font-semibold text-slate-900">{data.guide.name}</p>
-                          <p>
-                            {t("tourInstance.languages", "Languages")}: {" "}
-                            {data.guide.languages.join(", ") || "—"}
-                          </p>
-                          <p>
-                            {t("tourInstance.experience", "Experience")}: {" "}
-                            {data.guide.experience || "—"}
-                          </p>
+                          {data.managers.map((manager) => (
+                            <div key={manager.id} className="flex items-center gap-2">
+                              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                                manager.role === "Guide"
+                                  ? "bg-orange-100 text-orange-700"
+                                  : "bg-blue-100 text-blue-700"
+                              }`}>
+                                {manager.role}
+                              </span>
+                              {manager.userAvatar ? (
+                                <img
+                                  src={manager.userAvatar}
+                                  alt={manager.userName}
+                                  className="size-6 rounded-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <Icon icon="heroicons:user-circle" className="size-6 text-stone-400" />
+                              )}
+                              <span className="font-semibold text-slate-900">
+                                {manager.userName}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <p className="mt-4 text-sm text-slate-500">
-                          {t("tourInstance.userNotAssigned", "Not assigned")}
+                          {t("tourInstance.noGuidesOrManagers", "No guides or managers assigned")}
                         </p>
                       )}
                     </article>
@@ -513,40 +530,17 @@ export function TourInstancePublicDetailPage() {
 
               {activeTab === "pricing" && (
                 <div className="flex flex-col gap-6">
-                  {/* Dynamic Pricing Table */}
-                   <article className="rounded-xl border border-slate-200 bg-white p-5">
+                  <article className="rounded-xl border border-slate-200 bg-white p-5">
                     <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                       <Icon icon="heroicons:document-currency-dollar" className="size-5 text-orange-500" />
-                      {t("tourInstance.dynamicPricing", "Dynamic Pricing")}
+                      {t("tourInstance.basePrice", "Base Price")}
                     </h2>
-                    {data.dynamicPricing.length > 0 ? (
-                      <div className="mt-4 overflow-x-auto">
-                        <table className="min-w-full text-sm">
-                          <thead>
-                            <tr className="border-b border-slate-200 text-left text-slate-500">
-                              <th className="px-2 py-2">{t("tourInstance.form.minParticipants", "Min participants")}</th>
-                              <th className="px-2 py-2">{t("tourInstance.form.maxParticipants", "Max participants")}</th>
-                              <th className="px-2 py-2">{t("tourInstance.form.pricePerPerson", "Price per person")}</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {data.dynamicPricing.map((tier, index) => (
-                              <tr
-                                key={`${tier.minParticipants}-${tier.maxParticipants}-${index}`}
-                                className="border-b border-slate-100 hover:bg-orange-50/30 transition-colors">
-                                <td className="px-2 py-3">{tier.minParticipants}</td>
-                                <td className="px-2 py-3">{tier.maxParticipants}</td>
-                                <td className="px-2 py-3 font-bold text-orange-600">
-                                  {formatCurrency(tier.pricePerPerson, formatterLocale)}
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    ) : (
-                      <p className="mt-4 text-sm text-slate-500">—</p>
-                    )}
+                    <p className="mt-3 text-2xl font-bold text-orange-500">
+                      {formatCurrency(data.basePrice, formatterLocale)}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {t("tourInstance.pricingNote", "Pricing is calculated based on the number of participants. Final price may vary.")}
+                    </p>
                   </article>
                 </div>
               )}
@@ -617,18 +611,18 @@ export function TourInstancePublicDetailPage() {
                 )}
               </div>
 
-              {/* Deposit Required */}
+              {/* Base Price */}
               <div className="bg-orange-50/50 rounded-xl p-4 flex flex-col gap-1 border border-orange-100/50">
                 <span className="text-xs text-orange-600 font-semibold uppercase tracking-wide">
-                  {t("tourInstance.form.depositPerPerson", "Deposit Required")}
+                  {t("tourInstance.form.basePrice", "Base Price per person")}
                 </span>
                 <span className="text-[28px] font-black text-orange-500 leading-tight">
-                  {formatCurrency(data.depositPerPerson, formatterLocale)}
+                  {formatCurrency(data.basePrice, formatterLocale)}
                 </span>
                 <span className="text-[10px] text-gray-500 leading-snug mt-1">
                   {t(
-                    "tourInstance.depositRequiredNote",
-                    "Deposit is required to secure your booking. The remaining balance is due prior to departure.",
+                    "tourInstance.basePriceNote",
+                    "Price per person. Total may vary based on final participant count.",
                   )}
                 </span>
               </div>
@@ -656,7 +650,7 @@ export function TourInstancePublicDetailPage() {
                           startDate: data.startDate || "",
                           endDate: data.endDate || "",
                           location: data.location || "",
-                          depositPerPerson: String(data.depositPerPerson),
+                          basePrice: String(data.basePrice),
                           adults: String(adults),
                           children: String(children),
                           infants: String(infants),
