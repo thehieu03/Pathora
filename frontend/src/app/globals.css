@@ -116,6 +116,36 @@ body.bold-theme {
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+/* ─── Tour Detail Page — Design Tokens ─── */
+:root {
+  /* Tour detail — warm deep navy (replaces hardcoded #05073c) */
+  --tour-dark: #05073c;
+  --tour-dark-secondary: #1a1a4e;
+
+  /* Tour detail — text hierarchy */
+  --tour-heading: #05073c;
+  --tour-body: #4a5568;
+  --tour-caption: #9ca3af;
+  --tour-divider: #f3f4f6;
+
+  /* Tour detail — premium surfaces */
+  --tour-surface: #ffffff;
+  --tour-surface-raised: #fafaf8;
+  --tour-surface-muted: #f7f6f3;
+
+  /* Tour detail — warm tinted shadows */
+  --shadow-warm-sm: 0 2px 8px rgba(201, 135, 58, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-warm-md: 0 8px 32px rgba(201, 135, 58, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-warm-lg: 0 16px 48px rgba(201, 135, 58, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* Tour detail — glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.5);
+
+  /* Spotlight border effect */
+  --spotlight-glow: 0 0 0 2px rgba(249, 115, 22, 0.35);
+}
+
 /* ─── Tailwind Theme Mapping ─── */
 @theme inline {
   --color-background: var(--background);
@@ -353,6 +383,44 @@ img, picture, video, canvas {
   100% { background-position: 200% 0; }
 }
 
+/* ─── Tour Detail — Scroll Reveal ─── */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes reveal-scale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes reveal-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@utility animate-reveal-up {
+  animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@utility animate-reveal-scale {
+  animation: reveal-scale 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@utility animate-reveal-right {
+  animation: reveal-right 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger delays */
+@utility stagger-1 { animation-delay: 100ms; }
+@utility stagger-2 { animation-delay: 200ms; }
+@utility stagger-3 { animation-delay: 300ms; }
+@utility stagger-4 { animation-delay: 400ms; }
+@utility stagger-5 { animation-delay: 500ms; }
+@utility stagger-6 { animation-delay: 600ms; }
+@utility stagger-7 { animation-delay: 700ms; }
+@utility stagger-8 { animation-delay: 800ms; }
+
 /* ─── Awwwards-tier Blur-Fade Animations ─── */
 @utility animate-blur-in {
   animation: blur-fade-in 0.7s cubic-bezier(0.32, 0.72, 0, 1) forwards;
@@ -413,6 +481,16 @@ img, picture, video, canvas {
 ::selection {
   background: var(--accent-muted);
   color: var(--accent);
+}
+
+/* ─── Scroll Reveal — Initial hidden state ─── */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.reveal-on-scroll.revealed {
+  animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* ─── Grain Overlay (Minimalist Texture) ─── */
