@@ -12,7 +12,7 @@ import {
   useRegisterMutation,
 } from "@/store/api/auth/authApiSlice";
 import { GOOGLE_LOGIN_URL } from "@/configs/apiGateway";
-import { resolveLoginDestination, isAdminPortal, hasAdminRole } from "@/utils/authRouting";
+import { resolveLoginDestination } from "@/utils/authRouting";
 import { handleApiError } from "@/utils/apiResponse";
 
 type AuthView = "signup" | "login" | "forgot";
