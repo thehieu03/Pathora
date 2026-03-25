@@ -306,6 +306,7 @@ appsettings.Development.json
 
 src/Application/Common/Repositories/
 docs/plans/
+.worktrees/
 
 # Docker volumes (keep structure, ignore contents)
 volume/minio/*
