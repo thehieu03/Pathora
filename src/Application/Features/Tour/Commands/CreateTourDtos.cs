@@ -4,6 +4,7 @@ using Domain.Enums;
 namespace Application.Features.Tour.Commands;
 
 public sealed record ClassificationDto(
+    Guid? Id,
     string Name,
     string Description,
     decimal BasePrice,
@@ -15,6 +16,7 @@ public sealed record ClassificationDto(
 );
 
 public sealed record DayPlanDto(
+    Guid? Id,
     int DayNumber,
     string Title,
     string? Description,
@@ -23,6 +25,7 @@ public sealed record DayPlanDto(
 );
 
 public sealed record ActivityDto(
+    Guid? Id,
     string ActivityType,
     string Title,
     string? Description,
@@ -33,20 +36,23 @@ public sealed record ActivityDto(
     string? EndTime,
     List<RouteDto> Routes,
     AccommodationDto? Accommodation,
-    Dictionary<string, TourDayActivityTranslationData>? Translations = null
+    Dictionary<string, TourDayActivityTranslationData>? Translations = null,
+    List<string>? LinkToResources = null
 );
 
 public sealed record RouteDto(
-    string FromLocationName,
-    string ToLocationName,
     string TransportationType,
-    string? TransportationName,
-    int? DurationMinutes,
-    string? PricingType,
-    decimal? Price,
-    bool RequiresIndividualTicket,
-    string? TicketInfo,
-    string? Note,
+    string? FromLocationName = null,
+    string? ToLocationName = null,
+    Guid? FromLocationId = null,
+    Guid? ToLocationId = null,
+    string? TransportationName = null,
+    int? DurationMinutes = null,
+    string? PricingType = null,
+    decimal? Price = null,
+    bool RequiresIndividualTicket = false,
+    string? TicketInfo = null,
+    string? Note = null,
     Dictionary<string, TourPlanLocationTranslationData>? Translations = null,
     Dictionary<string, TourPlanRouteTranslationData>? RouteTranslations = null
 );
@@ -96,15 +102,25 @@ public sealed record ServiceDto(
 );
 
 public sealed record TransportationDto(
-    string FromLocationName,
-    string ToLocationName,
     string TransportationType,
+    string? FromLocationName = null,
+    string? ToLocationName = null,
+    Guid? FromLocationId = null,
+    Guid? ToLocationId = null,
+    string? TransportationName = null,
+    int? DurationMinutes = null,
+    string? PricingType = null,
+    decimal? Price = null,
+    bool RequiresIndividualTicket = false,
+    string? TicketInfo = null,
+    string? Note = null,
+    Dictionary<string, TourTransportationTranslationData>? Translations = null
+);
+
+public sealed record TourTransportationTranslationData(
+    string? FromLocationName,
+    string? ToLocationName,
     string? TransportationName,
-    int? DurationMinutes,
-    string? PricingType,
-    decimal? Price,
-    bool RequiresIndividualTicket,
     string? TicketInfo,
-    string? Note,
-    Dictionary<string, TourPlanRouteTranslationData>? Translations = null
+    string? Note
 );
