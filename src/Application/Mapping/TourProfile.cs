@@ -25,7 +25,12 @@ public sealed class TourProfile : Profile
 
         CreateMap<TourDayEntity, TourDayDto>();
 
-        CreateMap<TourDayActivityEntity, TourDayActivityDto>();
+        CreateMap<TourDayActivityEntity, TourDayActivityDto>()
+            .ForCtorParam(
+                nameof(TourDayActivityDto.linkToResources),
+                opt => opt.MapFrom(src => src.ResourceLinks
+                    .OrderBy(l => l.Order)
+                    .Select(l => l.Url).ToList()));
 
         CreateMap<TourInsuranceEntity, TourInsuranceDto>();
 
@@ -34,5 +39,7 @@ public sealed class TourProfile : Profile
         CreateMap<TourPlanRouteEntity, TourPlanRouteDto>();
 
         CreateMap<TourPlanAccommodationEntity, TourPlanAccommodationDto>();
+
+        CreateMap<TourResourceEntity, TourResourceDto>();
     }
 }
