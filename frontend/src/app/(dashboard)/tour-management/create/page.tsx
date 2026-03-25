@@ -45,6 +45,25 @@ interface ActivityForm {
   startTime: string;
   endTime: string;
   linkToResources: string[];
+  routes: ActivityRouteForm[];
+}
+
+interface ActivityRouteForm {
+  id: string;
+  fromLocationIndex: string;
+  fromLocationCustom: string;
+  enFromLocationCustom: string;
+  toLocationIndex: string;
+  toLocationCustom: string;
+  enToLocationCustom: string;
+  transportationType: string;
+  enTransportationType: string;
+  transportationName: string;
+  enTransportationName: string;
+  durationMinutes: string;
+  price: string;
+  note: string;
+  enNote: string;
 }
 
 interface DayPlanForm {
@@ -147,12 +166,26 @@ interface TranslationFields {
 
 /* ── Constants ──────────────────────────────────────────────── */
 const PACKAGE_TYPE_OPTIONS = [
-  { value: "Standard", label: "Standard" },
-  { value: "Premium", label: "Premium" },
-  { value: "Luxury", label: "Luxury" },
-  { value: "Budget", label: "Budget" },
-  { value: "VIP", label: "VIP" },
+  { key: "standard", vi: "Tiêu chuẩn", en: "Standard" },
+  { key: "premium", vi: "Cao cấp", en: "Premium" },
+  { key: "luxury", vi: "Sang trọng", en: "Luxury" },
+  { key: "budget", vi: "Tiết kiệm", en: "Budget" },
+  { key: "vip", vi: "VIP", en: "VIP" },
 ];
+
+const findPackageTypeOption = (value: string) => {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+
+  return PACKAGE_TYPE_OPTIONS.find(
+    (option) =>
+      option.key === normalized
+      || option.vi.toLowerCase() === normalized
+      || option.en.toLowerCase() === normalized,
+  );
+};
 
 const TRANSPORTATION_TYPE_OPTIONS = [
   { value: "0", label: "Flight" },
@@ -311,6 +344,17 @@ function Sidebar({ open, onClose, navItems }: { open: boolean; onClose: () => vo
   );
 }
 
+/* ── URL validation helper ─────────────────────────────────── */
+const isValidUrl = (value: string): boolean => {
+  if (!value.trim()) return true; // empty is valid (field is optional)
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+};
+
 /* ── Empty form factories ───────────────────────────────────── */
 const emptyClassification = (): ClassificationForm => ({
   name: "",
@@ -334,6 +378,25 @@ const emptyActivity = (): ActivityForm => ({
   startTime: "",
   endTime: "",
   linkToResources: [""],
+  routes: [],
+});
+
+const emptyRoute = (): ActivityRouteForm => ({
+  id: crypto.randomUUID(),
+  fromLocationIndex: "",
+  fromLocationCustom: "",
+  enFromLocationCustom: "",
+  toLocationIndex: "",
+  toLocationCustom: "",
+  enToLocationCustom: "",
+  transportationType: "0",
+  enTransportationType: "",
+  transportationName: "",
+  enTransportationName: "",
+  durationMinutes: "",
+  price: "",
+  note: "",
+  enNote: "",
 });
 
 const emptyDayPlan = (): DayPlanForm => ({
@@ -344,6 +407,37 @@ const emptyDayPlan = (): DayPlanForm => ({
   enDescription: "",
   activities: [],
 });
+
+const syncPlansByDuration = (
+  plans: DayPlanForm[],
+  durationDays: string,
+): DayPlanForm[] => {
+  const targetDays = Number.parseInt(durationDays, 10);
+  if (!Number.isFinite(targetDays) || targetDays <= 0) {
+    return plans;
+  }
+
+  const normalizedPlans = plans.map((plan, dayIndex) => ({
+    ...plan,
+    dayNumber: String(dayIndex + 1),
+  }));
+
+  if (normalizedPlans.length === targetDays) {
+    return normalizedPlans;
+  }
+
+  if (normalizedPlans.length > targetDays) {
+    return normalizedPlans.slice(0, targetDays);
+  }
+
+  const missingCount = targetDays - normalizedPlans.length;
+  const generatedPlans = Array.from({ length: missingCount }, (_, offset) => ({
+    ...emptyDayPlan(),
+    dayNumber: String(normalizedPlans.length + offset + 1),
+  }));
+
+  return [...normalizedPlans, ...generatedPlans];
+};
 
 const emptyInsurance = (): InsuranceForm => ({
   insuranceName: "",
@@ -640,8 +734,12 @@ export default function CreateTourPage() {
     fetchPolicies();
   }, []);
 
-  const validateStep = (step: number): boolean => {
+  const collectStepErrors = (
+    step: number,
+    packageIndexOverride?: number,
+  ): Record<string, string> => {
     const newErrors: Record<string, string> = {};
+    const activePackageIndex = packageIndexOverride ?? ci;
 
     if (step === 0) {
       if (!basicInfo.tourName.trim())
@@ -683,7 +781,7 @@ export default function CreateTourPage() {
     }
 
     if (step === 2) {
-      const plans = dayPlans[ci] ?? [];
+      const plans = dayPlans[activePackageIndex] ?? [];
       if (plans.length === 0) {
         newErrors.dayPlans = t("tourAdmin.validation.atLeastOneDayPlan", "At least one day plan is required.");
       }
@@ -696,6 +794,31 @@ export default function CreateTourPage() {
           newErrors[`plan_${i}_description`] = t("tourAdmin.required", "Required");
         if (!plan.enDescription.trim())
           newErrors[`plan_${i}_enDescription`] = t("tourAdmin.required", "Required");
+      });
+
+      // Validate linkToResources URLs
+      plans.forEach((plan, planIdx) => {
+        plan.activities.forEach((act, actIdx) => {
+          // Validate estimatedCost: optional, but if provided must be >= 0
+          if (act.estimatedCost.trim()) {
+            const cost = Number(act.estimatedCost);
+            if (Number.isNaN(cost) || cost < 0) {
+              newErrors[`act_${planIdx}_${actIdx}_estimatedCost`] = t(
+                "tourAdmin.validation.invalidEstimatedCost",
+                "Estimated cost must be 0 or greater",
+              );
+            }
+          }
+
+          act.linkToResources.forEach((link, linkIdx) => {
+            if (link.trim() && !isValidUrl(link)) {
+              newErrors[`link_${planIdx}_${actIdx}_${linkIdx}`] = t(
+                "tourAdmin.validation.invalidLinkUrl",
+                "Please enter a valid URL starting with http:// or https://",
+              );
+            }
+          });
+        });
       });
     }
 
@@ -733,7 +856,9 @@ export default function CreateTourPage() {
           tr.transportationName.trim() ||
           tr.price.trim(),
       );
-      if (!hasAnyData) return true;
+      if (!hasAnyData) {
+        return newErrors;
+      }
 
       transportations.forEach((tr, i) => {
         if (!tr.transportationType.trim())
@@ -762,7 +887,7 @@ export default function CreateTourPage() {
 
     if (step === 7) {
       // Insurance is optional, but if provided, validate required fields
-      const insurancesForClass = insurances[ci] ?? [];
+      const insurancesForClass = insurances[activePackageIndex] ?? [];
       insurancesForClass.forEach((ins, i) => {
         if (ins.insuranceName.trim() || ins.enInsuranceName.trim()) {
           if (!ins.insuranceName.trim())
@@ -783,6 +908,11 @@ export default function CreateTourPage() {
       });
     }
 
+    return newErrors;
+  };
+
+  const validateStep = (step: number, packageIndexOverride?: number): boolean => {
+    const newErrors = collectStepErrors(step, packageIndexOverride);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -820,6 +950,58 @@ export default function CreateTourPage() {
   ) => {
     setClassifications((prev) =>
       prev.map((cls, i) => (i === index ? { ...cls, [field]: value } : cls)),
+    );
+
+    if (field === "durationDays") {
+      setDayPlans((prev) =>
+        prev.map((plans, i) => {
+          if (i !== index) {
+            return plans;
+          }
+
+          return syncPlansByDuration(plans, value);
+        }),
+      );
+    }
+  };
+
+  useEffect(() => {
+    setDayPlans((prev) =>
+      classifications.map((classification, index) =>
+        syncPlansByDuration(prev[index] ?? [], classification.durationDays),
+      ),
+    );
+  }, [classifications]);
+
+  const updateClassificationPackageTypeVi = (index: number, value: string) => {
+    const option = findPackageTypeOption(value);
+    if (!option) {
+      updateClassification(index, "name", value);
+      return;
+    }
+
+    setClassifications((prev) =>
+      prev.map((cls, i) =>
+        i === index
+          ? { ...cls, name: option.vi, enName: option.en }
+          : cls,
+      ),
+    );
+  };
+
+  const updateClassificationPackageTypeEn = (index: number, value: string) => {
+    const option = findPackageTypeOption(value);
+    if (!option) {
+      updateClassification(index, "enName", value);
+      return;
+    }
+
+    setClassifications((prev) =>
+      prev.map((cls, i) =>
+        i === index
+          ? { ...cls, name: option.vi, enName: option.en }
+          : cls,
+      ),
     );
   };
 
@@ -924,6 +1106,31 @@ export default function CreateTourPage() {
           : plans,
       ),
     );
+  };
+
+  /* ── Route CRUD ───────────────────────────────────────────── */
+  const addRoute = (pi: number, di: number, ai: number) => {
+    setDayPlans((prev) => {
+      const updated = [...prev];
+      updated[pi].days[di].activities[ai].routes.push(emptyRoute());
+      return updated;
+    });
+  };
+
+  const removeRoute = (pi: number, di: number, ai: number, ri: number) => {
+    setDayPlans((prev) => {
+      const updated = [...prev];
+      updated[pi].days[di].activities[ai].routes.splice(ri, 1);
+      return updated;
+    });
+  };
+
+  const updateRoute = (pi: number, di: number, ai: number, ri: number, field: keyof ActivityRouteForm, value: string) => {
+    setDayPlans((prev) => {
+      const updated = [...prev];
+      (updated[pi].days[di].activities[ai].routes[ri] as any)[field] = value;
+      return updated;
+    });
   };
 
   /* ── Insurance CRUD ───────────────────────────────────────── */
@@ -1130,7 +1337,64 @@ export default function CreateTourPage() {
 
   /* ── Submit ───────────────────────────────────────────────── */
   const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return;
+    const stepIndices = WIZARD_STEPS.map((_, i) => i);
+    let firstInvalidStep: number | undefined;
+    let firstInvalidPackageIndex: number | undefined;
+    let firstInvalidErrors: Record<string, string> = {};
+
+    for (const step of stepIndices) {
+      if (step === 2 || step === 7) {
+        for (let packageIndex = 0; packageIndex < classifications.length; packageIndex += 1) {
+          const stepErrors = collectStepErrors(step, packageIndex);
+          if (Object.keys(stepErrors).length > 0) {
+            firstInvalidStep = step;
+            firstInvalidPackageIndex = packageIndex;
+            firstInvalidErrors = stepErrors;
+            break;
+          }
+        }
+
+        if (firstInvalidStep !== undefined) {
+          break;
+        }
+        continue;
+      }
+
+      const stepErrors = collectStepErrors(step);
+      if (Object.keys(stepErrors).length > 0) {
+        firstInvalidStep = step;
+        firstInvalidErrors = stepErrors;
+        break;
+      }
+    }
+
+    if (firstInvalidStep !== undefined) {
+      if (firstInvalidPackageIndex !== undefined) {
+        setSelectedPackageIndex(firstInvalidPackageIndex);
+      }
+      setErrors(firstInvalidErrors);
+      setCurrentStep(firstInvalidStep);
+      console.warn("[CreateTour] Validation failed before publish", {
+        currentStep,
+        maxNavigableStep,
+        firstInvalidStep,
+        firstInvalidPackageIndex,
+        firstInvalidErrorKeys: Object.keys(firstInvalidErrors),
+        selectedPackageIndex,
+        classificationsCount: classifications.length,
+        dayPlanCounts: dayPlans.map((plans) => plans.length),
+        insuranceCounts: insurances.map((items) => items.length),
+        imagesCount: images.length,
+        hasThumbnail: Boolean(thumbnail),
+      });
+      toast.error(
+        t(
+          "tourAdmin.validation.completeAllSteps",
+          "Please complete all required fields before publishing",
+        ),
+      );
+      return;
+    }
 
     try {
       setSaving(true);
@@ -1159,6 +1423,27 @@ export default function CreateTourPage() {
         selectedVisaPolicyId,
       });
 
+      console.info("[CreateTour] Publishing payload summary", {
+        currentStep,
+        maxNavigableStep,
+        selectedPackageIndex,
+        classificationsCount: classifications.length,
+        dayPlanCounts: dayPlans.map((plans) => plans.length),
+        insuranceCounts: insurances.map((items) => items.length),
+        servicesCount: services.filter((svc) => svc.serviceName.trim().length > 0)
+          .length,
+        accommodationsCount: accommodations.filter(
+          (acc) => acc.accommodationName.trim().length > 0,
+        ).length,
+        locationsCount: locations.filter((loc) => loc.locationName.trim().length > 0)
+          .length,
+        transportationsCount: transportations.filter(
+          (tr) => tr.fromLocation.trim() || tr.toLocation.trim(),
+        ).length,
+        imagesCount: images.length,
+        hasThumbnail: Boolean(thumbnail),
+      });
+
       await tourService.createTour(formData);
       localStorage.removeItem(AUTOSAVE_KEY);
       toast.success(t("tourAdmin.createSuccess", "Tour created successfully!"));
@@ -1180,6 +1465,16 @@ export default function CreateTourPage() {
      Render
      ══════════════════════════════════════════════════════════ */
   const ci = selectedPackageIndex;
+
+  useEffect(() => {
+    setSelectedPackageIndex((prev) => {
+      if (classifications.length === 0) {
+        return 0;
+      }
+
+      return Math.min(prev, classifications.length - 1);
+    });
+  }, [classifications.length]);
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -1693,12 +1988,12 @@ export default function CreateTourPage() {
                             {t("tourAdmin.packages.packageType")} <span className="text-red-500">*</span>
                           </label>
                           <select
-                            value={cls.name}
-                            onChange={(e) => updateClassification(clsI, "name", e.target.value)}
+                            value={findPackageTypeOption(cls.name)?.key ?? ""}
+                            onChange={(e) => updateClassificationPackageTypeVi(clsI, e.target.value)}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
                             <option value="">{t("tourAdmin.packages.placeholderPackageType")}</option>
                             {PACKAGE_TYPE_OPTIONS.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              <option key={opt.key} value={opt.key}>{opt.vi}</option>
                             ))}
                           </select>
                           {errors[`cls_${clsI}_name`] && (
@@ -1738,12 +2033,12 @@ export default function CreateTourPage() {
                             {t("tourAdmin.packages.packageType")} / Type
                           </label>
                           <select
-                            value={cls.enName}
-                            onChange={(e) => updateClassification(clsI, "enName", e.target.value)}
+                            value={findPackageTypeOption(cls.enName)?.key ?? ""}
+                            onChange={(e) => updateClassificationPackageTypeEn(clsI, e.target.value)}
                             className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
                             <option value="">Select type...</option>
                             {PACKAGE_TYPE_OPTIONS.map((opt) => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              <option key={opt.key} value={opt.key}>{opt.en}</option>
                             ))}
                           </select>
                           {errors[`cls_${clsI}_enName`] && (
@@ -2008,7 +2303,8 @@ export default function CreateTourPage() {
                                       {t("tourAdmin.itineraries.startTime")}
                                     </label>
                                     <input
-                                      type="text"
+                                      type="time"
+                                      step={300}
                                       value={act.startTime}
                                       onChange={(e) =>
                                         updateActivity(
@@ -2019,7 +2315,6 @@ export default function CreateTourPage() {
                                           e.target.value,
                                         )
                                       }
-                                      placeholder={t("tourAdmin.itineraries.startTime")}
                                       className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                     />
                                   </div>
@@ -2030,7 +2325,8 @@ export default function CreateTourPage() {
                                       {t("tourAdmin.itineraries.endTime")}
                                     </label>
                                     <input
-                                      type="text"
+                                      type="time"
+                                      step={300}
                                       value={act.endTime}
                                       onChange={(e) =>
                                         updateActivity(
@@ -2041,9 +2337,41 @@ export default function CreateTourPage() {
                                           e.target.value,
                                         )
                                       }
-                                      placeholder={t("placeholder.endTime")}
                                       className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
                                     />
+                                  </div>
+
+                                  {/* Estimated Cost */}
+                                  <div>
+                                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                      {t("tourAdmin.itineraries.estimatedCost")}
+                                    </label>
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      step={1000}
+                                      value={act.estimatedCost}
+                                      onChange={(e) =>
+                                        updateActivity(
+                                          ci,
+                                          di,
+                                          ai,
+                                          "estimatedCost",
+                                          e.target.value,
+                                        )
+                                      }
+                                      placeholder="0"
+                                      className={`w-full px-3 py-2 text-sm rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition ${
+                                        errors[`act_${di}_${ai}_estimatedCost`]
+                                          ? "border-red-400 dark:border-red-500"
+                                          : "border-slate-300 dark:border-slate-600"
+                                      }`}
+                                    />
+                                    {errors[`act_${di}_${ai}_estimatedCost`] && (
+                                      <p className="text-red-500 text-xs mt-0.5">
+                                        {errors[`act_${di}_${ai}_estimatedCost`]}
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
 
@@ -2142,22 +2470,33 @@ export default function CreateTourPage() {
                                     {act.linkToResources.map((link, li) => (
                                       <div
                                         key={li}
-                                        className="flex items-center gap-2">
-                                        <input
-                                          type="text"
-                                          value={link}
-                                          onChange={(e) =>
-                                            updateLinkToResource(
-                                              ci,
-                                              di,
-                                              ai,
-                                              li,
-                                              e.target.value,
-                                            )
-                                          }
-                                          placeholder={t("tourAdmin.itineraries.placeholderHttps")}
-                                          className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                                        />
+                                        className="flex items-start gap-2">
+                                        <div className="flex-1">
+                                          <input
+                                            type="text"
+                                            value={link}
+                                            onChange={(e) =>
+                                              updateLinkToResource(
+                                                ci,
+                                                di,
+                                                ai,
+                                                li,
+                                                e.target.value,
+                                              )
+                                            }
+                                            placeholder={t("tourAdmin.itineraries.placeholderHttps")}
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition ${
+                                              errors[`link_${di}_${ai}_${li}`]
+                                                ? "border-red-400 dark:border-red-500"
+                                                : "border-slate-300 dark:border-slate-600"
+                                            }`}
+                                          />
+                                          {errors[`link_${di}_${ai}_${li}`] && (
+                                            <p className="text-red-500 text-xs mt-0.5">
+                                              {errors[`link_${di}_${ai}_${li}`]}
+                                            </p>
+                                          )}
+                                        </div>
                                         {act.linkToResources.length > 1 && (
                                           <button
                                             type="button"
@@ -2170,7 +2509,7 @@ export default function CreateTourPage() {
                                               )
                                             }
                                             aria-label="Remove link"
-                                            className="text-red-400 hover:text-red-600 transition-colors p-1">
+                                            className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all rounded p-1 mt-0.5">
                                             <Icon
                                               icon="heroicons:x-mark"
                                               className="size-4"
