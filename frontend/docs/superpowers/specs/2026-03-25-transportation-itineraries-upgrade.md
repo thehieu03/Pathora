@@ -1,8 +1,21 @@
 # Transportation + Itineraries Upgrade Spec
 
 **Date:** 2026-03-25
-**Status:** Draft
+**Status:** Draft v2 (post-review fixes)
 **Author:** Claude Opus
+
+## Changelog (v1 → v2)
+
+- Fixed `buildClassificationsPayload` signature to preserve existing params + add `locations`
+- Fixed `buildCreateTourFormData` signature to include `locations`
+- Clarified edit page does NOT use `buildCreateTourFormData` — routes serialized manually in `handleSubmit`
+- Clarified edit page hydration: always treat routes as custom text (no locations step in edit page)
+- Added pre-existing bugs as prerequisites: edit page missing `enTitle/enDescription/enNote`, `enTransportationType` not rendered in transportation step UI
+- Fixed transportation type enum: use `TransportationTypeMap` as source of truth, reorder UI options
+- Fixed test assertion: check `locations` passed to `buildCreateTourFormData`, not `buildClassificationsPayload` directly
+- Clarified combobox typing: filter locations list, discard unmatched free-text
+- Added `ActivityPayloadInput` `routes` field to spec
+- Acknowledged `as any` workaround for `updateRoute` helper
 
 ## 1. Overview
 
@@ -125,6 +138,9 @@ const removeRoute = (pi: number, di: number, ai: number, ri: number) => {
   });
 };
 
+// Uses `as any` to bypass TypeScript limitation where ActivityForm's keyof union
+// includes `routes` (an array) alongside string/boolean fields. Safe: only updates
+// nested route scalar fields, not the routes array itself.
 const updateRoute = (pi: number, di: number, ai: number, ri: number, field: keyof ActivityRouteForm, value: string) => {
   setDayPlans((prev) => {
     const updated = [...prev];
@@ -183,7 +199,7 @@ Within each activity card, below the Link to Resources section, before the activ
   2. List of `locations[i].locationName` items — each selectable
   3. Divider
   4. "Custom location..." — switches to custom mode, clears index
-- When user types in the combobox: filter the locations list OR treat as custom text entry (if no match)
+- When user types in the combobox: **filter the locations list**. If the typed value doesn't match any location name and the user selects nothing, discard the typed value (don't auto-create a custom entry). If the user explicitly clicks a location or presses Enter on a match, select it.
 - When user clicks a location item: set `fromLocationIndex = i`, clear custom fields
 
 **Implementation approach**: Use a `<div>` with absolute-positioned dropdown + manual state management. Keep it simple — no external combobox library needed.
@@ -225,27 +241,24 @@ Check the backend contract. If `TourPlanRouteDto.fromLocation` is `TourPlanLocat
 
 **Action**: Verify the exact backend contract by checking the ASP.NET backend DTOs for transportation. If it uses `TourPlanLocationDto`, we need nested objects. If it uses flat strings, current mapping is fine. Make the minimal fix needed.
 
-### 5.4 Transportation Type Numeric Mapping
+### 5.4 Transportation Type Numeric Mapping — FIX REQUIRED
 
-Verify the enum mapping. UI options at lines 171-183 in `create/page.tsx`:
+`TransportationTypeMap` in `src/types/tour.ts` is the source of truth. The UI `transportationTypes` array must be reordered to match:
 
-```typescript
-const transportationTypes = [
-  { value: "0", label: "Flight" },
-  { value: "1", label: "Train" },
-  { value: "2", label: "Bus" },
-  { value: "3", label: "Car" },
-  { value: "4", label: "Taxi" },
-  { value: "5", label: "Boat" },
-  { value: "6", label: "Ferry" },
-  { value: "7", label: "Motorbike" },
-  { value: "8", label: "Bicycle" },
-  { value: "9", label: "Walking" },
-  { value: "99", label: "Other" },
-];
-```
+| Value | Label (from TransportationTypeMap) |
+|-------|-----------------------------------|
+| 0 | Walking |
+| 1 | Bus |
+| 2 | Train |
+| 3 | Flight |
+| 4 | Boat |
+| 5 | Car |
+| 6 | Bicycle |
+| 7 | Motorbike |
+| 8 | Taxi |
+| 99 | Other |
 
-Check against `TransportationTypeMap` in `src/types/tour.ts`. Fix if there's a mismatch.
+**Action**: Replace the UI `transportationTypes` array in `create/page.tsx` with the correct order above. This affects both the transportation step and activity route type selectors.
 
 ## 6. Payload Builder Changes
 
@@ -310,9 +323,41 @@ activities: dayPlan.activities.map((activity) => {
 }),
 ```
 
-### 6.2 Pass Locations to buildCreateTourFormData
+### 6.2 Add `routes` Field to `ActivityPayloadInput`
 
-`buildCreateTourFormData` needs access to `locations[]` to resolve route references. Update its signature:
+File: `src/api/services/tourCreatePayload.ts`
+
+Add `ActivityRoutePayloadInput` and `routes: ActivityRoutePayloadInput[]` to `ActivityPayloadInput`:
+
+```typescript
+interface ActivityRoutePayloadInput {
+  fromLocationIndex: string;
+  fromLocationCustom: string;
+  enFromLocationCustom: string;
+  toLocationIndex: string;
+  toLocationCustom: string;
+  enToLocationCustom: string;
+  transportationType: string;
+  enTransportationType: string;
+  transportationName: string;
+  enTransportationName: string;
+  durationMinutes: string;
+  price: string;
+  note: string;
+  enNote: string;
+}
+
+interface ActivityPayloadInput {
+  // ... existing fields ...
+  linkToResources: string[];
+  // NEW
+  routes: ActivityRoutePayloadInput[];
+}
+```
+
+### 6.3 Pass Locations to buildCreateTourFormData
+
+`buildCreateTourFormData` needs access to `locations[]` to resolve route references. Update its signature to add `locations` as a parameter:
 
 ```typescript
 export const buildCreateTourFormData = (
@@ -320,24 +365,70 @@ export const buildCreateTourFormData = (
   images: File[],
   translations: TranslationPayloadInput[],
   classifications: ClassificationPayloadInput[],
-  locations: LocationPayloadInput[],       // NEW
+  locations: LocationPayloadInput[],       // NEW — add before transportations
   transportations: TransportationPayloadInput[],
-  // ...
+  // ... existing rest params
 ) => { ... }
 ```
 
-Update all call sites in `create/page.tsx` to pass `locations` to `buildCreateTourFormData`.
+Update the single call site in `create/page.tsx` to pass `locations` to `buildCreateTourFormData`.
 
-### 6.3 Pass locations to buildClassificationsPayload
+### 6.4 Pass locations to buildClassificationsPayload
+
+`buildClassificationsPayload` receives `locations` from `buildCreateTourFormData`. Add `locations` as the LAST parameter (preserving all existing params):
 
 ```typescript
 const buildClassificationsPayload = (
-  dayPlans: DayPlanPayloadInput[],
-  locations: LocationPayloadInput[],   // NEW
+  classifications: ClassificationPayloadInput[],
+  dayPlans: DayPlanPayloadInput[][],
+  insurances: InsurancePayloadInput[][],
+  locations: LocationPayloadInput[],   // NEW — add as last param
 ) => {
-  // use locations to resolve route references
+  // use locations to resolve route references in Section 6.5
 };
 ```
+
+### 6.5 Wire Routes Resolution (Inside buildClassificationsPayload)
+
+Replace the existing `routes: []` line in the activity map block with route resolution logic (see full code in Section 6.1). The resolved `fromLocation`/`toLocation` are `TourPlanLocationDto` objects:
+
+```typescript
+// inside activity map:
+routes: activity.routes.map((route) => {
+  const fromLoc = route.fromLocationIndex !== "" && parseInt(route.fromLocationIndex) < locations.length
+    ? locations[parseInt(route.fromLocationIndex)]
+    : null;
+
+  const toLoc = route.toLocationIndex !== "" && parseInt(route.toLocationIndex) < locations.length
+    ? locations[parseInt(route.toLocationIndex)]
+    : null;
+
+  return {
+    transportationType: parseInt(route.transportationType) || 0,
+    transportationName: route.transportationName || null,
+    transportationNote: null,
+    fromLocation: fromLoc
+      ? { locationName: fromLoc.locationName, enLocationName: fromLoc.enLocationName, type: fromLoc.type || null, enType: fromLoc.enType || null }
+      : route.fromLocationCustom.trim()
+        ? { locationName: route.fromLocationCustom.trim(), enLocationName: route.enFromLocationCustom.trim(), type: null, enType: null }
+        : null,
+    toLocation: toLoc
+      ? { locationName: toLoc.locationName, enLocationName: toLoc.enLocationName, type: toLoc.type || null, enType: toLoc.enType || null }
+      : route.toLocationCustom.trim()
+        ? { locationName: route.toLocationCustom.trim(), enLocationName: route.enToLocationCustom.trim(), type: null, enType: null }
+        : null,
+    estimatedDepartureTime: null,
+    estimatedArrivalTime: null,
+    durationMinutes: route.durationMinutes.trim() ? parseIntValue(route.durationMinutes, null) : null,
+    distanceKm: null,
+    price: route.price.trim() ? parseDecimal(route.price, null) : null,
+    bookingReference: null,
+    note: route.note.trim() || null,
+  };
+}),
+```
+
+**Precedence**: When both `fromLocationIndex` and `fromLocationCustom` are set, `fromLocationIndex` takes precedence (it's checked first).
 
 ## 7. Validation — collectStepErrors (Step 2 — Itineraries)
 
@@ -410,35 +501,74 @@ In `en.json` and `vi.json` under `tourAdmin.validation`:
 
 File: `src/app/(dashboard)/tour-management/[id]/edit/page.tsx`
 
-### 8.1 Add ActivityRouteForm
+> **Note**: The edit page builds its own `FormData` manually — it does NOT use `buildCreateTourFormData`. Route serialization must be implemented inline in the edit page's `handleSubmit`, mirroring the route resolution logic from Section 6.5.
 
-Same interface as `create/page.tsx`.
+> **Note**: The edit page has only 4 steps (no separate Locations step). Therefore, **all routes are treated as custom text** during hydration. There is no locations array to reference. The `fromLocationIndex`/`toLocationIndex` are always `""`, and `fromLocationCustom`/`enFromLocationCustom` are populated from `TourPlanLocationDto.locationName`/`enLocationName`.
 
-### 8.2 Update ActivityForm
+### 8.1 Prerequisite: Add `enTitle/enDescription/enNote` to Edit Page ActivityForm
+
+The edit page's `ActivityForm` is missing bilingual fields that exist in the create page. Add them as a prerequisite fix:
+
+```typescript
+interface ActivityForm {
+  // ... existing fields ...
+  enTitle: string;      // ADD — missing from edit page
+  enDescription: string; // ADD — missing from edit page
+  enNote: string;        // ADD — missing from edit page
+  // ... existing fields ...
+}
+```
+
+Also update the edit page's activity hydration from API to populate `enTitle`, `enDescription`, `enNote` from `TourDayActivityDto`.
+
+### 8.2 Add ActivityRouteForm
+
+Same interface as `create/page.tsx` (`ActivityRouteForm`).
+
+### 8.3 Update ActivityForm
 
 Add `routes: ActivityRouteForm[]`.
 
-### 8.3 Update emptyActivity
+### 8.4 Update emptyActivity
 
 Return `routes: []`.
 
-### 8.4 Add CRUD for Routes
+### 8.5 Add CRUD for Routes
 
-Same `addRoute`, `removeRoute`, `updateRoute` helpers.
-
-### 8.5 Hydrate Routes from API
-
-When loading tour data, map `TourDayActivityDto.routes[]` to `ActivityRouteForm[]`. For each route's `fromLocation`/`toLocation`:
-- If the location matches a location from Step Locations by name: set `fromLocationIndex` to that location's index
-- Otherwise: set `fromLocationIndex = ""` and populate `fromLocationCustom`/`enFromLocationCustom` from the nested `TourPlanLocationDto` fields.
+Same `addRoute`, `removeRoute`, `updateRoute` helpers (same implementations as create page, using the edit page's `setDayPlans`).
 
 ### 8.6 Render Route Section
 
-Same collapsible Route section UI as the create page.
+Same collapsible Route section UI as the create page. Note: the combobox for picking from locations will show an empty list (since there's no locations state in the edit page). The "Custom location..." option will be the default mode.
 
-### 8.7 Send Routes in Update Payload
+### 8.7 Hydrate Routes from API
 
-In the edit page's submit handler, send `routes` as part of the update payload using the same `buildClassificationsPayload` logic.
+When loading tour data, map `TourDayActivityDto.routes[]` to `ActivityRouteForm[]`:
+
+```typescript
+// Map each route's from/to location from TourPlanRouteDto
+const route: ActivityRouteForm = {
+  id: crypto.randomUUID(),
+  fromLocationIndex: "",  // always "" — no locations step in edit page
+  fromLocationCustom: routeDto.fromLocation?.locationName ?? "",
+  enFromLocationCustom: routeDto.fromLocation?.enLocationName ?? "",
+  toLocationIndex: "",    // always "" — no locations step in edit page
+  toLocationCustom: routeDto.toLocation?.locationName ?? "",
+  enToLocationCustom: routeDto.toLocation?.enLocationName ?? "",
+  transportationType: String(routeDto.transportationType),
+  enTransportationType: "",
+  transportationName: routeDto.transportationName ?? "",
+  enTransportationName: "",
+  durationMinutes: routeDto.durationMinutes != null ? String(routeDto.durationMinutes) : "",
+  price: routeDto.price != null ? String(routeDto.price) : "",
+  note: routeDto.note ?? "",
+  enNote: "",
+};
+```
+
+### 8.8 Send Routes in Update Payload
+
+In the edit page's `handleSubmit`, inline the route resolution logic. The edit page does NOT call `buildCreateTourFormData` — it builds the classifications JSON manually. For each activity's `routes` array, map to `TourPlanRouteDto` objects using the same resolution logic as Section 6.5 (but without location index resolution since `fromLocationIndex` is always `""` in the edit page).
 
 ## 9. Regression Safety
 
@@ -499,7 +629,10 @@ describe("activity routes wiring", () => {
     const source = readFile("src/app/(dashboard)/tour-management/create/page.tsx");
     // Verify routes is included in the dayPlans structure passed to buildCreateTourFormData
     expect(source.includes("routes: resolvedRoutes")).toBe(true);
-    expect(source.includes("buildClassificationsPayload(dayPlans, locations")).toBe(true);
+    // Verify locations is passed to buildCreateTourFormData (indirectly via buildClassificationsPayload)
+    expect(source.includes("buildCreateTourFormData(")).toBe(true);
+    // The locations state should be referenced in the route section UI (combobox)
+    expect(source.includes("locations")).toBe(true);
   });
 
   it("edit page has routes in ActivityForm and sends them in update payload", () => {
@@ -514,9 +647,9 @@ describe("activity routes wiring", () => {
 
 | File | Change |
 |------|--------|
-| `src/app/(dashboard)/tour-management/create/page.tsx` | Add `ActivityRouteForm` interface, `emptyRoute()`, update `ActivityForm`, add route CRUD, render collapsible Route section with combobox, pass `locations` to payload builder |
-| `src/app/(dashboard)/tour-management/[id]/edit/page.tsx` | Same changes for edit page: add route interface, CRUD, UI, hydration from API |
-| `src/api/services/tourCreatePayload.ts` | Update `buildCreateTourFormData` signature to accept `locations`, update `buildClassificationsPayload` to accept `locations`, wire routes resolution with nested `TourPlanLocationDto`, fix transportation payload if needed |
+| `src/app/(dashboard)/tour-management/create/page.tsx` | Add `ActivityRouteForm` interface, `emptyRoute()`, update `ActivityForm`, add route CRUD, render collapsible Route section with combobox, pass `locations` to payload builder, reorder `transportationTypes` to match `TransportationTypeMap` |
+| `src/app/(dashboard)/tour-management/[id]/edit/page.tsx` | **Prerequisite**: add `enTitle/enDescription/enNote` to `ActivityForm`. Same changes for edit page: add route interface, CRUD, UI, hydration from API (custom text only) |
+| `src/api/services/tourCreatePayload.ts` | Add `routes` field + `ActivityRoutePayloadInput` to `ActivityPayloadInput`, add `locations` param to `buildCreateTourFormData` + `buildClassificationsPayload`, wire routes resolution with nested `TourPlanLocationDto` |
 | `src/i18n/locales/en.json` | Add validation keys for routes |
 | `src/i18n/locales/vi.json` | Add validation keys for routes |
 | `src/api/services/__tests__/tourCreatePayload.test.ts` | Add payload tests for routes |
