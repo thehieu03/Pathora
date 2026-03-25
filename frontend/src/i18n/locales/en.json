@@ -216,6 +216,9 @@
     "endTime": "12:00"
   },
   "toast": {
+    "draftRestoreConfirm": "A draft was found from your previous session. Do you want to restore it?",
+    "draftRestored": "Draft restored from previous session.",
+    "draftSaved": "Draft saved.",
     "draftNotImplemented": "Draft saving is not implemented yet.",
     "instancePricingSaved": "Instance pricing overrides saved.",
     "instanceTiersCleared": "Instance override tiers cleared.",
@@ -2238,6 +2241,8 @@
     "deleteError": "Failed to delete tour",
     "createSuccess": "Tour created successfully!",
     "createError": "Failed to create tour",
+    "creatingTour": "Creating tour...",
+    "creatingTourHint": "Please wait while we publish your tour.",
     "updateSuccess": "Tour updated successfully!",
     "updateError": "Failed to update tour",
     "loadError": "Failed to load tour",
@@ -2247,7 +2252,8 @@
     "validation": {
       "invalidBasePrice": "Invalid base price",
       "atLeastOneImage": "At least one image is required",
-      "atLeastOnePackage": "At least one package is required"
+      "atLeastOnePackage": "At least one package is required",
+      "locationRemoved": "Referenced location was removed"
     },
     "invalidDuration": "Invalid duration",
     "basicInfo": {
@@ -2423,7 +2429,21 @@
       "placeholderActivityTitle": "Activity title",
       "placeholderDescribeActivity": "Describe this activity",
       "placeholderAdditionalNotes": "Any additional notes",
-      "placeholderHttps": "https://..."
+      "placeholderHttps": "https://...",
+      "route": "Route",
+      "routes": "Routes",
+      "addRoute": "Add Route",
+      "removeRoute": "Remove Route",
+      "noRoutesYet": "No routes yet",
+      "fromLocation": "From",
+      "toLocation": "To",
+      "requiredFromLocation": "From location is required",
+      "requiredToLocation": "To location is required",
+      "customLocation": "Custom location...",
+      "searchLocation": "Search...",
+      "noLocationMatch": "No locations match",
+      "locationVI": "Location (VI)",
+      "locationEN": "Location (EN)"
     },
     "accommodations": {
       "sectionTitle": "Accommodations",
@@ -2486,7 +2506,12 @@
       "placeholderPricingType": "Per person, Fixed...",
       "placeholderPrice": "Optional",
       "placeholderTicketInfo": "Booking reference...",
-      "placeholderNote": "Air-conditioned vehicle..."
+      "placeholderNote": "Air-conditioned vehicle...",
+      "type": "Type",
+      "name": "Name",
+      "duration": "Duration (min)",
+      "from": "From",
+      "to": "To"
     },
     "services": {
       "sectionTitle": "Other Services",
@@ -2549,6 +2574,19 @@
       "4": "Baggage Loss",
       "5": "Personal Liability",
       "6": "Adventure Sports"
+    },
+    "transportationTypes": {
+      "0": "Flight",
+      "1": "Train",
+      "2": "Bus",
+      "3": "Car",
+      "4": "Taxi",
+      "5": "Boat",
+      "6": "Ferry",
+      "7": "Motorbike",
+      "8": "Bicycle",
+      "9": "Walking",
+      "99": "Other"
     },
     "nav": {
       "dashboard": "Dashboard",

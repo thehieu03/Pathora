@@ -36,6 +36,7 @@ interface ActivityPayloadInput {
   isOptional: boolean;
   startTime: string;
   endTime: string;
+  routes: ActivityRoutePayloadInput[];
 }
 
 interface DayPlanPayloadInput {
@@ -104,6 +105,27 @@ interface TransportationPayloadInput {
   requiresIndividualTicket: boolean;
   ticketInfo: string;
   enTicketInfo: string;
+  note: string;
+  enNote: string;
+}
+
+
+
+// Route within an activity
+interface ActivityRoutePayloadInput {
+  id: string;
+  fromLocationIndex: string;
+  fromLocationCustom: string;
+  enFromLocationCustom: string;
+  toLocationIndex: string;
+  toLocationCustom: string;
+  enToLocationCustom: string;
+  transportationType: string;
+  enTransportationType: string;
+  transportationName: string;
+  enTransportationName: string;
+  durationMinutes: string;
+  price: string;
   note: string;
   enNote: string;
 }
@@ -226,6 +248,7 @@ const buildClassificationsPayload = (
   classifications: ClassificationPayloadInput[],
   dayPlans: DayPlanPayloadInput[][],
   insurances: InsurancePayloadInput[][],
+  locations: LocationPayloadInput[],
 ) => {
   return classifications.map((classification, classificationIndex) => {
     const numberOfDay = Math.max(parseIntValue(classification.durationDays, 1), 1);
@@ -262,7 +285,7 @@ const buildClassificationsPayload = (
           isOptional: activity.isOptional,
           startTime: toOptionalString(activity.startTime),
           endTime: toOptionalString(activity.endTime),
-          routes: [],
+          routes: buildRoutesPayload(activity.routes, locations),
           accommodation: null,
           translations: buildActivityTranslations(
             activity.title,
@@ -404,6 +427,88 @@ const buildTransportationsPayload = (
     },
   }));
 
+
+// ── Route payload builder ───────────────────────────────────────
+
+const buildRoutesPayload = (
+  routes: ActivityRoutePayloadInput[],
+  locations: LocationPayloadInput[],
+) => {
+  return routes.map((route) => {
+    // Resolve from location
+    let fromLocationName: string | null = null;
+    let fromLocationId: string | null = null;
+    if (route.fromLocationIndex !== "") {
+      const idx = parseIntValue(route.fromLocationIndex);
+      if (idx < locations.length) {
+        fromLocationName = locations[idx].locationName;
+        fromLocationId = null;
+      }
+    } else {
+      fromLocationName = route.fromLocationCustom || null;
+      fromLocationId = null;
+    }
+
+    // Resolve to location
+    let toLocationName: string | null = null;
+    let toLocationId: string | null = null;
+    if (route.toLocationIndex !== "") {
+      const idx = parseIntValue(route.toLocationIndex);
+      if (idx < locations.length) {
+        toLocationName = locations[idx].locationName;
+        toLocationId = null;
+      }
+    } else {
+      toLocationName = route.toLocationCustom || null;
+      toLocationId = null;
+    }
+
+    const hasEnTransportation =
+      route.enTransportationType.trim().length > 0 ||
+      route.enTransportationName.trim().length > 0 ||
+      (route.enNote ?? "").trim().length > 0;
+
+    return {
+      id: route.id,
+      fromLocationIndex: route.fromLocationIndex !== "" ? parseIntValue(route.fromLocationIndex) : null,
+      fromLocationCustom: route.fromLocationIndex === "" ? route.fromLocationCustom : null,
+      enFromLocationCustom: route.fromLocationIndex === "" ? route.enFromLocationCustom : null,
+      toLocationIndex: route.toLocationIndex !== "" ? parseIntValue(route.toLocationIndex) : null,
+      toLocationCustom: route.toLocationIndex === "" ? route.toLocationCustom : null,
+      enToLocationCustom: route.toLocationIndex === "" ? route.enToLocationCustom : null,
+      fromLocationName,
+      toLocationName,
+      fromLocationId,
+      toLocationId,
+      transportationType: route.transportationType,
+      enTransportationType: route.enTransportationType || null,
+      transportationName: route.transportationName || null,
+      enTransportationName: route.enTransportationName || null,
+      durationMinutes: parseIntValue(route.durationMinutes, 0),
+      price: parseDecimal(route.price, 0),
+      pricingType: null,
+      requiresIndividualTicket: false,
+      ticketInfo: null,
+      note: route.note || null,
+      enNote: route.enNote || null,
+      routeTranslations: {
+        vi: {
+          transportationName: route.transportationName,
+          note: route.note,
+        },
+        ...(hasEnTransportation
+          ? {
+              en: {
+                transportationName: route.enTransportationName,
+                note: route.enNote,
+              },
+            }
+          : {}),
+      },
+    };
+  });
+};
+
 export const buildServicesPayload = (services: ServicePayloadInput[]) =>
   services
     .filter((svc) => svc.serviceName.trim().length > 0)
@@ -481,6 +586,7 @@ export const buildCreateTourFormData = ({
     classifications,
     dayPlans,
     insurances,
+    locations,
   );
 
   if (classificationsPayload.length > 0) {

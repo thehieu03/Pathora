@@ -216,6 +216,9 @@
     "endTime": "12:00"
   },
   "toast": {
+    "draftRestoreConfirm": "Tìm thấy bản nháp từ phiên trước. Bạn có muốn khôi phục không?",
+    "draftRestored": "Đã khôi phục bản nháp từ phiên trước.",
+    "draftSaved": "Đã lưu bản nháp.",
     "draftNotImplemented": "Chức năng lưu nháp chưa được triển khai.",
     "instancePricingSaved": "Đã lưu giá ghi đè của lịch trình.",
     "instanceTiersCleared": "Đã xóa các bậc giá ghi đè của lịch trình.",
@@ -2216,6 +2219,8 @@
     "deleteError": "Không thể xóa tour",
     "createSuccess": "Tạo tour thành công!",
     "createError": "Không thể tạo tour",
+    "creatingTour": "Đang tạo tour...",
+    "creatingTourHint": "Vui lòng đợi trong khi chúng tôi xuất bản tour của bạn.",
     "updateSuccess": "Cập nhật tour thành công!",
     "updateError": "Không thể cập nhật tour",
     "loadError": "Không thể tải thông tin tour",
@@ -2225,7 +2230,8 @@
     "validation": {
       "invalidBasePrice": "Giá gốc không hợp lệ",
       "atLeastOneImage": "Cần ít nhất một hình ảnh",
-      "atLeastOnePackage": "Cần ít nhất một gói tour"
+      "atLeastOnePackage": "Cần ít nhất một gói tour",
+      "locationRemoved": "Địa điểm được tham chiếu đã bị xóa"
     },
     "invalidDuration": "Thời lượng không hợp lệ",
     "basicInfo": {
@@ -2401,7 +2407,21 @@
       "placeholderActivityTitle": "Tiêu đề hoạt động",
       "placeholderDescribeActivity": "Mô tả hoạt động này",
       "placeholderAdditionalNotes": "Bất kỳ ghi chú bổ sung nào",
-      "placeholderHttps": "https://..."
+      "placeholderHttps": "https://...",
+      "route": "Tuyến đường",
+      "routes": "Tuyến đường",
+      "addRoute": "Thêm tuyến đường",
+      "removeRoute": "Xóa tuyến đường",
+      "noRoutesYet": "Chưa có tuyến đường nào",
+      "fromLocation": "Từ",
+      "toLocation": "Đến",
+      "requiredFromLocation": "Cần chọn hoặc nhập địa điểm đi",
+      "requiredToLocation": "Cần chọn hoặc nhập địa điểm đến",
+      "customLocation": "Địa điểm tùy chỉnh...",
+      "searchLocation": "Tìm kiếm...",
+      "noLocationMatch": "Không có địa điểm phù hợp",
+      "locationVI": "Địa điểm (VI)",
+      "locationEN": "Địa điểm (EN)"
     },
     "accommodations": {
       "sectionTitle": "Lưu trú",
@@ -2464,7 +2484,12 @@
       "placeholderPricingType": "Theo người, Cố định...",
       "placeholderPrice": "Tùy chọn",
       "placeholderTicketInfo": "Mã đặt vé...",
-      "placeholderNote": "Xe có điều hòa..."
+      "placeholderNote": "Xe có điều hòa...",
+      "type": "Loại",
+      "name": "Tên",
+      "duration": "Thời gian (phút)",
+      "from": "Từ",
+      "to": "Đến"
     },
     "services": {
       "sectionTitle": "Dịch vụ khác",
@@ -2527,6 +2552,19 @@
       "4": "Mất hành lý",
       "5": "Trách nhiệm cá nhân",
       "6": "Thể thao mạo hiểm"
+    },
+    "transportationTypes": {
+      "0": "Máy bay",
+      "1": "Tàu hỏa",
+      "2": "Xe bus",
+      "3": "Ô tô",
+      "4": "Taxi",
+      "5": "Thuyền",
+      "6": "Phà",
+      "7": "Xe máy",
+      "8": "Xe đạp",
+      "9": "Đi bộ",
+      "99": "Khác"
     },
     "nav": {
       "dashboard": "Bảng điều khiển",

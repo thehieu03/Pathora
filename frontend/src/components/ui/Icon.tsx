@@ -2,7 +2,7 @@ import React from "react";
 import {
   ArrowBendUpLeft, ArrowCounterClockwise, ArrowDown, ArrowLeft, ArrowRight, ArrowSquareOut, Bell, Bookmark,
   Buildings, Calendar, CalendarBlank, CaretDoubleLeft, CaretDoubleRight,
-  CaretDown, CaretLeft, CaretRight, ChartBar, Chat, ChatCircle,
+  CaretDown, CaretLeft, CaretRight, CaretUp, ChartBar, Chat, ChatCircle,
   ChatCircleDots, Check, CheckCircle, Certificate, ClipboardText, CheckSquare, Clock,
   Calculator, CreditCard, Cube, CurrencyDollar, CurrencyDollarSimple, Desktop, DeviceMobile, Envelope,
   Eye, EyeSlash, File, FileText, Funnel, Gear, Globe, GraduationCap, Heart,
@@ -95,6 +95,7 @@ const iconMap: Record<string, React.ElementType> = {
   "heroicons:chevron-down": CaretDown,
   "heroicons:chevron-left": CaretLeft,
   "heroicons:chevron-right": CaretRight,
+  "heroicons:chevron-up": CaretUp,
   "heroicons:clipboard-document": ClipboardText,
   "heroicons:clipboard-document-check": CheckSquare,
   "heroicons:clipboard-document-list": Note,

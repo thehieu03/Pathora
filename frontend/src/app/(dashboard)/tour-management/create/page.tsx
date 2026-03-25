@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import Icon from "@/components/ui/Icon";
 import SearchableSelect from "@/components/ui/SearchableSelect";
 import TourImageUpload from "@/components/ui/TourImageUpload";
+import { LocationCombobox } from "@/components/partials/tours/LocationCombobox";
 import LanguageTabs, {
   type SupportedLanguage,
 } from "@/components/ui/LanguageTabs";
@@ -578,6 +579,20 @@ export default function CreateTourPage() {
     t("tourAdmin.insuranceTypes.6"),
   ];
 
+  const transportationTypes = [
+    t("tourAdmin.transportationTypes.0"),
+    t("tourAdmin.transportationTypes.1"),
+    t("tourAdmin.transportationTypes.2"),
+    t("tourAdmin.transportationTypes.3"),
+    t("tourAdmin.transportationTypes.4"),
+    t("tourAdmin.transportationTypes.5"),
+    t("tourAdmin.transportationTypes.6"),
+    t("tourAdmin.transportationTypes.7"),
+    t("tourAdmin.transportationTypes.8"),
+    t("tourAdmin.transportationTypes.9"),
+    t("tourAdmin.transportationTypes.99"),
+  ];
+
   /* ── Layout state ─────────────────────────────────────────── */
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -632,6 +647,7 @@ export default function CreateTourPage() {
   /* ── Step 5: Locations ────────────────────────────────────── */
   const [locations, setLocations] = useState<LocationForm[]>([emptyLocation()]);
 
+/* ── Route UI State ──────────────────────────────────────── */  const [expandedRoutes, setExpandedRoutes] = useState<Record<string, boolean>>({});  const toggleActivityRoute = (pi: number, di: number, ai: number, ri?: number) => {    const key = ri !== undefined      ? pi + "_" + di + "_" + ai + "_" + ri      : pi + "_" + di + "_" + ai;    setExpandedRoutes((prev) => ({ ...prev, [key]: !prev[key] }));  };
   /* ── Step 6: Transportation ───────────────────────────────── */
   const [transportations, setTransportations] = useState<TransportationForm[]>([
     emptyTransportation(),
@@ -680,26 +696,33 @@ export default function CreateTourPage() {
       currentStep, thumbnail, images.length]);
 
   useEffect(() => {
-    const timeoutId = setTimeout(saveDraft, 2000);
+    const timeoutId = setTimeout(saveDraft, 180000); // 3 minutes
     return () => clearTimeout(timeoutId);
   }, [saveDraft]);
 
-  // Load draft on mount
+  // Load draft on mount — show restore dialog
   useEffect(() => {
     const saved = localStorage.getItem(AUTOSAVE_KEY);
-    if (saved) {
-      try {
-        const draft = JSON.parse(saved);
-        if (draft.basicInfo) setBasicInfo(draft.basicInfo);
+    if (!saved) return;
+    try {
+      const draft = JSON.parse(saved);
+      if (!draft.basicInfo) return;
+      const confirmed = window.confirm(
+        t("toast.draftRestoreConfirm", "A draft was found from your previous session. Do you want to restore it?"),
+      );
+      if (confirmed) {
+        setBasicInfo(draft.basicInfo);
         if (draft.selectedPricingPolicyId) setSelectedPricingPolicyId(draft.selectedPricingPolicyId);
         if (draft.selectedDepositPolicyId) setSelectedDepositPolicyId(draft.selectedDepositPolicyId);
         if (draft.selectedCancellationPolicyId) setSelectedCancellationPolicyId(draft.selectedCancellationPolicyId);
         if (draft.selectedVisaPolicyId) setSelectedVisaPolicyId(draft.selectedVisaPolicyId);
         if (draft.currentStep !== undefined) setCurrentStep(draft.currentStep);
         toast.info(t("toast.draftRestored", "Draft restored from previous session"));
-      } catch {
-        // Invalid draft data
+      } else {
+        localStorage.removeItem(AUTOSAVE_KEY);
       }
+    } catch {
+      // Invalid draft data
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -818,6 +841,62 @@ export default function CreateTourPage() {
               );
             }
           });
+
+          // Validate routes
+          act.routes.forEach((route, ri) => {
+            // Validate from/to: at least one of index/custom must have value
+            const hasFrom = route.fromLocationIndex !== "" || route.fromLocationCustom.trim() !== "";
+            const hasTo = route.toLocationIndex !== "" || route.toLocationCustom.trim() !== "";
+
+            if (!hasFrom) {
+              newErrors[`route_${planIdx}_${actIdx}_${ri}_from`] = t(
+                "tourAdmin.itineraries.requiredFromLocation",
+                "From location is required",
+              );
+            }
+            if (!hasTo) {
+              newErrors[`route_${planIdx}_${actIdx}_${ri}_to`] = t(
+                "tourAdmin.itineraries.requiredToLocation",
+                "To location is required",
+              );
+            }
+
+            // Validate dangling reference: index >= locations.length
+            if (route.fromLocationIndex !== "" && parseInt(route.fromLocationIndex) >= locations.length) {
+              newErrors[`route_${planIdx}_${actIdx}_${ri}_from`] = t(
+                "tourAdmin.validation.locationRemoved",
+                "Referenced location was removed",
+              );
+            }
+            if (route.toLocationIndex !== "" && parseInt(route.toLocationIndex) >= locations.length) {
+              newErrors[`route_${planIdx}_${actIdx}_${ri}_to`] = t(
+                "tourAdmin.validation.locationRemoved",
+                "Referenced location was removed",
+              );
+            }
+
+            // Validate duration >= 0
+            if (route.durationMinutes.trim()) {
+              const dur = Number(route.durationMinutes);
+              if (Number.isNaN(dur) || dur < 0) {
+                newErrors[`route_${planIdx}_${actIdx}_${ri}_duration`] = t(
+                  "tourAdmin.invalidDuration",
+                  "Invalid duration",
+                );
+              }
+            }
+
+            // Validate price >= 0
+            if (route.price.trim()) {
+              const price = Number(route.price);
+              if (Number.isNaN(price) || price < 0) {
+                newErrors[`route_${planIdx}_${actIdx}_${ri}_price`] = t(
+                  "tourAdmin.invalidPrice",
+                  "Invalid price",
+                );
+              }
+            }
+          });
         });
       });
     }
@@ -915,6 +994,38 @@ export default function CreateTourPage() {
     const newErrors = collectStepErrors(step, packageIndexOverride);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Real-time field validation on blur
+  const validateField = (field: string, value: string, isOptional = false) => {
+    const trimmed = value.trim();
+    if (!isOptional && !trimmed) {
+      setErrors((prev) => ({ ...prev, [field]: t("tourAdmin.required", "Required") }));
+    } else {
+      setErrors((prev) => {
+        const { [field]: _, ...rest } = prev;
+        return rest;
+      });
+    }
+  };
+
+  const validateFieldPositiveNumber = (field: string, value: string, isOptional = false) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      if (!isOptional) {
+        setErrors((prev) => ({ ...prev, [field]: t("tourAdmin.required", "Required") }));
+      }
+    } else {
+      const num = Number(trimmed);
+      if (isNaN(num) || num < 0) {
+        setErrors((prev) => ({ ...prev, [field]: t("tourAdmin.invalidPrice", "Invalid price") }));
+      } else {
+        setErrors((prev) => {
+          const { [field]: _, ...rest } = prev;
+          return rest;
+        });
+      }
+    }
   };
 
   const goNext = () => {
@@ -1112,7 +1223,7 @@ export default function CreateTourPage() {
   const addRoute = (pi: number, di: number, ai: number) => {
     setDayPlans((prev) => {
       const updated = [...prev];
-      updated[pi].days[di].activities[ai].routes.push(emptyRoute());
+      updated[pi][di].activities[ai].routes.push(emptyRoute());
       return updated;
     });
   };
@@ -1120,7 +1231,7 @@ export default function CreateTourPage() {
   const removeRoute = (pi: number, di: number, ai: number, ri: number) => {
     setDayPlans((prev) => {
       const updated = [...prev];
-      updated[pi].days[di].activities[ai].routes.splice(ri, 1);
+      updated[pi][di].activities[ai].routes.splice(ri, 1);
       return updated;
     });
   };
@@ -1128,7 +1239,7 @@ export default function CreateTourPage() {
   const updateRoute = (pi: number, di: number, ai: number, ri: number, field: keyof ActivityRouteForm, value: string) => {
     setDayPlans((prev) => {
       const updated = [...prev];
-      (updated[pi].days[di].activities[ai].routes[ri] as any)[field] = value;
+      (updated[pi][di].activities[ai].routes[ri] as any)[field] = value;
       return updated;
     });
   };
@@ -1398,6 +1509,7 @@ export default function CreateTourPage() {
 
     try {
       setSaving(true);
+      toast.loading(t("tourAdmin.creatingTour", "Creating tour..."), { toastId: "creating-tour" });
       const formData = buildCreateTourFormData({
         basicInfo,
         thumbnail,
@@ -1446,6 +1558,7 @@ export default function CreateTourPage() {
 
       await tourService.createTour(formData);
       localStorage.removeItem(AUTOSAVE_KEY);
+      toast.dismiss("creating-tour");
       toast.success(t("tourAdmin.createSuccess", "Tour created successfully!"));
       router.push("/tour-management");
     } catch (error: unknown) {
@@ -1455,6 +1568,7 @@ export default function CreateTourPage() {
         ? errorDetail
         : t("tourAdmin.createError", "Failed to create tour");
       console.error("Failed to create tour:", errorDetail);
+      toast.dismiss("creating-tour");
       toast.error(displayMsg);
     } finally {
       setSaving(false);
@@ -1478,6 +1592,21 @@ export default function CreateTourPage() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Full-screen saving overlay */}
+      {saving && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-sm mx-4">
+            <Icon icon="heroicons:arrow-path" className="size-12 text-orange-500 animate-spin" />
+            <p className="text-base font-semibold text-slate-900 dark:text-white">
+              {t("tourAdmin.creatingTour", "Creating tour...")}
+            </p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
+              {t("tourAdmin.creatingTourHint", "Please wait while we publish your tour.")}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -1512,7 +1641,8 @@ export default function CreateTourPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => router.push("/tour-management")}
-                className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+                disabled={saving}
+                className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors disabled:opacity-50">
                 {t("tourAdmin.createPage.cancel")}
               </button>
               <button
@@ -1520,7 +1650,8 @@ export default function CreateTourPage() {
                   saveDraft();
                   toast.success(t("toast.draftSaved", "Draft saved"));
                 }}
-                className="px-4 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
+                disabled={saving}
+                className="px-4 py-2 text-sm font-medium border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors disabled:opacity-50">
                 {t("tourAdmin.createPage.saveDraft")}
               </button>
               <button
@@ -1613,20 +1744,33 @@ export default function CreateTourPage() {
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       {t("tourAdmin.basicInfo.tourName")} <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={basicInfo.tourName}
-                      onChange={(e) =>
-                        setBasicInfo((prev) => ({
-                          ...prev,
-                          tourName: e.target.value,
-                        }))
-                      }
-                      placeholder={t("placeholder.enterTourName")}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={basicInfo.tourName}
+                        onChange={(e) =>
+                          setBasicInfo((prev) => ({
+                            ...prev,
+                            tourName: e.target.value,
+                          }))
+                        }
+                        onBlur={(e) => validateField("tourName", e.target.value)}
+                        placeholder={t("placeholder.enterTourName")}
+                        className={`w-full px-3 py-2 pr-8 text-sm rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition ${
+                          errors.tourName
+                            ? "border-red-400 dark:border-red-500"
+                            : "border-slate-300 dark:border-slate-600"
+                        }`}
+                      />
+                      {errors.tourName && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+                          <Icon icon="heroicons:x-circle" className="size-4" />
+                        </span>
+                      )}
+                    </div>
                     {errors.tourName && (
-                      <p className="text-red-500 text-xs mt-1">
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <Icon icon="heroicons:exclamation-triangle" className="size-3" />
                         {errors.tourName}
                       </p>
                     )}
@@ -1637,20 +1781,33 @@ export default function CreateTourPage() {
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       {t("tourAdmin.basicInfo.shortDescription")} <span className="text-red-500">*</span>
                     </label>
-                    <textarea
-                      value={basicInfo.shortDescription}
-                      onChange={(e) =>
-                        setBasicInfo((prev) => ({
-                          ...prev,
-                          shortDescription: e.target.value,
-                        }))
-                      }
-                      rows={2}
-                      placeholder={t("placeholder.briefTourDescription")}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                    />
+                    <div className="relative">
+                      <textarea
+                        value={basicInfo.shortDescription}
+                        onChange={(e) =>
+                          setBasicInfo((prev) => ({
+                            ...prev,
+                            shortDescription: e.target.value,
+                          }))
+                        }
+                        onBlur={(e) => validateField("shortDescription", e.target.value)}
+                        rows={2}
+                        placeholder={t("placeholder.briefTourDescription")}
+                        className={`w-full px-3 py-2 pr-8 text-sm rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none ${
+                          errors.shortDescription
+                            ? "border-red-400 dark:border-red-500"
+                            : "border-slate-300 dark:border-slate-600"
+                        }`}
+                      />
+                      {errors.shortDescription && (
+                        <span className="absolute right-3 top-3 text-red-500">
+                          <Icon icon="heroicons:x-circle" className="size-4" />
+                        </span>
+                      )}
+                    </div>
                     {errors.shortDescription && (
-                      <p className="text-red-500 text-xs mt-1">
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <Icon icon="heroicons:exclamation-triangle" className="size-3" />
                         {errors.shortDescription}
                       </p>
                     )}
@@ -1661,18 +1818,36 @@ export default function CreateTourPage() {
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                       {t("tourAdmin.basicInfo.longDescription")}
                     </label>
-                    <textarea
-                      value={basicInfo.longDescription}
-                      onChange={(e) =>
-                        setBasicInfo((prev) => ({
-                          ...prev,
-                          longDescription: e.target.value,
-                        }))
-                      }
-                      rows={4}
-                      placeholder={t("placeholder.detailedTourDescription")}
-                      className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none"
-                    />
+                    <div className="relative">
+                      <textarea
+                        value={basicInfo.longDescription}
+                        onChange={(e) =>
+                          setBasicInfo((prev) => ({
+                            ...prev,
+                            longDescription: e.target.value,
+                          }))
+                        }
+                        onBlur={(e) => validateField("longDescription", e.target.value)}
+                        rows={4}
+                        placeholder={t("placeholder.detailedTourDescription")}
+                        className={`w-full px-3 py-2 pr-8 text-sm rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition resize-none ${
+                          errors.longDescription
+                            ? "border-red-400 dark:border-red-500"
+                            : "border-slate-300 dark:border-slate-600"
+                        }`}
+                      />
+                      {errors.longDescription && (
+                        <span className="absolute right-3 top-3 text-red-500">
+                          <Icon icon="heroicons:x-circle" className="size-4" />
+                        </span>
+                      )}
+                    </div>
+                    {errors.longDescription && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                        <Icon icon="heroicons:exclamation-triangle" className="size-3" />
+                        {errors.longDescription}
+                      </p>
+                    )}
                   </div>
 
                   {/* SEO Title */}
@@ -1957,18 +2132,35 @@ export default function CreateTourPage() {
                         <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">
                           {t("tourAdmin.packages.basePrice")} <span className="text-red-500">*</span>
                         </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={cls.basePrice}
-                          onChange={(e) =>
-                            updateClassification(clsI, "basePrice", e.target.value)
-                          }
-                          placeholder={t("tourAdmin.packages.placeholderBasePrice")}
-                          className="w-full px-3 py-2 text-sm rounded-xl border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
-                        />
+                        <div className="relative">
+                          <input
+                            type="number"
+                            min="0"
+                            value={cls.basePrice}
+                            onChange={(e) =>
+                              updateClassification(clsI, "basePrice", e.target.value)
+                            }
+                            onBlur={(e) =>
+                              validateFieldPositiveNumber(`cls_${clsI}_basePrice`, e.target.value)
+                            }
+                            placeholder={t("tourAdmin.packages.placeholderBasePrice")}
+                            className={`w-full px-3 py-2 pr-8 text-sm rounded-xl border bg-white dark:bg-slate-800 text-stone-900 dark:text-white placeholder:text-stone-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition ${
+                              errors[`cls_${clsI}_basePrice`]
+                                ? "border-red-400 dark:border-red-500"
+                                : "border-stone-300 dark:border-stone-600"
+                            }`}
+                          />
+                          {errors[`cls_${clsI}_basePrice`] && (
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+                              <Icon icon="heroicons:x-circle" className="size-4" />
+                            </span>
+                          )}
+                        </div>
                         {errors[`cls_${clsI}_basePrice`] && (
-                          <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_basePrice`]}</p>
+                          <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                            <Icon icon="heroicons:exclamation-triangle" className="size-3" />
+                            {errors[`cls_${clsI}_basePrice`]}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -1987,17 +2179,32 @@ export default function CreateTourPage() {
                           <label className="block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1">
                             {t("tourAdmin.packages.packageType")} <span className="text-red-500">*</span>
                           </label>
-                          <select
-                            value={findPackageTypeOption(cls.name)?.key ?? ""}
-                            onChange={(e) => updateClassificationPackageTypeVi(clsI, e.target.value)}
-                            className="w-full px-3 py-2 text-sm rounded-lg border border-stone-300 dark:border-stone-600 bg-white dark:bg-slate-800 text-stone-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer">
-                            <option value="">{t("tourAdmin.packages.placeholderPackageType")}</option>
-                            {PACKAGE_TYPE_OPTIONS.map((opt) => (
-                              <option key={opt.key} value={opt.key}>{opt.vi}</option>
-                            ))}
-                          </select>
+                          <div className="relative">
+                            <select
+                              value={findPackageTypeOption(cls.name)?.key ?? ""}
+                              onChange={(e) => updateClassificationPackageTypeVi(clsI, e.target.value)}
+                              onBlur={(e) => validateField(`cls_${clsI}_name`, cls.name)}
+                              className={`w-full px-3 py-2 pr-8 text-sm rounded-lg border bg-white dark:bg-slate-800 text-stone-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition cursor-pointer ${
+                                errors[`cls_${clsI}_name`]
+                                  ? "border-red-400 dark:border-red-500"
+                                  : "border-stone-300 dark:border-stone-600"
+                              }`}>
+                              <option value="">{t("tourAdmin.packages.placeholderPackageType")}</option>
+                              {PACKAGE_TYPE_OPTIONS.map((opt) => (
+                                <option key={opt.key} value={opt.key}>{opt.vi}</option>
+                              ))}
+                            </select>
+                            {errors[`cls_${clsI}_name`] && (
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+                                <Icon icon="heroicons:x-circle" className="size-4" />
+                              </span>
+                            )}
+                          </div>
                           {errors[`cls_${clsI}_name`] && (
-                            <p className="text-red-500 text-xs mt-1">{errors[`cls_${clsI}_name`]}</p>
+                            <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                              <Icon icon="heroicons:exclamation-triangle" className="size-3" />
+                              {errors[`cls_${clsI}_name`]}
+                            </p>
                           )}
                         </div>
                         <div>
@@ -2531,6 +2738,224 @@ export default function CreateTourPage() {
                                       {t("tourAdmin.buttons.addLink")}
                                     </button>
                                   </div>
+                                </div>
+
+                                {/* Route Section */}
+                                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                      {t("tourAdmin.itineraries.routes", "Routes")}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => addRoute(ci, di, ai)}
+                                      className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-orange-600 dark:text-orange-400 border border-orange-300 dark:border-orange-500/30 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors">
+                                      <Icon icon="heroicons:plus" className="size-3" />
+                                      {t("tourAdmin.itineraries.addRoute")}
+                                    </button>
+                                  </div>
+
+                                  {act.routes.length === 0 && (
+                                    <p className="text-xs text-slate-400 text-center py-2">
+                                      {t("tourAdmin.itineraries.noRoutesYet", "No routes yet")}
+                                    </p>
+                                  )}
+
+                                  {act.routes.map((route, ri) => {
+                                    const routeKey = ci + "_" + di + "_" + ai + "_" + ri;
+                                    const isExpanded = expandedRoutes[routeKey] ?? false;
+                                    return (
+                                      <div
+                                        key={route.id}
+                                        className="bg-slate-50 dark:bg-slate-800/30 rounded-lg p-3 mb-2 border border-slate-100 dark:border-slate-700/50">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                            {t("tourAdmin.itineraries.route", "Route")} #{ri + 1}
+                                          </span>
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              type="button"
+                                              onClick={() => toggleActivityRoute(ci, di, ai, ri)}
+                                              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                                              <Icon
+                                                icon={isExpanded ? "heroicons:chevron-up" : "heroicons:chevron-down"}
+                                                className="size-3.5"
+                                              />
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() => removeRoute(ci, di, ai, ri)}
+                                              aria-label={t("tourAdmin.itineraries.removeRoute")}
+                                              className="text-red-400 hover:text-red-600 transition-colors">
+                                              <Icon icon="heroicons:trash" className="size-3.5" />
+                                            </button>
+                                          </div>
+                                        </div>
+
+                                        {isExpanded ? (
+                                          <div className="space-y-2">
+                                            {/* From + To LocationCombobox */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  {t("tourAdmin.itineraries.fromLocation", "From")} <span className="text-red-500">*</span>
+                                                </label>
+                                                <LocationCombobox
+                                                  value={route.fromLocationIndex}
+                                                  customValue={route.fromLocationCustom}
+                                                  enCustomValue={route.enFromLocationCustom}
+                                                  locations={locations.map((l) => ({ locationName: l.locationName, enLocationName: l.enLocationName }))}
+                                                  onSelect={(val) => updateRoute(ci, di, ai, ri, "fromLocationIndex", val)}
+                                                  onCustomChange={(val) => updateRoute(ci, di, ai, ri, "fromLocationCustom", val)}
+                                                  onEnCustomChange={(val) => updateRoute(ci, di, ai, ri, "enFromLocationCustom", val)}
+                                                  error={errors[`route_${ci}_${di}_${ai}_${ri}_from`]}
+                                                />
+                                              </div>
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  {t("tourAdmin.itineraries.toLocation", "To")} <span className="text-red-500">*</span>
+                                                </label>
+                                                <LocationCombobox
+                                                  value={route.toLocationIndex}
+                                                  customValue={route.toLocationCustom}
+                                                  enCustomValue={route.enToLocationCustom}
+                                                  locations={locations.map((l) => ({ locationName: l.locationName, enLocationName: l.enLocationName }))}
+                                                  onSelect={(val) => updateRoute(ci, di, ai, ri, "toLocationIndex", val)}
+                                                  onCustomChange={(val) => updateRoute(ci, di, ai, ri, "toLocationCustom", val)}
+                                                  onEnCustomChange={(val) => updateRoute(ci, di, ai, ri, "enToLocationCustom", val)}
+                                                  error={errors[`route_${ci}_${di}_${ai}_${ri}_to`]}
+                                                />
+                                              </div>
+                                            </div>
+
+                                            {/* Transportation Type */}
+                                            <div>
+                                              <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                {t("tourAdmin.transportation.type", "Type")}
+                                              </label>
+                                              <select
+                                                value={route.transportationType}
+                                                onChange={(e) => updateRoute(ci, di, ai, ri, "transportationType", e.target.value)}
+                                                className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-1 focus:ring-orange-500 outline-none transition">
+                                                {TRANSPORTATION_TYPE_OPTIONS.map((opt, idx) => (
+                                                  <option key={opt.value} value={opt.value}>
+                                                    {transportationTypes[idx]}
+                                                  </option>
+                                                ))}
+                                              </select>
+                                            </div>
+
+                                            {/* Transportation Name VI / EN */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  🇻🇳 {t("tourAdmin.transportation.name", "Name (VI)")}
+                                                </label>
+                                                <input
+                                                  type="text"
+                                                  value={route.transportationName}
+                                                  onChange={(e) => updateRoute(ci, di, ai, ri, "transportationName", e.target.value)}
+                                                  placeholder={t("tourAdmin.transportation.placeholderTransportationName", "e.g. Bus")}
+                                                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                                                />
+                                              </div>
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  🇬🇧 {t("tourAdmin.transportation.name", "Name (EN)")}
+                                                </label>
+                                                <input
+                                                  type="text"
+                                                  value={route.enTransportationName}
+                                                  onChange={(e) => updateRoute(ci, di, ai, ri, "enTransportationName", e.target.value)}
+                                                  placeholder="Name in English..."
+                                                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                                                />
+                                              </div>
+                                            </div>
+
+                                            {/* Duration + Price */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  {t("tourAdmin.transportation.duration", "Duration (min)")}
+                                                </label>
+                                                <input
+                                                  type="number"
+                                                  min={0}
+                                                  value={route.durationMinutes}
+                                                  onChange={(e) => updateRoute(ci, di, ai, ri, "durationMinutes", e.target.value)}
+                                                  placeholder="0"
+                                                  className={`w-full px-2 py-1.5 text-xs rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition ${
+                                                    errors[`route_${ci}_${di}_${ai}_${ri}_duration`]
+                                                      ? "border-red-400 dark:border-red-500"
+                                                      : "border-slate-300 dark:border-slate-600"
+                                                  }`}
+                                                />
+                                                {errors[`route_${ci}_${di}_${ai}_${ri}_duration`] && (
+                                                  <p className="text-red-500 text-xs mt-0.5">{errors[`route_${ci}_${di}_${ai}_${ri}_duration`]}</p>
+                                                )}
+                                              </div>
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  {t("tourAdmin.transportation.price", "Price ($)")}
+                                                </label>
+                                                <input
+                                                  type="number"
+                                                  min={0}
+                                                  step={1000}
+                                                  value={route.price}
+                                                  onChange={(e) => updateRoute(ci, di, ai, ri, "price", e.target.value)}
+                                                  placeholder="0"
+                                                  className={`w-full px-2 py-1.5 text-xs rounded-lg border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition ${
+                                                    errors[`route_${ci}_${di}_${ai}_${ri}_price`]
+                                                      ? "border-red-400 dark:border-red-500"
+                                                      : "border-slate-300 dark:border-slate-600"
+                                                  }`}
+                                                />
+                                                {errors[`route_${ci}_${di}_${ai}_${ri}_price`] && (
+                                                  <p className="text-red-500 text-xs mt-0.5">{errors[`route_${ci}_${di}_${ai}_${ri}_price`]}</p>
+                                                )}
+                                              </div>
+                                            </div>
+
+                                            {/* Note VI / EN */}
+                                            <div className="grid grid-cols-2 gap-2">
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  🇻🇳 {t("tourAdmin.itineraries.note", "Note (VI)")}
+                                                </label>
+                                                <input
+                                                  type="text"
+                                                  value={route.note}
+                                                  onChange={(e) => updateRoute(ci, di, ai, ri, "note", e.target.value)}
+                                                  placeholder={t("tourAdmin.itineraries.placeholderAdditionalNotes", "Additional notes...")}
+                                                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                                                />
+                                              </div>
+                                              <div>
+                                                <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                                  🇬🇧 {t("tourAdmin.itineraries.note", "Note (EN)")}
+                                                </label>
+                                                <input
+                                                  type="text"
+                                                  value={route.enNote}
+                                                  onChange={(e) => updateRoute(ci, di, ai, ri, "enNote", e.target.value)}
+                                                  placeholder="Notes in English..."
+                                                  className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 outline-none transition"
+                                                />
+                                              </div>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <div className="text-xs text-slate-400 italic">
+                                            {route.transportationName || t("tourAdmin.itineraries.customLocation", "Custom location...")}
+                                            {" → "}
+                                            {route.transportationName || t("tourAdmin.itineraries.customLocation", "Custom location...")}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             ))}
@@ -3908,7 +4333,8 @@ export default function CreateTourPage() {
               onClick={() =>
                 currentStep === 0 ? router.push("/tour-management") : goPrev()
               }
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+              disabled={saving}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors disabled:opacity-50">
               <Icon icon="heroicons:arrow-left" className="size-4" />
               {currentStep === 0 ? t("tourAdmin.buttons.backToList") : t("tourAdmin.buttons.previous")}
             </button>
@@ -3917,7 +4343,8 @@ export default function CreateTourPage() {
               <button
                 type="button"
                 onClick={goNext}
-                className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                disabled={saving}
+                className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50">
                 {t("tourAdmin.buttons.next")}
                 <Icon icon="heroicons:arrow-right" className="size-4" />
               </button>
