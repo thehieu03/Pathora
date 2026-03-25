@@ -50,6 +50,12 @@ if (!app.Environment.IsDevelopment())
     //    app.UseHttpsRedirection();
 }
 
+// Authentication and Authorization must be before exception handling
+// so that auth challenges (401/403) can set status codes before any response body is written.
+app.UseCors("DefaultCorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+
 // Exception handler is registered via DI (AddExceptionHandler<CustomExceptionHandler>) in AddApiServices().
 
 app.UseResponseCompression();
@@ -58,10 +64,6 @@ app.UseResponseCaching();
 
 app.UseMiddleware<LanguageResolutionMiddleware>();
 app.UseMiddleware<SecurityHeadersMiddleware>();
-
-app.UseCors("DefaultCorsPolicy");
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.UseRateLimiter();
 

@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+namespace Domain.Entities;
 
 using Domain.Entities.Translations;
 

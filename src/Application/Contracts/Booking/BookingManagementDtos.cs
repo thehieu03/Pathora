@@ -399,10 +399,10 @@ public sealed record CheckoutPriceResponse(
     int NumberAdult,
     int NumberChild,
     int NumberInfant,
-    // Base prices from TourInstance
-    decimal AdultPrice,
-    decimal ChildPrice,
-    decimal InfantPrice,
+    // TourInstance.BasePrice — adult (100%) price before PricingPolicy tier application
+    decimal BasePrice,
+    decimal? ChildPrice,
+    decimal? InfantPrice,
     // Calculated prices with tiers
     decimal AdultSubtotal,
     decimal ChildSubtotal,

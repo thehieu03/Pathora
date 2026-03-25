@@ -7,6 +7,7 @@ using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Mails;
 using Domain.UnitOfWork;
+using Domain.Enums;
 using ErrorOr;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -130,22 +131,42 @@ public class IdentityService(
 
     public async Task<ErrorOr<LoginResponse>> Login(LoginRequest request)
     {
-        var userEntity = await _userRepository.FindByEmail(request.Email);
+        UserEntity? userEntity;
+        try
+        {
+            userEntity = await _userRepository.FindByEmail(request.Email);
+        }
+        catch
+        {
+            return Error.Custom(503, ErrorConstants.Auth.ServiceUnavailableCode, ErrorConstants.Auth.ServiceUnavailableDescription);
+        }
+
         if (userEntity is null)
-            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundForInvalidCredentialsDescription);
+        {
+            return Error.Unauthorized(ErrorConstants.Auth.InvalidCredentialsCode, ErrorConstants.Auth.InvalidCredentialsDescription);
+        }
+
+        if (userEntity.IsDeleted || userEntity.Status != UserStatus.Active)
+        {
+            return Error.Forbidden(ErrorConstants.Auth.AccountForbiddenCode, ErrorConstants.Auth.AccountForbiddenDescription);
+        }
 
         var isPasswordValid = _passwordHasher.VerifyHashedPassword(userEntity.Password!, request.Password);
         if (!isPasswordValid)
-            return Error.Validation("User.InvalidPassword", "Email hoặc mật khẩu ");
+        {
+            return Error.Unauthorized(ErrorConstants.Auth.InvalidCredentialsCode, ErrorConstants.Auth.InvalidCredentialsDescription);
+        }
 
         var tokenResult = await _tokenManager.GenerateToken(userEntity);
         if (tokenResult.IsError)
-            return tokenResult.Errors;
+        {
+            return Error.Custom(503, ErrorConstants.Auth.ServiceUnavailableCode, ErrorConstants.Auth.ServiceUnavailableDescription);
+        }
 
         var portalResult = await ResolvePortalAsync(userEntity.Id);
         if (portalResult.IsError)
         {
-            return portalResult.Errors;
+            return Error.Custom(503, ErrorConstants.Auth.ServiceUnavailableCode, ErrorConstants.Auth.ServiceUnavailableDescription);
         }
 
         var (accessToken, refreshToken) = tokenResult.Value;

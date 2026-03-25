@@ -31,6 +31,7 @@ public class CancellationPolicyEntityConfiguration : IEntityTypeConfiguration<Ca
             .HasConversion<string>()
             .HasMaxLength(50)
             .HasDefaultValue(Domain.Enums.CancellationPolicyStatus.Active)
+            .HasSentinel(Domain.Enums.CancellationPolicyStatus.None)
             .IsRequired();
 
         builder.Property(p => p.IsDeleted)

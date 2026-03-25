@@ -163,6 +163,18 @@ public static class ErrorConstants
         public const string EmailTemporarilyLockedCode = "Auth.EmailTemporarilyLocked";
         public static readonly LocalizedMessage EmailTemporarilyLockedDescription =
             new("Email này đã bị tạm khóa do đăng ký thất bại nhiều lần. Vui lòng thử lại sau {0} phút.", "This email has been temporarily locked due to multiple failed registration attempts. Please try again in {0} minutes.");
+
+        public const string InvalidCredentialsCode = "Identity.InvalidCredentials";
+        public static readonly LocalizedMessage InvalidCredentialsDescription =
+            new("Thông tin đăng nhập không hợp lệ", "Invalid username or password");
+
+        public const string AccountForbiddenCode = "Identity.AccountForbidden";
+        public static readonly LocalizedMessage AccountForbiddenDescription =
+            new("Tài khoản đã bị khóa, vô hiệu hóa hoặc hết hạn", "Account is locked, deactivated, or expired");
+
+        public const string ServiceUnavailableCode = "Identity.ServiceUnavailable";
+        public static readonly LocalizedMessage ServiceUnavailableDescription =
+            new("Dịch vụ xác thực tạm thời không khả dụng", "Authentication service is temporarily unavailable");
     }
 
     public static class Booking
@@ -467,6 +479,9 @@ public static class ErrorConstants
             var value when value == TourRequest.InvalidStatusTransitionCode => TourRequest.InvalidStatusTransitionDescription,
             var value when value == User.DuplicateEmailCode => User.DuplicateEmailDescription,
             var value when value == Auth.EmailTemporarilyLockedCode => Auth.EmailTemporarilyLockedDescription,
+            var value when value == Auth.InvalidCredentialsCode => Auth.InvalidCredentialsDescription,
+            var value when value == Auth.AccountForbiddenCode => Auth.AccountForbiddenDescription,
+            var value when value == Auth.ServiceUnavailableCode => Auth.ServiceUnavailableDescription,
             var value when value == User.UnauthorizedCode => User.UnauthorizedDescription,
             var value when value == User.FunctionsNotFoundCode => User.FunctionsNotFoundDescription,
             var value when value == Booking.NotFoundCode => Booking.NotFoundDescription,

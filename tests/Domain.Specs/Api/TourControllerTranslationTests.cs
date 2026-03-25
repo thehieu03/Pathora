@@ -218,9 +218,7 @@ public sealed class TourControllerTranslationTests
                                     {
                                       "name": "Standard VI",
                                       "description": "Desc VI",
-                                      "adultPrice": 1000,
-                                      "childPrice": 500,
-                                      "infantPrice": 100,
+                                      "basePrice": 1000,
                                       "numberOfDay": 3,
                                       "numberOfNight": 2,
                                       "plans": [],
@@ -270,9 +268,7 @@ public sealed class TourControllerTranslationTests
                                     {
                                       "name": "Pkg",
                                       "description": "Desc",
-                                      "adultPrice": 500,
-                                      "childPrice": 250,
-                                      "infantPrice": 50,
+                                      "basePrice": 500,
                                       "numberOfDay": 1,
                                       "numberOfNight": 0,
                                       "plans": [
@@ -326,9 +322,7 @@ public sealed class TourControllerTranslationTests
                                     {
                                       "name": "Pkg",
                                       "description": "Desc",
-                                      "adultPrice": 500,
-                                      "childPrice": 250,
-                                      "infantPrice": 50,
+                                      "basePrice": 500,
                                       "numberOfDay": 1,
                                       "numberOfNight": 0,
                                       "plans": [
@@ -391,9 +385,7 @@ public sealed class TourControllerTranslationTests
                                     {
                                       "name": "Pkg",
                                       "description": "Desc",
-                                      "adultPrice": 500,
-                                      "childPrice": 250,
-                                      "infantPrice": 50,
+                                      "basePrice": 500,
                                       "numberOfDay": 1,
                                       "numberOfNight": 0,
                                       "plans": [],
@@ -592,9 +584,7 @@ public sealed class TourControllerTranslationTests
                                     {
                                       "name": "Cls VI",
                                       "description": "Desc VI",
-                                      "adultPrice": 500,
-                                      "childPrice": 250,
-                                      "infantPrice": 50,
+                                      "basePrice": 500,
                                       "numberOfDay": 1,
                                       "numberOfNight": 0,
                                       "plans": [],

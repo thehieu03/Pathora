@@ -3,17 +3,20 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Data.Migrations
+namespace Infrastructure.src.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260324163456_RefactorTourInstancePricing")]
+    partial class RefactorTourInstancePricing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1272,7 +1275,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Domain.Entities.PaymentTransactionEntity", b =>
@@ -1740,7 +1743,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SiteContents", (string)null);
+                    b.ToTable("SiteContents");
                 });
 
             modelBuilder.Entity("Domain.Entities.SupplierEntity", b =>
@@ -1981,7 +1984,6 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("BasePrice")
-                    b.Property<decimal>("BasePrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("CreatedBy")
@@ -1990,18 +1992,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -2051,12 +2044,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
@@ -2066,9 +2053,6 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<decimal?>("EstimatedCost")
                         .HasColumnType("numeric(18,2)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsOptional")
                         .ValueGeneratedOnAdd()
@@ -2158,51 +2142,6 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("TourDayActivityGuides", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.TourDayActivityResourceLinkEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("TourDayActivityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TourDayActivityId");
-
-                    b.ToTable("TourDayActivityResourceLinks", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Entities.TourDayActivityStatusEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2288,18 +2227,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<int>("DayNumber")
                         .HasColumnType("integer");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -2540,12 +2470,15 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("BasePrice")
+                    b.Property<decimal>("AdultPrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("CancellationReason")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<decimal>("ChildPrice")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<Guid>("ClassificationId")
                         .HasColumnType("uuid");
@@ -2569,6 +2502,12 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .HasDefaultValue(0);
 
+                    b.Property<decimal>("DepositPerPerson")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("DepositPolicyId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("DurationDays")
                         .HasColumnType("integer");
 
@@ -2578,6 +2517,9 @@ namespace Infrastructure.Data.Migrations
                     b.PrimitiveCollection<string>("IncludedServices")
                         .IsRequired()
                         .HasColumnType("jsonb");
+
+                    b.Property<decimal>("InfantPrice")
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("InstanceType")
                         .IsRequired()
@@ -2600,6 +2542,9 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("character varying(500)");
 
                     b.Property<int>("MaxParticipation")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinParticipation")
                         .HasColumnType("integer");
 
                     b.Property<DateTimeOffset>("StartDate")
@@ -2637,9 +2582,14 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<Guid?>("VisaPolicyId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClassificationId");
+
+                    b.HasIndex("DepositPolicyId");
 
                     b.HasIndex("IsDeleted")
                         .HasFilter("\"IsDeleted\" = false");
@@ -2651,49 +2601,11 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("TourInstanceCode")
                         .IsUnique();
 
+                    b.HasIndex("VisaPolicyId");
+
                     b.HasIndex("Status", "InstanceType");
 
                     b.ToTable("TourInstances", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.TourInstanceManagerEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("TourInstanceId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TourInstanceId");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("TourInstanceId", "UserId", "Role")
-                        .IsUnique();
-
-                    b.ToTable("TourInstanceManagers", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.TourInsuranceEntity", b =>
@@ -2719,12 +2631,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("InsuranceName")
                         .IsRequired()
                         .HasMaxLength(300)
@@ -2739,9 +2645,6 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsOptional")
                         .ValueGeneratedOnAdd()
@@ -2807,18 +2710,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -2911,20 +2805,11 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<decimal?>("EntranceFee")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<int?>("EstimatedDurationMinutes")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -2959,13 +2844,7 @@ namespace Infrastructure.Data.Migrations
                     b.Property<TimeOnly?>("OpeningHours")
                         .HasColumnType("time without time zone");
 
-                    b.Property<Guid?>("TourDayActivityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TourEntityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TourId")
+                    b.Property<Guid>("TourDayActivityId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Translations")
@@ -2977,10 +2856,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("LocationType");
 
                     b.HasIndex("TourDayActivityId");
-
-                    b.HasIndex("TourEntityId");
-
-                    b.HasIndex("TourId");
 
                     b.HasIndex("City", "Country");
 
@@ -3003,12 +2878,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<decimal?>("DistanceKm")
                         .HasColumnType("numeric(10,2)");
 
@@ -3021,11 +2890,8 @@ namespace Infrastructure.Data.Migrations
                     b.Property<TimeOnly?>("EstimatedDepartureTime")
                         .HasColumnType("time without time zone");
 
-                    b.Property<Guid?>("FromLocationId")
+                    b.Property<Guid>("FromLocationId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
@@ -3043,7 +2909,7 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<Guid?>("ToLocationId")
+                    b.Property<Guid>("ToLocationId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TourDayActivityId")
@@ -3192,132 +3058,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("Status", "DepartureDate");
 
                     b.ToTable("TourRequests", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.TourResourceEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("CheckInTime")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("CheckOutTime")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("City")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ContactEmail")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ContactPhone")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Country")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("DeletedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<int?>("DurationMinutes")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal?>("EntranceFee")
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<Guid?>("FromLocationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("LastModifiedOnUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<decimal?>("Price")
-                        .HasColumnType("numeric(18,2)");
-
-                    b.Property<string>("PricingType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<bool>("RequiresIndividualTicket")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TicketInfo")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<Guid?>("ToLocationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TourId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Translations")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
-
-                    b.Property<string>("TransportationName")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("TransportationType")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FromLocationId");
-
-                    b.HasIndex("ToLocationId");
-
-                    b.HasIndex("TourId");
-
-                    b.HasIndex("Type");
-
-                    b.ToTable("TourResources", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.UserEntity", b =>
@@ -3810,7 +3550,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasOne("Domain.Entities.TourInstanceEntity", "TourInstance")
                         .WithMany("DynamicPricingTiers")
-                        .HasForeignKey("TourInstanceId");
+                        .HasForeignKey("TourInstanceId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("TourClassification");
 
@@ -3938,17 +3679,6 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("TourGuide");
                 });
 
-            modelBuilder.Entity("Domain.Entities.TourDayActivityResourceLinkEntity", b =>
-                {
-                    b.HasOne("Domain.Entities.TourDayActivityEntity", "TourDayActivity")
-                        .WithMany("ResourceLinks")
-                        .HasForeignKey("TourDayActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TourDayActivity");
-                });
-
             modelBuilder.Entity("Domain.Entities.TourDayActivityStatusEntity", b =>
                 {
                     b.HasOne("Domain.Entities.BookingEntity", "Booking")
@@ -4026,7 +3756,7 @@ namespace Infrastructure.Data.Migrations
 
                             b1.HasKey("TourEntityId");
 
-                            b1.ToTable("Tours", (string)null);
+                            b1.ToTable("Tours");
 
                             b1.WithOwner()
                                 .HasForeignKey("TourEntityId");
@@ -4091,11 +3821,19 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.DepositPolicyEntity", "DepositPolicy")
+                        .WithMany()
+                        .HasForeignKey("DepositPolicyId");
+
                     b.HasOne("Domain.Entities.TourEntity", "Tour")
                         .WithMany()
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.VisaPolicyEntity", "VisaPolicy")
+                        .WithMany()
+                        .HasForeignKey("VisaPolicyId");
 
                     b.OwnsOne("Domain.Entities.ImageEntity", "Thumbnail", b1 =>
                         {
@@ -4125,6 +3863,30 @@ namespace Infrastructure.Data.Migrations
                             b1.HasKey("TourInstanceEntityId");
 
                             b1.ToTable("TourInstances");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TourInstanceEntityId");
+                        });
+
+                    b.OwnsOne("Domain.ValueObjects.TourInstanceGuide", "Guide", b1 =>
+                        {
+                            b1.Property<Guid>("TourInstanceEntityId");
+
+                            b1.Property<string>("AvatarUrl");
+
+                            b1.Property<string>("Experience");
+
+                            b1.PrimitiveCollection<string>("Languages")
+                                .IsRequired();
+
+                            b1.Property<string>("Name")
+                                .IsRequired();
+
+                            b1.HasKey("TourInstanceEntityId");
+
+                            b1.ToTable("TourInstances");
+
+                            b1.ToJson("Guide");
 
                             b1.WithOwner()
                                 .HasForeignKey("TourInstanceEntityId");
@@ -4169,31 +3931,18 @@ namespace Infrastructure.Data.Migrations
 
                     b.Navigation("Classification");
 
+                    b.Navigation("DepositPolicy");
+
+                    b.Navigation("Guide");
+
                     b.Navigation("Images");
 
                     b.Navigation("Thumbnail")
                         .IsRequired();
 
                     b.Navigation("Tour");
-                });
 
-            modelBuilder.Entity("Domain.Entities.TourInstanceManagerEntity", b =>
-                {
-                    b.HasOne("Domain.Entities.TourInstanceEntity", "TourInstance")
-                        .WithMany("Managers")
-                        .HasForeignKey("TourInstanceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("TourInstance");
-
-                    b.Navigation("User");
+                    b.Navigation("VisaPolicy");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourInsuranceEntity", b =>
@@ -4223,19 +3972,8 @@ namespace Infrastructure.Data.Migrations
                     b.HasOne("Domain.Entities.TourDayActivityEntity", "TourDayActivity")
                         .WithMany()
                         .HasForeignKey("TourDayActivityId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Domain.Entities.TourEntity", null)
-                        .WithMany("PlanLocations")
-                        .HasForeignKey("TourEntityId");
-
-                    b.HasOne("Domain.Entities.TourEntity", "Tour")
-                        .WithMany()
-                        .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Tour");
 
                     b.Navigation("TourDayActivity");
                 });
@@ -4245,12 +3983,14 @@ namespace Infrastructure.Data.Migrations
                     b.HasOne("Domain.Entities.TourPlanLocationEntity", "FromLocation")
                         .WithMany()
                         .HasForeignKey("FromLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.TourPlanLocationEntity", "ToLocation")
                         .WithMany()
                         .HasForeignKey("ToLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.TourDayActivityEntity", "TourDayActivity")
                         .WithMany("Routes")
@@ -4287,31 +4027,6 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("TourInstance");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Domain.Entities.TourResourceEntity", b =>
-                {
-                    b.HasOne("Domain.Entities.TourPlanLocationEntity", "FromLocation")
-                        .WithMany()
-                        .HasForeignKey("FromLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domain.Entities.TourPlanLocationEntity", "ToLocation")
-                        .WithMany()
-                        .HasForeignKey("ToLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domain.Entities.TourEntity", "Tour")
-                        .WithMany("Resources")
-                        .HasForeignKey("TourId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FromLocation");
-
-                    b.Navigation("ToLocation");
-
-                    b.Navigation("Tour");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserRoleEntity", b =>
@@ -4420,8 +4135,6 @@ namespace Infrastructure.Data.Migrations
                 {
                     b.Navigation("Accommodation");
 
-                    b.Navigation("ResourceLinks");
-
                     b.Navigation("Routes");
                 });
 
@@ -4440,10 +4153,6 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Domain.Entities.TourEntity", b =>
                 {
                     b.Navigation("Classifications");
-
-                    b.Navigation("PlanLocations");
-
-                    b.Navigation("Resources");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourGuideEntity", b =>
@@ -4456,8 +4165,6 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Domain.Entities.TourInstanceEntity", b =>
                 {
                     b.Navigation("DynamicPricingTiers");
-
-                    b.Navigation("Managers");
                 });
 
             modelBuilder.Entity("Domain.Entities.TourRequestEntity", b =>

@@ -20,7 +20,6 @@ public sealed class PublicHomeControllerTests
             "Ha Long",
             3,
             1000m,
-            900m,
             "Standard",
             null);
 
