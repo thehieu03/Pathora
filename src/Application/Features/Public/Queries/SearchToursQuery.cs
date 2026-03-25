@@ -78,10 +78,9 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
                 t.ShortDescription,
                 GetMainLocation(t),
                 classification?.NumberOfDay ?? 0,
-                classification?.BasePrice ?? 0,
-                0m,
+                classification?.BasePrice ?? 0m,
                 classification?.Name,
-                null);
+                0m);
         }).ToList();
 
         return new PaginatedList<SearchTourVm>(total, result);

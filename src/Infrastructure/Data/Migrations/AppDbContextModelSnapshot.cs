@@ -1981,7 +1981,6 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("BasePrice")
-                    b.Property<decimal>("BasePrice")
                         .HasColumnType("numeric(18,2)");
 
                     b.Property<string>("CreatedBy")

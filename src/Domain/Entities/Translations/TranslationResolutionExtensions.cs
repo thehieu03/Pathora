@@ -75,8 +75,8 @@ public static class TranslationResolutionExtensions
         var (requested, fallback) = ResolveCandidates(entity.Translations, language);
         return new TourPlanRouteTranslationData
         {
-            FromLocationName = requested?.FromLocationName ?? fallback?.FromLocationName ?? (entity.FromLocation?.LocationName ?? string.Empty),
-            ToLocationName = requested?.ToLocationName ?? fallback?.ToLocationName ?? (entity.ToLocation?.LocationName ?? string.Empty),
+            FromLocationName = requested?.FromLocationName ?? fallback?.FromLocationName,
+            ToLocationName = requested?.ToLocationName ?? fallback?.ToLocationName,
             TransportationType = requested?.TransportationType ?? fallback?.TransportationType,
             TransportationName = requested?.TransportationName ?? fallback?.TransportationName ?? entity.TransportationName,
             TicketInfo = requested?.TicketInfo ?? fallback?.TicketInfo,

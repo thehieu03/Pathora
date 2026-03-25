@@ -40,10 +40,9 @@ public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository)
                 t.TourName,
                 t.Thumbnail?.PublicURL,
                 GetMainLocation(t),
-                null,
-                classification?.NumberOfDay ?? 0,
-                classification?.BasePrice ?? 0,
                 0m,
+                classification?.NumberOfDay ?? 0,
+                classification?.BasePrice ?? 0m,
                 classification?.Name);
         }).ToList();
 

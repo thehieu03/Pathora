@@ -61,7 +61,6 @@ public sealed class CreatePublicBookingCommandValidator : AbstractValidator<Crea
 public sealed class CreatePublicBookingCommandHandler(
     IBookingRepository bookingRepository,
     ITourInstanceRepository tourInstanceRepository,
-    IPricingPolicyRepository pricingPolicyRepository,
     IUnitOfWork unitOfWork)
     : ICommandHandler<CreatePublicBookingCommand, ErrorOr<CheckoutPriceResponse>>
 {
@@ -97,9 +96,9 @@ public sealed class CreatePublicBookingCommandHandler(
         }
 
         // Calculate total price
-        var adultPrice = tourInstance.BasePrice;
-        var childPrice = tourInstance.BasePrice;
-        var infantPrice = tourInstance.BasePrice;
+        var adultUnitPrice = tourInstance.BasePrice;
+        var childUnitPrice = tourInstance.BasePrice;
+        var infantUnitPrice = tourInstance.BasePrice;
 
         var adultSubtotal = adultUnitPrice * request.NumberAdult;
         var childSubtotal = childUnitPrice * request.NumberChild;
@@ -146,7 +145,7 @@ public sealed class CreatePublicBookingCommandHandler(
             NumberAdult: request.NumberAdult,
             NumberChild: request.NumberChild,
             NumberInfant: request.NumberInfant,
-            BasePrice: basePrice,
+            BasePrice: adultUnitPrice,
             ChildPrice: childUnitPrice,
             InfantPrice: infantUnitPrice,
             AdultSubtotal: adultSubtotal,
