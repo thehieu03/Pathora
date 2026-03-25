@@ -15,6 +15,8 @@ public static class ValidationMessages
     // ── Password ────────────────────────────────────────────────────────
     public const string PasswordRequired = "Password is required.";
     public const string PasswordMinLength6 = "Password must be at least 6 characters.";
+    public const string PasswordInvalidFormat = "Invalid password format.";
+    public const string PasswordSqlInjectionDetected = "Password contains invalid SQL pattern.";
     public const string NewPasswordRequired = "New password is required.";
     public const string OldPasswordRequired = "Old password is required.";
     public const string PasswordComplexity =

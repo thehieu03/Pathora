@@ -58,6 +58,77 @@ public sealed class AuthControllerRegisterTests
         Assert.Equal("Identity.EmailExists", payload.Errors[0].Details);
     }
 
+    [Fact]
+    public async Task Register_WhenInputInvalid_ShouldReturnBadRequestResponse()
+    {
+        var command = new RegisterCommand(
+            Username: "admin",
+            FullName: "Administrator",
+            Email: "invalid-email-format",
+            Password: "123");
+        var (controller, _) = BuildController(Error.Validation("Identity.InvalidInput", "Sai định dạng input"));
+
+        var actionResult = await controller.Register(command);
+
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
+
+        var payload = Assert.IsType<ResultSharedResponse<object>>(objectResult.Value);
+        Assert.Equal(StatusCodes.Status400BadRequest, payload.StatusCode);
+        Assert.Equal("/api/auth/register", payload.Instance);
+        Assert.Equal("Sai định dạng input", payload.Message);
+        Assert.NotNull(payload.Errors);
+        Assert.Single(payload.Errors);
+        Assert.Equal("Identity.InvalidInput", payload.Errors[0].Details);
+    }
+
+    [Fact]
+    public async Task Register_WhenEmailTemporarilyLocked_ShouldReturnForbiddenResponse()
+    {
+        var command = new RegisterCommand(
+            Username: "admin",
+            FullName: "Administrator",
+            Email: "admin@example.com",
+            Password: "secret123");
+        var (controller, _) = BuildController(Error.Forbidden("Auth.EmailTemporarilyLocked", "Email này đã bị tạm khóa"));
+
+        var actionResult = await controller.Register(command);
+
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        Assert.Equal(StatusCodes.Status403Forbidden, objectResult.StatusCode);
+
+        var payload = Assert.IsType<ResultSharedResponse<object>>(objectResult.Value);
+        Assert.Equal(StatusCodes.Status403Forbidden, payload.StatusCode);
+        Assert.Equal("/api/auth/register", payload.Instance);
+        Assert.NotNull(payload.Errors);
+        Assert.Single(payload.Errors);
+        Assert.Equal("Auth.EmailTemporarilyLocked", payload.Errors[0].Details);
+    }
+
+    [Fact]
+    public async Task Register_WhenLockoutCheckFails_ShouldReturnInternalServerErrorResponse()
+    {
+        var command = new RegisterCommand(
+            Username: "admin",
+            FullName: "Administrator",
+            Email: "admin@example.com",
+            Password: "secret123");
+        var (controller, _) = BuildController(Error.Failure("Auth.LockoutCheckFailed", "Unable to verify registration eligibility"));
+
+        var actionResult = await controller.Register(command);
+
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        Assert.Equal(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
+
+        var payload = Assert.IsType<ResultSharedResponse<object>>(objectResult.Value);
+        Assert.Equal(StatusCodes.Status500InternalServerError, payload.StatusCode);
+        Assert.Equal("/api/auth/register", payload.Instance);
+        Assert.NotNull(payload.Errors);
+        Assert.Single(payload.Errors);
+        Assert.Equal("Auth.LockoutCheckFailed", payload.Errors[0].Details);
+    }
+
+
     private static (AuthController Controller, RegisterCommandProbe Probe) BuildController(ErrorOr<Success> response)
     {
         var services = new ServiceCollection();

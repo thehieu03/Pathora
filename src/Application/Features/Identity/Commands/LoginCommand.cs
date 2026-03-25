@@ -4,6 +4,7 @@ using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
 using Application.Services;
+using System.Text.RegularExpressions;
 
 namespace Application.Features.Identity.Commands;
 
@@ -11,6 +12,10 @@ public sealed record LoginCommand(string Email, string Password) : ICommand<Erro
 
 public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
+    private static readonly Regex SqlInjectionPattern = new(
+        "('\\s*or\\s+\\d+=\\d+|--|;|\\bunion\\b|\\bdrop\\b|\\binsert\\b|\\bdelete\\b|\\bupdate\\b)",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
     public LoginCommandValidator()
     {
         RuleFor(x => x.Email)
@@ -18,7 +23,9 @@ public sealed class LoginCommandValidator : AbstractValidator<LoginCommand>
             .EmailAddress().WithMessage(ValidationMessages.EmailInvalid);
 
         RuleFor(x => x.Password)
-            .NotEmpty().WithMessage(ValidationMessages.PasswordRequired);
+            .NotEmpty().WithMessage(ValidationMessages.PasswordRequired)
+            .Must(password => !SqlInjectionPattern.IsMatch(password))
+            .WithMessage(ValidationMessages.PasswordSqlInjectionDetected);
     }
 }
 
