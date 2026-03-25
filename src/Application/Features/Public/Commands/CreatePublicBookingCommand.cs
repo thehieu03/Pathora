@@ -69,6 +69,8 @@ public sealed class CreatePublicBookingCommandHandler(
         CreatePublicBookingCommand request,
         CancellationToken cancellationToken)
     {
+        _ = pricingPolicyRepository; // unused parameter, kept for future pricing logic
+
         // Verify tour instance exists and is available
         var tourInstance = await tourInstanceRepository.FindById(request.TourInstanceId);
         if (tourInstance == null)
@@ -101,9 +103,9 @@ public sealed class CreatePublicBookingCommandHandler(
         var childPrice = tourInstance.BasePrice;
         var infantPrice = tourInstance.BasePrice;
 
-        var adultSubtotal = adultUnitPrice * request.NumberAdult;
-        var childSubtotal = childUnitPrice * request.NumberChild;
-        var infantSubtotal = infantUnitPrice * request.NumberInfant;
+        var adultSubtotal = adultPrice * request.NumberAdult;
+        var childSubtotal = childPrice * request.NumberChild;
+        var infantSubtotal = infantPrice * request.NumberInfant;
         var subtotal = adultSubtotal + childSubtotal + infantSubtotal;
 
         // Get tax config (simplified - using 0 for now)
@@ -146,9 +148,9 @@ public sealed class CreatePublicBookingCommandHandler(
             NumberAdult: request.NumberAdult,
             NumberChild: request.NumberChild,
             NumberInfant: request.NumberInfant,
-            BasePrice: basePrice,
-            ChildPrice: childUnitPrice,
-            InfantPrice: infantUnitPrice,
+            BasePrice: adultPrice,
+            ChildPrice: childPrice,
+            InfantPrice: infantPrice,
             AdultSubtotal: adultSubtotal,
             ChildSubtotal: childSubtotal,
             InfantSubtotal: infantSubtotal,

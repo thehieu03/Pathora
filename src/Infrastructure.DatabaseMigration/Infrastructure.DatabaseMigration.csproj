@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <PackageReference Include="dbup-postgresql" />
+      <PackageReference Include="BCrypt.Net-Next" />
     </ItemGroup>
 
     <ItemGroup>

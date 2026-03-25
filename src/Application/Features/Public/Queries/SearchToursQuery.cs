@@ -79,9 +79,8 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
                 GetMainLocation(t),
                 classification?.NumberOfDay ?? 0,
                 classification?.BasePrice ?? 0,
-                0m,
                 classification?.Name,
-                null);
+                0m);
         }).ToList();
 
         return new PaginatedList<SearchTourVm>(total, result);
@@ -102,8 +101,13 @@ public sealed class SearchToursQueryHandler(ITourRepository tourRepository)
             return null;
 
         var firstRoute = firstActivity.Routes.FirstOrDefault();
-        return firstRoute?.FromLocation != null
-            ? $"{firstRoute.FromLocation.City}, {firstRoute.FromLocation.Country}"
-            : null;
+        if (firstRoute == null)
+            return null;
+
+        var translation = firstRoute.ResolveTranslation("vi");
+        if (!string.IsNullOrWhiteSpace(translation.FromLocationName))
+            return translation.FromLocationName;
+
+        return firstRoute.Note;
     }
 }

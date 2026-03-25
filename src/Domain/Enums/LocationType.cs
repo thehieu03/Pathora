@@ -12,20 +12,24 @@ public enum LocationType
     NationalPark = 2,
     [Description("Beach")]
     Beach = 3,
+    [Description("Natural Wonder")]
+    NaturalWonder = 4,
+    [Description("Historical Site")]
+    HistoricalSite = 5,
     [Description("Temple")]
-    Temple = 4,
+    Temple = 6,
     [Description("Market")]
-    Market = 5,
+    Market = 7,
     [Description("Restaurant")]
-    Restaurant = 6,
+    Restaurant = 8,
     [Description("Hotel")]
-    Hotel = 7,
+    Hotel = 9,
     [Description("Airport")]
-    Airport = 8,
+    Airport = 10,
     [Description("Train Station")]
-    TrainStation = 9,
+    TrainStation = 11,
     [Description("Bus Station")]
-    BusStation = 10,
+    BusStation = 12,
     [Description("Other")]
     Other = 99
 }
