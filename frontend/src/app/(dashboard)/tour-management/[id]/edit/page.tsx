@@ -534,73 +534,56 @@ export default function EditTourPage() {
       if (thumbnail) formData.append("thumbnail", thumbnail);
       images.forEach((img) => formData.append("images", img));
 
-      classifications.forEach((cls, ci) => {
-        const prefix = `classifications[${ci}]`;
-        if (cls.id) formData.append(`${prefix}.id`, cls.id);
-        formData.append(`${prefix}.name`, cls.name);
-        formData.append(`${prefix}.description`, cls.description);
-        formData.append(`${prefix}.basePrice`, cls.basePrice);
-        formData.append(`${prefix}.durationDays`, cls.durationDays);
+      // Build classifications payload as JSON string (matching backend expectation)
+      const classificationsPayload = classifications.map((cls, ci) => {
+        const numberOfDay = Math.max(parseInt(cls.durationDays, 10) || 1, 1);
+        const basePrice = parseFloat(cls.basePrice) || 0;
+        const plans = (dayPlans[ci] ?? []).map((day) => ({
+          id: day.id || null,
+          dayNumber: Math.max(parseInt(day.dayNumber, 10) || 1, 1),
+          title: day.title,
+          description: day.description || null,
+          activities: day.activities.map((act) => ({
+            id: act.id || null,
+            activityType: act.activityType,
+            title: act.title,
+            description: act.description || null,
+            note: act.note || null,
+            estimatedCost: parseFloat(act.estimatedCost) || 0,
+            isOptional: act.isOptional,
+            startTime: act.startTime || null,
+            endTime: act.endTime || null,
+            routes: [],
+            accommodation: null,
+          })),
+        }));
 
-        const plans = dayPlans[ci] ?? [];
-        plans.forEach((day, di) => {
-          const dayPrefix = `${prefix}.plans[${di}]`;
-          if (day.id) formData.append(`${dayPrefix}.id`, day.id);
-          formData.append(`${dayPrefix}.dayNumber`, day.dayNumber);
-          formData.append(`${dayPrefix}.title`, day.title);
-          formData.append(`${dayPrefix}.description`, day.description);
-          day.activities.forEach((act, ai) => {
-            const actPrefix = `${dayPrefix}.activities[${ai}]`;
-            if (act.id) formData.append(`${actPrefix}.id`, act.id);
-            formData.append(`${actPrefix}.activityType`, act.activityType);
-            formData.append(`${actPrefix}.title`, act.title);
-            formData.append(`${actPrefix}.description`, act.description);
-            formData.append(`${actPrefix}.note`, act.note);
-            formData.append(
-              `${actPrefix}.estimatedCost`,
-              act.estimatedCost || "0",
-            );
-            formData.append(`${actPrefix}.isOptional`, String(act.isOptional));
-            formData.append(`${actPrefix}.startTime`, act.startTime);
-            formData.append(`${actPrefix}.endTime`, act.endTime);
-          });
-        });
+        const ins = (insurances[ci] ?? []).map((insurance) => ({
+          insuranceName: insurance.insuranceName,
+          insuranceType: insurance.insuranceType,
+          insuranceProvider: insurance.insuranceProvider,
+          coverageDescription: insurance.coverageDescription,
+          coverageAmount: parseFloat(insurance.coverageAmount) || 0,
+          coverageFee: parseFloat(insurance.coverageFee) || 0,
+          isOptional: insurance.isOptional,
+          note: insurance.note || null,
+        }));
 
-        const ins = insurances[ci] ?? [];
-        ins.forEach((insurance, ii) => {
-          const insPrefix = `${prefix}.insurances[${ii}]`;
-          if (insurance.id) formData.append(`${insPrefix}.id`, insurance.id);
-          formData.append(
-            `${insPrefix}.insuranceName`,
-            insurance.insuranceName,
-          );
-          formData.append(
-            `${insPrefix}.insuranceType`,
-            insurance.insuranceType,
-          );
-          formData.append(
-            `${insPrefix}.insuranceProvider`,
-            insurance.insuranceProvider,
-          );
-          formData.append(
-            `${insPrefix}.coverageDescription`,
-            insurance.coverageDescription,
-          );
-          formData.append(
-            `${insPrefix}.coverageAmount`,
-            insurance.coverageAmount || "0",
-          );
-          formData.append(
-            `${insPrefix}.coverageFee`,
-            insurance.coverageFee || "0",
-          );
-          formData.append(
-            `${insPrefix}.isOptional`,
-            String(insurance.isOptional),
-          );
-          formData.append(`${insPrefix}.note`, insurance.note);
-        });
+        return {
+          id: cls.id || null,
+          name: cls.name,
+          description: cls.description,
+          basePrice,
+          numberOfDay,
+          numberOfNight: Math.max(numberOfDay - 1, 0),
+          plans,
+          insurances: ins,
+        };
       });
+
+      if (classificationsPayload.length > 0) {
+        formData.append("classifications", JSON.stringify(classificationsPayload));
+      }
 
       await tourService.updateTour(formData);
       toast.success(t("tourAdmin.updateSuccess", "Tour updated successfully!"));
