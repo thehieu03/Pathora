@@ -55,4 +55,5 @@ export const PricingPolicyStatusMap: Record<number, string> = {
 export const TourTypeMap: Record<number, string> = {
   1: "Private",
   2: "Public",
+  3: "Group",
 };

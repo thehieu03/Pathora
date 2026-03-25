@@ -26,7 +26,7 @@ export function PricingTierInput({ tiers, onChange }: PricingTierInputProps) {
 
   const updateTier = (index: number, field: keyof PricingPolicyTier, value: string | number | null) => {
     const updated = [...tiers];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value ?? null };
     onChange(updated);
   };
 
@@ -88,7 +88,7 @@ export function PricingTierInput({ tiers, onChange }: PricingTierInputProps) {
                       </label>
                       <input
                         type="text"
-                        value={tier.label}
+                        value={tier.label ?? ""}
                         onChange={(e) => updateTier(index, "label", e.target.value)}
                         placeholder="Adult, Child, Senior"
                         className="w-full px-3 py-2 border border-stone-200 rounded-2xl text-sm text-stone-700 placeholder-stone-400 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"

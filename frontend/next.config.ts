@@ -118,6 +118,26 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "https",
+        hostname: "wowcher.vn",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "statics.vinpearl.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "travelhalong.com.vn",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "encrypted-tbn0.gstatic.com",
+        pathname: "/**",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "9000",

@@ -102,6 +102,10 @@ export function CancellationPolicyForm({
       }
     }
 
+    // Backend requires: last tier maxDays = int.MaxValue, tiers sorted by minDays, no overlaps
+    const sortedTiers = [...data.tiers].sort((a, b) => a.minDaysBeforeDeparture - b.minDaysBeforeDeparture);
+    sortedTiers[sortedTiers.length - 1].maxDaysBeforeDeparture = 2147483647;
+
     setSaving(true);
     setSubmitError(null);
     try {
@@ -109,7 +113,7 @@ export function CancellationPolicyForm({
         const payload: UpdateCancellationPolicyRequest = {
           id: policy.id,
           tourScope: data.tourScope,
-          tiers: data.tiers,
+          tiers: sortedTiers,
           translations,
         };
         const response = await cancellationPolicyService.update(payload);
@@ -124,7 +128,7 @@ export function CancellationPolicyForm({
       } else {
         const payload: CreateCancellationPolicyRequest = {
           tourScope: data.tourScope,
-          tiers: data.tiers,
+          tiers: sortedTiers,
           translations,
         };
         const response = await cancellationPolicyService.create(payload);
@@ -252,8 +256,8 @@ export function CancellationPolicyForm({
                   <label className="block text-xs font-medium text-stone-600 mb-1.5">
                     {t("cancellationPolicy.form.maxDays", "Max Days Before Departure")}
                     {index === fields.length - 1 && (
-                      <span className="ml-1 text-stone-400 font-normal">
-                        ({t("cancellationPolicy.form.noLimit", "no limit")})
+                      <span className="ml-1 text-amber-600 font-medium text-[10px]">
+                        (∞ no limit)
                       </span>
                     )}
                   </label>
@@ -264,7 +268,7 @@ export function CancellationPolicyForm({
                       min: { value: 0, message: t("cancellationPolicy.validation.cannotBeNegative", "Cannot be negative") },
                       valueAsNumber: true,
                     })}
-                    placeholder={index === fields.length - 1 ? "∞" : undefined}
+                    placeholder={index === fields.length - 1 ? "∞ (no limit)" : undefined}
                     className="block w-full px-3 py-2 border border-stone-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-400 text-sm text-stone-700 hover:border-stone-300 transition-colors"
                   />
                   {errors.tiers?.[index]?.maxDaysBeforeDeparture && (

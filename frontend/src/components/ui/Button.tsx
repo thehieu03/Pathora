@@ -16,8 +16,11 @@ type ButtonProps = {
   iconClass?: string;
   link?: string;
   onClick?: () => void;
+  onMouseEnter?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>;
   ariaLabel?: string;
   suppressHydrationWarning?: boolean;
+  style?: React.CSSProperties;
 };
 
 const LoadingSpinner = ({ loadingClass }: { loadingClass?: string }) => (
@@ -97,8 +100,11 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
   iconClass = "text-[20px]",
   link,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   ariaLabel,
   suppressHydrationWarning,
+  style,
 
 }, ref) => {
   const baseClasses = `btn inline-flex items-center justify-center rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] active:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background ${
@@ -112,9 +118,12 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
         ref={ref as unknown as React.Ref<HTMLAnchorElement>}
         className={baseClasses}
         onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
         aria-label={ariaLabel}
         aria-disabled={disabled || isLoading}
-        suppressHydrationWarning={suppressHydrationWarning}>
+        suppressHydrationWarning={suppressHydrationWarning}
+        style={style}>
         <ButtonContent
           text={text}
           isLoading={isLoading}
@@ -133,11 +142,14 @@ const Button = React.forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPro
       ref={ref as unknown as React.Ref<HTMLButtonElement>}
       type={type}
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       disabled={disabled || isLoading}
       className={baseClasses}
       aria-label={ariaLabel}
       aria-busy={isLoading}
-      suppressHydrationWarning={suppressHydrationWarning}>
+      suppressHydrationWarning={suppressHydrationWarning}
+      style={style}>
       <ButtonContent
         text={text}
         isLoading={isLoading}
