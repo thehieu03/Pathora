@@ -4,8 +4,16 @@ using Domain.Entities.Translations;
 
 public class TourResourceEntity : Aggregate<Guid>
 {
+    private Guid? _fromLocationId;
+    private Guid? _toLocationId;
+
     public Guid TourId { get; set; }
     public virtual TourEntity Tour { get; set; } = null!;
+
+    public Guid? FromLocationId => _fromLocationId;
+    public Guid? ToLocationId => _toLocationId;
+    public virtual TourPlanLocationEntity? FromLocation { get; set; }
+    public virtual TourPlanLocationEntity? ToLocation { get; set; }
     public TourResourceType Type { get; set; }
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
@@ -26,6 +34,9 @@ public class TourResourceEntity : Aggregate<Guid>
     public string? CheckOutTime { get; set; }
     public string? Note { get; set; }
     public Dictionary<string, TourResourceTranslationData> Translations { get; set; } = [];
+
+    public void SetFromLocationId(Guid? id) => _fromLocationId = id;
+    public void SetToLocationId(Guid? id) => _toLocationId = id;
 
     public static TourResourceEntity Create(
         Guid tourId,
@@ -48,9 +59,11 @@ public class TourResourceEntity : Aggregate<Guid>
         string? ticketInfo = null,
         string? checkInTime = null,
         string? checkOutTime = null,
-        string? note = null)
+        string? note = null,
+        Guid? fromLocationId = null,
+        Guid? toLocationId = null)
     {
-        return new TourResourceEntity
+        var entity = new TourResourceEntity
         {
             Id = Guid.CreateVersion7(),
             TourId = tourId,
@@ -78,6 +91,9 @@ public class TourResourceEntity : Aggregate<Guid>
             CreatedOnUtc = DateTimeOffset.UtcNow,
             LastModifiedOnUtc = DateTimeOffset.UtcNow
         };
+        entity.SetFromLocationId(fromLocationId);
+        entity.SetToLocationId(toLocationId);
+        return entity;
     }
 }
 
