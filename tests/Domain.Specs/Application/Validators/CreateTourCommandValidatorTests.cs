@@ -269,7 +269,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard Tour",
                 Description: "Standard package",
                 BasePrice: 1000,
@@ -292,7 +292,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "",
                 Description: "Description",
                 BasePrice: 1000,
@@ -316,7 +316,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: -100,
@@ -340,7 +340,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
@@ -364,13 +364,13 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1 Title",
                     Description: "Day 1 description",
@@ -391,13 +391,13 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "",
                     Description: "Description",
@@ -419,17 +419,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Visit Temple",
                         Description: "Visit ancient temple",
@@ -456,17 +456,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "",
                         Title: "Activity",
                         Description: null,
@@ -494,17 +494,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -539,17 +539,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -585,17 +585,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -631,17 +631,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -651,16 +651,20 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [new RouteDto(
+                            TransportationType: "Bus",
                             FromLocationName: "Hotel",
                             ToLocationName: "Temple",
-                            TransportationType: "Bus",
+                            FromLocationId: null,
+                            ToLocationId: null,
                             TransportationName: null,
                             DurationMinutes: 60,
                             PricingType: null,
                             Price: 20,
                             RequiresIndividualTicket: false,
                             TicketInfo: null,
-                            Note: null)],
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
                         Accommodation: null)])],
                 Insurances: [])
             ]
@@ -678,17 +682,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -698,16 +702,20 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [new RouteDto(
+                            TransportationType: "Bus",
                             FromLocationName: "",
                             ToLocationName: "Temple",
-                            TransportationType: "Bus",
+                            FromLocationId: null,
+                            ToLocationId: null,
                             TransportationName: null,
                             DurationMinutes: 60,
                             PricingType: null,
                             Price: null,
                             RequiresIndividualTicket: false,
                             TicketInfo: null,
-                            Note: null)],
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
                         Accommodation: null)])],
                 Insurances: [])
             ]
@@ -726,17 +734,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
                 NumberOfDay: 3,
                 NumberOfNight: 2,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day 1",
                     Description: "Description",
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Sightseeing",
                         Title: "Activity",
                         Description: null,
@@ -746,16 +754,20 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [new RouteDto(
+                            TransportationType: "Bus",
                             FromLocationName: "Hotel",
                             ToLocationName: "Temple",
-                            TransportationType: "Bus",
+                            FromLocationId: null,
+                            ToLocationId: null,
                             TransportationName: null,
                             DurationMinutes: -10,
                             PricingType: null,
                             Price: null,
                             RequiresIndividualTicket: false,
                             TicketInfo: null,
-                            Note: null)],
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
                         Accommodation: null)])],
                 Insurances: [])
             ]
@@ -774,7 +786,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
@@ -805,7 +817,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
@@ -837,7 +849,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Standard",
                 Description: "Description",
                 BasePrice: 1000,
@@ -958,7 +970,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Free Tour",
                 Description: "Free tour",
                 BasePrice: 0,
@@ -981,7 +993,7 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Invalid",
                 Description: "Bad",
                 BasePrice: -1,
@@ -1033,17 +1045,17 @@ public class CreateTourCommandValidatorTests
     {
         var command = CreateBaseValidCommand() with
         {
-            Classifications = [new ClassificationDto(
+            Classifications = [new ClassificationDto(null,
                 Name: "Test",
                 Description: "Test",
                 BasePrice: 100,
                 NumberOfDay: 1,
                 NumberOfNight: 0,
-                Plans: [new DayPlanDto(
+                Plans: [new DayPlanDto(null,
                     DayNumber: 1,
                     Title: "Day",
                     Description: null,
-                    Activities: [new ActivityDto(
+                    Activities: [new ActivityDto(null,
                         ActivityType: "Transport",
                         Title: "Transfer",
                         Description: null,
@@ -1053,22 +1065,209 @@ public class CreateTourCommandValidatorTests
                         StartTime: null,
                         EndTime: null,
                         Routes: [new RouteDto(
+                            TransportationType: "Bus",
                             FromLocationName: "A",
                             ToLocationName: "B",
-                            TransportationType: "Bus",
+                            FromLocationId: null,
+                            ToLocationId: null,
                             TransportationName: null,
                             DurationMinutes: 0,
                             PricingType: null,
                             Price: 0,
                             RequiresIndividualTicket: false,
                             TicketInfo: null,
-                            Note: null)],
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
                         Accommodation: null)])],
                 Insurances: [])
             ]
         };
         var result = _validator.Validate(command);
         Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region V1: Route with LocationId FK - passes
+
+    [Fact]
+    public void Validate_V1_RouteWithLocationReference_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Transport",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            TransportationType: "Bus",
+                            FromLocationName: null,
+                            ToLocationName: null,
+                            FromLocationId: Guid.NewGuid(),
+                            ToLocationId: Guid.NewGuid(),
+                            TransportationName: null,
+                            DurationMinutes: 30,
+                            PricingType: null,
+                            Price: 10,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region V2: Route missing both From AND To - fails
+
+    [Fact]
+    public void Validate_V2_RouteMissingFromAndTo_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Transport",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            TransportationType: "Bus",
+                            FromLocationName: null,
+                            ToLocationName: null,
+                            FromLocationId: null,
+                            ToLocationId: null,
+                            TransportationName: null,
+                            DurationMinutes: 0,
+                            PricingType: null,
+                            Price: 0,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("FromLocation"));
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("ToLocation"));
+    }
+
+    #endregion
+
+    #region V3-V5: TransportationDto Bilingual Validation
+
+    [Fact]
+    public void Validate_V3_TransportationWithBilingualTranslations_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                TransportationType: "Flight",
+                FromLocationName: "Hanoi",
+                ToLocationName: "HCM",
+                FromLocationId: null,
+                ToLocationId: null,
+                TransportationName: "Vietnam Airlines",
+                DurationMinutes: 120,
+                PricingType: "Per person",
+                Price: 100,
+                RequiresIndividualTicket: false,
+                TicketInfo: "Economy class",
+                Note: null,
+                Translations: new Dictionary<string, TourTransportationTranslationData>
+                {
+                    ["vi"] = new TourTransportationTranslationData("Hà Nội", "TP Hồ Chí Minh", "Vietnam Airlines", "Hạng phổ thông", "Bay thẳng"),
+                    ["en"] = new TourTransportationTranslationData("Hanoi", "Ho Chi Minh City", "Vietnam Airlines", "Economy class", "Direct flight")
+                })]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_V4_TransportationWithLocationReference_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                TransportationType: "Bus",
+                FromLocationName: null,
+                ToLocationName: null,
+                FromLocationId: Guid.NewGuid(),
+                ToLocationId: Guid.NewGuid(),
+                TransportationName: "Tour Bus",
+                DurationMinutes: 60,
+                PricingType: null,
+                Price: 10,
+                RequiresIndividualTicket: false,
+                TicketInfo: null,
+                Note: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_V5_TransportationNegativePrice_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                FromLocationName: "Hanoi",
+                ToLocationName: "HCM",
+                TransportationType: "Flight",
+                FromLocationId: null,
+                ToLocationId: null,
+                TransportationName: null,
+                DurationMinutes: 120,
+                PricingType: "Per person",
+                Price: -50,
+                RequiresIndividualTicket: false,
+                TicketInfo: null,
+                Note: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("price", StringComparison.OrdinalIgnoreCase));
     }
 
     #endregion
@@ -1143,6 +1342,8 @@ public class CreateTourCommandValidatorTests
             Transportations = [new TransportationDto(
                 FromLocationName: "",
                 ToLocationName: "Airport",
+                FromLocationId: null,
+                ToLocationId: null,
                 TransportationType: "Bus",
                 TransportationName: "Airport Shuttle",
                 DurationMinutes: 60,
@@ -1150,7 +1351,8 @@ public class CreateTourCommandValidatorTests
                 Price: 5,
                 RequiresIndividualTicket: false,
                 TicketInfo: null,
-                Note: null)]
+                Note: null,
+                Translations: null)]
         };
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
@@ -1165,6 +1367,8 @@ public class CreateTourCommandValidatorTests
             Transportations = [new TransportationDto(
                 FromLocationName: "Hotel",
                 ToLocationName: "",
+                FromLocationId: null,
+                ToLocationId: null,
                 TransportationType: "Bus",
                 TransportationName: "Airport Shuttle",
                 DurationMinutes: 60,
@@ -1329,6 +1533,159 @@ public class CreateTourCommandValidatorTests
         var result = _validator.Validate(command);
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.PropertyName.Contains("Accommodations"));
+    }
+
+    #endregion
+
+    #region TC60: Activity EstimatedCost Valid Positive - Normal
+
+    [Fact]
+    public void Validate_TC60_ActivityEstimatedCostPositive_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Standard",
+                Description: "Description",
+                BasePrice: 1000,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 150.50m,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [],
+                        Accommodation: null)],
+                    Translations: null)],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC61: Activity EstimatedCost Negative - Abnormal
+
+    [Fact]
+    public void Validate_TC61_ActivityEstimatedCostNegative_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Standard",
+                Description: "Description",
+                BasePrice: 1000,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: -10,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [],
+                        Accommodation: null)],
+                    Translations: null)],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.PropertyName.Contains("EstimatedCost"));
+    }
+
+    #endregion
+
+    #region TC62: Activity EstimatedCost Zero - Boundary (allowed)
+
+    [Fact]
+    public void Validate_TC62_ActivityEstimatedCostZero_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Standard",
+                Description: "Description",
+                BasePrice: 1000,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [],
+                        Accommodation: null)],
+                    Translations: null)],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region TC63: Activity EstimatedCost Null - Normal (optional)
+
+    [Fact]
+    public void Validate_TC63_ActivityEstimatedCostNull_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Standard",
+                Description: "Description",
+                BasePrice: 1000,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day 1",
+                    Description: "Description",
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Sightseeing",
+                        Title: "Activity",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: null,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [],
+                        Accommodation: null)],
+                    Translations: null)],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }
 
     #endregion

@@ -45,6 +45,10 @@ public class TourRepository(AppDbContext context) : ITourRepository
                     .ThenInclude(p => p.Activities)
                         .ThenInclude(a => a.Accommodation)
             .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.ResourceLinks.OrderBy(l => l.Order))
+            .Include(t => t.Classifications)
                 .ThenInclude(c => c.Insurances)
             .AsSplitQuery();
     }
@@ -235,8 +239,9 @@ public class TourRepository(AppDbContext context) : ITourRepository
                     .SelectMany(p => p.Activities)
                     .SelectMany(a => a.Routes)
                     .Any(r =>
-                        (r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(search)) ||
-                        (r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(search))));
+                        r.FromLocation != null &&
+                        ((r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(search)) ||
+                        (r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(search)))));
         }
 
         if (!string.IsNullOrWhiteSpace(destination))
@@ -246,8 +251,9 @@ public class TourRepository(AppDbContext context) : ITourRepository
                 .SelectMany(c => c.Plans)
                 .SelectMany(p => p.Activities)
                 .SelectMany(a => a.Routes)
-                .Any(r => (r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(destLower)) ||
-                          (r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(destLower))));
+                .Any(r => r.FromLocation != null &&
+                          ((r.FromLocation.City != null && r.FromLocation.City.ToLower().Contains(destLower)) ||
+                          (r.FromLocation.Country != null && r.FromLocation.Country.ToLower().Contains(destLower)))));
         }
 
         if (!string.IsNullOrWhiteSpace(classification))

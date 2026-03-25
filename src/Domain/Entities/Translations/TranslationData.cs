@@ -134,4 +134,12 @@ public sealed class TourResourceTranslationData
     public string? Description { get; set; }
     [JsonPropertyName("note")]
     public string? Note { get; set; }
+    [JsonPropertyName("fromLocationName")]
+    public string? FromLocationName { get; set; }
+    [JsonPropertyName("toLocationName")]
+    public string? ToLocationName { get; set; }
+    [JsonPropertyName("transportationName")]
+    public string? TransportationName { get; set; }
+    [JsonPropertyName("ticketInfo")]
+    public string? TicketInfo { get; set; }
 }

@@ -4,26 +4,14 @@ namespace Domain.Enums;
 
 public enum TransportationType
 {
-    [Description("Flight")]
-    Flight = 0,
-    [Description("Train")]
-    Train = 1,
-    [Description("Bus")]
-    Bus = 2,
-    [Description("Car")]
-    Car = 3,
-    [Description("Taxi")]
-    Taxi = 4,
-    [Description("Boat")]
-    Boat = 5,
-    [Description("Ferry")]
-    Ferry = 6,
-    [Description("Motorbike")]
+    Walking = 0,
+    Bus = 1,
+    Train = 2,
+    Flight = 3,
+    Boat = 4,
+    Car = 5,
+    Bicycle = 6,
     Motorbike = 7,
-    [Description("Bicycle")]
-    Bicycle = 8,
-    [Description("Walking")]
-    Walking = 9,
-    [Description("Other")]
+    Taxi = 8,
     Other = 99
 }

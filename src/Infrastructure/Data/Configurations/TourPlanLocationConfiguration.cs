@@ -55,14 +55,23 @@ public class TourPlanLocationConfiguration : IEntityTypeConfiguration<TourPlanLo
             .ConfigureTranslationsJsonb();
 
         builder.Property(l => l.TourDayActivityId)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasIndex(l => l.TourDayActivityId);
 
         builder.HasOne(l => l.TourDayActivity)
             .WithMany()
             .HasForeignKey(l => l.TourDayActivityId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Property(l => l.TourId).IsRequired();
+
+        builder.HasOne(l => l.Tour)
+            .WithMany()
+            .HasForeignKey(l => l.TourId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(l => l.TourId);
 
         builder.HasIndex(l => new { l.City, l.Country });
         builder.HasIndex(l => l.LocationType);

@@ -42,19 +42,19 @@ public sealed record ActivityDto(
 
 public sealed record RouteDto(
     string TransportationType,
-    string? FromLocationName = null,
-    string? ToLocationName = null,
-    Guid? FromLocationId = null,
-    Guid? ToLocationId = null,
-    string? TransportationName = null,
-    int? DurationMinutes = null,
-    string? PricingType = null,
-    decimal? Price = null,
-    bool RequiresIndividualTicket = false,
-    string? TicketInfo = null,
-    string? Note = null,
-    Dictionary<string, TourPlanLocationTranslationData>? Translations = null,
-    Dictionary<string, TourPlanRouteTranslationData>? RouteTranslations = null
+    string? FromLocationName,
+    string? ToLocationName,
+    Guid? FromLocationId,
+    Guid? ToLocationId,
+    string? TransportationName,
+    int? DurationMinutes,
+    string? PricingType,
+    decimal? Price,
+    bool RequiresIndividualTicket,
+    string? TicketInfo,
+    string? Note,
+    Dictionary<string, TourPlanLocationTranslationData>? Translations,
+    Dictionary<string, TourPlanRouteTranslationData>? RouteTranslations
 );
 
 public sealed record InsuranceDto(

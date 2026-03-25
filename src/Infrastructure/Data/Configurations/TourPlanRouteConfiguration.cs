@@ -54,11 +54,13 @@ public class TourPlanRouteConfiguration : IEntityTypeConfiguration<TourPlanRoute
         builder.HasOne(r => r.FromLocation)
             .WithMany()
             .HasForeignKey("FromLocationId")
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
 
         builder.HasOne(r => r.ToLocation)
             .WithMany()
             .HasForeignKey("ToLocationId")
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired(false);
     }
 }

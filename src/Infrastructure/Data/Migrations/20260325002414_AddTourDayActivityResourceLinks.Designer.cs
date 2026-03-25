@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260325002414_AddTourDayActivityResourceLinks")]
+    partial class AddTourDayActivityResourceLinks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2895,10 +2898,7 @@ namespace Infrastructure.Data.Migrations
                     b.Property<TimeOnly?>("OpeningHours")
                         .HasColumnType("time without time zone");
 
-                    b.Property<Guid?>("TourDayActivityId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("TourId")
+                    b.Property<Guid>("TourDayActivityId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Translations")
@@ -2910,8 +2910,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("LocationType");
 
                     b.HasIndex("TourDayActivityId");
-
-                    b.HasIndex("TourId");
 
                     b.HasIndex("City", "Country");
 
@@ -2946,7 +2944,7 @@ namespace Infrastructure.Data.Migrations
                     b.Property<TimeOnly?>("EstimatedDepartureTime")
                         .HasColumnType("time without time zone");
 
-                    b.Property<Guid?>("FromLocationId")
+                    b.Property<Guid>("FromLocationId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("LastModifiedBy")
@@ -2965,7 +2963,7 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<Guid?>("ToLocationId")
+                    b.Property<Guid>("ToLocationId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TourDayActivityId")
@@ -3166,9 +3164,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal?>("EntranceFee")
                         .HasColumnType("numeric(18,2)");
 
-                    b.Property<Guid?>("FromLocationId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
@@ -3198,9 +3193,6 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<Guid?>("ToLocationId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("TourId")
                         .HasColumnType("uuid");
 
@@ -3221,10 +3213,6 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FromLocationId");
-
-                    b.HasIndex("ToLocationId");
 
                     b.HasIndex("TourId");
 
@@ -4136,15 +4124,8 @@ namespace Infrastructure.Data.Migrations
                     b.HasOne("Domain.Entities.TourDayActivityEntity", "TourDayActivity")
                         .WithMany()
                         .HasForeignKey("TourDayActivityId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("Domain.Entities.TourEntity", "Tour")
-                        .WithMany("PlanLocations")
-                        .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Tour");
 
                     b.Navigation("TourDayActivity");
                 });
@@ -4154,12 +4135,14 @@ namespace Infrastructure.Data.Migrations
                     b.HasOne("Domain.Entities.TourPlanLocationEntity", "FromLocation")
                         .WithMany()
                         .HasForeignKey("FromLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.TourPlanLocationEntity", "ToLocation")
                         .WithMany()
                         .HasForeignKey("ToLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.TourDayActivityEntity", "TourDayActivity")
                         .WithMany("Routes")
@@ -4200,25 +4183,11 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Domain.Entities.TourResourceEntity", b =>
                 {
-                    b.HasOne("Domain.Entities.TourPlanLocationEntity", "FromLocation")
-                        .WithMany()
-                        .HasForeignKey("FromLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("Domain.Entities.TourPlanLocationEntity", "ToLocation")
-                        .WithMany()
-                        .HasForeignKey("ToLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Domain.Entities.TourEntity", "Tour")
                         .WithMany("Resources")
                         .HasForeignKey("TourId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("FromLocation");
-
-                    b.Navigation("ToLocation");
 
                     b.Navigation("Tour");
                 });
@@ -4349,8 +4318,6 @@ namespace Infrastructure.Data.Migrations
             modelBuilder.Entity("Domain.Entities.TourEntity", b =>
                 {
                     b.Navigation("Classifications");
-
-                    b.Navigation("PlanLocations");
 
                     b.Navigation("Resources");
                 });

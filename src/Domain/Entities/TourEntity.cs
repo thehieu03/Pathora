@@ -110,6 +110,7 @@ public class TourEntity : Aggregate<Guid>
     /// </summary>
     public virtual List<TourClassificationEntity> Classifications { get; set; } = [];
     public virtual List<TourResourceEntity> Resources { get; set; } = [];
+    public virtual List<TourPlanLocationEntity> PlanLocations { get; set; } = [];
 
     /// <summary>
     /// Khóa ngoại tham chiếu đến chính sách visa áp dụng cho tour quốc

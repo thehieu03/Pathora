@@ -8,8 +8,8 @@ public class TourPlanRouteEntity : Aggregate<Guid>
     public TransportationType TransportationType { get; set; }
     public string? TransportationName { get; set; }
     public string? TransportationNote { get; set; }
-    public virtual TourPlanLocationEntity FromLocation { get; set; } = null!;
-    public virtual TourPlanLocationEntity ToLocation { get; set; } = null!;
+    public virtual TourPlanLocationEntity? FromLocation { get; set; }
+    public virtual TourPlanLocationEntity? ToLocation { get; set; }
     public TimeOnly? EstimatedDepartureTime { get; set; }
     public TimeOnly? EstimatedArrivalTime { get; set; }
     public int? DurationMinutes { get; set; }

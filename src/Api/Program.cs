@@ -47,7 +47,7 @@ await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAs
 if (!app.Environment.IsDevelopment())
 {
     app.UseHsts();
-//    app.UseHttpsRedirection();
+    //    app.UseHttpsRedirection();
 }
 
 app.UseExceptionHandler(appError =>

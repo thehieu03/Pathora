@@ -84,10 +84,41 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] TourScope tourScope = TourScope.Domestic,
         [FromForm] CustomerSegment customerSegment = CustomerSegment.Group)
     {
-        var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
-        var imageDtos = images is not null && images.Count > 0
-            ? await UploadFiles(images)
-            : null;
+        // Validate JSON fields before processing
+        var validationErrors = new Dictionary<string, string[]>();
+
+        if (!TryParseTranslations(translations, out _, out var translationError))
+            validationErrors["translations"] = [translationError!];
+        if (!TryParseClassifications(classifications, out _, out var classificationError))
+            validationErrors["classifications"] = [classificationError!];
+        if (!TryParseAccommodations(accommodations, out _, out var accommodationError))
+            validationErrors["accommodations"] = [accommodationError!];
+        if (!TryParseLocations(locations, out _, out var locationError))
+            validationErrors["locations"] = [locationError!];
+        if (!TryParseTransportations(transportations, out _, out var transportationError))
+            validationErrors["transportations"] = [transportationError!];
+        if (!TryParseServices(services, out _, out var serviceError))
+            validationErrors["services"] = [serviceError!];
+
+        if (validationErrors.Count > 0)
+            return BadRequest(new ValidationProblemDetails(validationErrors));
+
+        // Upload thumbnail and images in parallel
+        ImageInputDto? thumbnailDto = null;
+        List<ImageInputDto>? imageDtos = null;
+        if (thumbnail is not null || (images is not null && images.Count > 0))
+        {
+            var tasks = new List<Task<ImageInputDto>>();
+            if (thumbnail is not null)
+                tasks.Add(UploadSingleFile(thumbnail));
+            if (images is not null && images.Count > 0)
+                tasks.AddRange(images.Select(f => UploadSingleFile(f)));
+
+            var results = await Task.WhenAll(tasks);
+            thumbnailDto = results[0];
+            imageDtos = results.Length > 1 ? results.Skip(1).ToList() : null;
+        }
+
         var translationData = ParseTranslations(translations);
         var classificationData = ParseClassifications(classifications);
         var accommodationData = ParseAccommodations(accommodations);
@@ -159,17 +190,19 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] TourStatus status,
         IFormFile? thumbnail,
         [FromForm] List<IFormFile>? images,
-        [FromForm] string? translations = null)
+        [FromForm] string? translations = null,
+        [FromForm] string? classifications = null)
     {
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
             ? await UploadFiles(images)
             : null;
         var translationData = ParseTranslations(translations);
+        var classificationData = ParseClassifications(classifications);
 
         var command = new UpdateTourCommand(
             id, tourName, shortDescription, longDescription,
-            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData);
+            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData, classificationData);
 
         var result = await Sender.Send(command);
         return HandleResult(result);
@@ -288,6 +321,170 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
 
         propertyValue = default;
         return false;
+    }
+
+    private static bool TryParseTranslations(string? translations, out Dictionary<string, TourTranslationData>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(translations))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            using var document = JsonDocument.Parse(translations);
+            if (document.RootElement.ValueKind != JsonValueKind.Object)
+            {
+                result = null;
+                error = "translations must be a JSON object.";
+                return false;
+            }
+
+            var dict = new Dictionary<string, TourTranslationData>(StringComparer.OrdinalIgnoreCase);
+            foreach (var languageProperty in document.RootElement.EnumerateObject())
+            {
+                if (languageProperty.Value.ValueKind != JsonValueKind.Object)
+                    continue;
+
+                var translation = new TourTranslationData
+                {
+                    TourName = GetStringProperty(languageProperty.Value, "tourName", "description"),
+                    ShortDescription = GetStringProperty(languageProperty.Value, "shortDescription"),
+                    LongDescription = GetStringProperty(languageProperty.Value, "longDescription"),
+                    SEOTitle = GetNullableStringProperty(languageProperty.Value, "seoTitle", "sEOTitle"),
+                    SEODescription = GetNullableStringProperty(languageProperty.Value, "seoDescription", "sEODescription")
+                };
+
+                dict[languageProperty.Name] = translation;
+            }
+
+            result = dict;
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryParseClassifications(string? classifications, out List<ClassificationDto>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(classifications))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            result = JsonSerializer.Deserialize<List<ClassificationDto>>(classifications, ClassificationJsonOptions);
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryParseAccommodations(string? accommodations, out List<AccommodationDto>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(accommodations))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            result = JsonSerializer.Deserialize<List<AccommodationDto>>(accommodations, TranslationJsonOptions);
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryParseLocations(string? locations, out List<LocationDto>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(locations))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            result = JsonSerializer.Deserialize<List<LocationDto>>(locations, TranslationJsonOptions);
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryParseTransportations(string? transportations, out List<TransportationDto>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(transportations))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            result = JsonSerializer.Deserialize<List<TransportationDto>>(transportations, TranslationJsonOptions);
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static bool TryParseServices(string? services, out List<ServiceDto>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(services))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            result = JsonSerializer.Deserialize<List<ServiceDto>>(services, TranslationJsonOptions);
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
     }
 
     private static List<ClassificationDto>? ParseClassifications(string? classifications)

@@ -173,7 +173,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ClassificationDto(null,
                     Name: "Standard Package",
                     Description: "Standard 3-day package",
                     BasePrice: 1000,
@@ -181,13 +181,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 2,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new DayPlanDto(null,
                             DayNumber: 1,
                             Title: "Day 1",
                             Description: "Arrival",
                             Activities:
                             [
-                                new ActivityDto(
+                                new ActivityDto(null,
                                     ActivityType: "Transport",
                                     Title: "Airport Pickup",
                                     Description: "Pick up from airport",
@@ -199,9 +199,11 @@ public sealed class TourServiceTests
                                     Routes:
                                     [
                                         new RouteDto(
+                                            TransportationType: "Car",
                                             FromLocationName: "Airport",
                                             ToLocationName: "Hotel",
-                                            TransportationType: "Car",
+                                            FromLocationId: null,
+                                            ToLocationId: null,
                                             TransportationName: "Sedan",
                                             DurationMinutes: 60,
                                             PricingType: null,
@@ -258,7 +260,7 @@ public sealed class TourServiceTests
         Assert.Single(cls.Plans[0].Activities);
         Assert.Equal("Airport Pickup", cls.Plans[0].Activities[0].Title);
         Assert.Single(cls.Plans[0].Activities[0].Routes);
-        Assert.Equal("Airport", cls.Plans[0].Activities[0].Routes[0].FromLocation.LocationName);
+        Assert.Equal("Airport", cls.Plans[0].Activities[0].Routes[0].FromLocation!.LocationName);
         Assert.Equal("Hotel ABC", cls.Plans[0].Activities[0].Accommodation!.AccommodationName);
         Assert.Single(cls.Insurances);
         Assert.Equal("Travel Insurance", cls.Insurances[0].InsuranceName);
@@ -282,7 +284,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ClassificationDto(null,
                     Name: "Test",
                     Description: "",
                     BasePrice: 0,
@@ -290,13 +292,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new DayPlanDto(null,
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ActivityDto(null,
                                     ActivityType: "Sightseeing",
                                     Title: "Visit Temple",
                                     Description: null,
@@ -348,7 +350,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ClassificationDto(null,
                     Name: "Test",
                     Description: "",
                     BasePrice: 0,
@@ -356,13 +358,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new DayPlanDto(null,
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ActivityDto(null,
                                     ActivityType: "Sightseeing",
                                     Title: "Visit",
                                     Description: null,
@@ -410,7 +412,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ClassificationDto(null,
                     Name: "Test",
                     Description: "",
                     BasePrice: 0,
@@ -418,13 +420,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new DayPlanDto(null,
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ActivityDto(null,
                                     ActivityType: "UnknownActivityType",
                                     Title: "Activity",
                                     Description: null,
@@ -472,7 +474,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ClassificationDto(null,
                     Name: "Test",
                     Description: "",
                     BasePrice: 0,
@@ -480,13 +482,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new DayPlanDto(null,
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ActivityDto(null,
                                     ActivityType: "Transport",
                                     Title: "Transfer",
                                     Description: null,
@@ -498,9 +500,11 @@ public sealed class TourServiceTests
                                     Routes:
                                     [
                                         new RouteDto(
+                                            TransportationType: "UnknownTransport",
                                             FromLocationName: "A",
                                             ToLocationName: "B",
-                                            TransportationType: "UnknownTransport",
+                                            FromLocationId: null,
+                                            ToLocationId: null,
                                             TransportationName: null,
                                             DurationMinutes: 30,
                                             PricingType: null,
@@ -652,7 +656,7 @@ public sealed class TourServiceTests
         {
             Classifications =
             [
-                new ClassificationDto(
+                new ClassificationDto(null,
                     Name: "Pkg",
                     Description: "Desc",
                     BasePrice: 0,
@@ -660,13 +664,13 @@ public sealed class TourServiceTests
                     NumberOfNight: 0,
                     Plans:
                     [
-                        new DayPlanDto(
+                        new DayPlanDto(null,
                             DayNumber: 1,
                             Title: "Day",
                             Description: null,
                             Activities:
                             [
-                                new ActivityDto(
+                                new ActivityDto(null,
                                     ActivityType: "Sightseeing",
                                     Title: "Act",
                                     Description: null,
@@ -793,6 +797,431 @@ public sealed class TourServiceTests
 
         // Assert - TourService uses Price when both are provided, falls back to SalePrice
         Assert.Equal(100, capturedTour!.Resources[0].Price);
+    }
+
+    #endregion
+
+    #region TC14: Create activity with EstimatedCost -> entity has correct value
+
+    [Fact]
+    public async Task Create_WithActivityEstimatedCost_ShouldSetCorrectValue()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "",
+                    BasePrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Sightseeing",
+                                    Title: "Activity",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 250.75m,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes: [],
+                                    Accommodation: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.NotNull(capturedTour);
+        var activity = capturedTour!.Classifications[0].Plans[0].Activities[0];
+        Assert.Equal(250.75m, activity.EstimatedCost);
+    }
+
+    #endregion
+
+    #region TC15: Create activity EstimatedCost null -> entity is null
+
+    [Fact]
+    public async Task Create_WithActivityEstimatedCostNull_ShouldSetNull()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "",
+                    BasePrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Sightseeing",
+                                    Title: "Activity",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: null,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes: [],
+                                    Accommodation: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        await service.Create(command);
+
+        // Assert
+        Assert.NotNull(capturedTour);
+        var activity = capturedTour!.Classifications[0].Plans[0].Activities[0];
+        Assert.Null(activity.EstimatedCost);
+    }
+
+    #endregion
+
+    #region TC16: Create activity EstimatedCost negative -> throws
+
+    [Fact]
+    public async Task Create_WithActivityEstimatedCostNegative_ShouldThrow()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.Create(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "",
+                    BasePrice: 0,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Sightseeing",
+                                    Title: "Activity",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: -50,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes: [],
+                                    Accommodation: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => service.Create(command));
+    }
+
+    #endregion
+
+    #region S1: Route text-only backward compat — FromLocation/ToLocation created
+
+    [Fact]
+    public async Task CreateTour_WithRouteTextOnly_BackwardCompat()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? captured = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => captured = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "Test",
+                    BasePrice: 100,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Transport",
+                                    Title: "Airport Pickup",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes:
+                                    [
+                                        new RouteDto(
+                                            TransportationType: "Car",
+                                            FromLocationName: "Airport",
+                                            ToLocationName: "Hotel",
+                                            FromLocationId: null,
+                                            ToLocationId: null,
+                                            TransportationName: null,
+                                            DurationMinutes: 30,
+                                            PricingType: null,
+                                            Price: 50,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null)
+                                    ],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [])
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(captured);
+        var classification = captured!.Classifications[0];
+        var plan = classification.Plans[0];
+        var activity = plan.Activities[0];
+        var route = activity.Routes[0];
+        Assert.NotNull(route.FromLocation);
+        Assert.NotNull(route.ToLocation);
+        Assert.Equal("Airport", route.FromLocation!.LocationName);
+        Assert.Equal("Hotel", route.ToLocation!.LocationName);
+        Assert.Equal(route.FromLocation.TourId, captured.Id);
+        Assert.Equal(route.ToLocation.TourId, captured.Id);
+    }
+
+    #endregion
+
+    #region S2: Multiple routes same from/to name — deduplication via location cache
+
+    [Fact]
+    public async Task CreateTour_MultipleRoutesSameFromToName_DeduplicatesLocations()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? captured = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => captured = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "Test",
+                    BasePrice: 100,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Transport",
+                                    Title: "Transfer 1",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes:
+                                    [
+                                        new RouteDto(
+                                            TransportationType: "Car",
+                                            FromLocationName: "Hotel",
+                                            ToLocationName: "Airport",
+                                            FromLocationId: null,
+                                            ToLocationId: null,
+                                            TransportationName: null,
+                                            DurationMinutes: 30,
+                                            PricingType: null,
+                                            Price: 20,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null),
+                                        new RouteDto(
+                                            TransportationType: "Car",
+                                            FromLocationName: "Airport",
+                                            ToLocationName: "Museum",
+                                            FromLocationId: null,
+                                            ToLocationId: null,
+                                            TransportationName: null,
+                                            DurationMinutes: 45,
+                                            PricingType: null,
+                                            Price: 15,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null)
+                                    ],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [])
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(captured);
+        var activity = captured!.Classifications[0].Plans[0].Activities[0];
+        var hotelRoutes = activity.Routes.Where(r => r.FromLocation?.LocationName == "Hotel").ToList();
+        var airportRoutes = activity.Routes.Where(r => r.FromLocation?.LocationName == "Airport").ToList();
+
+        // Hotel appears once as from (1 route), Airport appears once as from and once as to (2 routes total)
+        Assert.Single(hotelRoutes);
+        Assert.Single(airportRoutes);
+
+        // Same "Airport" location instance used for both routes that mention it
+        var airportFrom = activity.Routes.First(r => r.FromLocation?.LocationName == "Airport");
+        var airportTo = activity.Routes.First(r => r.ToLocation?.LocationName == "Airport");
+        Assert.Same(airportFrom.FromLocation, airportTo.ToLocation);
+    }
+
+    #endregion
+
+    #region S3: Transportation with bilingual translations
+
+    [Fact]
+    public async Task CreateTour_TransportationWithBilingualTranslations_ShouldSetNameAndTranslations()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? captured = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => captured = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations =
+            [
+                new TransportationDto(
+                    TransportationType: "Flight",
+                    FromLocationName: "Hanoi",
+                    ToLocationName: "HCM",
+                    FromLocationId: null,
+                    ToLocationId: null,
+                    TransportationName: "Vietnam Airlines",
+                    DurationMinutes: 120,
+                    PricingType: "Per person",
+                    Price: 100,
+                    RequiresIndividualTicket: true,
+                    TicketInfo: "Economy",
+                    Note: "Direct",
+                    Translations: new Dictionary<string, TourTransportationTranslationData>
+                    {
+                        ["vi"] = new TourTransportationTranslationData("Hà Nội", "TP Hồ Chí Minh", "Hãng Vietnam Airlines", "Phổ thông", "Bay thẳng"),
+                        ["en"] = new TourTransportationTranslationData("Hanoi", "Ho Chi Minh City", "Vietnam Airlines", "Economy", "Direct")
+                    })
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(captured);
+        var resource = captured!.Resources.Single();
+        Assert.Equal(TourResourceType.Transportation, resource.Type);
+        Assert.Equal(2, resource.Translations.Count);
+        Assert.True(resource.Translations.ContainsKey("vi"));
+        Assert.True(resource.Translations.ContainsKey("en"));
+        Assert.Equal("Hà Nội", resource.Translations["vi"].FromLocationName);
+        Assert.Equal("Phổ thông", resource.Translations["vi"].TicketInfo);
     }
 
     #endregion

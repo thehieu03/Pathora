@@ -98,6 +98,16 @@ public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
         RuleFor(x => x.Accommodation)
             .SetValidator(new AccommodationDtoValidator()!)
             .When(x => x.Accommodation != null);
+
+        RuleForEach(x => x.LinkToResources)
+            .Must(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri?.Scheme == "http" || uri?.Scheme == "https"))
+            .WithMessage("Each resource link must be a valid absolute URL with http or https scheme (e.g., https://example.com).")
+            .When(x => x.LinkToResources != null && x.LinkToResources.Count > 0);
+
+        RuleForEach(x => x.LinkToResources)
+            .MaximumLength(2048)
+            .WithMessage("Each resource link URL must not exceed 2048 characters.")
+            .When(x => x.LinkToResources != null && x.LinkToResources.Count > 0);
     }
 }
 
@@ -105,20 +115,67 @@ public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
 {
     public RouteDtoValidator()
     {
-        RuleFor(x => x.FromLocationName)
-            .NotEmpty().WithMessage("From location is required.");
-
-        RuleFor(x => x.ToLocationName)
-            .NotEmpty().WithMessage("To location is required.");
-
+        // TransportationType is always required
         RuleFor(x => x.TransportationType)
             .NotEmpty().WithMessage("Transportation type is required.");
+
+        // From/To: either the FK or the text name must be provided
+        When(x => !x.FromLocationId.HasValue, () =>
+        {
+            RuleFor(x => x.FromLocationName)
+                .NotEmpty().WithMessage("From location name is required when FromLocationId is not provided.");
+        });
+
+        When(x => !x.ToLocationId.HasValue, () =>
+        {
+            RuleFor(x => x.ToLocationName)
+                .NotEmpty().WithMessage("To location name is required when ToLocationId is not provided.");
+        });
 
         RuleFor(x => x.DurationMinutes)
             .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.");
 
         RuleFor(x => x.Price)
             .GreaterThanOrEqualTo(0).WithMessage("Route price must be greater than or equal to 0.");
+    }
+}
+
+public sealed class TransportationDtoValidator : AbstractValidator<TransportationDto>
+{
+    public TransportationDtoValidator()
+    {
+        RuleFor(x => x.TransportationType)
+            .NotEmpty().WithMessage("Transportation type is required.");
+
+        When(x => !x.FromLocationId.HasValue, () =>
+        {
+            RuleFor(x => x.FromLocationName)
+                .NotEmpty().WithMessage("From location name is required when FromLocationId is not provided.");
+        });
+
+        When(x => !x.ToLocationId.HasValue, () =>
+        {
+            RuleFor(x => x.ToLocationName)
+                .NotEmpty().WithMessage("To location name is required when ToLocationId is not provided.");
+        });
+
+        RuleFor(x => x.DurationMinutes)
+            .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.");
+
+        RuleFor(x => x.Price)
+            .GreaterThanOrEqualTo(0).WithMessage("Transportation price must be greater than or equal to 0.");
+
+        RuleFor(x => x.TransportationName)
+            .MaximumLength(300).WithMessage("Transportation name must not exceed 300 characters.")
+            .When(x => x.TransportationName != null);
+
+        RuleFor(x => x.TicketInfo)
+            .MaximumLength(500).WithMessage("Ticket info must not exceed 500 characters.")
+            .When(x => x.TicketInfo != null);
+
+        RuleFor(x => x.Note)
+            .MaximumLength(1000).WithMessage("Note must not exceed 1000 characters.")
+            .When(x => x.Note != null);
     }
 }
 
@@ -208,29 +265,6 @@ public sealed class LocationDtoValidator : AbstractValidator<LocationDto>
         RuleFor(x => x.Address)
             .MaximumLength(500).WithMessage("Address must not exceed 500 characters.")
             .When(x => x.Address != null);
-    }
-}
-
-public sealed class TransportationDtoValidator : AbstractValidator<TransportationDto>
-{
-    public TransportationDtoValidator()
-    {
-        RuleFor(x => x.FromLocationName)
-            .NotEmpty().WithMessage("From location is required.");
-
-        RuleFor(x => x.ToLocationName)
-            .NotEmpty().WithMessage("To location is required.");
-
-        RuleFor(x => x.TransportationType)
-            .NotEmpty().WithMessage("Transportation type is required.");
-
-        RuleFor(x => x.DurationMinutes)
-            .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.")
-            .When(x => x.DurationMinutes.HasValue);
-
-        RuleFor(x => x.Price)
-            .GreaterThanOrEqualTo(0).WithMessage("Route price must be greater than or equal to 0.")
-            .When(x => x.Price.HasValue);
     }
 }
 

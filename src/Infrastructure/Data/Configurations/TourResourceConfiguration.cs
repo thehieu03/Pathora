@@ -78,5 +78,19 @@ public class TourResourceConfiguration : IEntityTypeConfiguration<TourResourceEn
             .WithMany(t => t.Resources)
             .HasForeignKey(r => r.TourId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(r => r.FromLocation)
+            .WithMany()
+            .HasForeignKey(r => r.FromLocationId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(r => r.FromLocationId).IsRequired(false);
+        builder.HasIndex(r => r.FromLocationId);
+
+        builder.HasOne(r => r.ToLocation)
+            .WithMany()
+            .HasForeignKey(r => r.ToLocationId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.Property(r => r.ToLocationId).IsRequired(false);
+        builder.HasIndex(r => r.ToLocationId);
     }
 }

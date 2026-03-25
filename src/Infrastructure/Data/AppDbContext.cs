@@ -57,6 +57,7 @@ public class AppDbContext : DbContext
     public DbSet<TourClassificationEntity> TourClassifications => Set<TourClassificationEntity>();
     public DbSet<TourDayEntity> TourDays => Set<TourDayEntity>();
     public DbSet<TourDayActivityEntity> TourDayActivities => Set<TourDayActivityEntity>();
+    public DbSet<TourDayActivityResourceLinkEntity> TourDayActivityResourceLinks => Set<TourDayActivityResourceLinkEntity>();
     public DbSet<TourInsuranceEntity> TourInsurances => Set<TourInsuranceEntity>();
     public DbSet<TourPlanAccommodationEntity> TourPlanAccommodations => Set<TourPlanAccommodationEntity>();
     public DbSet<TourPlanLocationEntity> TourPlanLocations => Set<TourPlanLocationEntity>();

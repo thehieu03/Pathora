@@ -89,6 +89,11 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
             .HasForeignKey(c => c.TourId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(t => t.PlanLocations)
+            .WithOne(l => l.Tour)
+            .HasForeignKey(l => l.TourId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Pricing policy relationship
         builder.HasOne(t => t.PricingPolicy)
             .WithMany()

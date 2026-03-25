@@ -9,6 +9,7 @@ using Application.Services;
 using Domain.Enums;
 using ErrorOr;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Domain.Specs.Api;
 
@@ -27,7 +28,9 @@ public sealed class TourControllerTests
     private sealed class StubFileServiceImpl : IFileService
     {
         public Task<FileMetadataVm> UploadFileAsync(UploadFileRequest request)
-            => Task.FromResult(new FileMetadataVm(Guid.CreateVersion7(), "http://cdn/test.jpg", request.FileName, "image/jpeg", request.Length));
+        {
+            return Task.FromResult(new FileMetadataVm(Guid.CreateVersion7(), "http://cdn/test.jpg", request.FileName, "image/jpeg", request.Length));
+        }
 
         public Task<IEnumerable<FileMetadataVm>> UploadMultipleFilesAsync(UploadMultipleFilesRequest request)
             => Task.FromResult<IEnumerable<FileMetadataVm>>([]);
@@ -37,6 +40,38 @@ public sealed class TourControllerTests
 
         public Task DeleteUploadedFilesAsync(List<string> objectNames)
             => Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Minimal IFormFile that works without HttpContext (unlike FormFile which requires it for ContentType).
+    /// </summary>
+    private sealed class StubFormFile : IFormFile
+    {
+        private readonly byte[] _bytes;
+        private readonly string _fileName;
+        private readonly string _contentType;
+
+        public StubFormFile(string fileName, string contentType)
+        {
+            _bytes = "fake image bytes"u8.ToArray();
+            _fileName = fileName;
+            _contentType = contentType;
+        }
+
+        public Stream OpenReadStream() => new MemoryStream(_bytes);
+        public string ContentType => _contentType;
+        public string FileName => _fileName;
+        public long Length => _bytes.Length;
+        public string Name => "file";
+        public DateTimeOffset LastModified => DateTimeOffset.UtcNow;
+        public IHeaderDictionary Headers => new HeaderDictionary();
+        public string ContentDisposition => $"form-data; name=\"{Name}\"; filename=\"{FileName}\"";
+        public void CopyTo(Stream target) => target.Write(_bytes);
+        public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default)
+        {
+            target.Write(_bytes);
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class StubFileManagerImpl : IFileManager
@@ -180,4 +215,244 @@ public sealed class TourControllerTests
             expectedInstance: $"/api/tour/{id}");
         Assert.Equal(new DeleteTourCommand(id), probe.CapturedRequest);
     }
+
+    #region Parallel Upload Tests
+
+    [Fact]
+    public async Task Create_WhenThumbnailAndImagesProvided_ShouldNotThrow()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var thumbnail = new StubFormFile("thumb.jpg", "image/jpeg");
+        var image1 = new StubFormFile("img1.jpg", "image/jpeg");
+        var image2 = new StubFormFile("img2.jpg", "image/jpeg");
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: thumbnail,
+            images: [image1, image2]);
+
+        // Should return 200 OK (command succeeds), not throw during parallel upload
+        Assert.IsNotType<BadRequestObjectResult>(actionResult);
+    }
+
+    #endregion
+
+    #region JSON Parse Error Handling Tests
+
+    [Fact]
+    public async Task Create_WhenClassificationsJsonInvalid_ShouldReturnBadRequest()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            classifications: "{ invalid json");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("classifications", validation.Errors.Keys);
+        Assert.Contains("invalid JSON format", validation.Errors["classifications"][0]);
+    }
+
+    [Fact]
+    public async Task Create_WhenAccommodationsJsonInvalid_ShouldReturnBadRequest()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            accommodations: "[{ broken");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("accommodations", validation.Errors.Keys);
+        Assert.Contains("invalid JSON format", validation.Errors["accommodations"][0]);
+    }
+
+    [Fact]
+    public async Task Create_WhenLocationsJsonInvalid_ShouldReturnBadRequest()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            locations: "[{");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("locations", validation.Errors.Keys);
+        Assert.Contains("invalid JSON format", validation.Errors["locations"][0]);
+    }
+
+    [Fact]
+    public async Task Create_WhenTransportationsJsonInvalid_ShouldReturnBadRequest()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            transportations: "{ broken");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("transportations", validation.Errors.Keys);
+        Assert.Contains("invalid JSON format", validation.Errors["transportations"][0]);
+    }
+
+    [Fact]
+    public async Task Create_WhenServicesJsonInvalid_ShouldReturnBadRequest()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            services: "invalid");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("services", validation.Errors.Keys);
+        // whitespace-only: TryParseServices returns true (no error), but ParseServices will
+        // throw on actual invalid JSON. Since the validation step passes (whitespace = null),
+        // the test for invalid JSON should use a non-whitespace but non-array value.
+        // Actually, "invalid" isn't valid JSON for List<ServiceDto> so we expect the method to fail.
+        Assert.Contains("invalid JSON format", validation.Errors["services"][0]);
+    }
+
+    [Fact]
+    public async Task Create_WhenMultipleJsonFieldsInvalid_ShouldReturnAllErrors()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            classifications: "{ bad",
+            accommodations: "[ broken",
+            locations: "not array",
+            transportations: "also bad",
+            services: "broken");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("classifications", validation.Errors.Keys);
+        Assert.Contains("accommodations", validation.Errors.Keys);
+        Assert.Contains("locations", validation.Errors.Keys);
+        Assert.Contains("transportations", validation.Errors.Keys);
+        Assert.Contains("services", validation.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task Create_WhenTranslationsJsonInvalid_ShouldReturnBadRequest()
+    {
+        var (controller, _) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                Guid.CreateVersion7(), "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            translations: "invalid{json");
+
+        var badRequest = Assert.IsType<BadRequestObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(badRequest.Value);
+        Assert.Contains("translations", validation.Errors.Keys);
+        Assert.Contains("invalid JSON format", validation.Errors["translations"][0]);
+    }
+
+    [Fact]
+    public async Task Create_WhenAllJsonFieldsValid_ShouldCallCommandHandler()
+    {
+        var responseId = Guid.CreateVersion7();
+        var (controller, probe) = ApiControllerTestHelper
+            .BuildController<TourController, CreateTourCommand, Guid>(
+                responseId, "/api/tour", StubFileService(), StubFileManager());
+
+        var actionResult = await controller.Create(
+            tourName: "Tour Test",
+            shortDescription: "Short",
+            longDescription: "Long",
+            seoTitle: null,
+            seoDescription: null,
+            status: TourStatus.Active,
+            thumbnail: null,
+            images: null,
+            translations: "{\"vi\":{\"tourName\":\"Tên Tour\",\"shortDescription\":\"Mô tả\",\"longDescription\":\"Chi tiết\"}}",
+            classifications: "[]",
+            accommodations: "[]",
+            locations: "[]",
+            transportations: "[]",
+            services: "[]");
+
+        Assert.IsNotType<BadRequestObjectResult>(actionResult);
+        Assert.NotNull(probe.CapturedRequest);
+    }
+
+    #endregion
 }

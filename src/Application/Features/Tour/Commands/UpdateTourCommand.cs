@@ -20,6 +20,7 @@ public sealed record UpdateTourCommand(
     ImageInputDto? Thumbnail = null,
     List<ImageInputDto>? Images = null,
     Dictionary<string, TourTranslationData>? Translations = null,
+    List<ClassificationDto>? Classifications = null,
     Guid? VisaPolicyId = null,
     Guid? DepositPolicyId = null,
     Guid? PricingPolicyId = null,

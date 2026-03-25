@@ -16,6 +16,7 @@ public sealed record TourDayActivityDto(
     TimeOnly? EndTime,
     List<TourPlanRouteDto> Routes,
     TourPlanAccommodationDto? Accommodation,
+    List<string>? linkToResources,
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,
