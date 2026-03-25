@@ -8,6 +8,7 @@ public sealed record FeaturedTourVm(
     decimal? Rating,
     int DurationDays,
     decimal BasePrice,
+    decimal? ReviewRating,
     string? ClassificationName);
 
 public sealed record LatestTourVm(

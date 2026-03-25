@@ -2,10 +2,20 @@ using Application.Services;
 using BuildingBlocks.CORS;
 using Contracts;
 using ErrorOr;
+using FluentValidation;
 
 namespace Application.Features.PricingPolicy.Commands;
 
 public sealed record DeletePricingPolicyCommand(Guid Id) : ICommand<ErrorOr<Success>>;
+
+public sealed class DeletePricingPolicyCommandValidator : AbstractValidator<DeletePricingPolicyCommand>
+{
+    public DeletePricingPolicyCommandValidator()
+    {
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage("Policy ID is required.");
+    }
+}
 
 public sealed class DeletePricingPolicyCommandHandler(IPricingPolicyService pricingPolicyService)
     : ICommandHandler<DeletePricingPolicyCommand, ErrorOr<Success>>

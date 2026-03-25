@@ -62,6 +62,30 @@ public static class BookingContextSeed
         return hasChanges;
     }
 
+    public static bool SeedTourPolicies(AppDbContext context)
+    {
+        var hasChanges = false;
+        hasChanges |= SeedPricingPolicies(context);
+        hasChanges |= SeedTaxConfigs(context);
+        hasChanges |= SeedCancellationPolicies(context);
+        return hasChanges;
+    }
+
+    public static bool SeedTourData(AppDbContext context)
+    {
+        var hasChanges = false;
+        hasChanges |= SeedTours(context);
+        hasChanges |= SeedTourClassifications(context);
+        hasChanges |= SeedTourDays(context);
+        hasChanges |= SeedTourInstances(context);
+        hasChanges |= SeedTourGuides(context);
+        hasChanges |= SeedTourDayActivityStatuses(context);
+        hasChanges |= SeedTourDayActivityGuides(context);
+        hasChanges |= BackfillTourDayTranslations(context);
+        hasChanges |= BackfillTourInstanceTranslations(context);
+        return hasChanges;
+    }
+
     private static bool SeedRoles(AppDbContext context)
     {
         if (context.Roles.Any()) return false;

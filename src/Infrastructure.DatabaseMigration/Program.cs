@@ -20,6 +20,12 @@ if (mode == "seed")
     return 0;
 }
 
+if (mode == "updatepasswords")
+{
+    await UpdatePasswordsAsync(connectionString, args.Length > 1 ? args[1] : "thehieu03");
+    return 0;
+}
+
 if (mode == "verify")
 {
     await VerifyAsync(connectionString);
@@ -54,6 +60,26 @@ Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Database ensured/created!");
 Console.ResetColor();
 return 0;
+
+static async Task UpdatePasswordsAsync(string connectionString, string newPassword)
+{
+    var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    optionsBuilder.UseNpgsql(connectionString);
+    await using var context = new AppDbContext(optionsBuilder.Options);
+    await context.Database.OpenConnectionAsync();
+
+    var users = context.Users.ToList();
+    foreach (var user in users)
+    {
+        user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        user.ForcePasswordChange = false;
+    }
+    context.SaveChanges();
+
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine($"Updated password for {users.Count} users to: {newPassword}");
+    Console.ResetColor();
+}
 
 static async Task VerifyAsync(string connectionString)
 {
