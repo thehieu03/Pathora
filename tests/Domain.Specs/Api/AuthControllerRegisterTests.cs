@@ -128,6 +128,29 @@ public sealed class AuthControllerRegisterTests
         Assert.Equal("Auth.LockoutCheckFailed", payload.Errors[0].Details);
     }
 
+    [Fact]
+    public async Task Register_WhenUnexpectedError_ShouldReturnInternalServerErrorResponse()
+    {
+        var command = new RegisterCommand(
+            Username: "admin",
+            FullName: "Administrator",
+            Email: "admin@example.com",
+            Password: "secret123");
+        var (controller, _) = BuildController(Error.Failure("Server.Error", "Lỗi máy chủ không xác định"));
+
+        var actionResult = await controller.Register(command);
+
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        Assert.Equal(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
+
+        var payload = Assert.IsType<ResultSharedResponse<object>>(objectResult.Value);
+        Assert.Equal(StatusCodes.Status500InternalServerError, payload.StatusCode);
+        Assert.Equal("/api/auth/register", payload.Instance);
+        Assert.NotNull(payload.Errors);
+        Assert.Single(payload.Errors);
+        Assert.Equal("Server.Error", payload.Errors[0].Details);
+    }
+
 
     private static (AuthController Controller, RegisterCommandProbe Probe) BuildController(ErrorOr<Success> response)
     {
