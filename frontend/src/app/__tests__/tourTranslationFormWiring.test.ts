@@ -8,12 +8,16 @@ const readFile = (relativePath: string): string => {
 };
 
 describe("tour translation form wiring", () => {
-  it("sends translations JSON payload in create page", () => {
-    const source = readFile("src/app/(dashboard)/tour-management/create/page.tsx");
+  it("delegates translations payload serialization to create payload builder", () => {
+    const createPageSource = readFile("src/app/(dashboard)/tour-management/create/page.tsx");
+    const payloadBuilderSource = readFile("src/api/services/tourCreatePayload.ts");
 
-    expect(source.includes("formData.append(\"translations\"")).toBe(true);
-    expect(source.includes("JSON.stringify(translationPayload)")).toBe(true);
-    expect(source.includes("TourName")).toBe(true);
+    expect(createPageSource.includes("buildCreateTourFormData")).toBe(true);
+    expect(createPageSource.includes("vietnameseTranslation")).toBe(true);
+    expect(createPageSource.includes("englishTranslation")).toBe(true);
+
+    expect(payloadBuilderSource.includes("formData.append(\"translations\"")).toBe(true);
+    expect(payloadBuilderSource.includes("JSON.stringify(translationsPayload)")).toBe(true);
   });
 
   it("uses language tabs and sends translations JSON payload in edit page", () => {

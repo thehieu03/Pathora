@@ -441,6 +441,7 @@ describe("buildCreateTourFormData", () => {
                   isOptional: false,
                   startTime: "08:00",
                   endTime: "10:00",
+                  routes: [],
                 },
               ],
             },
@@ -559,6 +560,7 @@ describe("buildCreateTourFormData", () => {
             isOptional: false,
             startTime: "",
             endTime: "",
+            routes: [],
           }],
         }]],
         insurances: [[{

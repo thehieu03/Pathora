@@ -1029,7 +1029,16 @@ export default function CreateTourPage() {
   };
 
   const goNext = () => {
-    if (validateStep(currentStep)) {
+    const canSkipValidation = currentStep === 2;
+
+    if (canSkipValidation) {
+      console.info("[CreateTour] Skipping step validation for navigation", {
+        currentStep,
+        stepKey: WIZARD_STEPS[currentStep]?.key,
+      });
+    }
+
+    if (canSkipValidation || validateStep(currentStep)) {
       setThumbnailError(undefined);
       setImagesError(undefined);
       const nextStep = Math.min(currentStep + 1, WIZARD_STEPS.length - 1);
