@@ -9,6 +9,9 @@ public class TourDayEntity : Aggregate<Guid>
     public int DayNumber { get; set; }
     public string Title { get; set; } = null!;
     public string? Description { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourDayTranslationData> Translations { get; set; } = [];
     public virtual List<TourDayActivityEntity> Activities { get; set; } = [];
     public virtual List<TourDayActivityStatusEntity> ActivityStatuses { get; set; } = [];
@@ -36,5 +39,12 @@ public class TourDayEntity : Aggregate<Guid>
         Description = description;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

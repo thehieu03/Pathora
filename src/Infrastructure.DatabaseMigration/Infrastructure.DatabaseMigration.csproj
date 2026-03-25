@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -13,10 +13,17 @@
             <Link>.dockerignore</Link>
         </Content>
     </ItemGroup>
+
     <ItemGroup>
         <EmbeddedResource Include="scripts/**/*.sql" />
     </ItemGroup>
+
     <ItemGroup>
       <PackageReference Include="dbup-postgresql" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

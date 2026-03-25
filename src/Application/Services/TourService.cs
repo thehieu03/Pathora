@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Application.Common;
 using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
@@ -153,18 +154,19 @@ public class TourService(
                             foreach (var route in act.Routes)
                             {
                                 var routeOrder = act.Routes.IndexOf(route) + 1;
-                                var transportationType = Enum.TryParse<TransportationType>(route.TransportationType, out var tt) ? tt : TransportationType.Other;
-
-                                var fromLocation = ResolveLocation(route.FromLocationId, route.FromLocationName, tour.Id);
-                                var toLocation = ResolveLocation(route.ToLocationId, route.ToLocationName, tour.Id);
+                                var fromLocation = await ResolveLocationAsync(route.FromLocationId, route.FromLocationName, tour.Id);
+                                var toLocation = await ResolveLocationAsync(route.ToLocationId, route.ToLocationName, tour.Id);
 
                                 // Apply route translations to locations
                                 fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
                                 toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
 
+                                // Validator guarantees TransportationType is a valid enum — parse with assertion
+                                _ = EnumHelper.TryParseDefinedEnum<TransportationType>(route.TransportationType, out var routeTransportType);
+
                                 var routeEntity = TourPlanRouteEntity.Create(
                                     routeOrder,
-                                    transportationType,
+                                    routeTransportType,
                                     _user.Id ?? string.Empty,
                                     route.TransportationName,
                                     null, // transportationNote
@@ -269,10 +271,11 @@ public class TourService(
             {
                 foreach (var loc in request.Locations)
                 {
-                    var locationType = Enum.TryParse<LocationType>(loc.LocationType, out var lt) ? lt : LocationType.Other;
+                    // Validator guarantees LocationType is a valid enum
+                    _ = EnumHelper.TryParseDefinedEnum<LocationType>(loc.LocationType, out var locType);
                     var entity = TourPlanLocationEntity.Create(
                         loc.LocationName,
-                        locationType,
+                        locType,
                         _user.Id ?? string.Empty,
                         tour.Id,
                         locationDescription: loc.Description,
@@ -371,6 +374,85 @@ public class TourService(
             await UpdateClassificationsAsync(tour, request.Classifications);
         }
 
+        // Standalone Accommodations, Locations, Transportations and Services are merged as TourResources
+        if (request.Accommodations?.Count > 0)
+        {
+            foreach (var acc in request.Accommodations)
+            {
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Accommodation,
+                    acc.AccommodationName,
+                    _user.Id ?? string.Empty,
+                    address: acc.Address,
+                    contactPhone: acc.ContactPhone,
+                    checkInTime: acc.CheckInTime,
+                    checkOutTime: acc.CheckOutTime,
+                    note: acc.Note);
+                tour.Resources.Add(resource);
+            }
+        }
+        if (request.Locations?.Count > 0)
+        {
+            foreach (var loc in request.Locations)
+            {
+                // Validator guarantees LocationType is a valid enum
+                _ = EnumHelper.TryParseDefinedEnum<LocationType>(loc.LocationType, out var locType);
+                var entity = TourPlanLocationEntity.Create(
+                    loc.LocationName,
+                    locType,
+                    _user.Id ?? string.Empty,
+                    tour.Id,
+                    locationDescription: loc.Description,
+                    address: loc.Address,
+                    city: loc.City,
+                    country: loc.Country,
+                    entranceFee: loc.EntranceFee);
+                entity.Translations = NormalizeTranslationsFromPayload(loc.Translations);
+                tour.PlanLocations.Add(entity);
+            }
+        }
+        if (request.Transportations?.Count > 0)
+        {
+            foreach (var tr in request.Transportations)
+            {
+                var name = NormalizeTransportationName(tr);
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Transportation,
+                    name,
+                    _user.Id ?? string.Empty,
+                    transportationType: tr.TransportationType,
+                    transportationName: tr.TransportationName,
+                    durationMinutes: tr.DurationMinutes,
+                    price: tr.Price,
+                    pricingType: tr.PricingType,
+                    requiresIndividualTicket: tr.RequiresIndividualTicket,
+                    ticketInfo: tr.TicketInfo,
+                    note: tr.Note,
+                    fromLocationId: tr.FromLocationId,
+                    toLocationId: tr.ToLocationId);
+                resource.Translations = NormalizeTransportationTranslations(tr.Translations);
+                tour.Resources.Add(resource);
+            }
+        }
+        if (request.Services?.Count > 0)
+        {
+            foreach (var svc in request.Services)
+            {
+                var resource = TourResourceEntity.Create(
+                    tour.Id,
+                    TourResourceType.Service,
+                    svc.ServiceName,
+                    _user.Id ?? string.Empty,
+                    contactEmail: svc.Email,
+                    contactPhone: svc.ContactNumber,
+                    price: svc.Price ?? svc.SalePrice,
+                    pricingType: svc.PricingType);
+                tour.Resources.Add(resource);
+            }
+        }
+
         await _tourRepository.Update(tour);
         await _unitOfWork.SaveChangeAsync();
         return Result.Success;
@@ -382,9 +464,94 @@ public class TourService(
         if (tour is null)
             return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 
-        await _tourRepository.SoftDelete(id);
+        var performedBy = _user.Id ?? string.Empty;
+        CascadeSoftDelete(tour, performedBy);
         await _unitOfWork.SaveChangeAsync();
         return Result.Success;
+    }
+
+    /// <summary>
+    /// Recursively soft-deletes the tour entity and all its nested entities
+    /// (Classifications, Plans, Activities, Routes, Locations, Insurances, Resources, Accommodations).
+    /// </summary>
+    private static void CascadeSoftDelete(TourEntity tour, string performedBy)
+    {
+        tour.SoftDelete(performedBy);
+
+        foreach (var classification in tour.Classifications)
+        {
+            CascadeSoftDeleteClassification(classification, performedBy);
+        }
+
+        foreach (var resource in tour.Resources)
+        {
+            resource.SoftDelete(performedBy);
+        }
+
+        foreach (var location in tour.PlanLocations)
+        {
+            location.SoftDelete(performedBy);
+        }
+    }
+
+    private static void CascadeSoftDeleteClassification(TourClassificationEntity classification, string performedBy)
+    {
+        classification.SoftDelete(performedBy);
+
+        foreach (var plan in classification.Plans)
+        {
+            CascadeSoftDeletePlan(plan, performedBy);
+        }
+
+        foreach (var insurance in classification.Insurances)
+        {
+            insurance.SoftDelete(performedBy);
+        }
+    }
+
+    private static void CascadeSoftDeletePlan(TourDayEntity plan, string performedBy)
+    {
+        plan.SoftDelete(performedBy);
+
+        foreach (var activity in plan.Activities)
+        {
+            CascadeSoftDeleteActivity(activity, performedBy);
+        }
+    }
+
+    private static void CascadeSoftDeleteActivity(TourDayActivityEntity activity, string performedBy)
+    {
+        activity.SoftDelete(performedBy);
+
+        if (activity.Accommodation != null)
+        {
+            activity.Accommodation.SoftDelete(performedBy);
+        }
+
+        foreach (var link in activity.ResourceLinks)
+        {
+            link.SoftDelete(performedBy);
+        }
+
+        foreach (var route in activity.Routes)
+        {
+            CascadeSoftDeleteRoute(route, performedBy);
+        }
+    }
+
+    private static void CascadeSoftDeleteRoute(TourPlanRouteEntity route, string performedBy)
+    {
+        route.SoftDelete(performedBy);
+
+        if (route.FromLocation != null)
+        {
+            route.FromLocation.SoftDelete(performedBy);
+        }
+
+        if (route.ToLocation != null)
+        {
+            route.ToLocation.SoftDelete(performedBy);
+        }
     }
 
     public async Task<ErrorOr<PaginatedList<TourVm>>> GetAll(GetAllToursQuery request)
@@ -457,13 +624,19 @@ public class TourService(
     /// otherwise looks up or creates a TourPlanLocationEntity for the given name.
     /// Deduplication is performed within the current Create() call.
     /// </summary>
-    private TourPlanLocationEntity ResolveLocation(Guid? locationId, string? locationName, Guid tourId)
+    private async Task<TourPlanLocationEntity> ResolveLocationAsync(Guid? locationId, string? locationName, Guid tourId)
     {
         if (locationId.HasValue && locationId != Guid.Empty)
         {
-            // Reference to an existing location — caller must ensure it exists
-            // Return a stub; the service layer does not have DB access to fetch it here.
-            // The repository should resolve this stub to the actual entity before saving.
+            // Reference to an existing location — fetch the actual entity from DB
+            var existingLocation = await _tourRepository.FindLocationByIdAsync(locationId.Value);
+            if (existingLocation != null)
+            {
+                // Update the TourId to point to the current tour and return the fetched entity
+                existingLocation.TourId = tourId;
+                return existingLocation;
+            }
+            // Fallback to stub if not found
             return TourPlanLocationEntity.Create(
                 locationName ?? "Referenced Location",
                 LocationType.Other,
@@ -687,7 +860,9 @@ public class TourService(
                 foreach (var route in act.Routes)
                 {
                     var routeOrder = act.Routes.IndexOf(route) + 1;
-                    var transportationType = Enum.TryParse<TransportationType>(route.TransportationType, out var tt) ? tt : TransportationType.Other;
+                    // Validator guarantees TransportationType is a valid enum — use helper
+                    _ = EnumHelper.TryParseDefinedEnum<TransportationType>(route.TransportationType, out var routeTypeEnum);
+                    var transportationType = routeTypeEnum;
                     var fromLocation = TourPlanLocationEntity.Create(
                         route.FromLocationName ?? string.Empty,
                         LocationType.Other,
@@ -741,7 +916,9 @@ public class TourService(
                 foreach (var route in act.Routes)
                 {
                     var routeOrder = act.Routes.IndexOf(route) + 1;
-                    var transportationType = Enum.TryParse<TransportationType>(route.TransportationType, out var tt) ? tt : TransportationType.Other;
+                    // Validator guarantees TransportationType is a valid enum — use helper
+                    _ = EnumHelper.TryParseDefinedEnum<TransportationType>(route.TransportationType, out var routeTypeEnum);
+                    var transportationType = routeTypeEnum;
                     var fromLocation = TourPlanLocationEntity.Create(
                         route.FromLocationName ?? string.Empty,
                         LocationType.Other,

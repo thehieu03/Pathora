@@ -13,6 +13,9 @@ public class TourDayActivityEntity : Aggregate<Guid>
     public string? Note { get; set; }
     public decimal? EstimatedCost { get; set; }
     public bool IsOptional { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourDayActivityTranslationData> Translations { get; set; } = [];
 
     // Time
@@ -105,5 +108,12 @@ public class TourDayActivityEntity : Aggregate<Guid>
         {
             throw new ArgumentOutOfRangeException(nameof(estimatedCost), "Estimated cost must be non-negative.");
         }
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

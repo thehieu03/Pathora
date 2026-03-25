@@ -40,4 +40,5 @@ public interface ITourRepository
     Task<int> GetTotalActiveTours();
     Task<decimal> GetTotalDistanceKm();
     Task<List<string>> GetAllDestinations();
+    Task<TourPlanLocationEntity?> FindLocationByIdAsync(Guid id);
 }

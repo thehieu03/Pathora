@@ -795,7 +795,7 @@ public class CreateTourCommandValidatorTests
                 Plans: [],
                 Insurances: [new InsuranceDto(
                     InsuranceName: "Travel Insurance",
-                    InsuranceType: "Basic",
+                    InsuranceType: "Travel",
                     InsuranceProvider: "ABC Insurance",
                     CoverageDescription: "Basic coverage",
                     CoverageAmount: 10000,
@@ -826,7 +826,7 @@ public class CreateTourCommandValidatorTests
                 Plans: [],
                 Insurances: [new InsuranceDto(
                     InsuranceName: "",
-                    InsuranceType: "Basic",
+                    InsuranceType: "Travel",
                     InsuranceProvider: "ABC Insurance",
                     CoverageDescription: "Basic coverage",
                     CoverageAmount: 10000,
@@ -858,7 +858,7 @@ public class CreateTourCommandValidatorTests
                 Plans: [],
                 Insurances: [new InsuranceDto(
                     InsuranceName: "Insurance",
-                    InsuranceType: "Basic",
+                    InsuranceType: "Travel",
                     InsuranceProvider: "ABC Insurance",
                     CoverageDescription: "Basic coverage",
                     CoverageAmount: 10000,
@@ -1056,7 +1056,7 @@ public class CreateTourCommandValidatorTests
                     Title: "Day",
                     Description: null,
                     Activities: [new ActivityDto(null,
-                        ActivityType: "Transport",
+                        ActivityType: "Transportation",
                         Title: "Transfer",
                         Description: null,
                         Note: null,
@@ -1107,7 +1107,7 @@ public class CreateTourCommandValidatorTests
                     Title: "Day",
                     Description: null,
                     Activities: [new ActivityDto(null,
-                        ActivityType: "Transport",
+                        ActivityType: "Transportation",
                         Title: "Transfer",
                         Description: null,
                         Note: null,
@@ -1158,7 +1158,7 @@ public class CreateTourCommandValidatorTests
                     Title: "Day",
                     Description: null,
                     Activities: [new ActivityDto(null,
-                        ActivityType: "Transport",
+                        ActivityType: "Transportation",
                         Title: "Transfer",
                         Description: null,
                         Note: null,
@@ -1687,6 +1687,351 @@ public class CreateTourCommandValidatorTests
         var result = _validator.Validate(command);
         Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
     }
+
+    #endregion
+
+    #region Enum Validation Tests
+
+    #region TransportationType invalid
+
+    [Fact]
+    public void Validate_RouteDto_TransportationTypeInvalidString_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Transportation",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            TransportationType: "InvalidTransportType",
+                            FromLocationName: "A",
+                            ToLocationName: "B",
+                            FromLocationId: null,
+                            ToLocationId: null,
+                            TransportationName: null,
+                            DurationMinutes: 30,
+                            PricingType: null,
+                            Price: 10,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("TransportationType") && e.ErrorMessage.Contains("InvalidTransportType"));
+    }
+
+    [Fact]
+    public void Validate_RouteDto_TransportationTypeInvalidNumeric_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Transportation",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            TransportationType: "999",
+                            FromLocationName: "A",
+                            ToLocationName: "B",
+                            FromLocationId: null,
+                            ToLocationId: null,
+                            TransportationName: null,
+                            DurationMinutes: 30,
+                            PricingType: null,
+                            Price: 10,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("TransportationType") && e.ErrorMessage.Contains("999"));
+    }
+
+    [Fact]
+    public void Validate_TransportationDto_TransportationTypeInvalid_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Transportations = [new TransportationDto(
+                TransportationType: "UnknownType",
+                FromLocationName: "Hotel",
+                ToLocationName: "Beach",
+                FromLocationId: null,
+                ToLocationId: null,
+                TransportationName: null,
+                DurationMinutes: 30,
+                PricingType: null,
+                Price: 5,
+                RequiresIndividualTicket: false,
+                TicketInfo: null,
+                Note: null,
+                Translations: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("TransportationType") && e.ErrorMessage.Contains("UnknownType"));
+    }
+
+    #endregion
+
+    #region TransportationType valid
+
+    [Fact]
+    public void Validate_RouteDto_TransportationTypeValidByName_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Transportation",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            TransportationType: "Flight",
+                            FromLocationName: "Hanoi",
+                            ToLocationName: "HCM",
+                            FromLocationId: null,
+                            ToLocationId: null,
+                            TransportationName: null,
+                            DurationMinutes: 120,
+                            PricingType: null,
+                            Price: 100,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_RouteDto_TransportationTypeValidByNumeric_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications = [new ClassificationDto(null,
+                Name: "Test",
+                Description: "Test",
+                BasePrice: 100,
+                NumberOfDay: 1,
+                NumberOfNight: 0,
+                Plans: [new DayPlanDto(null,
+                    DayNumber: 1,
+                    Title: "Day",
+                    Description: null,
+                    Activities: [new ActivityDto(null,
+                        ActivityType: "Transportation",
+                        Title: "Transfer",
+                        Description: null,
+                        Note: null,
+                        EstimatedCost: 0,
+                        IsOptional: false,
+                        StartTime: null,
+                        EndTime: null,
+                        Routes: [new RouteDto(
+                            TransportationType: "3",
+                            FromLocationName: "A",
+                            ToLocationName: "B",
+                            FromLocationId: null,
+                            ToLocationId: null,
+                            TransportationName: null,
+                            DurationMinutes: 30,
+                            PricingType: null,
+                            Price: 10,
+                            RequiresIndividualTicket: false,
+                            TicketInfo: null,
+                            Note: null,
+                            Translations: null,
+                            RouteTranslations: null)],
+                        Accommodation: null)])],
+                Insurances: [])
+            ]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
+
+    #region LocationType invalid
+
+    [Fact]
+    public void Validate_LocationDto_LocationTypeInvalidString_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "Test Museum",
+                LocationType: "InvalidLocationType",
+                Description: "Description",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 10,
+                Address: "123 Main St")]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("LocationType") && e.ErrorMessage.Contains("InvalidLocationType"));
+    }
+
+    [Fact]
+    public void Validate_LocationDto_LocationTypeInvalidNumeric_ShouldFail()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "Test Museum",
+                LocationType: "888",
+                Description: "Description",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 10,
+                Address: "123 Main St")]
+        };
+        var result = _validator.Validate(command);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.ErrorMessage.Contains("LocationType") && e.ErrorMessage.Contains("888"));
+    }
+
+    #endregion
+
+    #region LocationType valid
+
+    [Fact]
+    public void Validate_LocationDto_LocationTypeValidByName_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "Hanoi Opera House",
+                LocationType: "Museum",
+                Description: "Historic building",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 10,
+                Address: "1 Rue de la Paix")]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_LocationDto_LocationTypeValidByNumeric_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "My Khe Beach",
+                LocationType: "3",
+                Description: "Beach",
+                City: "Da Nang",
+                Country: "Vietnam",
+                EntranceFee: 0,
+                Address: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_LocationDto_LocationTypeOther_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "Custom Place",
+                LocationType: "Other",
+                Description: "Some custom place",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 0,
+                Address: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    [Fact]
+    public void Validate_LocationDto_LocationTypeOtherNumeric_ShouldPass()
+    {
+        var command = CreateBaseValidCommand() with
+        {
+            Locations = [new LocationDto(
+                LocationName: "Custom Place 2",
+                LocationType: "99",
+                Description: "Other",
+                City: "Hanoi",
+                Country: "Vietnam",
+                EntranceFee: 0,
+                Address: null)]
+        };
+        var result = _validator.Validate(command);
+        Assert.True(result.IsValid, string.Join(", ", result.Errors.Select(e => e.ErrorMessage)));
+    }
+
+    #endregion
 
     #endregion
 }

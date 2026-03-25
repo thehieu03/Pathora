@@ -17,6 +17,9 @@ public class TourPlanRouteEntity : Aggregate<Guid>
     public decimal? Price { get; set; }
     public string? BookingReference { get; set; }
     public string? Note { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourPlanRouteTranslationData> Translations { get; set; } = [];
     public virtual TourDayActivityEntity TourDayActivity { get; set; } = null!;
 
@@ -100,5 +103,12 @@ public class TourPlanRouteEntity : Aggregate<Guid>
         {
             throw new ArgumentOutOfRangeException(nameof(price), "Price must be non-negative.");
         }
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

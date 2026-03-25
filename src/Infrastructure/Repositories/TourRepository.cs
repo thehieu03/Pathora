@@ -378,4 +378,10 @@ public class TourRepository(AppDbContext context) : ITourRepository
             .AsNoTracking()
             .ToListAsync();
     }
+
+    public async Task<TourPlanLocationEntity?> FindLocationByIdAsync(Guid id)
+    {
+        return await _context.TourPlanLocations
+            .FirstOrDefaultAsync(l => l.Id == id);
+    }
 }

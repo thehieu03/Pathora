@@ -6,6 +6,9 @@ public class TourDayActivityResourceLinkEntity : Entity<Guid>
     public virtual TourDayActivityEntity TourDayActivity { get; set; } = null!;
     public string Url { get; set; } = null!;
     public int Order { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
 
     public static TourDayActivityResourceLinkEntity Create(Guid tourDayActivityId, string url, int order, string performedBy)
     {
@@ -30,5 +33,12 @@ public class TourDayActivityResourceLinkEntity : Entity<Guid>
         {
             throw new ArgumentOutOfRangeException(nameof(order), "Order must be greater than zero.");
         }
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

@@ -23,6 +23,9 @@ public class TourPlanAccommodationEntity : Aggregate<Guid>
     public decimal? Latitude { get; set; }
     public decimal? Longitude { get; set; }
     public string? Note { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourPlanAccommodationTranslationData> Translations { get; set; } = [];
     public virtual TourDayActivityEntity TourDayActivity { get; set; } = null!;
 
@@ -80,5 +83,12 @@ public class TourPlanAccommodationEntity : Aggregate<Guid>
         Note = note;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

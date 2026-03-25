@@ -191,18 +191,51 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         IFormFile? thumbnail,
         [FromForm] List<IFormFile>? images,
         [FromForm] string? translations = null,
-        [FromForm] string? classifications = null)
+        [FromForm] string? classifications = null,
+        [FromForm] string? accommodations = null,
+        [FromForm] string? locations = null,
+        [FromForm] string? transportations = null,
+        [FromForm] string? services = null,
+        [FromForm] Guid? visaPolicyId = null,
+        [FromForm] Guid? depositPolicyId = null,
+        [FromForm] Guid? pricingPolicyId = null,
+        [FromForm] Guid? cancellationPolicyId = null)
     {
+        // Validate JSON fields before processing
+        var validationErrors = new Dictionary<string, string[]>();
+
+        if (!TryParseTranslations(translations, out _, out var translationError))
+            validationErrors["translations"] = [translationError!];
+        if (!TryParseClassifications(classifications, out _, out var classificationError))
+            validationErrors["classifications"] = [classificationError!];
+        if (!TryParseAccommodations(accommodations, out _, out var accommodationError))
+            validationErrors["accommodations"] = [accommodationError!];
+        if (!TryParseLocations(locations, out _, out var locationError))
+            validationErrors["locations"] = [locationError!];
+        if (!TryParseTransportations(transportations, out _, out var transportationError))
+            validationErrors["transportations"] = [transportationError!];
+        if (!TryParseServices(services, out _, out var serviceError))
+            validationErrors["services"] = [serviceError!];
+
+        if (validationErrors.Count > 0)
+            return BadRequest(new ValidationProblemDetails(validationErrors));
+
         var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
         var imageDtos = images is not null && images.Count > 0
             ? await UploadFiles(images)
             : null;
         var translationData = ParseTranslations(translations);
         var classificationData = ParseClassifications(classifications);
+        var accommodationData = ParseAccommodations(accommodations);
+        var locationData = ParseLocations(locations);
+        var transportationData = ParseTransportations(transportations);
+        var serviceData = ParseServices(services);
 
         var command = new UpdateTourCommand(
             id, tourName, shortDescription, longDescription,
-            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData, classificationData);
+            seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData,
+            classificationData, accommodationData, locationData, transportationData, serviceData,
+            visaPolicyId, depositPolicyId, pricingPolicyId, cancellationPolicyId);
 
         var result = await Sender.Send(command);
         return HandleResult(result);

@@ -50,21 +50,7 @@ if (!app.Environment.IsDevelopment())
     //    app.UseHttpsRedirection();
 }
 
-app.UseExceptionHandler(appError =>
-{
-    appError.Run(async context =>
-    {
-        context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";
-        var ex = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()?.Error;
-        await context.Response.WriteAsJsonAsync(new
-        {
-            error = ex?.GetType().Name,
-            message = ex?.Message,
-            stack = ex?.StackTrace
-        });
-    });
-});
+// Exception handler is registered via DI (AddExceptionHandler<CustomExceptionHandler>) in AddApiServices().
 
 app.UseResponseCompression();
 

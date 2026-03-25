@@ -4,6 +4,13 @@ public sealed class SecurityHeadersMiddleware(RequestDelegate next)
 {
     public async Task InvokeAsync(HttpContext context)
     {
+        // Don't write headers if the response has already started (e.g. challenge written by auth middleware).
+        if (context.Response.HasStarted)
+        {
+            await next(context);
+            return;
+        }
+
         var headers = context.Response.Headers;
 
         headers["X-Content-Type-Options"] = "nosniff";

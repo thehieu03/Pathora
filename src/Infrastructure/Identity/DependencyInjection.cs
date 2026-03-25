@@ -94,15 +94,47 @@ internal static class DependencyInjection
                             context.Fail("Token is blacklisted");
                         }
                     },
-                    OnAuthenticationFailed = async context =>
+                    OnAuthenticationFailed = context =>
                     {
                         if (context.Exception is SecurityTokenExpiredException)
                         {
-                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            context.Response.ContentType = "application/json";
-                            await context.Response.WriteAsync(
-                                """{"code":"TOKEN_EXPIRED","message":"Token has expired. Please login again.","statusCode":401}""");
+                            // Only write response if the pipeline hasn't started yet.
+                            // This prevents "StatusCode cannot be set because the response has already started".
+                            if (!context.Response.HasStarted)
+                            {
+                                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                                context.Response.ContentType = "application/json";
+                                context.Response.WriteAsync(
+                                    """{"code":"TOKEN_EXPIRED","message":"Token has expired. Please login again.","statusCode":401}""");
+                                context.NoResult();
+                            }
                         }
+
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        // HandleChallenge is called by AuthorizationMiddleware when auth fails
+                        // (missing/invalid token, forbidden, etc.). Guard against writing to an
+                        // already-started response (e.g. when OnAuthenticationFailed already wrote).
+                        if (context.Response.HasStarted)
+                        {
+                            context.HandleResponse();
+                            return Task.CompletedTask;
+                        }
+
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        string challengeJson = context.AuthenticateFailure switch
+                        {
+                            SecurityTokenExpiredException => """{"code":"TOKEN_EXPIRED","message":"Token has expired. Please login again.","statusCode":401}""",
+                            _ => string.IsNullOrEmpty(context.Request.Headers.Authorization.ToString())
+                                ? """{"code":"TOKEN_MISSING","message":"Authentication required. Please provide a valid token.","statusCode":401}"""
+                                : """{"code":"TOKEN_INVALID","message":"Authentication failed. Please check your credentials.","statusCode":401}"""
+                        };
+
+                        return context.Response.WriteAsync(challengeJson);
                     }
                 };
             });

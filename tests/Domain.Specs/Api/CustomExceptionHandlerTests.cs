@@ -1,6 +1,7 @@
 using Api.Exceptions.Handler;
 using Common.Constants;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Infrastructure.Loging;
@@ -45,6 +46,26 @@ public sealed class CustomExceptionHandlerTests
         Assert.Equal(StatusCodes.Status400BadRequest, httpContext.Response.StatusCode);
     }
 
+    [Fact]
+    public async Task TryHandleAsync_WhenResponseHasStarted_ShouldNotWriteAgain()
+    {
+        var handler = BuildHandler(includeInnerException: true, includeStackTrace: false);
+        var httpContext = CreateHttpContext();
+
+        httpContext.Features.Set<IHttpResponseFeature>(new StartedHttpResponseFeature());
+
+        Assert.True(httpContext.Response.HasStarted);
+
+        var handled = await handler.TryHandleAsync(
+            httpContext,
+            new Exception("secondary exception"),
+            CancellationToken.None);
+
+        Assert.True(handled);
+        Assert.True(httpContext.Response.HasStarted);
+        Assert.Equal(StatusCodes.Status500InternalServerError, httpContext.Response.StatusCode);
+    }
+
     private static CustomExceptionHandler BuildHandler(bool includeInnerException, bool includeStackTrace)
     {
         var configuration = new ConfigurationBuilder()
@@ -66,5 +87,16 @@ public sealed class CustomExceptionHandlerTests
         context.Request.Path = "/api/test";
         context.Response.Body = new MemoryStream();
         return context;
+    }
+
+    private sealed class StartedHttpResponseFeature : IHttpResponseFeature
+    {
+        public int StatusCode { get; set; } = StatusCodes.Status200OK;
+        public string? ReasonPhrase { get; set; }
+        public IHeaderDictionary Headers { get; set; } = new HeaderDictionary();
+        public Stream Body { get; set; } = new MemoryStream();
+        public bool HasStarted { get; set; } = true;
+        public void OnStarting(Func<object, Task> callback, object state) { }
+        public void OnCompleted(Func<object, Task> callback, object state) { }
     }
 }

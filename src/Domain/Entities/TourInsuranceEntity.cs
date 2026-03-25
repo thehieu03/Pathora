@@ -12,6 +12,9 @@ public class TourInsuranceEntity : Aggregate<Guid>
     public decimal CoverageFee { get; set; }
     public bool IsOptional { get; set; } = false;
     public string? Note { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourClassificationTranslationData> Translations { get; set; } = [];
     public Guid TourClassificationId { get; set; }
     public virtual TourClassificationEntity TourClassification { get; set; } = null!;
@@ -48,5 +51,12 @@ public class TourInsuranceEntity : Aggregate<Guid>
         Note = note;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

@@ -11,6 +11,9 @@ public class TourClassificationEntity : Aggregate<Guid>
     public string Description { get; set; } = null!;
     public int NumberOfDay { get; set; }
     public int NumberOfNight { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourClassificationTranslationData> Translations { get; set; } = [];
     public virtual List<TourDayEntity> Plans { get; set; } = [];
     public virtual List<TourInsuranceEntity> Insurances { get; set; } = [];
@@ -43,5 +46,12 @@ public class TourClassificationEntity : Aggregate<Guid>
         NumberOfNight = numberOfNight;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

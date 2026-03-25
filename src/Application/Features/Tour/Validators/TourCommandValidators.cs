@@ -1,5 +1,8 @@
+using Application.Common;
+using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
+using Domain.Enums;
 using FluentValidation;
 
 namespace Application.Features.Tour.Validators;
@@ -81,6 +84,15 @@ public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
         RuleFor(x => x.ActivityType)
             .NotEmpty().WithMessage("Activity type is required.");
 
+        RuleFor(x => x.ActivityType)
+            .Custom((value, context) =>
+            {
+                if (!EnumHelper.TryParseDefinedEnum<TourDayActivityType>(value, out _))
+                {
+                    context.AddFailure($"{context.PropertyPath} has invalid value '{value}'.");
+                }
+            });
+
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Activity title is required.")
             .MaximumLength(200).WithMessage("Activity title must not exceed 200 characters.");
@@ -119,6 +131,15 @@ public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
         RuleFor(x => x.TransportationType)
             .NotEmpty().WithMessage("Transportation type is required.");
 
+        RuleFor(x => x.TransportationType)
+            .Custom((value, context) =>
+            {
+                if (!EnumHelper.TryParseDefinedEnum<TransportationType>(value, out _))
+                {
+                    context.AddFailure($"{context.PropertyPath} has invalid value '{value}'.");
+                }
+            });
+
         // From/To: either the FK or the text name must be provided
         When(x => !x.FromLocationId.HasValue, () =>
         {
@@ -146,6 +167,15 @@ public sealed class TransportationDtoValidator : AbstractValidator<Transportatio
     {
         RuleFor(x => x.TransportationType)
             .NotEmpty().WithMessage("Transportation type is required.");
+
+        RuleFor(x => x.TransportationType)
+            .Custom((value, context) =>
+            {
+                if (!EnumHelper.TryParseDefinedEnum<TransportationType>(value, out _))
+                {
+                    context.AddFailure($"{context.PropertyPath} has invalid value '{value}'.");
+                }
+            });
 
         When(x => !x.FromLocationId.HasValue, () =>
         {
@@ -221,6 +251,15 @@ public sealed class InsuranceDtoValidator : AbstractValidator<InsuranceDto>
         RuleFor(x => x.InsuranceType)
             .NotEmpty().WithMessage("Insurance type is required.");
 
+        RuleFor(x => x.InsuranceType)
+            .Custom((value, context) =>
+            {
+                if (!EnumHelper.TryParseDefinedEnum<InsuranceType>(value, out _))
+                {
+                    context.AddFailure($"{context.PropertyPath} has invalid value '{value}'.");
+                }
+            });
+
         RuleFor(x => x.InsuranceProvider)
             .MaximumLength(200).WithMessage("Insurance provider must not exceed 200 characters.");
 
@@ -245,6 +284,15 @@ public sealed class LocationDtoValidator : AbstractValidator<LocationDto>
 
         RuleFor(x => x.LocationType)
             .NotEmpty().WithMessage("Location type is required.");
+
+        RuleFor(x => x.LocationType)
+            .Custom((value, context) =>
+            {
+                if (!EnumHelper.TryParseDefinedEnum<LocationType>(value, out _))
+                {
+                    context.AddFailure($"{context.PropertyPath} has invalid value '{value}'.");
+                }
+            });
 
         RuleFor(x => x.Description)
             .MaximumLength(1000).WithMessage("Location description must not exceed 1000 characters.")
@@ -293,3 +341,98 @@ public sealed class ServiceDtoValidator : AbstractValidator<ServiceDto>
             .When(x => !string.IsNullOrEmpty(x.ContactNumber));
     }
 }
+
+public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCommand>
+{
+    public UpdateTourCommandValidator()
+    {
+        // TourName - Required, Max 500 chars
+        RuleFor(x => x.TourName)
+            .NotEmpty().WithMessage(ValidationMessages.TourNameRequired)
+            .MaximumLength(500).WithMessage(ValidationMessages.TourNameMaxLength500);
+
+        // ShortDescription - Required, Max 250 chars
+        RuleFor(x => x.ShortDescription)
+            .NotEmpty().WithMessage(ValidationMessages.ShortDescriptionRequired)
+            .MaximumLength(250).WithMessage(ValidationMessages.ShortDescriptionMaxLength250);
+
+        // LongDescription - Required, Max 5000 chars
+        RuleFor(x => x.LongDescription)
+            .NotEmpty().WithMessage(ValidationMessages.LongDescriptionRequired)
+            .MaximumLength(5000).WithMessage(ValidationMessages.LongDescriptionMaxLength5000);
+
+        // SEOTitle - Optional, Max 70 chars
+        RuleFor(x => x.SEOTitle)
+            .MaximumLength(70).WithMessage(ValidationMessages.SEOTitleMaxLength70)
+            .When(x => x.SEOTitle != null);
+
+        // SEODescription - Optional, Max 320 chars
+        RuleFor(x => x.SEODescription)
+            .MaximumLength(320).WithMessage(ValidationMessages.SEODescriptionMaxLength320)
+            .When(x => x.SEODescription != null);
+
+        // Status - Required
+        RuleFor(x => x.Status)
+            .IsInEnum().WithMessage(ValidationMessages.TourStatusInvalid);
+
+        // Thumbnail - Optional but must be valid if provided
+        RuleFor(x => x.Thumbnail)
+            .SetValidator(new ImageInputDtoValidator()!)
+            .When(x => x.Thumbnail != null);
+
+        // Classifications - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Classifications)
+            .Must(cls => cls == null || cls.Count > 0)
+            .WithMessage("At least one classification is required when Classifications are provided.");
+
+        RuleForEach(x => x.Classifications)
+            .SetValidator(new ClassificationDtoValidator())
+            .When(x => x.Classifications != null && x.Classifications.Any());
+
+        // Images - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Images)
+            .Must(images => images == null || images.Count > 0)
+            .WithMessage("At least one image is required when Images are provided.");
+
+        RuleForEach(x => x.Images)
+            .SetValidator(new ImageInputDtoValidator()!)
+            .When(x => x.Images != null && x.Images.Count > 0);
+
+        // Accommodations - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Accommodations)
+            .Must(acc => acc == null || acc.Count > 0)
+            .WithMessage("At least one accommodation is required when Accommodations are provided.");
+
+        RuleForEach(x => x.Accommodations)
+            .SetValidator(new AccommodationDtoValidator())
+            .When(x => x.Accommodations != null && x.Accommodations.Any());
+
+        // Locations - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Locations)
+            .Must(loc => loc == null || loc.Count > 0)
+            .WithMessage("At least one location is required when Locations are provided.");
+
+        RuleForEach(x => x.Locations)
+            .SetValidator(new LocationDtoValidator())
+            .When(x => x.Locations != null && x.Locations.Any());
+
+        // Transportations - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Transportations)
+            .Must(tr => tr == null || tr.Count > 0)
+            .WithMessage("At least one transportation is required when Transportations are provided.");
+
+        RuleForEach(x => x.Transportations)
+            .SetValidator(new TransportationDtoValidator())
+            .When(x => x.Transportations != null && x.Transportations.Any());
+
+        // Services - Optional but if provided must have at least 1 item
+        RuleFor(x => x.Services)
+            .Must(svc => svc == null || svc.Count > 0)
+            .WithMessage("At least one service is required when Services are provided.");
+
+        RuleForEach(x => x.Services)
+            .SetValidator(new ServiceDtoValidator())
+            .When(x => x.Services != null && x.Services.Any());
+    }
+}
+

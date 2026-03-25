@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Services;
@@ -458,10 +459,10 @@ public sealed class TourServiceTests
 
     #endregion
 
-    #region TC09: Route transportation type enum fallback to Other
+    #region TC09: Route transportation type enum — valid values map correctly
 
     [Fact]
-    public async Task Create_WithUnknownTransportationType_ShouldFallbackToOther()
+    public async Task Create_WithValidTransportationType_ShouldMapCorrectly()
     {
         // Arrange
         _user.Id.Returns("admin@test.com");
@@ -500,7 +501,7 @@ public sealed class TourServiceTests
                                     Routes:
                                     [
                                         new RouteDto(
-                                            TransportationType: "UnknownTransport",
+                                            TransportationType: "Flight",
                                             FromLocationName: "A",
                                             ToLocationName: "B",
                                             FromLocationId: null,
@@ -531,7 +532,7 @@ public sealed class TourServiceTests
 
         // Assert
         Assert.Equal(
-            Domain.Enums.TransportationType.Other,
+            Domain.Enums.TransportationType.Flight,
             capturedTour!.Classifications[0].Plans[0].Activities[0].Routes[0].TransportationType);
     }
 
@@ -1222,6 +1223,513 @@ public sealed class TourServiceTests
         Assert.True(resource.Translations.ContainsKey("en"));
         Assert.Equal("Hà Nội", resource.Translations["vi"].FromLocationName);
         Assert.Equal("Phổ thông", resource.Translations["vi"].TicketInfo);
+    }
+
+    #endregion
+
+    #region Issue1: Cascade soft delete
+
+    [Fact]
+    public async Task Delete_WithFullEntityGraph_ShouldCascadeSoftDeleteToAllNestedEntities()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+
+        var tourId = Guid.CreateVersion7();
+        var classificationId = Guid.CreateVersion7();
+        var dayId = Guid.CreateVersion7();
+        var activityId = Guid.CreateVersion7();
+        var routeId = Guid.CreateVersion7();
+        var insuranceId = Guid.CreateVersion7();
+        var resourceId = Guid.CreateVersion7();
+        var locationId = Guid.CreateVersion7();
+        var accommodationId = Guid.CreateVersion7();
+
+        var tour = TourEntity.Create(
+            "Test Tour", "Short", "Long", "admin@test.com",
+            Domain.Enums.TourStatus.Active);
+
+        // Build a complete entity graph
+        var classification = TourClassificationEntity.Create(
+            tour.Id, "Standard", 100, "Desc", 1, 0, "admin@test.com");
+        classification.Id = classificationId;
+
+        var day = TourDayEntity.Create(
+            classification.Id, 1, "Day 1", "admin@test.com");
+        day.Id = dayId;
+
+        var activity = TourDayActivityEntity.Create(
+            day.Id, 1, Domain.Enums.TourDayActivityType.Sightseeing,
+            "Visit", "admin@test.com");
+        activity.Id = activityId;
+
+        var fromLocation = TourPlanLocationEntity.Create(
+            "Airport", Domain.Enums.LocationType.Airport, "admin@test.com", tour.Id);
+        fromLocation.Id = locationId;
+
+        var toLocation = TourPlanLocationEntity.Create(
+            "Hotel", Domain.Enums.LocationType.Hotel, "admin@test.com", tour.Id);
+        toLocation.Id = Guid.CreateVersion7();
+
+        var route = TourPlanRouteEntity.Create(
+            1, Domain.Enums.TransportationType.Car, "admin@test.com");
+        route.Id = routeId;
+        route.FromLocation = fromLocation;
+        route.ToLocation = toLocation;
+
+        activity.Routes.Add(route);
+
+        var accommodation = TourPlanAccommodationEntity.Create(
+            "Hotel ABC", Domain.Enums.RoomType.Double, 2,
+            Domain.Enums.MealType.Breakfast, "admin@test.com");
+        accommodation.Id = accommodationId;
+        activity.Accommodation = accommodation;
+
+        day.Activities.Add(activity);
+        classification.Plans.Add(day);
+
+        var insurance = TourInsuranceEntity.Create(
+            "Insurance", Domain.Enums.InsuranceType.Travel,
+            "Provider", "Coverage", 1000, 50, "admin@test.com");
+        insurance.Id = insuranceId;
+        classification.Insurances.Add(insurance);
+
+        tour.Classifications.Add(classification);
+
+        var resource = TourResourceEntity.Create(
+            tour.Id, TourResourceType.Service, "Guide", "admin@test.com");
+        resource.Id = resourceId;
+        tour.Resources.Add(resource);
+
+        var planLocation = TourPlanLocationEntity.Create(
+            "Museum", Domain.Enums.LocationType.Museum, "admin@test.com", tour.Id);
+        planLocation.Id = Guid.CreateVersion7();
+        tour.PlanLocations.Add(planLocation);
+
+        _tourRepository.FindById(tour.Id).Returns(tour);
+        _tourRepository.SoftDelete(tour.Id).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Delete(tour.Id);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.True(tour.IsDeleted);
+        // All nested entities must also have IsDeleted = true
+        Assert.True(classification.IsDeleted, "Classification should be soft-deleted");
+        Assert.True(day.IsDeleted, "Day should be soft-deleted");
+        Assert.True(activity.IsDeleted, "Activity should be soft-deleted");
+        Assert.True(fromLocation.IsDeleted, "FromLocation should be soft-deleted");
+        Assert.True(toLocation.IsDeleted, "ToLocation should be soft-deleted");
+        Assert.True(route.IsDeleted, "Route should be soft-deleted");
+        Assert.True(insurance.IsDeleted, "Insurance should be soft-deleted");
+        Assert.True(resource.IsDeleted, "Resource should be soft-deleted");
+        Assert.True(planLocation.IsDeleted, "PlanLocation should be soft-deleted");
+        Assert.True(accommodation.IsDeleted, "Accommodation should be soft-deleted");
+        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
+        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Delete_WhenTourNotFound_ShouldReturnNotFoundError()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        var tourId = Guid.CreateVersion7();
+        _tourRepository.FindById(tourId).Returns((TourEntity?)null);
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Delete(tourId);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Equal(ErrorConstants.Tour.NotFoundCode, result.Errors[0].Code);
+    }
+
+    #endregion
+
+    #region Issue2: ResolveLocation should fetch from DB when locationId is provided
+
+    [Fact]
+    public async Task Create_WithLocationId_ShouldFetchActualLocationFromRepository()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var existingLocationId = Guid.CreateVersion7();
+        var existingLocation = TourPlanLocationEntity.Create(
+            "Da Nang Airport",
+            Domain.Enums.LocationType.Airport,
+            "admin@test.com",
+            Guid.Empty); // TourId does not matter for this entity
+        existingLocation.Id = existingLocationId;
+        existingLocation.Latitude = 16.0544m;
+        existingLocation.Longitude = 108.2022m;
+        existingLocation.City = "Da Nang";
+        existingLocation.Country = "Vietnam";
+
+        _tourRepository.FindLocationByIdAsync(existingLocationId).Returns(existingLocation);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "Test",
+                    BasePrice: 100,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Transport",
+                                    Title: "Transfer",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes:
+                                    [
+                                        new RouteDto(
+                                            TransportationType: "Car",
+                                            FromLocationName: null,
+                                            ToLocationName: null,
+                                            FromLocationId: existingLocationId,
+                                            ToLocationId: null,
+                                            TransportationName: null,
+                                            DurationMinutes: 30,
+                                            PricingType: null,
+                                            Price: 20,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null)
+                                    ],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(capturedTour);
+        var route = capturedTour!.Classifications[0].Plans[0].Activities[0].Routes[0];
+        Assert.NotNull(route.FromLocation);
+        // The resolved location should preserve actual properties, not be a generic stub
+        Assert.Equal("Da Nang Airport", route.FromLocation.LocationName);
+        Assert.Equal(Domain.Enums.LocationType.Airport, route.FromLocation.LocationType);
+        Assert.Equal(16.0544m, route.FromLocation.Latitude);
+        Assert.Equal(108.2022m, route.FromLocation.Longitude);
+        // Verify the repository was called to fetch the location
+        await _tourRepository.Received(1).FindLocationByIdAsync(existingLocationId);
+    }
+
+    [Fact]
+    public async Task Create_WithNonExistentLocationId_ShouldFallbackToStub()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        TourEntity? capturedTour = null;
+        _tourRepository.Create(Arg.Do<TourEntity>(t => capturedTour = t))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var nonExistentLocationId = Guid.CreateVersion7();
+        _tourRepository.FindLocationByIdAsync(nonExistentLocationId).Returns((TourPlanLocationEntity?)null);
+
+        var command = CreateBaseValidCommand() with
+        {
+            Classifications =
+            [
+                new ClassificationDto(null,
+                    Name: "Test",
+                    Description: "Test",
+                    BasePrice: 100,
+                    NumberOfDay: 1,
+                    NumberOfNight: 0,
+                    Plans:
+                    [
+                        new DayPlanDto(null,
+                            DayNumber: 1,
+                            Title: "Day",
+                            Description: null,
+                            Activities:
+                            [
+                                new ActivityDto(null,
+                                    ActivityType: "Transport",
+                                    Title: "Transfer",
+                                    Description: null,
+                                    Note: null,
+                                    EstimatedCost: 0,
+                                    IsOptional: false,
+                                    StartTime: null,
+                                    EndTime: null,
+                                    Routes:
+                                    [
+                                        new RouteDto(
+                                            TransportationType: "Car",
+                                            FromLocationName: null,
+                                            ToLocationName: null,
+                                            FromLocationId: nonExistentLocationId,
+                                            ToLocationId: null,
+                                            TransportationName: null,
+                                            DurationMinutes: 30,
+                                            PricingType: null,
+                                            Price: 20,
+                                            RequiresIndividualTicket: false,
+                                            TicketInfo: null,
+                                            Note: null,
+                                            Translations: null,
+                                            RouteTranslations: null)
+                                    ],
+                                    Accommodation: null,
+                                    Translations: null)
+                            ],
+                            Translations: null)
+                    ],
+                    Insurances: [],
+                    Translations: null)
+            ]
+        };
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.NotNull(capturedTour);
+        var route = capturedTour!.Classifications[0].Plans[0].Activities[0].Routes[0];
+        Assert.NotNull(route.FromLocation);
+        // Should fallback to stub with "Referenced Location" name
+        Assert.Equal("Referenced Location", route.FromLocation.LocationName);
+        Assert.Equal(Domain.Enums.LocationType.Other, route.FromLocation.LocationType);
+    }
+
+    #endregion
+
+    #region Issue1 (Update): Standalone resources should be mergeable via Update flow
+
+    private UpdateTourCommand CreateBaseValidUpdateCommand(Guid tourId) => new(
+        Id: tourId,
+        TourName: "Updated Tour",
+        ShortDescription: "Updated short desc",
+        LongDescription: "Updated long desc",
+        SEOTitle: null,
+        SEODescription: null,
+        Status: Domain.Enums.TourStatus.Active,
+        Thumbnail: null,
+        Images: null,
+        Translations: null,
+        Classifications: null);
+
+    private static TourEntity CreateExistingTour(Guid id) =>
+        TourEntity.Create(
+            "Original Tour",
+            "Original short",
+            "Original long",
+            "admin@test.com",
+            Domain.Enums.TourStatus.Active,
+            tourScope: Domain.Enums.TourScope.Domestic,
+            customerSegment: Domain.Enums.CustomerSegment.Group);
+
+    [Fact]
+    public async Task Update_WithStandaloneAccommodations_ShouldAddAsTourResources()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        _user.Id.Returns("admin@test.com");
+        TourEntity? existingTour = CreateExistingTour(tourId);
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            Accommodations =
+            [
+                new AccommodationDto(
+                    AccommodationName: "Hotel A",
+                    Address: "123 St",
+                    ContactPhone: "0123456789",
+                    CheckInTime: "14:00",
+                    CheckOutTime: "12:00",
+                    Note: null,
+                    RoomType: null,
+                    RoomCapacity: null,
+                    Translations: null)
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.Single(existingTour.Resources);
+        Assert.Equal(TourResourceType.Accommodation, existingTour.Resources[0].Type);
+        Assert.Equal("Hotel A", existingTour.Resources[0].Name);
+        Assert.Equal("123 St", existingTour.Resources[0].Address);
+        await _tourRepository.Received(1).Update(Arg.Any<TourEntity>());
+    }
+
+    [Fact]
+    public async Task Update_WithStandaloneLocations_ShouldAddAsTourPlanLocations()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        _user.Id.Returns("admin@test.com");
+        TourEntity? existingTour = CreateExistingTour(tourId);
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            Locations =
+            [
+                new LocationDto(
+                    LocationName: "Museum",
+                    LocationType: "Museum",
+                    Description: "Art museum",
+                    City: "Da Nang",
+                    Country: "Vietnam",
+                    EntranceFee: 0,
+                    Address: null,
+                    Translations: null)
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.Single(existingTour.PlanLocations);
+        Assert.Equal("Museum", existingTour.PlanLocations[0].LocationName);
+        Assert.Equal(Domain.Enums.LocationType.Museum, existingTour.PlanLocations[0].LocationType);
+        Assert.Equal("Da Nang", existingTour.PlanLocations[0].City);
+        await _tourRepository.Received(1).Update(Arg.Any<TourEntity>());
+    }
+
+    [Fact]
+    public async Task Update_WithStandaloneTransportations_ShouldAddAsTourResources()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        _user.Id.Returns("admin@test.com");
+        TourEntity? existingTour = CreateExistingTour(tourId);
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            Transportations =
+            [
+                new TransportationDto(
+                    FromLocationName: "Hotel",
+                    ToLocationName: "Beach",
+                    TransportationType: "Bus",
+                    TransportationName: "City Bus",
+                    FromLocationId: null,
+                    ToLocationId: null,
+                    DurationMinutes: 30,
+                    PricingType: "Per person",
+                    Price: 5,
+                    RequiresIndividualTicket: false,
+                    TicketInfo: null,
+                    Note: null,
+                    Translations: null)
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.Single(existingTour.Resources);
+        Assert.Equal(TourResourceType.Transportation, existingTour.Resources[0].Type);
+        Assert.Equal("City Bus", existingTour.Resources[0].TransportationName);
+        await _tourRepository.Received(1).Update(Arg.Any<TourEntity>());
+    }
+
+    [Fact]
+    public async Task Update_WithStandaloneServices_ShouldAddAsTourResources()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        _user.Id.Returns("admin@test.com");
+        TourEntity? existingTour = CreateExistingTour(tourId);
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            Services =
+            [
+                new ServiceDto(
+                    ServiceName: "Guide Service",
+                    PricingType: "Per Person",
+                    Price: 50,
+                    SalePrice: 45,
+                    Email: "guide@tour.com",
+                    ContactNumber: "0123456789")
+            ]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.Single(existingTour.Resources);
+        Assert.Equal(TourResourceType.Service, existingTour.Resources[0].Type);
+        Assert.Equal("Guide Service", existingTour.Resources[0].Name);
+        Assert.Equal(50, existingTour.Resources[0].Price);
+        await _tourRepository.Received(1).Update(Arg.Any<TourEntity>());
     }
 
     #endregion

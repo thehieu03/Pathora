@@ -17,6 +17,9 @@ public class TourPlanLocationEntity : Aggregate<Guid>
     public TimeOnly? ClosingHours { get; set; }
     public int? EstimatedDurationMinutes { get; set; }
     public string? Note { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTimeOffset? DeletedOnUtc { get; set; }
+    public string? DeletedBy { get; set; }
     public Dictionary<string, TourPlanLocationTranslationData> Translations { get; set; } = [];
     public Guid? TourDayActivityId { get; set; }
     public virtual TourDayActivityEntity? TourDayActivity { get; set; }
@@ -68,5 +71,12 @@ public class TourPlanLocationEntity : Aggregate<Guid>
         TourDayActivityId = tourDayActivityId;
         LastModifiedBy = performedBy;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void SoftDelete(string performedBy)
+    {
+        IsDeleted = true;
+        DeletedOnUtc = DateTimeOffset.UtcNow;
+        DeletedBy = performedBy;
     }
 }

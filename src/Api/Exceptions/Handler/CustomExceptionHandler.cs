@@ -123,6 +123,14 @@ public sealed class CustomExceptionHandler(
             Content = "[" + exception.GetType().Name + "]" + exception.Message + exception.StackTrace,
         };
         logQueue.Writer.TryWrite(log);
+
+        // Only write response if the pipeline hasn't started. If HasStarted is true,
+        // OnChallenge or OnAuthenticationFailed already wrote a response.
+        if (context.Response.HasStarted)
+        {
+            return true;
+        }
+
         await context.Response.WriteAsJsonAsync(response, cancellationToken: cancellationToken);
 
         return true;
