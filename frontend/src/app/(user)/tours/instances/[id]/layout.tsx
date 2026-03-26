@@ -9,7 +9,7 @@ interface Props {
 async function fetchTourInstance(id: string) {
   try {
     const baseUrl = API_GATEWAY_BASE_URL.replace(/\/+$/, "");
-    const res = await fetch(`${baseUrl}/api/tour-instances/${id}`, {
+    const res = await fetch(`${baseUrl}/api/public/tour-instances/${id}`, {
       credentials: "include",
       next: { revalidate: 60 },
     });

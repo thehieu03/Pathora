@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
 import { useGetUserInfoQuery, useChangePasswordMutation, useUpdateUserMutation } from "@/store/api/auth/authApiSlice";
@@ -7,10 +7,14 @@ import type { UserInfo } from "@/store/domain/auth";
 import { Button } from "@/components/ui";
 import { extractResult } from "@/utils/apiResponse";
 import { handleApiError } from "@/utils/apiResponse";
-import { FiUser, FiLock, FiSettings, FiSave, FiArrowLeft } from "react-icons/fi";
-import Link from "next/link";
+import { FiUser, FiLock, FiSettings, FiSave } from "react-icons/fi";
+import { LandingHeader } from "@/features/shared/components";
+import { toast } from "react-toastify";
 
 type TabType = "profile" | "password" | "settings";
+
+// Vietnamese phone regex: 0xxxxxxxxx, 84xxxxxxxxx, +84xxxxxxxxx
+const VIETNAM_PHONE_REGEX = /^(\+84|84|0)[1-9]\d{8}$/;
 
 function ProfileContent() {
   const { t } = useTranslation();
@@ -28,14 +32,16 @@ function ProfileContent() {
     phoneNumber: "",
     address: "",
   });
+  const [initialProfileData, setInitialProfileData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    address: "",
+  });
   const [settingsData, setSettingsData] = useState({
     emailNotifications: true,
     smsNotifications: false,
     newsletter: true,
   });
-  const [passwordError, setPasswordError] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState("");
-  const [profileSuccess, setProfileSuccess] = useState("");
 
   const { data: userInfo, isLoading } = useGetUserInfoQuery();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
@@ -45,27 +51,47 @@ function ProfileContent() {
     if (userInfo) {
       const user = extractResult<UserInfo>(userInfo);
       if (user) {
-        setProfileData({
+        const data = {
           fullName: user.fullName || "",
           phoneNumber: user.phoneNumber || "",
           address: user.address || "",
-        });
+        };
+        setProfileData(data);
+        setInitialProfileData(data);
       }
     }
   }, [userInfo]);
 
+  // Phone number validation
+  const phoneError = useMemo(() => {
+    if (!profileData.phoneNumber) return "";
+    return VIETNAM_PHONE_REGEX.test(profileData.phoneNumber)
+      ? ""
+      : t("common.auth.phoneNumberInvalid") || "Số điện thoại không đúng định dạng";
+  }, [profileData.phoneNumber, t]);
+
+  // Form dirty tracking — true if any field differs from initial
+  const isProfileDirty = useMemo(
+    () =>
+      profileData.fullName !== initialProfileData.fullName ||
+      profileData.phoneNumber !== initialProfileData.phoneNumber ||
+      profileData.address !== initialProfileData.address,
+    [profileData, initialProfileData]
+  );
+
+  const isProfileSubmitDisabled =
+    isUpdatingUser || !isProfileDirty || !!phoneError || profileData.phoneNumber === "" && initialProfileData.phoneNumber !== "";
+
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPasswordError("");
-    setPasswordSuccess("");
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError(t("common.auth.passwordMismatch") || "Mật khẩu xác nhận không khớp");
+      toast.error(t("common.auth.passwordMismatch") || "Mật khẩu xác nhận không khớp");
       return;
     }
 
     if (passwordData.newPassword.length < 6) {
-      setPasswordError(t("common.auth.passwordMinLength") || "Mật khẩu phải có ít nhất 6 ký tự");
+      toast.error(t("common.auth.passwordMinLength") || "Mật khẩu phải có ít nhất 6 ký tự");
       return;
     }
 
@@ -75,33 +101,37 @@ function ProfileContent() {
         newPassword: passwordData.newPassword,
       }).unwrap();
 
-      setPasswordSuccess(t("common.auth.passwordChangedSuccess") || "Đổi mật khẩu thành công");
+      toast.success(t("common.auth.passwordChangedSuccess") || "Đổi mật khẩu thành công");
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
       const apiError = handleApiError(error);
-      setPasswordError(apiError.message || t("common.auth.passwordChangeFailed") || "Đổi mật khẩu thất bại");
+      toast.error(apiError.message || t("common.auth.passwordChangeFailed") || "Đổi mật khẩu thất bại");
     }
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProfileSuccess("");
+
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
 
     try {
       await updateUser({
         fullName: profileData.fullName,
-        phoneNumber: profileData.phoneNumber,
-        address: profileData.address,
+        phoneNumber: profileData.phoneNumber || undefined,
+        address: profileData.address || undefined,
       }).unwrap();
 
-      setProfileSuccess(t("common.profilePage.updateSuccess") || "Cập nhật thông tin thành công");
+      // Update initial values so form is no longer dirty
+      setInitialProfileData(profileData);
+      toast.success(t("common.profilePage.updateSuccess") || "Cập nhật thông tin thành công");
     } catch (error) {
       const apiError = handleApiError(error);
-      setProfileError(apiError.message || t("common.profilePage.updateFailed") || "Cập nhật thất bại");
+      toast.error(apiError.message || t("common.profilePage.updateFailed") || "Cập nhật thất bại");
     }
   };
-
-  const [profileError, setProfileError] = useState("");
 
   const tabs = [
     { id: "profile" as TabType, label: t("common.profile") || "Thông tin cá nhân", icon: FiUser },
@@ -134,24 +164,20 @@ function ProfileContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
-      </div>
+      <>
+        <LandingHeader variant="solid" />
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        {/* Back Button */}
-        <Link
-          href="/home"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-orange-500 mb-6"
-        >
-          <FiArrowLeft className="w-4 h-4" />
-          {t("common.back") || "Quay lại"}
-        </Link>
-
+    <>
+      <LandingHeader variant="solid" />
+      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="max-w-4xl mx-auto px-4 pb-8">
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           {/* Dynamic Header */}
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-8 transition-all duration-300">
@@ -233,8 +259,14 @@ function ProfileContent() {
                       type="tel"
                       value={profileData.phoneNumber}
                       onChange={(e) => setProfileData({ ...profileData, phoneNumber: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                      placeholder="0912345678"
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 ${
+                        phoneError && profileData.phoneNumber ? "border-red-500" : "border-gray-300"
+                      }`}
                     />
+                    {phoneError && profileData.phoneNumber && (
+                      <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+                    )}
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -260,18 +292,15 @@ function ProfileContent() {
                   </div>
                 </div>
 
-                {profileError && (
-                  <div className="text-red-500 text-sm">{profileError}</div>
-                )}
-                {profileSuccess && (
-                  <div className="text-green-500 text-sm">{profileSuccess}</div>
-                )}
-
                 <div className="flex justify-end">
                   <Button
                     type="submit"
-                    disabled={isUpdatingUser}
-                    className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg"
+                    disabled={isProfileSubmitDisabled}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-lg ${
+                      isProfileSubmitDisabled
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-orange-500 hover:bg-orange-600 text-white"
+                    }`}
                   >
                     <FiSave className="w-4 h-4" />
                     {isUpdatingUser ? t("common.loading") || "Đang lưu..." : t("common.save") || "Lưu"}
@@ -326,13 +355,6 @@ function ProfileContent() {
                     required
                   />
                 </div>
-
-                {passwordError && (
-                  <div className="text-red-500 text-sm">{passwordError}</div>
-                )}
-                {passwordSuccess && (
-                  <div className="text-green-500 text-sm">{passwordSuccess}</div>
-                )}
 
                 <div className="flex justify-end">
                   <Button
@@ -434,6 +456,7 @@ function ProfileContent() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

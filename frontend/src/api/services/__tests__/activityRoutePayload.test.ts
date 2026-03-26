@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { buildCreateTourFormData } from "../tourCreatePayload";
+import { buildTourFormData } from "../tourCreatePayload";
 
-// Helper: minimal required inputs for buildCreateTourFormData
+// Helper: minimal required inputs for buildTourFormData
 const minimalInputs = () => ({
   basicInfo: {
     tourName: "Tour",
@@ -129,7 +129,7 @@ describe("activity route payload", () => {
         ],
       ];
 
-      const formData = buildCreateTourFormData(inputs);
+      const formData = buildTourFormData(inputs);
       const classifications = JSON.parse(String(formData.get("classifications")));
       const routes = classifications[0].plans[0].activities[0].routes;
 
@@ -192,7 +192,7 @@ describe("activity route payload", () => {
         ],
       ];
 
-      const formData = buildCreateTourFormData(inputs);
+      const formData = buildTourFormData(inputs);
       const classifications = JSON.parse(String(formData.get("classifications")));
       const routes = classifications[0].plans[0].activities[0].routes;
 
@@ -239,7 +239,7 @@ describe("activity route payload", () => {
         ],
       ];
 
-      const formData = buildCreateTourFormData(inputs);
+      const formData = buildTourFormData(inputs);
       const classifications = JSON.parse(String(formData.get("classifications")));
       const routes = classifications[0].plans[0].activities[0].routes;
 
@@ -312,7 +312,7 @@ describe("activity route payload", () => {
         ],
       ];
 
-      const formData = buildCreateTourFormData(inputs);
+      const formData = buildTourFormData(inputs);
       const classifications = JSON.parse(String(formData.get("classifications")));
       const routes = classifications[0].plans[0].activities[0].routes;
 
@@ -372,7 +372,7 @@ describe("activity route payload", () => {
         ],
       ];
 
-      const formData = buildCreateTourFormData(inputs);
+      const formData = buildTourFormData(inputs);
       const classifications = JSON.parse(String(formData.get("classifications")));
       const translations = classifications[0].plans[0].activities[0].translations;
 

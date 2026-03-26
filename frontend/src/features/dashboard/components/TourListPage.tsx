@@ -9,7 +9,7 @@ import { SkeletonTable } from "@/components/ui/SkeletonTable";
 import { tourService } from "@/api/services/tourService";
 import { handleApiError } from "@/utils/apiResponse";
 import { useDebounce } from "@/hooks/useDebounce";
-import { SearchTourVm } from "@/types/tour";
+import { TourVm } from "@/types/tour";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
 
 /* ── Animation Variants ───────────────────────────────────── */
@@ -116,7 +116,7 @@ export function TourListPage() {
   const router = useRouter();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [tours, setTours] = useState<SearchTourVm[]>([]);
+  const [tours, setTours] = useState<TourVm[]>([]);
   const [dataState, setDataState] = useState<TourListDataState>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
@@ -136,7 +136,7 @@ export function TourListPage() {
         setDataState("loading");
         setErrorMessage(null);
         setCurrentPage(1);
-        const result = await tourService.getAllTours(
+        const result = await tourService.getAllToursAdmin(
           debouncedSearch || undefined,
           1,
           pageSize,
@@ -374,9 +374,9 @@ export function TourListPage() {
                           <div className="flex items-center gap-4">
                             <div className="w-14 h-14 rounded-2xl border border-stone-200/80 bg-stone-100 flex items-center justify-center shrink-0 overflow-hidden group-hover:border-amber-300 transition-colors duration-200">
                               {!failedThumbnailIds.has(tour.id) &&
-                              tour.thumbnail ? (
+                              tour.thumbnail?.publicURL ? (
                                 <img
-                                  src={tour.thumbnail}
+                                  src={tour.thumbnail.publicURL}
                                   alt={tour.tourName || "Tour thumbnail"}
                                   className="h-full w-full object-cover"
                                   loading="lazy"

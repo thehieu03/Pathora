@@ -8,8 +8,10 @@ import { isAdminPortal } from "@/utils/authRouting";
 
 const DAY_SECONDS = 60 * 60 * 24;
 
+const isProduction = process.env.NODE_ENV === "production";
 const setCookie = (name: string, value: string, maxAge = DAY_SECONDS): void => {
-  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax`;
+  const secure = isProduction ? "; Secure" : "";
+  document.cookie = `${name}=${value}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
 };
 
 const removeCookie = (name: string): void => {
@@ -197,12 +199,12 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
 
     /**
-     * PUT /api/user
-     * Update user profile.
+     * PUT /api/auth/me
+     * Update current user profile.
      */
     updateUser: builder.mutation<ApiSharedResponse<void>, { fullName?: string; phoneNumber?: string; address?: string }>({
       query: (body) => ({
-        url: "/api/user",
+        url: "/api/auth/me",
         method: "PUT",
         body,
       }),

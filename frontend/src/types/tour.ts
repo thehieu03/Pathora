@@ -182,6 +182,15 @@ export interface PaginatedResponse<T> {
   data: T[];
 }
 
+// TourStatus typed constants matching backend enum values
+export const TourStatus = {
+  Active: 1,
+  Inactive: 2,
+  Pending: 3,
+  Rejected: 4,
+} as const;
+export type TourStatusValue = typeof TourStatus[keyof typeof TourStatus];
+
 // Enum maps for display
 export const TourStatusMap: Record<number, string> = {
   1: "Active",
@@ -306,6 +315,18 @@ export interface TourInstanceVm {
   instanceType: string;
 }
 
+export interface TourInstanceDayDto {
+  id: string;
+  instanceDayNumber: number;
+  actualDate: string;
+  title: string;
+  description: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  note: string | null;
+  tourDay: TourDayDto;
+}
+
 export interface TourInstanceDto {
   id: string;
   tourId: string;
@@ -333,6 +354,7 @@ export interface TourInstanceDto {
   confirmationDeadline: string | null;
   managers: TourInstanceManagerDto[];
   includedServices: string[];
+  days?: TourInstanceDayDto[];
 }
 
 export type NormalizedTourInstanceVm = TourInstanceVm & {

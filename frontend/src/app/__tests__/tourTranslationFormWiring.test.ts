@@ -12,7 +12,7 @@ describe("tour translation form wiring", () => {
     const createPageSource = readFile("src/app/(dashboard)/tour-management/create/page.tsx");
     const payloadBuilderSource = readFile("src/api/services/tourCreatePayload.ts");
 
-    expect(createPageSource.includes("buildCreateTourFormData")).toBe(true);
+    expect(createPageSource.includes("buildTourFormData")).toBe(true);
     expect(createPageSource.includes("vietnameseTranslation")).toBe(true);
     expect(createPageSource.includes("englishTranslation")).toBe(true);
 

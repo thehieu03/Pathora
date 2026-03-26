@@ -10,8 +10,8 @@ interface BasicInfoPayload {
   seoTitle: string;
   seoDescription: string;
   status: string;
-  tourScope: string;
-  customerSegment: string;
+  tourScope?: string;
+  customerSegment?: string;
 }
 
 // Bilingual input types for nested entities
@@ -523,7 +523,7 @@ export const buildServicesPayload = (services: ServicePayloadInput[]) =>
 
 // ── Main export ─────────────────────────────────────────────────────
 
-export const buildCreateTourFormData = ({
+export const buildTourFormData = ({
   basicInfo,
   thumbnail,
   images,
@@ -549,8 +549,12 @@ export const buildCreateTourFormData = ({
   formData.append("seoTitle", basicInfo.seoTitle);
   formData.append("seoDescription", basicInfo.seoDescription);
   formData.append("status", basicInfo.status);
-  formData.append("tourScope", basicInfo.tourScope);
-  formData.append("customerSegment", basicInfo.customerSegment);
+  if (basicInfo.tourScope) {
+    formData.append("tourScope", basicInfo.tourScope);
+  }
+  if (basicInfo.customerSegment) {
+    formData.append("customerSegment", basicInfo.customerSegment);
+  }
 
   if (thumbnail) {
     formData.append("thumbnail", thumbnail);

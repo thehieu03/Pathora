@@ -7,6 +7,7 @@ import {
   TourClassificationDto,
   TourDto,
   SearchTourVm,
+  TourVm,
 } from "@/types/tour";
 import { extractResult } from "@/utils/apiResponse";
 import { ApiResponse } from "@/types/home";
@@ -68,11 +69,32 @@ export const tourService = {
     };
   },
 
+  getAllToursAdmin: async (
+    searchText?: string,
+    pageNumber = 1,
+    pageSize = 10,
+  ) => {
+    const params = new URLSearchParams({
+      searchText: searchText || "",
+      pageNumber: String(pageNumber),
+      pageSize: String(pageSize),
+    });
+    // Backend returns { data: { data: TourVm[], total: number }, ... }
+    type AdminTourPage = { data: TourVm[]; total: number };
+    const response = await api.get<ApiResponse<AdminTourPage>>(
+      `${API_ENDPOINTS.TOUR.GET_ALL_ADMIN}?${params.toString()}`,
+    );
+    const result = extractResult<AdminTourPage>(response.data);
+    return {
+      total: result?.total ?? 0,
+      data: result?.data ?? [],
+    };
+  },
+
   getTourDetail: async (id: string) => {
     const response = await api.get<ApiResponse<TourDto>>(
       API_ENDPOINTS.TOUR.GET_DETAIL(id),
     );
-
     const result = extractResult<TourDto>(response.data);
     return result ? normalizeTourDetail(result) : null;
   },
@@ -81,7 +103,6 @@ export const tourService = {
     const response = await api.get<ApiResponse<DynamicPricingDto[]>>(
       API_ENDPOINTS.TOUR.GET_CLASSIFICATION_PRICING_TIERS(classificationId),
     );
-
     return extractResult<DynamicPricingDto[]>(response.data) ?? [];
   },
 
@@ -93,7 +114,6 @@ export const tourService = {
       API_ENDPOINTS.TOUR.UPSERT_CLASSIFICATION_PRICING_TIERS(classificationId),
       tiers,
     );
-
     return extractResult<unknown>(response.data);
   },
 
@@ -101,9 +121,7 @@ export const tourService = {
     const response = await api.post<ApiResponse<string>>(
       API_ENDPOINTS.TOUR.CREATE,
       formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      },
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return extractResult<string>(response.data);
   },
@@ -112,9 +130,7 @@ export const tourService = {
     const response = await api.put<ApiResponse<unknown>>(
       API_ENDPOINTS.TOUR.UPDATE,
       formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      },
+      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return extractResult<unknown>(response.data);
   },

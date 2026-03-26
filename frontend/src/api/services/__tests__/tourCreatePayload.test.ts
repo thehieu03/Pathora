@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { buildCreateTourFormData, buildServicesPayload } from "../tourCreatePayload";
+import { buildTourFormData, buildServicesPayload } from "../tourCreatePayload";
 
-describe("buildCreateTourFormData", () => {
+describe("buildTourFormData", () => {
   // =========================================================================
   // Helper function edge cases
   // =========================================================================
@@ -10,7 +10,7 @@ describe("buildCreateTourFormData", () => {
   describe("base price parsing", () => {
     // TC-FE06: basePrice is mapped directly to payload basePrice
     it("maps classification basePrice into payload", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -61,7 +61,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE07: NumberOfDay must be at least 1
     it("defaults NumberOfDay to 1 when less than 1", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -110,7 +110,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE08: NumberOfNight equals NumberOfDay - 1
     it("calculates NumberOfNight as NumberOfDay minus 1", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -165,7 +165,7 @@ describe("buildCreateTourFormData", () => {
   describe("policy IDs are appended when provided", () => {
     // TC-FE09: All four policy IDs appended to FormData
     it("appends all four policy IDs when provided", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -210,7 +210,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE10: Policy IDs omitted when not provided
     it("omits policy IDs from FormData when not provided", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -257,7 +257,7 @@ describe("buildCreateTourFormData", () => {
   describe("empty classifications handling", () => {
     // TC-FE11: Empty classifications array omits classifications field
     it("omits classifications field when array is empty", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -295,7 +295,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE12: Basic fields always appended as strings
     it("appends all basic string fields to FormData", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "My Tour",
           shortDescription: "Short desc",
@@ -341,7 +341,7 @@ describe("buildCreateTourFormData", () => {
       const file1 = new File(["content1"], "img1.jpg", { type: "image/jpeg" });
       const file2 = new File(["content2"], "img2.jpg", { type: "image/jpeg" });
 
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -385,7 +385,7 @@ describe("buildCreateTourFormData", () => {
 
   describe("bilingual nested translations", () => {
     it("serializes bilingual classification and nested plan/activity/insurance translations", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Da Nang Explorer",
           shortDescription: "Short",
@@ -507,7 +507,7 @@ describe("buildCreateTourFormData", () => {
     });
 
     it("omits English translation block when English fields are empty", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour VI",
           shortDescription: "Short VI",
@@ -604,7 +604,7 @@ describe("buildCreateTourFormData", () => {
     });
 
     it("serializes accommodations, locations, and transportations with translations", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -732,7 +732,7 @@ describe("buildCreateTourFormData", () => {
   describe("services payload", () => {
     // TC-FE15: Services are appended as JSON when provided
     it("appends services as JSON when services are provided", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -787,7 +787,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE16: Services with empty serviceName are filtered out
     it("filters out services with empty serviceName", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -845,7 +845,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE17: Services omitted from FormData when array is empty
     it("omits services field when array is empty", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",
@@ -884,7 +884,7 @@ describe("buildCreateTourFormData", () => {
 
     // TC-FE18: Services omitted when all entries have empty serviceName
     it("omits services field when all services have empty serviceName", () => {
-      const formData = buildCreateTourFormData({
+      const formData = buildTourFormData({
         basicInfo: {
           tourName: "Tour",
           shortDescription: "Short",

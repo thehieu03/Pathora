@@ -20,6 +20,13 @@ function validateFile(
   return undefined;
 }
 
+interface ExistingImage {
+  fileId?: string | null;
+  publicURL?: string | null;
+  fileName?: string | null;
+  originalFileName?: string | null;
+}
+
 interface TourImageUploadProps {
   thumbnail: File | null;
   setThumbnail: (file: File | null) => void;
@@ -30,6 +37,9 @@ interface TourImageUploadProps {
   imagesError?: string;
   onThumbnailError?: (msg: string | undefined) => void;
   onImagesError?: (msg: string | undefined) => void;
+  /** Existing images from the server — shown with remove option, managed by parent state */
+  existingImages?: ExistingImage[];
+  onRemoveExistingImage?: (image: ExistingImage) => void;
 }
 
 export default function TourImageUpload({
@@ -42,6 +52,8 @@ export default function TourImageUpload({
   imagesError,
   onThumbnailError,
   onImagesError,
+  existingImages = [],
+  onRemoveExistingImage,
 }: TourImageUploadProps) {
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +77,8 @@ export default function TourImageUpload({
       if (files.length === 0) return;
 
       const MAX_IMAGES = 20;
-      const remaining = MAX_IMAGES - images.length;
+      const totalAllowed = MAX_IMAGES - existingImages.length;
+      const remaining = totalAllowed - images.length;
       if (remaining <= 0) {
         onImagesError?.(t("tourAdmin.validation.maxImagesReached", `Maximum ${MAX_IMAGES} images allowed.`));
         return;
@@ -89,7 +102,7 @@ export default function TourImageUpload({
       }
       onImagesError?.(errors.length > 0 ? errors.join("; ") : undefined);
     },
-    [images, setImages, onImagesError, t],
+    [images, setImages, onImagesError, t, existingImages.length],
   );
 
   const removeGalleryImage = useCallback(
@@ -102,14 +115,14 @@ export default function TourImageUpload({
   const thumbnailUrl = thumbnail ? URL.createObjectURL(thumbnail) : null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="space-y-5">
       {/* ── Thumbnail ── */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div>
-          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)]">
             {t("tourAdmin.basicInfo.thumbnail", "Ảnh đại diện (Thumbnail)")}
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             {t(
               "tourAdmin.basicInfo.thumbnailDesc",
               "Kích thước khuyến nghị: 600x600 pixels",
@@ -127,7 +140,7 @@ export default function TourImageUpload({
 
         {thumbnailUrl ? (
           <div className="relative group">
-            <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-orange-200 shadow-md">
+            <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm">
               <Image
                 src={thumbnailUrl}
                 alt="Thumbnail preview"
@@ -141,23 +154,21 @@ export default function TourImageUpload({
                   <button
                     type="button"
                     onClick={() => thumbnailInputRef.current?.click()}
-                    className="flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-white shadow-sm transition-all"
-                  >
+                    className="flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-white shadow-sm transition-all">
                     <Icon icon="heroicons:arrow-path" className="size-3.5" />
                     {t("tourAdmin.basicInfo.replace", "Đổi ảnh")}
                   </button>
                   <button
                     type="button"
                     onClick={() => setThumbnail(null)}
-                    className="flex items-center gap-1.5 rounded-xl bg-red-500/90 px-3 py-2 text-xs font-semibold text-white hover:bg-red-600 shadow-sm transition-all"
-                  >
+                    className="flex items-center gap-1.5 rounded-xl bg-red-500/90 px-3 py-2 text-xs font-semibold text-white hover:bg-red-600 shadow-sm transition-all">
                     <Icon icon="heroicons:trash" className="size-3.5" />
                     {t("common.remove", "Xóa")}
                   </button>
                 </div>
               </div>
             </div>
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 text-center">
+            <p className="mt-1.5 text-xs text-[var(--text-muted)] text-center">
               {thumbnail.name}
             </p>
             {thumbnailError && (
@@ -170,24 +181,22 @@ export default function TourImageUpload({
           <button
             type="button"
             onClick={() => thumbnailInputRef.current?.click()}
-            className="relative w-full aspect-square rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-600 flex flex-col items-center justify-center gap-3 hover:border-orange-400 hover:bg-orange-50/50 transition-all duration-200 cursor-pointer"
-          >
-            <div className="size-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+            className="relative w-full aspect-square rounded-2xl border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center gap-3 hover:border-primary/40 hover:bg-[var(--muted)]/50 transition-all duration-200 cursor-pointer group">
+            <div className="size-12 rounded-full bg-[var(--muted)] flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-200">
               <Icon
                 icon="heroicons:photo"
-                className="size-6 text-orange-500"
+                className="size-6 text-[var(--text-muted)] group-hover:text-primary transition-colors duration-200"
               />
             </div>
             <div className="text-center">
-              <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">
                 {t(
                   "tourAdmin.basicInfo.uploadThumbnail",
                   "Tải lên ảnh đại diện",
                 )}
               </p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                PNG, JPG, WEBP ·{" "}
-                {t("tourAdmin.basicInfo.maxSize", "Tối đa 10MB")}
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                PNG, JPG, WEBP · {t("tourAdmin.basicInfo.maxSize", "Tối đa 10MB")}
               </p>
             </div>
           </button>
@@ -197,13 +206,13 @@ export default function TourImageUpload({
       {/* ── Gallery ── */}
       <div className="space-y-3">
         <div>
-          <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)]">
             {t("tourAdmin.basicInfo.gallery", "Thư viện ảnh (Gallery)")}
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             {t(
               "tourAdmin.basicInfo.galleryDesc",
-              "Có thể tải lên nhiều ảnh, kích thước khuyến nghị: 600x600 pixels",
+              "Tối đa 20 ảnh · Khuyến nghị: 600x600 pixels",
             )}
           </p>
         </div>
@@ -217,7 +226,46 @@ export default function TourImageUpload({
           onChange={handleGalleryChange}
         />
 
-        {/* Image grid */}
+        {/* Existing images */}
+        {existingImages.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {existingImages.map((img, index) => (
+              <div
+                key={img.fileId ?? `existing-${index}`}
+                className="relative group aspect-square">
+                <div className="relative w-full h-full rounded-xl overflow-hidden border border-[var(--border)] shadow-sm">
+                  {img.publicURL ? (
+                    <Image
+                      src={img.publicURL}
+                      alt={img.fileName ?? `Image ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="150px"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[var(--muted)] flex items-center justify-center">
+                      <Icon icon="heroicons:photo" className="size-6 text-[var(--text-muted)]" />
+                    </div>
+                  )}
+                </div>
+                {/* Remove button */}
+                <button
+                  type="button"
+                  onClick={() => onRemoveExistingImage?.(img)}
+                  className="absolute -top-1.5 -right-1.5 size-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md hover:bg-red-600 z-10"
+                  title={t("common.remove", "Xóa")}>
+                  <Icon icon="heroicons:x-mark" className="size-3" weight="bold" />
+                </button>
+                {/* Index badge */}
+                <span className="absolute bottom-1 left-1 rounded-md bg-black/50 text-white text-[10px] font-semibold px-1.5 py-0.5">
+                  {index + 1}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* New image grid */}
         {images.length > 0 && (
           <div className="grid grid-cols-3 gap-2">
             {images.map((file, index) => {
@@ -225,9 +273,8 @@ export default function TourImageUpload({
               return (
                 <div
                   key={`gallery-${index}`}
-                  className="relative group aspect-square"
-                >
-                  <div className="relative w-full h-full rounded-xl overflow-hidden border border-stone-200 dark:border-stone-600 shadow-sm">
+                  className="relative group aspect-square">
+                  <div className="relative w-full h-full rounded-xl overflow-hidden border border-[var(--border)] shadow-sm">
                     <Image
                       src={url}
                       alt={`Gallery image ${index + 1}`}
@@ -240,14 +287,13 @@ export default function TourImageUpload({
                   <button
                     type="button"
                     onClick={() => removeGalleryImage(index)}
-                    className="absolute -top-1.5 -right-1.5 size-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md hover:bg-red-600"
-                    title={t("common.remove", "Xóa")}
-                  >
+                    className="absolute -top-1.5 -right-1.5 size-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md hover:bg-red-600 z-10"
+                    title={t("common.remove", "Xóa")}>
                     <Icon icon="heroicons:x-mark" className="size-3" weight="bold" />
                   </button>
                   {/* Index badge */}
                   <span className="absolute bottom-1 left-1 rounded-md bg-black/50 text-white text-[10px] font-semibold px-1.5 py-0.5">
-                    {index + 1}
+                    {existingImages.length + index + 1}
                   </span>
                 </div>
               );
@@ -259,17 +305,16 @@ export default function TourImageUpload({
         <button
           type="button"
           onClick={() => galleryInputRef.current?.click()}
-          className="w-full py-8 rounded-2xl border-2 border-dashed border-stone-300 dark:border-stone-600 flex flex-col items-center justify-center gap-2 hover:border-orange-400 hover:bg-orange-50/50 transition-all duration-200 cursor-pointer"
-        >
-          <div className="size-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+          className="w-full py-8 rounded-2xl border-2 border-dashed border-[var(--border)] flex flex-col items-center justify-center gap-2 hover:border-primary/40 hover:bg-[var(--muted)]/50 transition-all duration-200 cursor-pointer group">
+          <div className="size-10 rounded-full bg-[var(--muted)] flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-200">
             <Icon
               icon="heroicons:plus"
-              className="size-5 text-orange-500"
+              className="size-5 text-[var(--text-muted)] group-hover:text-primary transition-colors duration-200"
             />
           </div>
           <div className="text-center">
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              {images.length > 0
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
+              {images.length > 0 || existingImages.length > 0
                 ? t(
                     "tourAdmin.basicInfo.addMoreImages",
                     "Thêm ảnh khác",
@@ -279,17 +324,21 @@ export default function TourImageUpload({
                     "Tải lên thư viện ảnh",
                   )}
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-              PNG, JPG, WEBP ·{" "}
-              {t("tourAdmin.basicInfo.maxSize", "Tối đa 10MB")}
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              PNG, JPG, WEBP · {t("tourAdmin.basicInfo.maxSize", "Tối đa 10MB")}
             </p>
           </div>
         </button>
 
-        {images.length > 0 && (
-          <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-            {images.length}{" "}
+        {(images.length > 0 || existingImages.length > 0) && (
+          <p className="text-xs text-[var(--text-muted)] text-center">
+            {existingImages.length + images.length}{" "}
             {t("tourAdmin.basicInfo.imagesSelected", "ảnh đã chọn")}
+            {existingImages.length > 0 && (
+              <span className="ml-1 text-[var(--text-muted)]">
+                ({existingImages.length} {t("tourAdmin.existing", "cũ")}, {images.length} {t("tourAdmin.new", "mới")})
+              </span>
+            )}
           </p>
         )}
         {imagesError && (

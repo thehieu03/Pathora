@@ -4,6 +4,7 @@ export type EndpointWithId = (id: string) => string;
 
 export interface TourEndpoints {
   GET_ALL: string;
+  GET_ALL_ADMIN: string;
   GET_DETAIL: EndpointWithId;
   GET_CLASSIFICATION_PRICING_TIERS: EndpointWithId;
   CREATE: string;
@@ -34,6 +35,7 @@ export interface PublicTourInstanceEndpoints {
 
 export const TOUR: TourEndpoints = {
   GET_ALL: "/api/tour",
+  GET_ALL_ADMIN: "/api/tour",
   GET_DETAIL: (id: string): string => `/api/tour/${id}`,
   GET_CLASSIFICATION_PRICING_TIERS: (classificationId: string): string =>
     `/api/tour/classifications/${classificationId}/pricing-tiers`,

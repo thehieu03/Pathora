@@ -488,11 +488,6 @@ function ActivityItem({ activity }: { activity: TourDayActivityDto }) {
           </p>
         )}
 
-        {activity.estimatedCost != null && activity.estimatedCost > 0 && (
-          <span className="text-[10px] font-medium" style={{ color: "#fa8b02" }}>
-            {t("landing.tourDetail.estimatedCost")}: ~{formatCurrency(activity.estimatedCost)}
-          </span>
-        )}
       </div>
     </div>
   );

@@ -150,11 +150,13 @@ const MobileSidebar = ({
   onClose,
   onOpenAuth,
   dialogId,
+  logoVariant = "svg",
 }: {
   open: boolean;
   onClose: () => void;
   onOpenAuth: (view: "signup" | "login" | "forgot") => void;
   dialogId: string;
+  logoVariant?: "svg" | "text";
 }) => {
   const { t, i18n } = useTranslation();
   const { isAuth, user } = useSelector((state: RootState) => state.auth);
@@ -219,8 +221,7 @@ const MobileSidebar = ({
           enterTo="opacity-100"
           leave="transition-opacity duration-200 ease-in"
           leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
+          leaveTo="opacity-0">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
         </TransitionChild>
 
@@ -231,8 +232,7 @@ const MobileSidebar = ({
           enterTo="translate-x-0"
           leave="transform transition duration-200 ease-in"
           leaveFrom="translate-x-0"
-          leaveTo="translate-x-full"
-        >
+          leaveTo="translate-x-full">
           <div
             ref={panelRef}
             id={dialogId}
@@ -240,24 +240,32 @@ const MobileSidebar = ({
             role="dialog"
             aria-modal="true"
             aria-labelledby={menuTitleId}
-            tabIndex={-1}
-          >
+            tabIndex={-1}>
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
               <Link
                 href="/home"
                 onClick={onClose}
-                className="flex items-center gap-3"
-              >
-                <div className="relative h-10 w-12">
-                  <Image
-                    src={LOGO}
-                    alt="Pathora logo"
-                    fill
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <span className="text-xl font-bold text-white">Pathora</span>
+                className="flex items-center gap-3">
+                {logoVariant === "text" ? (
+                  <span className="text-xl font-bold text-white font-['Space_Grotesk']">
+                    Pathora
+                  </span>
+                ) : (
+                  <>
+                    <div className="relative h-10 w-12">
+                      <Image
+                        src={LOGO}
+                        alt="Pathora logo"
+                        fill
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                    <span className="text-xl font-bold text-white">
+                      Pathora
+                    </span>
+                  </>
+                )}
               </Link>
               <Button
                 onClick={onClose}
@@ -300,8 +308,7 @@ const MobileSidebar = ({
                   <Link
                     href={item.href}
                     onClick={onClose}
-                    className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all group"
-                  >
+                    className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all group">
                     <Icon
                       icon={item.icon}
                       className="w-5 h-5 text-gray-400 group-hover:text-[#fa8b02] transition-colors"
@@ -318,8 +325,7 @@ const MobileSidebar = ({
                   <Link
                     href="/tours/my-requests"
                     onClick={onClose}
-                    className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all group"
-                  >
+                    className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-all group">
                     <Icon
                       icon="heroicons-outline:clipboard-document-list"
                       className="w-5 h-5 text-gray-400 group-hover:text-[#fa8b02] transition-colors"
@@ -349,8 +355,7 @@ const MobileSidebar = ({
                           : "text-gray-300 hover:text-white"
                       } min-h-9 min-w-14`}
                       onClick={() => i18n.changeLanguage(lang.code)}
-                      aria-pressed={normalizedLanguage === lang.code}
-                    >
+                      aria-pressed={normalizedLanguage === lang.code}>
                       {lang.code.toUpperCase()}
                     </Button>
                   ))}
@@ -383,8 +388,11 @@ const MobileSidebar = ({
 /* ── Header ────────────────────────────────────────────────── */
 export const LandingHeader = ({
   variant = "overlay",
+  logoVariant = "svg",
 }: {
   variant?: "overlay" | "solid";
+  /** "svg" = Pathora logo image, "text" = "Pathora" in Space Grotesk font */
+  logoVariant?: "svg" | "text";
 }) => {
   const isSolid = variant === "solid";
   const { t, i18n } = useTranslation();
@@ -538,9 +546,19 @@ export const LandingHeader = ({
     const fetchRecentBookings = async () => {
       setBookingsLoading(true);
       try {
+        // DEBUG: check token
+        const token = document.cookie.split('; ').find(r => r.startsWith('access_token='))?.split('=')[1];
+        if (token) {
+          const parts = token.split('.');
+          if (parts.length === 3) {
+            const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+            console.log("[DEBUG] JWT payload roles:", payload.roles, "role claim:", payload[Object.keys(payload).find(k => k.toLowerCase().includes('role')) || '']);
+          }
+        }
         const bookings = await bookingService.getRecentBookings(3);
         setRecentBookings(bookings);
-      } catch {
+      } catch (err) {
+        console.error("[LandingHeader] getRecentBookings error:", err);
         setRecentBookings([]);
       } finally {
         setBookingsLoading(false);
@@ -573,8 +591,7 @@ export const LandingHeader = ({
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-[#fa8b02] focus:px-4 focus:py-2 focus:text-white focus:shadow-lg"
-      >
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-100 focus:rounded-md focus:bg-[#fa8b02] focus:px-4 focus:py-2 focus:text-white focus:shadow-lg">
         Skip to main content
       </a>
       <header
@@ -584,30 +601,33 @@ export const LandingHeader = ({
             : scrolled
               ? "bg-[rgba(26,26,26,0.95)] backdrop-blur-xl shadow-lg shadow-black/20"
               : "bg-[rgba(26,26,26,0.7)] backdrop-blur-md"
-        } ${scrolled ? "py-3" : "py-5"}`}
-      >
+        } ${scrolled ? "py-3" : "py-5"}`}>
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/home" className="flex items-center shrink-0 group">
-              <div
-                className={`relative transition-all duration-300 ${scrolled ? "h-10 w-24" : "h-12 w-28"}`}
-              >
-                <Image
-                  src={LOGO}
-                  alt="Pathora logo"
-                  fill
-                  sizes="(max-width: 768px) 96px, 112px"
-                  className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+              {logoVariant === "text" ? (
+                <span className="text-2xl font-bold text-white font-['Space_Grotesk'] tracking-tight">
+                  Pathora
+                </span>
+              ) : (
+                <div
+                  className={`relative transition-all duration-300 ${scrolled ? "h-10 w-24" : "h-12 w-28"}`}>
+                  <Image
+                    src={LOGO}
+                    alt="Pathora logo"
+                    fill
+                    sizes="(max-width: 768px) 96px, 112px"
+                    className="h-full w-full object-contain group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              )}
             </Link>
 
             {/* Desktop Navigation */}
             <nav
               className="hidden lg:flex items-center gap-1"
-              aria-label="Main navigation"
-            >
+              aria-label="Main navigation">
               {navLinks.map((link) => {
                 const isActive =
                   link.href === "/"
@@ -625,8 +645,7 @@ export const LandingHeader = ({
                         ? "text-[#fa8b02]"
                         : "text-white hover:text-[#fa8b02]"
                     }`}
-                    aria-current={isActive ? "page" : undefined}
-                  >
+                    aria-current={isActive ? "page" : undefined}>
                     {mounted
                       ? t(link.labelKey)
                       : link.labelKey === "landing.nav.home"
@@ -664,8 +683,7 @@ export const LandingHeader = ({
                   aria-label={`${t("landing.a11y.changeLanguage")} (${mounted ? normalizedLanguage.toUpperCase() : "EN"})`}
                   aria-haspopup="menu"
                   aria-expanded={languageMenuOpen}
-                  aria-controls={languageMenuId}
-                >
+                  aria-controls={languageMenuId}>
                   <FiGlobe
                     suppressHydrationWarning
                     className="w-4 h-4 text-white/70"
@@ -686,8 +704,7 @@ export const LandingHeader = ({
                     languageMenuOpen
                       ? "visible opacity-100 translate-y-0"
                       : "invisible opacity-0 translate-y-2 pointer-events-none"
-                  }`}
-                >
+                  }`}>
                   {languages.map((lang) => {
                     const isActive =
                       mounted && lang.code === normalizedLanguage;
@@ -703,8 +720,7 @@ export const LandingHeader = ({
                           isActive
                             ? "text-[#fa8b02] bg-[#fa8b02]/10"
                             : "text-white"
-                        }`}
-                      >
+                        }`}>
                         <span className="text-lg">{lang.flag}</span>
                         <span className="font-medium">{lang.label}</span>
                         {isActive && <FiCheck className="w-4 h-4 ml-auto" />}
@@ -727,8 +743,7 @@ export const LandingHeader = ({
                     aria-label="User menu"
                     aria-haspopup="menu"
                     aria-expanded={userMenuOpen}
-                    aria-controls={userMenuId}
-                  >
+                    aria-controls={userMenuId}>
                     {user?.avatar ? (
                       <AvatarImage
                         src={user.avatar}
@@ -750,8 +765,7 @@ export const LandingHeader = ({
                       userMenuOpen
                         ? "visible opacity-100 translate-y-0"
                         : "invisible opacity-0 translate-y-2 pointer-events-none"
-                    }`}
-                  >
+                    }`}>
                     {/* User Info Header */}
                     <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#fa8b02] to-[#ff9f2d] flex items-center justify-center shrink-0 overflow-hidden">
@@ -789,8 +803,7 @@ export const LandingHeader = ({
                               key={booking.bookingId}
                               href={`/bookings/${booking.bookingId}`}
                               onClick={() => setUserMenuOpen(false)}
-                              className="flex w-full items-start gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                            >
+                              className="flex w-full items-start gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors">
                               <FiCalendar className="w-4 h-4 mt-0.5 text-gray-400 shrink-0" />
                               <div className="min-w-0 flex-1">
                                 <p className="truncate font-medium">
@@ -798,16 +811,19 @@ export const LandingHeader = ({
                                 </p>
                                 <div className="flex items-center gap-2 mt-1">
                                   <span className="text-xs text-gray-400">
-                                    {new Date(booking.departureDate).toLocaleDateString(
-                                      i18n.language === "vi" ? "vi-VN" : "en-US",
+                                    {new Date(
+                                      booking.departureDate,
+                                    ).toLocaleDateString(
+                                      i18n.language === "vi"
+                                        ? "vi-VN"
+                                        : "en-US",
                                       { day: "numeric", month: "short" },
                                     )}
                                   </span>
                                   <span
                                     className={`text-xs px-1.5 py-0.5 rounded ${getStatusColor(
                                       booking.status,
-                                    )}`}
-                                  >
+                                    )}`}>
                                     {booking.status}
                                   </span>
                                 </div>
@@ -817,11 +833,8 @@ export const LandingHeader = ({
                           <Link
                             href="/bookings"
                             onClick={() => setUserMenuOpen(false)}
-                            className="flex w-full items-center justify-between gap-3 px-4 py-2 text-sm text-[#fa8b02] hover:bg-white/5 transition-colors"
-                          >
-                            <span>
-                              {t("booking.viewAll") || "Xem tất cả"}
-                            </span>
+                            className="flex w-full items-center justify-between gap-3 px-4 py-2 text-sm text-[#fa8b02] hover:bg-white/5 transition-colors">
+                            <span>{t("booking.viewAll") || "Xem tất cả"}</span>
                             <FiArrowRight className="w-4 h-4" />
                           </Link>
                         </div>
@@ -829,20 +842,21 @@ export const LandingHeader = ({
                     )}
 
                     {/* Empty bookings state */}
-                    {recentBookings.length === 0 && !bookingsLoading && clientIsAuth && (
-                      <div className="border-t border-white/10 px-4 py-3">
-                        <p className="text-xs text-gray-400">
-                          {t("booking.noBookings") || "Bạn chưa có tour nào"}
-                        </p>
-                        <Link
-                          href="/tours"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="text-xs text-[#fa8b02] hover:underline mt-1 block"
-                        >
-                          {t("booking.browseTours") || "Khám phá tour ngay"}
-                        </Link>
-                      </div>
-                    )}
+                    {recentBookings.length === 0 &&
+                      !bookingsLoading &&
+                      clientIsAuth && (
+                        <div className="border-t border-white/10 px-4 py-3">
+                          <p className="text-xs text-gray-400">
+                            {t("booking.noBookings") || "Bạn chưa có tour nào"}
+                          </p>
+                          <Link
+                            href="/tours"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="text-xs text-[#fa8b02] hover:underline mt-1 block">
+                            {t("booking.browseTours") || "Khám phá tour ngay"}
+                          </Link>
+                        </div>
+                      )}
 
                     {/* Loading state */}
                     {bookingsLoading && (
@@ -860,28 +874,29 @@ export const LandingHeader = ({
                       <Link
                         href="/profile"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                      >
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors">
                         <FiUser className="w-4 h-4" />
-                        <span>{t("common.profile") || "Thông tin cá nhân"}</span>
+                        <span>
+                          {t("common.profile") || "Thông tin cá nhân"}
+                        </span>
                       </Link>
 
                       {/* Change Password */}
                       <Link
                         href="/profile?tab=password"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                      >
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors">
                         <FiLock className="w-4 h-4" />
-                        <span>{t("common.changePassword") || "Đổi mật khẩu"}</span>
+                        <span>
+                          {t("common.changePassword") || "Đổi mật khẩu"}
+                        </span>
                       </Link>
 
                       {/* Settings */}
                       <Link
                         href="/profile?tab=settings"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                      >
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors">
                         <FiSettings className="w-4 h-4" />
                         <span>{t("common.settings") || "Cài đặt"}</span>
                       </Link>
@@ -889,8 +904,7 @@ export const LandingHeader = ({
                       <Link
                         href="/tours/my-requests"
                         onClick={() => setUserMenuOpen(false)}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors"
-                      >
+                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/5 transition-colors">
                         <FiClipboard className="w-4 h-4" />
                         <span>{t("tourRequest.page.myRequests.title")}</span>
                       </Link>
@@ -898,8 +912,7 @@ export const LandingHeader = ({
                       <Button
                         type="button"
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
-                      >
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
                         <FiLogOut className="w-4 h-4" />
                         <span>{t("common.signOut") || "Đăng xuất"}</span>
                       </Button>
@@ -933,8 +946,7 @@ export const LandingHeader = ({
               onClick={() => setMobileMenuOpen(true)}
               aria-label={t("landing.a11y.openMenu")}
               aria-expanded={mobileMenuOpen}
-              aria-controls="landing-mobile-menu"
-            >
+              aria-controls="landing-mobile-menu">
               {mobileMenuOpen ? (
                 <FiX suppressHydrationWarning className="w-6 h-6" />
               ) : (
@@ -955,6 +967,7 @@ export const LandingHeader = ({
         onClose={() => setMobileMenuOpen(false)}
         onOpenAuth={openAuth}
         dialogId="landing-mobile-menu"
+        logoVariant={logoVariant}
       />
       <AuthModal
         key={effectiveAuthView}
