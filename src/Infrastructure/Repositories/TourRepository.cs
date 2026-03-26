@@ -100,17 +100,29 @@ public class TourRepository(AppDbContext context) : ITourRepository
 
     public Task Update(TourEntity tour)
     {
-        // Ensure new Images (OwnsMany) are tracked as Added
-        foreach (var img in tour.Images)
+        // OwnsOne (Thumbnail) and OwnsMany (Images) with a shared type cause EF Core
+        // to throw when the owner entity is re-attached via Update().
+        // Strategy: mark the owner as Modified instead. EF Core will cascade state to
+        // owned navigation properties automatically.
+        // Images cleared via Images.Clear() are already marked Deleted by EF change tracker.
+        // Images added via foreach+Add() are already tracked as Added.
+        try
         {
-            var imgEntry = _context.Entry(img);
-            if (imgEntry.State == EntityState.Detached)
-            {
-                imgEntry.State = EntityState.Added;
-            }
+            _context.Entry(tour).State = EntityState.Modified;
         }
-
-        _context.Tours.Update(tour);
+        catch (InvalidOperationException)
+        {
+            // Fallback for images that aren't tracked — mark each one
+            foreach (var img in tour.Images)
+            {
+                var imgEntry = _context.Entry(img);
+                if (imgEntry.State == EntityState.Detached)
+                {
+                    imgEntry.State = EntityState.Added;
+                }
+            }
+            _context.Entry(tour).State = EntityState.Modified;
+        }
         return Task.CompletedTask;
     }
 

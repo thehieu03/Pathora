@@ -21,6 +21,14 @@ public static class AuthCookieWriter
         WriteAuthPortalCookie(response, tokens.Portal, secure);
     }
 
+    public static void WriteAuthCookies(HttpResponse response, LoginResponse tokens, bool secure)
+    {
+        response.Cookies.Append(AccessTokenCookieName, tokens.AccessToken, BuildOptions(AccessTokenLifetime, secure));
+        response.Cookies.Append(RefreshTokenCookieName, tokens.RefreshToken, BuildOptions(RefreshTokenLifetime, secure));
+        WriteAuthStatusCookie(response, secure);
+        WriteAuthPortalCookie(response, tokens.Portal, secure);
+    }
+
     public static void WriteAuthStatusCookie(HttpResponse response, bool secure)
     {
         response.Cookies.Append(AuthStatusCookieName, "1", BuildOptions(AuthStatusLifetime, secure));

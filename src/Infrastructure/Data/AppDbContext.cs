@@ -98,6 +98,7 @@ public class AppDbContext : DbContext
     public DbSet<CancellationPolicyEntity> CancellationPolicies => Set<CancellationPolicyEntity>();
     public DbSet<TourResourceEntity> TourResources => Set<TourResourceEntity>();
     public DbSet<TourInstanceManagerEntity> TourInstanceManagers => Set<TourInstanceManagerEntity>();
+    public DbSet<TourInstanceDayEntity> TourInstanceDays => Set<TourInstanceDayEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

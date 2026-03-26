@@ -98,6 +98,16 @@ public sealed class TourInstanceTranslationData
     public string? CancellationReason { get; set; }
 }
 
+public sealed class TourInstanceDayTranslationData
+{
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
+}
+
 public sealed class VisaPolicyTranslationData
 {
     [JsonPropertyName("region")]

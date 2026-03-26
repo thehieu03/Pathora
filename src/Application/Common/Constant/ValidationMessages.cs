@@ -24,6 +24,8 @@ public static class ValidationMessages
     public const string NewPasswordMustDiffer = "New password must not be the same as the old password.";
 
     // ── User / Identity ─────────────────────────────────────────────────
+    public const string PhoneNumberInvalid = "Invalid phone number format.";
+    public const string AddressTooLong = "Address must not exceed 500 characters.";
     public const string FullNameRequired = "Name is required.";
     public const string FullNameAndLastNameRequired = "Full name is required.";
     public const string FullNameTooLong = "Full name is too long.";

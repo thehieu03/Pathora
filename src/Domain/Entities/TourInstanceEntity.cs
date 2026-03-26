@@ -49,6 +49,9 @@ public class TourInstanceEntity : Aggregate<Guid>
     // Dynamic pricing tiers owned by this instance (override classification tiers)
     public virtual List<DynamicPricingTierEntity> DynamicPricingTiers { get; set; } = [];
 
+    // Instance-specific day schedule
+    public virtual List<TourInstanceDayEntity> InstanceDays { get; set; } = [];
+
     // Soft delete
     public bool IsDeleted { get; set; }
 

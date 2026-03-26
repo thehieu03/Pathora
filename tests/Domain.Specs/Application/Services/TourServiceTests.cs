@@ -1549,7 +1549,17 @@ public sealed class TourServiceTests
         Thumbnail: null,
         Images: null,
         Translations: null,
-        Classifications: null);
+        Classifications: null,
+        Accommodations: null,
+        Locations: null,
+        Transportations: null,
+        Services: null,
+        VisaPolicyId: null,
+        DepositPolicyId: null,
+        PricingPolicyId: null,
+        CancellationPolicyId: null,
+        DeletedClassificationIds: null,
+        DeletedActivityIds: null);
 
     private static TourEntity CreateExistingTour(Guid id) =>
         TourEntity.Create(
@@ -1730,6 +1740,204 @@ public sealed class TourServiceTests
         Assert.Equal("Guide Service", existingTour.Resources[0].Name);
         Assert.Equal(50, existingTour.Resources[0].Price);
         await _tourRepository.Received(1).Update(Arg.Any<TourEntity>());
+    }
+
+    #endregion
+
+    #region Issue3: Cascade soft-delete classifications and activities via Update
+
+    [Fact]
+    public async Task Update_WithDeletedClassificationIds_ShouldSoftDeleteClassificationAndNestedEntities()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        var classificationId = Guid.CreateVersion7();
+        var dayId = Guid.CreateVersion7();
+        var activityId = Guid.CreateVersion7();
+        var routeId = Guid.CreateVersion7();
+        var insuranceId = Guid.CreateVersion7();
+
+        var existingTour = CreateExistingTour(tourId);
+        var classification = TourClassificationEntity.Create(
+            tourId, "Standard", 100, "Desc", 1, 0, "admin@test.com");
+        classification.Id = classificationId;
+
+        var day = TourDayEntity.Create(classification.Id, 1, "Day 1", "admin@test.com");
+        day.Id = dayId;
+
+        var fromLocation = TourPlanLocationEntity.Create(
+            "Airport", Domain.Enums.LocationType.Airport, "admin@test.com", tourId);
+        var toLocation = TourPlanLocationEntity.Create(
+            "Hotel", Domain.Enums.LocationType.Hotel, "admin@test.com", tourId);
+        var route = TourPlanRouteEntity.Create(
+            1, Domain.Enums.TransportationType.Car, "admin@test.com");
+        route.Id = routeId;
+        route.FromLocation = fromLocation;
+        route.ToLocation = toLocation;
+
+        var activity = TourDayActivityEntity.Create(
+            day.Id, 1, Domain.Enums.TourDayActivityType.Sightseeing,
+            "Visit", "admin@test.com");
+        activity.Id = activityId;
+        activity.Routes.Add(route);
+
+        day.Activities.Add(activity);
+        classification.Plans.Add(day);
+
+        var insurance = TourInsuranceEntity.Create(
+            "Insurance", Domain.Enums.InsuranceType.Travel,
+            "Provider", "Coverage", 1000, 50, "admin@test.com");
+        insurance.Id = insuranceId;
+        classification.Insurances.Add(insurance);
+
+        existingTour.Classifications.Add(classification);
+
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            DeletedClassificationIds = [classificationId]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.True(classification.IsDeleted, "Classification should be soft-deleted");
+        Assert.True(day.IsDeleted, "Day should be soft-deleted");
+        Assert.True(activity.IsDeleted, "Activity should be soft-deleted");
+        Assert.True(route.IsDeleted, "Route should be soft-deleted");
+        Assert.True(fromLocation.IsDeleted, "FromLocation should be soft-deleted");
+        Assert.True(toLocation.IsDeleted, "ToLocation should be soft-deleted");
+        Assert.True(insurance.IsDeleted, "Insurance should be soft-deleted");
+        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Update_WithDeletedActivityIds_ShouldSoftDeleteActivityAndNestedRoutesAccommodations()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        var classificationId = Guid.CreateVersion7();
+        var dayId = Guid.CreateVersion7();
+        var activityId = Guid.CreateVersion7();
+        var routeId = Guid.CreateVersion7();
+
+        var existingTour = CreateExistingTour(tourId);
+        var classification = TourClassificationEntity.Create(
+            tourId, "Standard", 100, "Desc", 1, 0, "admin@test.com");
+        classification.Id = classificationId;
+
+        var day = TourDayEntity.Create(classification.Id, 1, "Day 1", "admin@test.com");
+        day.Id = dayId;
+
+        var fromLocation = TourPlanLocationEntity.Create(
+            "Airport", Domain.Enums.LocationType.Airport, "admin@test.com", tourId);
+        var toLocation = TourPlanLocationEntity.Create(
+            "Hotel", Domain.Enums.LocationType.Hotel, "admin@test.com", tourId);
+        var route = TourPlanRouteEntity.Create(
+            1, Domain.Enums.TransportationType.Car, "admin@test.com");
+        route.Id = routeId;
+        route.FromLocation = fromLocation;
+        route.ToLocation = toLocation;
+
+        var activity = TourDayActivityEntity.Create(
+            day.Id, 1, Domain.Enums.TourDayActivityType.Sightseeing,
+            "Visit", "admin@test.com");
+        activity.Id = activityId;
+        activity.Routes.Add(route);
+
+        var accommodation = TourPlanAccommodationEntity.Create(
+            "Hotel ABC", Domain.Enums.RoomType.Double, 2,
+            Domain.Enums.MealType.Breakfast, "admin@test.com");
+        activity.Accommodation = accommodation;
+
+        day.Activities.Add(activity);
+        classification.Plans.Add(day);
+        existingTour.Classifications.Add(classification);
+
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            DeletedActivityIds = [activityId]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.True(activity.IsDeleted, "Activity should be soft-deleted");
+        Assert.True(route.IsDeleted, "Route should be soft-deleted");
+        Assert.True(fromLocation.IsDeleted, "FromLocation should be soft-deleted");
+        Assert.True(toLocation.IsDeleted, "ToLocation should be soft-deleted");
+        Assert.True(accommodation.IsDeleted, "Accommodation should be soft-deleted");
+        // Day and Classification should NOT be deleted
+        Assert.False(day.IsDeleted, "Day should NOT be soft-deleted");
+        Assert.False(classification.IsDeleted, "Classification should NOT be soft-deleted");
+        await _unitOfWork.Received(1).SaveChangeAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Update_WithDeletedClassificationIds_OnlyDeletesSpecifiedIds()
+    {
+        // Arrange
+        var tourId = Guid.CreateVersion7();
+        var classificationId1 = Guid.CreateVersion7();
+        var classificationId2 = Guid.CreateVersion7();
+        var dayId = Guid.CreateVersion7();
+
+        var existingTour = CreateExistingTour(tourId);
+        var classification1 = TourClassificationEntity.Create(
+            tourId, "Standard", 100, "Desc", 1, 0, "admin@test.com");
+        classification1.Id = classificationId1;
+
+        var classification2 = TourClassificationEntity.Create(
+            tourId, "Premium", 200, "Desc", 2, 1, "admin@test.com");
+        classification2.Id = classificationId2;
+
+        var day = TourDayEntity.Create(classification1.Id, 1, "Day 1", "admin@test.com");
+        day.Id = dayId;
+        classification1.Plans.Add(day);
+
+        existingTour.Classifications.Add(classification1);
+        existingTour.Classifications.Add(classification2);
+
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
+        _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        var command = CreateBaseValidUpdateCommand(tourId) with
+        {
+            DeletedClassificationIds = [classificationId1]
+        };
+
+        var service = CreateService();
+
+        // Act
+        var result = await service.Update(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.True(classification1.IsDeleted, "Only deleted classification1");
+        Assert.False(classification2.IsDeleted, "classification2 should NOT be deleted");
+        Assert.True(day.IsDeleted, "Nested day should be deleted");
     }
 
     #endregion

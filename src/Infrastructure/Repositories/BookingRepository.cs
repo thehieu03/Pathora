@@ -43,7 +43,8 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
     {
         return await _context.Bookings
             .AsNoTracking()
-            .Include(b => b.TourInstance)
+            .Include(b => b.TourInstance).ThenInclude(ti => ti.Thumbnail)
+            .Include(b => b.TourInstance).ThenInclude(ti => ti.Images)
             .Where(b => b.UserId == userId)
             .OrderByDescending(b => b.BookingDate)
             .ToListAsync();

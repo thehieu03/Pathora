@@ -42,6 +42,7 @@ public static class DependencyInjection
         services.AddResponseCaching();
         services.AddSignalR();
         services.AddHttpContextAccessor();
+        services.AddProblemDetails();
         services.AddExceptionHandler<ApiExceptionHandler>();
         services.AddCors(options =>
         {
@@ -60,7 +61,7 @@ public static class DependencyInjection
         services.Configure<ApiBehaviorOptions>(options => options.SuppressModelStateInvalidFilter = true);
 
         services.AddMonitoringServices(configuration);
-        services.AddIdentityServices();
+        services.AddIdentityServices(configuration);
         services.AddRateLimiterServices();
         services.AddResponseCompressionServices();
         services.AddSingleton<IDatabaseStartupLifecycle, EfCoreDatabaseStartupLifecycle>();
@@ -185,10 +186,20 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+    private static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
     {
+        var isAuthDisabled = configuration.GetValue<bool>("Auth:DisableAuthorization");
+
         services.AddAuthorization(options =>
         {
+            // When DisableAuthorization is true, allow unauthenticated access by default.
+            // Individual endpoints with [Authorize] still require auth.
+            // Endpoints with [AllowAnonymous] bypass auth regardless.
+            options.FallbackPolicy = isAuthDisabled
+                ? null
+                : new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
             options.DefaultPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();

@@ -32,6 +32,12 @@ if (mode == "verify")
     return 0;
 }
 
+if (mode == "check")
+{
+    await CheckSchemaAsync(connectionString);
+    return 0;
+}
+
 if (mode == "sql")
 {
     if (args.Length < 2)
@@ -79,6 +85,52 @@ static async Task UpdatePasswordsAsync(string connectionString, string newPasswo
     Console.ForegroundColor = ConsoleColor.Green;
     Console.WriteLine($"Updated password for {users.Count} users to: {newPassword}");
     Console.ResetColor();
+}
+
+static async Task CheckSchemaAsync(string connectionString)
+{
+    var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    optionsBuilder.UseNpgsql(connectionString);
+    await using var context = new AppDbContext(optionsBuilder.Options);
+    await context.Database.OpenConnectionAsync();
+
+    var tables = new[] {
+        "TourPlanLocations", "TourDays", "TourInstances", "TourClassifications", "Tours"
+    };
+
+    foreach (var table in tables)
+    {
+        await using var cmd = context.Database.GetDbConnection().CreateCommand();
+        cmd.CommandText = $"SELECT column_name FROM information_schema.columns WHERE table_name = '{table}' ORDER BY ordinal_position";
+        var cols = new List<string>();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync()) cols.Add(reader.GetString(0));
+        Console.WriteLine($"{table}: {string.Join(", ", cols)}");
+    }
+
+    Console.WriteLine("\n__EFMigrationsHistory:");
+    await using var cmd2 = context.Database.GetDbConnection().CreateCommand();
+    cmd2.CommandText = "SELECT \"MigrationId\" FROM \"__EFMigrationsHistory\" ORDER BY \"MigrationId\"";
+    await using var reader2 = await cmd2.ExecuteReaderAsync();
+    while (await reader2.ReadAsync()) Console.WriteLine($"  {reader2.GetString(0)}");
+
+    Console.WriteLine("\nExisting Tours:");
+    await using var cmd3 = context.Database.GetDbConnection().CreateCommand();
+    cmd3.CommandText = "SELECT \"Id\", \"TourCode\" FROM \"Tours\" LIMIT 5";
+    await using var reader3 = await cmd3.ExecuteReaderAsync();
+    while (await reader3.ReadAsync()) Console.WriteLine($"  {reader3.GetGuid(0)} | {reader3.GetString(1)}");
+
+    Console.WriteLine("\nTourPlanLocations:");
+    await using var cmd4 = context.Database.GetDbConnection().CreateCommand();
+    cmd4.CommandText = "SELECT \"Id\", \"TourId\", \"TourDayActivityId\", \"TourEntityId\" FROM \"TourPlanLocations\" LIMIT 5";
+    await using var reader4 = await cmd4.ExecuteReaderAsync();
+    while (await reader4.ReadAsync())
+    {
+        var tid = reader4.IsDBNull(1) ? "NULL" : reader4.GetGuid(1).ToString();
+        var aid = reader4.IsDBNull(2) ? "NULL" : reader4.GetGuid(2).ToString();
+        var eid = reader4.IsDBNull(3) ? "NULL" : reader4.GetGuid(3).ToString();
+        Console.WriteLine($"  {reader4.GetGuid(0)} | TourId={tid} | ActivityId={aid} | EntityId={eid}");
+    }
 }
 
 static async Task VerifyAsync(string connectionString)

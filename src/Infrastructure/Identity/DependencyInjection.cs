@@ -114,27 +114,52 @@ internal static class DependencyInjection
                     },
                     OnChallenge = context =>
                     {
-                        // HandleChallenge is called by AuthorizationMiddleware when auth fails
-                        // (missing/invalid token, forbidden, etc.). Guard against writing to an
-                        // already-started response (e.g. when OnAuthenticationFailed already wrote).
+                        // Guard: if the response has already started (e.g. from a previous callback
+                        // or another middleware), suppress further handling to prevent the exception
+                        // "StatusCode cannot be set because the response has already started".
                         if (context.Response.HasStarted)
                         {
                             context.HandleResponse();
                             return Task.CompletedTask;
                         }
 
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        context.Response.ContentType = "application/json";
-
-                        string challengeJson = context.AuthenticateFailure switch
+                        try
                         {
-                            SecurityTokenExpiredException => """{"code":"TOKEN_EXPIRED","message":"Token has expired. Please login again.","statusCode":401}""",
-                            _ => string.IsNullOrEmpty(context.Request.Headers.Authorization.ToString())
-                                ? """{"code":"TOKEN_MISSING","message":"Authentication required. Please provide a valid token.","statusCode":401}"""
-                                : """{"code":"TOKEN_INVALID","message":"Authentication failed. Please check your credentials.","statusCode":401}"""
-                        };
+                            // 403 Forbidden: user is authenticated but lacks the required role.
+                            // This hits OnChallenge (not OnForbid) when AuthorizationMiddleware
+                            // calls ChallengeAsync after ForbidAsync. Write the 403 response and
+                            // call HandleResponse to suppress the default challenge behavior.
+                            if (context.AuthenticateFailure is not null &&
+                                context.AuthenticateFailure.GetType().Name is "RolesAuthorizationFailure" or "AuthorizationFailure")
+                            {
+                                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                                context.Response.ContentType = "application/json";
+                                context.HandleResponse();
+                                return context.Response.WriteAsync(
+                                    """{"code":"ACCESS_DENIED","message":"You do not have permission to perform this action.","statusCode":403}""");
+                            }
 
-                        return context.Response.WriteAsync(challengeJson);
+                            // 401 Unauthorized: no valid authentication token
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            string challengeJson = context.AuthenticateFailure switch
+                            {
+                                SecurityTokenExpiredException => """{"code":"TOKEN_EXPIRED","message":"Token has expired. Please login again.","statusCode":401}""",
+                                _ => string.IsNullOrEmpty(context.Request.Headers.Authorization.ToString())
+                                    ? """{"code":"TOKEN_MISSING","message":"Authentication required. Please provide a valid token.","statusCode":401}"""
+                                    : """{"code":"TOKEN_INVALID","message":"Authentication failed. Please check your credentials.","statusCode":401}"""
+                            };
+
+                            return context.Response.WriteAsync(challengeJson);
+                        }
+                        catch (InvalidOperationException) when (context.Response.HasStarted)
+                        {
+                            // Suppress: the base HandleChallengeAsync may try to set StatusCode after
+                            // our callback wrote. Since HasStarted is now true, swallow the exception.
+                            context.HandleResponse();
+                            return Task.CompletedTask;
+                        }
                     }
                 };
             });

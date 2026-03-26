@@ -29,8 +29,7 @@ public class AuthController : BaseApiController
 
         if (!result.IsError)
         {
-            AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
-            AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
+            AuthCookieWriter.WriteAuthCookies(Response, result.Value, Request.IsHttps);
         }
 
         return HandleResult(result);
@@ -97,6 +96,15 @@ public class AuthController : BaseApiController
 
         return HandleResult(result);
     }
+
+    [Authorize]
+    [HttpPut(AuthEndpoint.Me)]
+    public async Task<IActionResult> UpdateMyProfile([FromBody] Application.Features.Identity.Commands.UpdateMyProfileCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
+
     [Authorize]
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()
@@ -194,6 +202,7 @@ public class AuthController : BaseApiController
         });
     }
 
+    [AllowAnonymous]
     [HttpGet(AuthEndpoint.GoogleLogin)]
     public IActionResult GoogleLogin([FromServices] IConfiguration configuration)
     {
@@ -207,6 +216,7 @@ public class AuthController : BaseApiController
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
+    [AllowAnonymous]
     [HttpGet(AuthEndpoint.GoogleCallback)]
     public async Task<IActionResult> GoogleCallback([FromServices] IConfiguration configuration)
     {

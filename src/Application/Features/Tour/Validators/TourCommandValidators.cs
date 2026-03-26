@@ -433,6 +433,16 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         RuleForEach(x => x.Services)
             .SetValidator(new ServiceDtoValidator())
             .When(x => x.Services != null && x.Services.Any());
+
+        // DeletedClassificationIds - optional list of IDs to soft-delete
+        RuleForEach(x => x.DeletedClassificationIds)
+            .NotEmpty().WithMessage("Deleted classification ID cannot be empty.")
+            .When(x => x.DeletedClassificationIds != null && x.DeletedClassificationIds.Count > 0);
+
+        // DeletedActivityIds - optional list of IDs to soft-delete
+        RuleForEach(x => x.DeletedActivityIds)
+            .NotEmpty().WithMessage("Deleted activity ID cannot be empty.")
+            .When(x => x.DeletedActivityIds != null && x.DeletedActivityIds.Count > 0);
     }
 }
 

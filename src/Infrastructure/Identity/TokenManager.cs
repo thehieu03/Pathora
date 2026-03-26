@@ -30,11 +30,15 @@ internal sealed class TokenManager(
 
     public async Task<ErrorOr<(string AccessToken, string RefreshToken)>> GenerateToken(UserEntity user)
     {
+        Console.WriteLine($"[DEBUG GenerateToken] userId={user.Id}, email={user.Email}");
         var rolesResult = await roleRepository.FindByUserId(user.Id.ToString());
         if (rolesResult.IsError)
         {
+            Console.WriteLine($"[DEBUG GenerateToken] FindByUserId error: {string.Join(", ", rolesResult.Errors.Select(e => e.Description))}");
             return rolesResult.Errors;
         }
+
+        Console.WriteLine($"[DEBUG GenerateToken] roles found: {string.Join(", ", rolesResult.Value.Select(r => r.Name))}");
 
         var roleClaims = rolesResult.Value
             .GroupBy(role => role.Id)

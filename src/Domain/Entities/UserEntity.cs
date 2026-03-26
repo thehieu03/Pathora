@@ -11,6 +11,7 @@ public class UserEntity : Aggregate<Guid>
     public string? FullName { get; set; }
     public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }
+    public string? Address { get; set; }
     public string? AvatarUrl { get; set; }
     public UserStatus Status { get; set; } = UserStatus.Active;
     public VerifyStatus VerifyStatus { get; set; } = VerifyStatus.Unverified;
@@ -43,6 +44,15 @@ public class UserEntity : Aggregate<Guid>
         FullName = fullName;
         AvatarUrl = avatar;
         LastModifiedBy = performedBy;
+        LastModifiedOnUtc = DateTimeOffset.UtcNow;
+    }
+
+    public void UpdateProfile(string? fullName, string? phoneNumber, string? address, string? avatar)
+    {
+        FullName = fullName;
+        PhoneNumber = phoneNumber;
+        Address = address;
+        AvatarUrl = avatar;
         LastModifiedOnUtc = DateTimeOffset.UtcNow;
     }
 

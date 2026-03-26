@@ -257,16 +257,27 @@ public class TourEntity : Aggregate<Guid>
         CustomerSegment = customerSegment;
         if (thumbnail is not null)
         {
-            Thumbnail ??= new ImageEntity();
-            Thumbnail.FileId = thumbnail.FileId;
-            Thumbnail.OriginalFileName = thumbnail.OriginalFileName;
-            Thumbnail.FileName = thumbnail.FileName;
-            Thumbnail.PublicURL = thumbnail.PublicURL;
+            Thumbnail = new ImageEntity
+            {
+                FileId = thumbnail.FileId,
+                OriginalFileName = thumbnail.OriginalFileName,
+                FileName = thumbnail.FileName,
+                PublicURL = thumbnail.PublicURL,
+            };
         }
         if (images is not null)
         {
             Images.Clear();
-            Images.AddRange(images);
+            foreach (var img in images)
+            {
+                Images.Add(new ImageEntity
+                {
+                    FileId = img.FileId,
+                    OriginalFileName = img.OriginalFileName,
+                    FileName = img.FileName,
+                    PublicURL = img.PublicURL,
+                });
+            }
         }
         VisaPolicyId = visaPolicyId;
         DepositPolicyId = depositPolicyId;

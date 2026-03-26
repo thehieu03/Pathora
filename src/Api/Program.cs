@@ -44,19 +44,20 @@ var app = builder.Build();
 
 await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAsync();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHsts();
-    //    app.UseHttpsRedirection();
-}
+// Note: DeveloperExceptionPage is intentionally NOT used in any environment.
+// In Development, ASP.NET Core auto-registers it unless we suppress it. We handle all
+// exceptions via custom middleware + IExceptionHandler registered in DI.
+app.Environment.IsDevelopment(); // Suppress auto-UseDeveloperExceptionPage
 
-// Authentication and Authorization must be before exception handling
-// so that auth challenges (401/403) can set status codes before any response body is written.
+// Exception handling middleware is FIRST to wrap the entire pipeline, including
+// authentication/authorization middleware where "StatusCode cannot be set" exceptions
+// can be thrown from JwtBearerHandler.HandleChallengeAsync.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Authentication and Authorization.
 app.UseCors("DefaultCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Exception handler is registered via DI (AddExceptionHandler<CustomExceptionHandler>) in AddApiServices().
 
 app.UseResponseCompression();
 

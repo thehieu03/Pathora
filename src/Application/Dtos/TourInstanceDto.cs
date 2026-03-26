@@ -26,4 +26,5 @@ public sealed record TourInstanceDto(
     decimal Revenue,
     DateTimeOffset? ConfirmationDeadline,
     List<TourInstanceManagerDto> Managers,
-    List<string> IncludedServices);
+    List<string> IncludedServices,
+    List<TourInstanceDayDto>? Days = null);
