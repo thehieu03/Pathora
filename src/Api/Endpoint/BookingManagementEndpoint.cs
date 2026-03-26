@@ -8,6 +8,9 @@ public static class BookingManagementEndpoint
 
     public const string MyRecent = "my-recent";
 
+    // NOTE: /api/bookings/my-recent is Admin-only.
+    // Use /api/public/bookings/my-recent-bookings for any authenticated user.
+
     public const string Activities = "{id:guid}/activities";
     public const string ActivityDetail = "{id:guid}/activities/{activityId:guid}";
     public const string TransportDetails = "{id:guid}/transport-details";

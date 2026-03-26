@@ -16,7 +16,6 @@ public sealed class GetRecentBookingsQueryHandler(
 {
     public async Task<ErrorOr<List<RecentBookingResponse>>> Handle(GetRecentBookingsQuery request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"[DEBUG GetRecentBookings] user.Id={user.Id}");
         if (string.IsNullOrWhiteSpace(user.Id) || !Guid.TryParse(user.Id, out var currentUserId))
         {
             return Error.Unauthorized("Unauthorized", "User is not authenticated.");

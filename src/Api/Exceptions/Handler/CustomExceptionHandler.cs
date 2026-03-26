@@ -31,58 +31,74 @@ public sealed class CustomExceptionHandler(
         var includeInnerEx = cfg.GetValue<bool>("AppConfig:IncludeInnerException");
         var includeStackTrace = cfg.GetValue<bool>("AppConfig:IncludeExceptionStackTrace");
 
-        (string ErrorMessage, int StatusCode, string? Details, string InnerException) details = exception switch
+        int statusCode;
+        string? details;
+        string errorMessage;
+        string innerException;
+
+        switch (exception)
         {
-            ValidationException =>
-            (
-                exception.Message,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest,
-                MessageCode.BadRequest,
-                includeInnerEx ? exception.GetType().Name : string.Empty
-            ),
-            ClientValidationException =>
-            (
-                exception.Message,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest,
-                MessageCode.BadRequest,
-                includeInnerEx ? exception.GetType().Name : string.Empty
-            ),
-            ArgumentException =>
-            (
-                exception.Message,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest,
-                MessageCode.BadRequest,
-                includeInnerEx ? exception.GetType().Name : string.Empty
-            ),
-            NotFoundException =>
-            (
-                exception.Message,
-                context.Response.StatusCode = StatusCodes.Status404NotFound,
-                MessageCode.NotFound,
-                includeInnerEx ? exception.GetType().Name : string.Empty
-            ),
-            UnauthorizedException =>
-            (
-                exception.Message,
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized,
-                MessageCode.Unauthorized,
-                includeInnerEx ? exception.GetType().Name : string.Empty
-            ),
-            NoPermissionException =>
-            (
-                exception.Message,
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized,
-                MessageCode.AccessDenied,
-                includeInnerEx ? exception.GetType().Name : string.Empty
-            ),
-            _ =>
-            (
-                includeInnerEx ? exception.Message : MessageCode.UnknownError,
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError,
-                includeStackTrace ? exception.StackTrace : null,
-                includeInnerEx ? exception.InnerException?.Message ?? string.Empty : string.Empty
-            )
-        };
+            case ValidationException:
+                statusCode = StatusCodes.Status400BadRequest;
+                details = MessageCode.BadRequest;
+                errorMessage = exception.Message;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
+            case ClientValidationException:
+                statusCode = StatusCodes.Status400BadRequest;
+                details = MessageCode.BadRequest;
+                errorMessage = exception.Message;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
+            case ArgumentException:
+                statusCode = StatusCodes.Status400BadRequest;
+                details = MessageCode.BadRequest;
+                errorMessage = exception.Message;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
+            case NotFoundException:
+                statusCode = StatusCodes.Status404NotFound;
+                details = MessageCode.NotFound;
+                errorMessage = exception.Message;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
+            case UnauthorizedException:
+                statusCode = StatusCodes.Status401Unauthorized;
+                details = MessageCode.Unauthorized;
+                errorMessage = exception.Message;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
+            case NoPermissionException:
+                statusCode = StatusCodes.Status401Unauthorized;
+                details = MessageCode.AccessDenied;
+                errorMessage = exception.Message;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
+            default:
+                statusCode = StatusCodes.Status500InternalServerError;
+                details = includeStackTrace ? exception.StackTrace : null;
+                errorMessage = includeInnerEx ? exception.Message : MessageCode.UnknownError;
+                innerException = includeInnerEx ? exception.InnerException?.Message ?? string.Empty : string.Empty;
+                break;
+        }
+
+        // Guard: if response started while building the details above, don't touch it.
+        if (context.Response.HasStarted)
+        {
+            return true;
+        }
+
+        // Set status code safely — if it throws (response committed mid-flight), swallow it.
+        try
+        {
+            context.Response.StatusCode = statusCode;
+        }
+        catch (InvalidOperationException)
+        {
+            // Response was committed between the HasStarted check and the StatusCode setter.
+            // The response is already on its way; don't interfere.
+            return true;
+        }
 
         var errors = new List<ErrorResult>();
 
@@ -107,16 +123,16 @@ public sealed class CustomExceptionHandler(
         }
         else
         {
-            errors.Add(new ErrorResult(details.ErrorMessage, details.InnerException));
+            errors.Add(new ErrorResult(errorMessage, innerException));
         }
 
         var response = ResultSharedResponse<object>.Failure(
-            statusCode: details.StatusCode,
+            statusCode: statusCode,
             instance: context.Request.Path,
             errors: errors,
-            message: details.Details);
+            message: details);
 
-        if (details.StatusCode == StatusCodes.Status500InternalServerError)
+        if (statusCode == StatusCodes.Status500InternalServerError)
         {
             logger.LogError("Error Message: {exceptionMessage}, Time of occurrence {time}", exception.Message, DateTime.UtcNow);
 
@@ -130,6 +146,12 @@ public sealed class CustomExceptionHandler(
             Content = "[" + exception.GetType().Name + "]" + exception.Message + exception.StackTrace,
         };
         logQueue.Writer.TryWrite(log);
+
+        // Guard: if response was committed between StatusCode set and WriteAsJson, skip writing.
+        if (context.Response.HasStarted)
+        {
+            return true;
+        }
 
         await context.Response.WriteAsJsonAsync(response, cancellationToken: cancellationToken);
 
