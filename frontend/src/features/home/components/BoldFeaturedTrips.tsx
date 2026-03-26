@@ -51,7 +51,6 @@ export const BoldFeaturedTrips = () => {
   return (
     <section className="py-20 md:py-28 bg-[#0a0a1a]">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* Header */}
         <div
           ref={titleRef}
           className={`text-center mb-14 transition-all duration-700 ${
@@ -69,7 +68,6 @@ export const BoldFeaturedTrips = () => {
           </h2>
         </div>
 
-        {/* Bento Grid */}
         <div
           ref={gridRef}
           className={`grid grid-cols-1 md:grid-cols-3 gap-5 auto-rows-[300px] transition-all duration-1000 ${

@@ -21,7 +21,6 @@ export const BoldTrendingDestinations = () => {
   return (
     <section className="py-20 md:py-28 bg-[#0a0a1a]">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        {/* Section Header */}
         <div
           ref={titleRef}
           className={`flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12 transition-all duration-700 ${
@@ -48,7 +47,6 @@ export const BoldTrendingDestinations = () => {
           </Link>
         </div>
 
-        {/* Horizontal Scroll Carousel */}
         <div
           ref={scrollRef}
           className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"

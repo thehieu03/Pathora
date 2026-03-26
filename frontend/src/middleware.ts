@@ -42,10 +42,11 @@ const isPublicPath = (pathname: string): boolean => {
 
 export function middleware(request: NextRequest) {
   const authStatus = request.cookies.get("auth_status")?.value;
+  const accessToken = request.cookies.get("access_token")?.value;
   const authPortal = request.cookies.get("auth_portal")?.value;
   const { pathname, searchParams } = request.nextUrl;
 
-  const authenticated = Boolean(authStatus);
+  const authenticated = Boolean(authStatus || accessToken);
   const adminPortal = isAdminPortal(authPortal);
   const publicPath = isPublicPath(pathname);
 

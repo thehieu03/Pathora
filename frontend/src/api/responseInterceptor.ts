@@ -48,7 +48,7 @@ export const handleResponseError = async (
   const errorToast = resolveErrorToast(error);
   deps.showError(errorToast.key, errorToast.details);
 
-  if (error.response?.status === 401 || error.response?.status === 403) {
+  if (error.response?.status === 401) {
     deps.onUnauthorized();
   }
 

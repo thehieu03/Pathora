@@ -546,15 +546,6 @@ export const LandingHeader = ({
     const fetchRecentBookings = async () => {
       setBookingsLoading(true);
       try {
-        // DEBUG: check token
-        const token = document.cookie.split('; ').find(r => r.startsWith('access_token='))?.split('=')[1];
-        if (token) {
-          const parts = token.split('.');
-          if (parts.length === 3) {
-            const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-            console.log("[DEBUG] JWT payload roles:", payload.roles, "role claim:", payload[Object.keys(payload).find(k => k.toLowerCase().includes('role')) || '']);
-          }
-        }
         const bookings = await bookingService.getRecentBookings(3);
         setRecentBookings(bookings);
       } catch (err) {

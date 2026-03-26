@@ -53,7 +53,7 @@ export const PUBLIC_BOOKING: PublicBookingEndpoints = {
 
 export const BOOKING: BookingEndpoints = {
   GET_LIST: "/api/bookings",
-  GET_MY_RECENT: "/api/bookings/my-recent",
+  GET_MY_RECENT: "/api/public/bookings/my-recent-bookings",
   GET_DETAIL: (id: string): string => `/api/bookings/${id}`,
   GET_CHECKOUT_PRICE: (id: string): string => `/api/bookings/${id}/checkout-price`,
   GET_ACTIVITIES: (id: string): string => `/api/bookings/${id}/activities`,
