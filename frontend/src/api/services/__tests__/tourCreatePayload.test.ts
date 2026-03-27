@@ -47,9 +47,6 @@ describe("buildTourFormData", () => {
         ],
         dayPlans: [[]],
         insurances: [[]],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const classifications = JSON.parse(String(formData.get("classifications")));
@@ -93,14 +90,11 @@ describe("buildTourFormData", () => {
             description: "",
             enDescription: "",
             basePrice: "500",
-            durationDays: "0", // less than 1
+            durationDays: "0",
           },
         ],
         dayPlans: [[]],
         insurances: [[]],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const classifications = JSON.parse(String(formData.get("classifications")));
@@ -147,9 +141,6 @@ describe("buildTourFormData", () => {
         ],
         dayPlans: [[]],
         insurances: [[]],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const classifications = JSON.parse(String(formData.get("classifications")));
@@ -197,9 +188,6 @@ describe("buildTourFormData", () => {
         selectedDepositPolicyId: "policy-deposit-1",
         selectedCancellationPolicyId: "policy-cancel-1",
         selectedVisaPolicyId: "policy-visa-1",
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       expect(formData.get("pricingPolicyId")).toBe("policy-pricing-1");
@@ -238,9 +226,6 @@ describe("buildTourFormData", () => {
         classifications: [],
         dayPlans: [],
         insurances: [],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       expect(formData.get("pricingPolicyId")).toBeNull();
@@ -285,9 +270,6 @@ describe("buildTourFormData", () => {
         classifications: [],
         dayPlans: [],
         insurances: [],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       expect(formData.get("classifications")).toBeNull();
@@ -323,9 +305,6 @@ describe("buildTourFormData", () => {
         classifications: [],
         dayPlans: [],
         insurances: [],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       expect(formData.get("tourName")).toBe("My Tour");
@@ -369,13 +348,362 @@ describe("buildTourFormData", () => {
         classifications: [],
         dayPlans: [],
         insurances: [],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const imageCount = formData.getAll("images").length;
       expect(imageCount).toBe(2);
+    });
+  });
+
+  // =========================================================================
+  // Activity-extracted locations and accommodations
+  // =========================================================================
+
+  describe("activity-extracted locations and accommodations", () => {
+    it("extracts location from activity (type 0) into classification locations", () => {
+      const formData = buildTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        classifications: [
+          {
+            name: "Standard",
+            enName: "",
+            description: "",
+            enDescription: "",
+            basePrice: "1000",
+            durationDays: "1",
+          },
+        ],
+        dayPlans: [[{
+          dayNumber: "1",
+          title: "Day 1",
+          enTitle: "",
+          description: "",
+          enDescription: "",
+          activities: [{
+            activityType: "0",
+            title: "Visit Museum",
+            enTitle: "",
+            description: "",
+            enDescription: "",
+            note: "",
+            enNote: "",
+            estimatedCost: "",
+            isOptional: false,
+            startTime: "",
+            endTime: "",
+            routes: [],
+            // Activity location fields
+            locationName: "Hanoi Museum",
+            enLocationName: "",
+            locationCity: "Hanoi",
+            enLocationCity: "",
+            locationCountry: "Vietnam",
+            enLocationCountry: "",
+            locationAddress: "01 Phan Boi Chau",
+            enLocationAddress: "",
+            locationEntranceFee: "50",
+            // Transportation fields (type 7)
+            fromLocation: "", enFromLocation: "",
+            toLocation: "", enToLocation: "",
+            transportationType: "", enTransportationType: "",
+            transportationName: "", enTransportationName: "",
+            durationMinutes: "", price: "",
+            // Accommodation fields (type 8)
+            accommodationName: "", enAccommodationName: "",
+            accommodationAddress: "", enAccommodationAddress: "",
+            accommodationPhone: "", checkInTime: "", checkOutTime: "",
+          }],
+        }]],
+        insurances: [[]],
+      });
+
+      const classifications = JSON.parse(String(formData.get("classifications")));
+      expect(classifications[0].locations).toHaveLength(1);
+      expect(classifications[0].locations[0].locationName).toBe("Hanoi Museum");
+      expect(classifications[0].locations[0].city).toBe("Hanoi");
+    });
+
+    it("extracts accommodation from activity (type 8) into classification accommodations", () => {
+      const formData = buildTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        classifications: [
+          {
+            name: "Standard",
+            enName: "",
+            description: "",
+            enDescription: "",
+            basePrice: "1000",
+            durationDays: "1",
+          },
+        ],
+        dayPlans: [[{
+          dayNumber: "1",
+          title: "Day 1",
+          enTitle: "",
+          description: "",
+          enDescription: "",
+          activities: [{
+            activityType: "8",
+            title: "Hotel Check-in",
+            enTitle: "",
+            description: "",
+            enDescription: "",
+            note: "",
+            enNote: "",
+            estimatedCost: "",
+            isOptional: false,
+            startTime: "",
+            endTime: "",
+            routes: [],
+            // Activity location fields
+            locationName: "", enLocationName: "",
+            locationCity: "", enLocationCity: "",
+            locationCountry: "", enLocationCountry: "",
+            locationAddress: "", enLocationAddress: "",
+            locationEntranceFee: "",
+            // Transportation fields (type 7)
+            fromLocation: "", enFromLocation: "",
+            toLocation: "", enToLocation: "",
+            transportationType: "", enTransportationType: "",
+            transportationName: "", enTransportationName: "",
+            durationMinutes: "", price: "",
+            // Accommodation fields (type 8)
+            accommodationName: "Hotel Paradise",
+            enAccommodationName: "",
+            accommodationAddress: "123 Main St",
+            enAccommodationAddress: "",
+            accommodationPhone: "0909123456",
+            checkInTime: "14:00",
+            checkOutTime: "12:00",
+          }],
+        }]],
+        insurances: [[]],
+      });
+
+      const classifications = JSON.parse(String(formData.get("classifications")));
+      expect(classifications[0].accommodations).toHaveLength(1);
+      expect(classifications[0].accommodations[0].accommodationName).toBe("Hotel Paradise");
+      expect(classifications[0].accommodations[0].checkInTime).toBe("14:00");
+    });
+
+    it("deduplicates locations by name across multiple activities", () => {
+      const formData = buildTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        classifications: [
+          {
+            name: "Standard",
+            enName: "",
+            description: "",
+            enDescription: "",
+            basePrice: "1000",
+            durationDays: "2",
+          },
+        ],
+        dayPlans: [[{
+          dayNumber: "1",
+          title: "Day 1",
+          enTitle: "",
+          description: "",
+          enDescription: "",
+          activities: [{
+            activityType: "0",
+            title: "Visit Museum",
+            enTitle: "",
+            description: "",
+            enDescription: "",
+            note: "",
+            enNote: "",
+            estimatedCost: "",
+            isOptional: false,
+            startTime: "",
+            endTime: "",
+            routes: [],
+            locationName: "Hanoi Museum",
+            enLocationName: "",
+            locationCity: "Hanoi",
+            enLocationCity: "",
+            locationCountry: "Vietnam",
+            enLocationCountry: "",
+            locationAddress: "",
+            enLocationAddress: "",
+            locationEntranceFee: "",
+            fromLocation: "", enFromLocation: "",
+            toLocation: "", enToLocation: "",
+            transportationType: "", enTransportationType: "",
+            transportationName: "", enTransportationName: "",
+            durationMinutes: "", price: "",
+            accommodationName: "", enAccommodationName: "",
+            accommodationAddress: "", enAccommodationAddress: "",
+            accommodationPhone: "", checkInTime: "", checkOutTime: "",
+          }, {
+            activityType: "0",
+            title: "Back to Museum",
+            enTitle: "",
+            description: "",
+            enDescription: "",
+            note: "",
+            enNote: "",
+            estimatedCost: "",
+            isOptional: false,
+            startTime: "",
+            endTime: "",
+            routes: [],
+            locationName: "Hanoi Museum", // duplicate name
+            enLocationName: "",
+            locationCity: "Hanoi",
+            enLocationCity: "",
+            locationCountry: "Vietnam",
+            enLocationCountry: "",
+            locationAddress: "",
+            enLocationAddress: "",
+            locationEntranceFee: "",
+            fromLocation: "", enFromLocation: "",
+            toLocation: "", enToLocation: "",
+            transportationType: "", enTransportationType: "",
+            transportationName: "", enTransportationName: "",
+            durationMinutes: "", price: "",
+            accommodationName: "", enAccommodationName: "",
+            accommodationAddress: "", enAccommodationAddress: "",
+            accommodationPhone: "", checkInTime: "", checkOutTime: "",
+          }],
+        }]],
+        insurances: [[]],
+      });
+
+      const classifications = JSON.parse(String(formData.get("classifications")));
+      // Should deduplicate — only one "Hanoi Museum" entry
+      expect(classifications[0].locations).toHaveLength(1);
+    });
+
+    it("sends activity type-7 transportation fields in the payload", () => {
+      const formData = buildTourFormData({
+        basicInfo: {
+          tourName: "Tour",
+          shortDescription: "Short",
+          longDescription: "Long",
+          seoTitle: "",
+          seoDescription: "",
+          status: "1",
+        },
+        thumbnail: null,
+        images: [],
+        vietnameseTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        englishTranslation: {
+          tourName: "", shortDescription: "", longDescription: "", seoTitle: "", seoDescription: "",
+        },
+        classifications: [
+          {
+            name: "Standard",
+            enName: "",
+            description: "",
+            enDescription: "",
+            basePrice: "1000",
+            durationDays: "1",
+          },
+        ],
+        dayPlans: [[{
+          dayNumber: "1",
+          title: "Day 1",
+          enTitle: "",
+          description: "",
+          enDescription: "",
+          activities: [{
+            activityType: "7",
+            title: "Transfer",
+            enTitle: "",
+            description: "",
+            enDescription: "",
+            note: "",
+            enNote: "",
+            estimatedCost: "",
+            isOptional: false,
+            startTime: "",
+            endTime: "",
+            routes: [],
+            locationName: "",
+            enLocationName: "",
+            locationCity: "",
+            enLocationCity: "",
+            locationCountry: "",
+            enLocationCountry: "",
+            locationAddress: "",
+            enLocationAddress: "",
+            locationEntranceFee: "",
+            fromLocation: "Hanoi",
+            enFromLocation: "",
+            toLocation: "Hai Phong",
+            enToLocation: "",
+            transportationType: "1",
+            enTransportationType: "",
+            transportationName: "Train",
+            enTransportationName: "",
+            durationMinutes: "120",
+            price: "50",
+            accommodationName: "",
+            enAccommodationName: "",
+            accommodationAddress: "",
+            enAccommodationAddress: "",
+            accommodationPhone: "",
+            checkInTime: "",
+            checkOutTime: "",
+          }],
+        }]],
+        insurances: [[]],
+      });
+
+      const classifications = JSON.parse(String(formData.get("classifications")));
+      const act = classifications[0].plans[0].activities[0];
+      expect(act.fromLocation).toBe("Hanoi");
+      expect(act.toLocation).toBe("Hai Phong");
+      expect(act.transportationType).toBe("1");
+      expect(act.durationMinutes).toBe("120");
     });
   });
 
@@ -442,6 +770,19 @@ describe("buildTourFormData", () => {
                   startTime: "08:00",
                   endTime: "10:00",
                   routes: [],
+                  locationName: "", enLocationName: "",
+                  locationCity: "", enLocationCity: "",
+                  locationCountry: "", enLocationCountry: "",
+                  locationAddress: "", enLocationAddress: "",
+                  locationEntranceFee: "",
+                  fromLocation: "", enFromLocation: "",
+                  toLocation: "", enToLocation: "",
+                  transportationType: "", enTransportationType: "",
+                  transportationName: "", enTransportationName: "",
+                  durationMinutes: "", price: "",
+                  accommodationName: "", enAccommodationName: "",
+                  accommodationAddress: "", enAccommodationAddress: "",
+                  accommodationPhone: "", checkInTime: "", checkOutTime: "",
                 },
               ],
             },
@@ -464,9 +805,6 @@ describe("buildTourFormData", () => {
             },
           ],
         ],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const translations = JSON.parse(String(formData.get("translations")));
@@ -561,6 +899,19 @@ describe("buildTourFormData", () => {
             startTime: "",
             endTime: "",
             routes: [],
+            locationName: "", enLocationName: "",
+            locationCity: "", enLocationCity: "",
+            locationCountry: "", enLocationCountry: "",
+            locationAddress: "", enLocationAddress: "",
+            locationEntranceFee: "",
+            fromLocation: "", enFromLocation: "",
+            toLocation: "", enToLocation: "",
+            transportationType: "", enTransportationType: "",
+            transportationName: "", enTransportationName: "",
+            durationMinutes: "", price: "",
+            accommodationName: "", enAccommodationName: "",
+            accommodationAddress: "", enAccommodationAddress: "",
+            accommodationPhone: "", checkInTime: "", checkOutTime: "",
           }],
         }]],
         insurances: [[{
@@ -603,130 +954,10 @@ describe("buildTourFormData", () => {
       expect(classifications[0].insurances[0].translations.en).toBeUndefined();
     });
 
-    it("serializes accommodations, locations, and transportations with translations", () => {
-      const formData = buildTourFormData({
-        basicInfo: {
-          tourName: "Tour",
-          shortDescription: "Short",
-          longDescription: "Long",
-          seoTitle: "SEO",
-          seoDescription: "SEO Desc",
-          status: "1",
-        },
-        thumbnail: null,
-        images: [],
-        vietnameseTranslation: {
-          tourName: "Tour VI",
-          shortDescription: "Short VI",
-          longDescription: "Long VI",
-          seoTitle: "SEO VI",
-          seoDescription: "SEO Desc VI",
-        },
-        englishTranslation: {
-          tourName: "",
-          shortDescription: "",
-          longDescription: "",
-          seoTitle: "",
-          seoDescription: "",
-        },
-        classifications: [],
-        dayPlans: [],
-        insurances: [],
-        accommodations: [{
-          accommodationName: "Hotel VI",
-          enAccommodationName: "Hotel EN",
-          address: "Address VI",
-          enAddress: "Address EN",
-          contactPhone: "123456",
-          checkInTime: "14:00",
-          checkOutTime: "12:00",
-          note: "Note VI",
-          enNote: "Note EN",
-        }],
-        locations: [{
-          locationName: "Location VI",
-          enLocationName: "Location EN",
-          type: "Museum",
-          enType: "Museum EN",
-          description: "Desc VI",
-          enDescription: "Desc EN",
-          city: "Hanoi VI",
-          enCity: "Hanoi EN",
-          country: "Vietnam",
-          enCountry: "",
-          entranceFee: "50",
-          address: "Addr VI",
-          enAddress: "Addr EN",
-        }],
-        transportations: [{
-          fromLocation: "From VI",
-          enFromLocation: "From EN",
-          toLocation: "To VI",
-          enToLocation: "To EN",
-          transportationType: "Bus VI",
-          enTransportationType: "Bus EN",
-          transportationName: "Name VI",
-          enTransportationName: "Name EN",
-          durationMinutes: "120",
-          pricingType: "Per person",
-          price: "50",
-          requiresIndividualTicket: false,
-          ticketInfo: "Info VI",
-          enTicketInfo: "Info EN",
-          note: "Note VI",
-          enNote: "Note EN",
-        }],
-      });
-
-      const accommodations = JSON.parse(String(formData.get("accommodations")));
-      expect(accommodations[0].accommodationName).toBe("Hotel VI");
-      expect(accommodations[0].translations.vi).toEqual({
-        accommodationName: "Hotel VI",
-        address: "Address VI",
-        note: "Note VI",
-      });
-      expect(accommodations[0].translations.en).toEqual({
-        accommodationName: "Hotel EN",
-        address: "Address EN",
-        note: "Note EN",
-      });
-
-      const locations = JSON.parse(String(formData.get("locations")));
-      expect(locations[0].locationName).toBe("Location VI");
-      expect(locations[0].translations.vi).toEqual({
-        locationName: "Location VI",
-        locationDescription: "Desc VI",
-        city: "Hanoi VI",
-        country: "Vietnam",
-        address: "Addr VI",
-      });
-      expect(locations[0].translations.en).toEqual({
-        locationName: "Location EN",
-        locationDescription: "Desc EN",
-        city: "Hanoi EN",
-        country: "",
-        address: "Addr EN",
-      });
-
-      const transportations = JSON.parse(String(formData.get("transportations")));
-      expect(transportations[0].fromLocationName).toBe("From VI");
-      expect(transportations[0].translations.vi).toEqual({
-        fromLocationName: "From VI",
-        toLocationName: "To VI",
-        transportationType: "Bus VI",
-        transportationName: "Name VI",
-        ticketInfo: "Info VI",
-        note: "Note VI",
-      });
-      expect(transportations[0].translations.en).toEqual({
-        fromLocationName: "From EN",
-        toLocationName: "To EN",
-        transportationType: "Bus EN",
-        transportationName: "Name EN",
-        ticketInfo: "Info EN",
-        note: "Note EN",
-      });
-    });
+    // NOTE: The old test "serializes accommodations, locations, and transportations
+    // with translations" is replaced by activity-extracted tests above.
+    // Accommodations and locations are no longer sent as top-level FormData fields —
+    // they are derived from activity data and included inside the classifications payload.
   });
 
   describe("services payload", () => {
@@ -770,9 +1001,6 @@ describe("buildTourFormData", () => {
             contactNumber: "123456",
           },
         ],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const services = JSON.parse(String(formData.get("services")));
@@ -833,9 +1061,6 @@ describe("buildTourFormData", () => {
             contactNumber: "",
           },
         ],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       const services = JSON.parse(String(formData.get("services")));
@@ -874,9 +1099,6 @@ describe("buildTourFormData", () => {
         dayPlans: [],
         insurances: [],
         services: [],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       expect(formData.get("services")).toBeNull();
@@ -922,9 +1144,6 @@ describe("buildTourFormData", () => {
             contactNumber: "",
           },
         ],
-        accommodations: [],
-        locations: [],
-        transportations: [],
       });
 
       expect(formData.get("services")).toBeNull();

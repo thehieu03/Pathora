@@ -78,6 +78,25 @@ export interface TourDayActivityDto {
   endTime: string | null;
   routes: TourPlanRouteDto[];
   accommodation: TourPlanAccommodationDto | null;
+  // Location fields — populated from TourPlanLocations for all activity types
+  locationName?: string | null;
+  locationCity?: string | null;
+  locationCountry?: string | null;
+  locationAddress?: string | null;
+  locationEntranceFee?: number | null;
+  // Transportation fields — for type 7 (Transportation) activities
+  fromLocation?: string | null;
+  toLocation?: string | null;
+  transportationType?: string | null;
+  transportationName?: string | null;
+  durationMinutes?: number | null;
+  price?: number | null;
+  // Accommodation fields — for type 8 (Accommodation) activities
+  accommodationName?: string | null;
+  accommodationAddress?: string | null;
+  accommodationPhone?: string | null;
+  checkInTime?: string | null;
+  checkOutTime?: string | null;
 }
 
 export interface TourDayDto {
@@ -124,6 +143,8 @@ export interface TourDto {
   shortDescription: string;
   longDescription: string;
   status: number;
+  tourScope?: number;
+  customerSegment?: number;
   seoTitle: string | null;
   seoDescription: string | null;
   isDeleted: boolean;

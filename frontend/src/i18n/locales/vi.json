@@ -2231,7 +2231,16 @@
       "invalidBasePrice": "Giá gốc không hợp lệ",
       "atLeastOneImage": "Cần ít nhất một hình ảnh",
       "atLeastOnePackage": "Cần ít nhất một gói tour",
-      "locationRemoved": "Địa điểm được tham chiếu đã bị xóa"
+      "locationRemoved": "Địa điểm được tham chiếu đã bị xóa",
+      "invalidRoomCapacity": "Sức chứa phòng phải từ 1 trở lên",
+      "invalidNumberOfRooms": "Số phòng phải từ 1 đến 999",
+      "invalidNumberOfNights": "Số đêm phải từ 1 đến 999",
+      "invalidRoomPrice": "Giá phòng phải bằng 0 hoặc lớn hơn",
+      "invalidLatitude": "Vĩ độ phải từ -90 đến 90",
+      "invalidLongitude": "Kinh độ phải từ -180 đến 180",
+      "invalidEstimatedCost": "Chi phí ước tính phải bằng 0 hoặc lớn hơn",
+      "invalidLinkUrl": "Vui lòng nhập URL hợp lệ bắt đầu bằng http:// hoặc https://",
+      "invalidCoverageAmount": "Số tiền bảo hiểm phải lớn hơn 0"
     },
     "invalidDuration": "Thời lượng không hợp lệ",
     "basicInfo": {
@@ -2260,6 +2269,63 @@
       "searchDepositPolicy": "Tìm chính sách đặt cọc…",
       "searchCancellationPolicy": "Tìm chính sách hủy…",
       "searchVisaPolicy": "Tìm chính sách visa…"
+    },
+    "tourScope": {
+      "label": "Phạm vi Tour",
+      "domestic": "Trong nước",
+      "international": "Quốc tế"
+    },
+    "customerSegment": {
+      "label": "Phân khúc khách hàng",
+      "individual": "Cá nhân",
+      "group": "Nhóm",
+      "family": "Gia đình",
+      "corporate": "Doanh nghiệp"
+    },
+    "accommodation": {
+      "roomDetails": "Chi tiết phòng",
+      "roomType": "Loại phòng",
+      "roomCapacity": "Sức chứa phòng",
+      "numberOfRooms": "Số phòng",
+      "numberOfNights": "Số đêm",
+      "mealsIncluded": "Bữa ăn",
+      "roomPrice": "Giá phòng",
+      "specialRequest": "Yêu cầu đặc biệt",
+      "latitude": "Vĩ độ",
+      "longitude": "Kinh độ",
+      "roomTypeOptions": {
+        "single": "Single",
+        "double": "Double",
+        "triple": "Triple",
+        "quad": "Quad",
+        "suite": "Suite",
+        "villa": "Villa"
+      },
+      "mealsOptions": {
+        "none": "Không",
+        "breakfast": "Bữa sáng",
+        "lunch": "Bữa trưa",
+        "dinner": "Bữa tối",
+        "breakfast_lunch": "Bữa sáng & Trưa",
+        "breakfast_dinner": "Bữa sáng & Tối",
+        "lunch_dinner": "Bữa trưa & Tối",
+        "all": "Tất cả"
+      }
+    },
+    "confirmDelete": {
+      "title": "Xác nhận xóa?",
+      "message": "Hành động này không thể hoàn tác.",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
+    },
+    "preview": {
+      "sectionTitle": "Xem trước Tour",
+      "basicInfo": "Thông tin cơ bản",
+      "packages": "Gói Tour",
+      "services": "Dịch vụ",
+      "insurances": "Bảo hiểm",
+      "confirmCreate": "Xác nhận tạo Tour",
+      "backToEdit": "Quay lại chỉnh sửa"
     },
     "shortDescription": "Mô tả ngắn",
     "longDescription": "Mô tả chi tiết",
@@ -2352,6 +2418,7 @@
       "transportation": "Phương tiện",
       "services": "Dịch vụ",
       "insurance": "Bảo hiểm",
+      "preview": "Xem trước",
       "review": "Xem lại"
     },
     "buttons": {
@@ -2400,6 +2467,19 @@
       "linkToResources": "Liên kết tài nguyên (Tùy chọn)",
       "estimatedCost": "Chi phí ước tính ($)",
       "optional": "Tùy chọn",
+      "locationName": "Địa điểm",
+      "placeholderLocation": "Tên địa điểm...",
+      "fromLocation": "Từ",
+      "toLocation": "Đến",
+      "placeholderFromLocation": "Điểm khởi hành...",
+      "placeholderToLocation": "Điểm đến...",
+      "transportationType": "Phương tiện",
+      "durationMinutes": "Thời gian (phút)",
+      "accommodationName": "Tên khách sạn",
+      "checkInTime": "Check-in",
+      "checkOutTime": "Check-out",
+      "contactPhone": "Số điện thoại",
+      "accommodationAddress": "Địa chỉ",
       "removeActivity": "Xóa hoạt động",
       "removeDay": "Xóa ngày",
       "placeholderDayTitle": "Tiêu đề ngày {number}",

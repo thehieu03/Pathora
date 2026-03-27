@@ -26,7 +26,7 @@ const PALETTE = [
 ] as const;
 
 const QUICK_ACTIONS = [
-  { labelKey: "adminDashboard.quickActionCreateTour",     icon: "heroicons:plus",           href: "/tour-management/create" },
+  { labelKey: "adminDashboard.quickActionCreateTour",     icon: "heroicons:plus",           href: "/tour-management?create=true" },
   { labelKey: "adminDashboard.quickActionScheduleTour",   icon: "heroicons:calendar",        href: "/tour-instances/create" },
   { labelKey: "adminDashboard.quickActionViewBookings",   icon: "heroicons:eye",             href: "/dashboard/bookings" },
   { labelKey: "adminDashboard.quickActionEditSiteContent", icon: "heroicons:document-text",  href: "/dashboard/site-content" },

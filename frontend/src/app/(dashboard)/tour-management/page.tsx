@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { TourListPage } from "@/features/dashboard/components/TourListPage";
+import { SkeletonTable } from "@/components/ui/SkeletonTable";
 
 export const metadata: Metadata = {
   title: "Tour Management | Pathora",
@@ -11,5 +13,9 @@ export const metadata: Metadata = {
 };
 
 export default function TourManagementPage() {
-  return <TourListPage />;
+  return (
+    <Suspense fallback={<div className="p-6"><SkeletonTable rows={4} columns={5} /></div>}>
+      <TourListPage />
+    </Suspense>
+  );
 }

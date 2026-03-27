@@ -70,3 +70,6 @@ skills-lock.json
 
 # OpenSpec
 openspec/
+
+# Moat task system
+.moat/
