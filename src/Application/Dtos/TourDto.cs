@@ -9,6 +9,8 @@ public sealed record TourDto(
     string ShortDescription,
     string LongDescription,
     TourStatus Status,
+    TourScope TourScope,
+    CustomerSegment CustomerSegment,
     string? SEOTitle,
     string? SEODescription,
     bool IsDeleted,

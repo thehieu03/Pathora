@@ -72,11 +72,11 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
 
         // TourScope - Optional with default
         RuleFor(x => x.TourScope)
-            .IsInEnum().WithMessage("Tour scope must be a valid value.");
+            .IsInEnum().WithMessage(ValidationMessages.TourScopeInvalid);
 
         // CustomerSegment - Optional with default
         RuleFor(x => x.CustomerSegment)
-            .IsInEnum().WithMessage("Customer segment must be a valid value.");
+            .IsInEnum().WithMessage(ValidationMessages.CustomerSegmentInvalid);
 
         // Thumbnail - Required
         RuleFor(x => x.Thumbnail)
@@ -86,7 +86,7 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         // Classifications - Optional but if provided must have at least 1 item
         RuleFor(x => x.Classifications)
             .Must(cls => cls == null || cls.Count > 0)
-            .WithMessage("At least one classification is required when Classifications are provided.");
+            .WithMessage(ValidationMessages.TourClassificationsMinOne);
 
         RuleForEach(x => x.Classifications)
             .SetValidator(new ClassificationDtoValidator())
@@ -105,7 +105,7 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         // Accommodations - Optional but if provided must have at least 1 item
         RuleFor(x => x.Accommodations)
             .Must(acc => acc == null || acc.Count > 0)
-            .WithMessage("At least one accommodation is required when Accommodations are provided.");
+            .WithMessage(ValidationMessages.TourAccommodationsMinOne);
 
         RuleForEach(x => x.Accommodations)
             .SetValidator(new AccommodationDtoValidator())
@@ -114,7 +114,7 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         // Locations - Optional but if provided must have at least 1 item
         RuleFor(x => x.Locations)
             .Must(loc => loc == null || loc.Count > 0)
-            .WithMessage("At least one location is required when Locations are provided.");
+            .WithMessage(ValidationMessages.TourLocationsMinOne);
 
         RuleForEach(x => x.Locations)
             .SetValidator(new LocationDtoValidator())
@@ -123,7 +123,7 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         // Transportations - Optional but if provided must have at least 1 item
         RuleFor(x => x.Transportations)
             .Must(tr => tr == null || tr.Count > 0)
-            .WithMessage("At least one transportation is required when Transportations are provided.");
+            .WithMessage(ValidationMessages.TourTransportationsMinOne);
 
         RuleForEach(x => x.Transportations)
             .SetValidator(new TransportationDtoValidator())
@@ -132,7 +132,7 @@ public sealed class CreateTourCommandValidator : AbstractValidator<CreateTourCom
         // Services - Optional but if provided must have at least 1 item
         RuleFor(x => x.Services)
             .Must(svc => svc == null || svc.Count > 0)
-            .WithMessage("At least one service is required when Services are provided.");
+            .WithMessage(ValidationMessages.TourServicesMinOne);
 
         RuleForEach(x => x.Services)
             .SetValidator(new ServiceDtoValidator())

@@ -525,7 +525,14 @@ public class CreateTourCommandValidatorTests
                             CheckOutTime: "12:00",
                             Note: null,
                             RoomType: null,
-                            RoomCapacity: null))])],
+                            RoomCapacity: null,
+                            MealsIncluded: null,
+                            RoomPrice: null,
+                            NumberOfRooms: null,
+                            NumberOfNights: null,
+                            Latitude: null,
+                            Longitude: null,
+                            SpecialRequest: null))])],
                 Insurances: [])
             ]
         };
@@ -570,7 +577,14 @@ public class CreateTourCommandValidatorTests
                             CheckOutTime: null,
                             Note: null,
                             RoomType: null,
-                            RoomCapacity: null))])],
+                            RoomCapacity: null,
+                            MealsIncluded: null,
+                            RoomPrice: null,
+                            NumberOfRooms: null,
+                            NumberOfNights: null,
+                            Latitude: null,
+                            Longitude: null,
+                            SpecialRequest: null))])],
                 Insurances: [])
             ]
         };
@@ -616,7 +630,14 @@ public class CreateTourCommandValidatorTests
                             CheckOutTime: null,
                             Note: null,
                             RoomType: null,
-                            RoomCapacity: null))])],
+                            RoomCapacity: null,
+                            MealsIncluded: null,
+                            RoomPrice: null,
+                            NumberOfRooms: null,
+                            NumberOfNights: null,
+                            Latitude: null,
+                            Longitude: null,
+                            SpecialRequest: null))])],
                 Insurances: [])
             ]
         };

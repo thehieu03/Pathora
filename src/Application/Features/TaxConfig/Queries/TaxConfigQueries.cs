@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Contracts.TaxConfig;
 using Application.Services;
 using BuildingBlocks.CORS;
@@ -26,7 +27,7 @@ public sealed class GetTaxConfigByIdQueryValidator : AbstractValidator<GetTaxCon
     public GetTaxConfigByIdQueryValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigIdRequired);
     }
 }
 

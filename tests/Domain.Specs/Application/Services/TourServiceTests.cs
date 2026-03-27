@@ -224,6 +224,13 @@ public sealed class TourServiceTests
                                         Note: "Late check-in available",
                                         RoomType: null,
                                         RoomCapacity: null,
+                                        MealsIncluded: null,
+                                        RoomPrice: null,
+                                        NumberOfRooms: null,
+                                        NumberOfNights: null,
+                                        Latitude: null,
+                                        Longitude: null,
+                                        SpecialRequest: null,
                                         Translations: null),
                                     Translations: null)
                             ],
@@ -561,6 +568,13 @@ public sealed class TourServiceTests
                     Note: null,
                     RoomType: null,
                     RoomCapacity: null,
+                    MealsIncluded: null,
+                    RoomPrice: null,
+                    NumberOfRooms: null,
+                    NumberOfNights: null,
+                    Latitude: null,
+                    Longitude: null,
+                    SpecialRequest: null,
                     Translations: null)
             ],
             Locations =
@@ -1596,6 +1610,13 @@ public sealed class TourServiceTests
                     Note: null,
                     RoomType: null,
                     RoomCapacity: null,
+                    MealsIncluded: null,
+                    RoomPrice: null,
+                    NumberOfRooms: null,
+                    NumberOfNights: null,
+                    Latitude: null,
+                    Longitude: null,
+                    SpecialRequest: null,
                     Translations: null)
             ]
         };

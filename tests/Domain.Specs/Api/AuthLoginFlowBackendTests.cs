@@ -3,6 +3,7 @@ using Application.Contracts.Identity;
 using Application.Features.Identity.Commands;
 using Contracts.ModelResponse;
 using ErrorOr;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using System.Security.Claims;
 
@@ -195,6 +197,11 @@ public sealed class AuthLoginFlowBackendTests
     {
         var services = new ServiceCollection();
         services.AddSingleton(sender);
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }));
 
         var httpContext = new DefaultHttpContext
         {
@@ -202,7 +209,11 @@ public sealed class AuthLoginFlowBackendTests
         };
         httpContext.Request.Path = path;
 
-        return new AuthController
+        return new AuthController(Microsoft.Extensions.Options.Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }))
         {
             ControllerContext = new ControllerContext
             {
@@ -219,6 +230,11 @@ public sealed class AuthLoginFlowBackendTests
         var services = new ServiceCollection();
         services.AddSingleton(sender);
         services.AddSingleton<IAuthenticationService>(new FakeAuthenticationService(authenticateResult));
+        services.AddSingleton(Microsoft.Extensions.Options.Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }));
 
         var httpContext = new DefaultHttpContext
         {
@@ -226,7 +242,11 @@ public sealed class AuthLoginFlowBackendTests
         };
         httpContext.Request.Path = path;
 
-        return new AuthController
+        return new AuthController(Microsoft.Extensions.Options.Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }))
         {
             ControllerContext = new ControllerContext
             {

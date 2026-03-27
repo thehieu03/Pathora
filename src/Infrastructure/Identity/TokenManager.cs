@@ -26,7 +26,6 @@ internal sealed class TokenManager(
     : ITokenManager
 {
     private readonly JwtOptions _jwtOptions = jwtOptions.Value;
-    private const int RefreshTokenTimeoutInHours = 24 * 7;
 
     public async Task<ErrorOr<(string AccessToken, string RefreshToken)>> GenerateToken(UserEntity user)
     {
@@ -74,7 +73,7 @@ internal sealed class TokenManager(
         {
             UserId = user.Id,
             Token = refreshTokenValue,
-            ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(RefreshTokenTimeoutInHours)
+            ExpiresOnUtc = DateTimeOffset.UtcNow.AddHours(_jwtOptions.RefreshTokenExpirationHours)
         };
 
         var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();

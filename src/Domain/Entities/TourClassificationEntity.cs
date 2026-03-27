@@ -17,7 +17,6 @@ public class TourClassificationEntity : Aggregate<Guid>
     public Dictionary<string, TourClassificationTranslationData> Translations { get; set; } = [];
     public virtual List<TourDayEntity> Plans { get; set; } = [];
     public virtual List<TourInsuranceEntity> Insurances { get; set; } = [];
-    public virtual List<DynamicPricingTierEntity> DynamicPricingTiers { get; set; } = [];
 
     public static TourClassificationEntity Create(Guid tourId, string name, decimal basePrice, string description, int numberOfDay, int numberOfNight, string performedBy)
     {

@@ -51,20 +51,6 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         return HandleResult(result);
     }
 
-    [HttpGet(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> GetClassificationPricingTiers(Guid classificationId)
-    {
-        var result = await Sender.Send(new GetClassificationPricingTiersQuery(classificationId));
-        return HandleResult(result);
-    }
-
-    [HttpPut(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> UpsertClassificationPricingTiers(Guid classificationId, [FromBody] List<DynamicPricingDto> tiers)
-    {
-        var result = await Sender.Send(new UpsertClassificationPricingTiersCommand(classificationId, tiers));
-        return HandleUpdated(result);
-    }
-
     [HttpPost]
     [Consumes("multipart/form-data")]
     public async Task<IActionResult> Create(
@@ -207,7 +193,9 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] Guid? pricingPolicyId = null,
         [FromForm] Guid? cancellationPolicyId = null,
         [FromForm] string? deletedClassificationIds = null,
-        [FromForm] string? deletedActivityIds = null)
+        [FromForm] string? deletedActivityIds = null,
+        [FromForm] TourScope tourScope = TourScope.Domestic,
+        [FromForm] CustomerSegment customerSegment = CustomerSegment.Group)
     {
         // Validate JSON fields before processing
         var validationErrors = new Dictionary<string, string[]>();
@@ -291,7 +279,8 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
             seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData,
             classificationData, accommodationData, locationData, transportationData, serviceData,
             visaPolicyId, depositPolicyId, pricingPolicyId, cancellationPolicyId,
-            parsedDeletedClassificationIds, parsedDeletedActivityIds);
+            parsedDeletedClassificationIds, parsedDeletedActivityIds,
+            tourScope, customerSegment);
 
         var result = await Sender.Send(command);
         return HandleResult(result);

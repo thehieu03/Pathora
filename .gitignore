@@ -316,3 +316,6 @@ volume/redis/*
 volume/postgres/*
 !volume/postgres/.gitkeep
 .gitnexus
+
+# Auto Claude data directory
+.auto-claude/

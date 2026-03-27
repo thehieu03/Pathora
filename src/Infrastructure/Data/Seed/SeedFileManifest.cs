@@ -14,7 +14,6 @@ internal static class SeedFileManifest
         new("CustomerDepositContextSeed", "customer-deposit.json", ["Id", "BookingId", "ExpectedAmount", "Status"], "Id", ["BookingId"]),
         new("CustomerPaymentContextSeed", "customer-payment.json", ["Id", "BookingId", "Amount", "PaymentMethod", "PaidAt"], "Id", ["BookingId"]),
         new("DepartmentContextSeed", "department.json", ["Id", "Name", "Level"], "Id", null),
-        new("DynamicPricingTierContextSeed", "dynamic-pricing-tier.json", ["Id", "MinParticipants", "MaxParticipants", "PricePerPerson"], "Id", null),
         new("FileMetadataContextSeed", "file-metadata.json", ["Id", "OriginalFileName", "StoredFileName", "Url"], "Id", null),
         new("OtpContextSeed", "otp.json", ["Id", "Code", "Email"], "Id", null),
         new("PassportContextSeed", "passport.json", ["Id", "BookingParticipantId", "PassportNumber"], "Id", ["BookingParticipantId"]),

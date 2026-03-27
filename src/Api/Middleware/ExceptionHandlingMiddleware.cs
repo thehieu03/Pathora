@@ -22,5 +22,14 @@ public sealed class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Ex
                 "Response status: {StatusCode}",
                 context.Response.StatusCode);
         }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("Headers are read-only"))
+        {
+            // TEMPORARY DIAGNOSTIC: catch "Headers are read-only" variant from OAuthHandler.GenerateCorrelationId
+            Console.WriteLine($"[DIAG-EXC] InvalidOperationException caught by ExceptionHandlingMiddleware: {ex.Message}");
+            Console.WriteLine($"[DIAG-EXC] HasStarted: {context.Response.HasStarted}, Status: {context.Response.StatusCode}");
+            Console.WriteLine($"[DIAG-EXC] Path: {context.Request.Path}");
+            Console.WriteLine($"[DIAG-EXC] Headers: {string.Join(", ", context.Response.Headers.Select(h => $"{h.Key}={h.Value.ToString()}"))}");
+            throw; // Rethrow to see the original exception
+        }
     }
 }

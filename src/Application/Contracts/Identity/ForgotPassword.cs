@@ -28,7 +28,7 @@ public class ResetPasswordRequestValidator : AbstractValidator<ResetPasswordRequ
     public ResetPasswordRequestValidator()
     {
         RuleFor(x => x.Token)
-            .NotEmpty().WithMessage("Token is required");
+            .NotEmpty().WithMessage(ValidationMessages.CommonTokenRequired);
 
         RuleFor(x => x.NewPassword)
             .NotEmpty().WithMessage(ValidationMessages.NewPasswordRequired)

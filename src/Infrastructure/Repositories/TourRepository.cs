@@ -39,8 +39,6 @@ public class TourRepository(AppDbContext context) : ITourRepository
                         .ThenInclude(a => a.Routes)
                             .ThenInclude(r => r.ToLocation)
             .Include(t => t.Classifications)
-                .ThenInclude(c => c.DynamicPricingTiers)
-            .Include(t => t.Classifications)
                 .ThenInclude(c => c.Plans)
                     .ThenInclude(p => p.Activities)
                         .ThenInclude(a => a.Accommodation)

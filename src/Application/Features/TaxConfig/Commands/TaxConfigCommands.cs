@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Contracts.TaxConfig;
 using Application.Services;
 using BuildingBlocks.CORS;
@@ -18,14 +19,14 @@ public sealed class CreateTaxConfigCommandValidator : AbstractValidator<CreateTa
     public CreateTaxConfigCommandValidator()
     {
         RuleFor(x => x.TaxName)
-            .NotEmpty().WithMessage("Tax name is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigNameRequired);
 
         RuleFor(x => x.TaxRate)
-            .GreaterThanOrEqualTo(0).WithMessage("Tax rate cannot be negative.")
-            .LessThanOrEqualTo(100).WithMessage("Tax rate cannot exceed 100%.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TaxConfigRateNonNegative)
+            .LessThanOrEqualTo(100).WithMessage(ValidationMessages.TaxConfigRateMax100);
 
         RuleFor(x => x.EffectiveDate)
-            .NotEmpty().WithMessage("Effective date is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigEffectiveDateRequired);
     }
 }
 
@@ -60,17 +61,17 @@ public sealed class UpdateTaxConfigCommandValidator : AbstractValidator<UpdateTa
     public UpdateTaxConfigCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigIdRequired);
 
         RuleFor(x => x.TaxName)
-            .NotEmpty().WithMessage("Tax name is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigNameRequired);
 
         RuleFor(x => x.TaxRate)
-            .GreaterThanOrEqualTo(0).WithMessage("Tax rate cannot be negative.")
-            .LessThanOrEqualTo(100).WithMessage("Tax rate cannot exceed 100%.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TaxConfigRateNonNegative)
+            .LessThanOrEqualTo(100).WithMessage(ValidationMessages.TaxConfigRateMax100);
 
         RuleFor(x => x.EffectiveDate)
-            .NotEmpty().WithMessage("Effective date is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigEffectiveDateRequired);
     }
 }
 
@@ -100,7 +101,7 @@ public sealed class DeleteTaxConfigCommandValidator : AbstractValidator<DeleteTa
     public DeleteTaxConfigCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TaxConfigIdRequired);
     }
 }
 

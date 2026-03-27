@@ -2,6 +2,7 @@ using Application.Contracts.PricingPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
 using Domain.ValueObjects;
+using Application.Common.Constant;
 using ErrorOr;
 using FluentValidation;
 
@@ -18,10 +19,10 @@ public sealed class CreatePricingPolicyCommandValidator : AbstractValidator<Crea
     public CreatePricingPolicyCommandValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Policy name is required.");
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyNameRequired);
 
         RuleFor(x => x.Tiers)
-            .NotEmpty().WithMessage("At least one pricing tier is required.")
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyTiersMinOne)
             .ForEach(tier => tier.SetValidator(new PricingPolicyTierValidator()));
     }
 }
@@ -31,17 +32,17 @@ public sealed class PricingPolicyTierValidator : AbstractValidator<PricingPolicy
     public PricingPolicyTierValidator()
     {
         RuleFor(x => x.Label)
-            .NotEmpty().WithMessage("Tier label is required.");
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyTierLabelRequired);
 
         RuleFor(x => x.AgeFrom)
-            .GreaterThanOrEqualTo(0).WithMessage("Age from must be non-negative.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.PricingPolicyTierAgeFromNonNegative);
 
         RuleFor(x => x.PricePercentage)
-            .InclusiveBetween(0, 100).WithMessage("Price percentage must be between 0 and 100.");
+            .InclusiveBetween(0, 100).WithMessage(ValidationMessages.PricingPolicyTierPricePercentageRange);
 
         RuleFor(x => x)
             .Must(tier => !tier.AgeTo.HasValue || tier.AgeTo >= tier.AgeFrom)
-            .WithMessage("Age to must be greater than or equal to age from.");
+            .WithMessage(ValidationMessages.PricingPolicyTierAgeToGreaterThanOrEqualAgeFrom);
     }
 }
 

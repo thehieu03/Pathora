@@ -1,5 +1,6 @@
 using Application.Services;
 using BuildingBlocks.CORS;
+using Application.Common.Constant;
 using ErrorOr;
 using FluentValidation;
 
@@ -12,7 +13,7 @@ public sealed class DeleteCancellationPolicyCommandValidator : AbstractValidator
     public DeleteCancellationPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required");
+            .NotEmpty().WithMessage(ValidationMessages.CancellationPolicyIdRequired);
     }
 }
 

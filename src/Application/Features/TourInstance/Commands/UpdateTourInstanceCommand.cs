@@ -53,18 +53,18 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
 
         RuleFor(x => x.GuideUserIds)
             .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage("Guide IDs không được trùng nhau")
+            .WithMessage(ValidationMessages.TourInstanceGuideIdsNotDuplicate)
             .When(x => x.GuideUserIds is { Count: > 0 });
 
         RuleFor(x => x.ManagerUserIds)
             .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage("Manager IDs không được trùng nhau")
+            .WithMessage(ValidationMessages.TourInstanceGuideIdsNotDuplicate)
             .When(x => x.ManagerUserIds is { Count: > 0 });
 
         RuleFor(x => x)
             .Must(x => x.GuideUserIds == null || x.ManagerUserIds == null ||
                        !x.GuideUserIds.Any(g => x.ManagerUserIds.Contains(g)))
-            .WithMessage("Một user không thể vừa là Guide vừa là Manager");
+            .WithMessage(ValidationMessages.TourInstanceUserCannotBeBothGuideAndManager);
     }
 }
 

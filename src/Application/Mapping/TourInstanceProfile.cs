@@ -28,7 +28,6 @@ public sealed class TourInstanceProfile : Profile
             .ForCtorParam(nameof(TourInstanceManagerDto.UserAvatar), opt => opt.MapFrom(src => src.User != null ? src.User.AvatarUrl : null))
             .ForCtorParam(nameof(TourInstanceManagerDto.Role), opt => opt.MapFrom(src => src.Role.ToString()));
 
-        CreateMap<DynamicPricingTierEntity, DynamicPricingDto>();
 
         CreateMap<TourInstanceDayEntity, TourInstanceDayDto>()
             .ForCtorParam(nameof(TourInstanceDayDto.Id), opt => opt.MapFrom(src => src.Id))

@@ -397,6 +397,8 @@ public class TourService(
             request.LongDescription,
             request.Status,
             _user.Id ?? string.Empty,
+            tourScope: request.TourScope,
+            customerSegment: request.CustomerSegment,
             seoTitle: request.SEOTitle,
             seoDescription: request.SEODescription,
             visaPolicyId: request.VisaPolicyId,

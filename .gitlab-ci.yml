@@ -1,0 +1,36 @@
+stages:
+  - verify
+  - build
+  - test
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "true"
+  NPM_CONFIG_FUND: "false"
+  NPM_CONFIG_AUDIT: "false"
+
+gitnexus_check:
+  stage: verify
+  image: node:22
+  script:
+    - npm ci
+    - npm run gitnexus:check
+  artifacts:
+    when: always
+    paths:
+      - .gitnexus/
+    expire_in: 1 day
+
+build_backend:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - dotnet restore LocalService.slnx
+    - dotnet build LocalService.slnx --no-restore
+
+test_backend:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  script:
+    - dotnet restore LocalService.slnx
+    - dotnet test LocalService.slnx --no-restore --no-build

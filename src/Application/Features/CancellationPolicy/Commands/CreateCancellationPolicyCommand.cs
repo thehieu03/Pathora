@@ -5,6 +5,7 @@ using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.Enums;
 using Domain.ValueObjects;
+using Application.Common.Constant;
 using ErrorOr;
 using FluentValidation;
 
@@ -22,21 +23,21 @@ public sealed class CreateCancellationPolicyCommandValidator : AbstractValidator
     public CreateCancellationPolicyCommandValidator()
     {
         RuleFor(x => x.TourScope)
-            .IsInEnum().WithMessage("Invalid tour scope");
+            .IsInEnum().WithMessage(ValidationMessages.CancellationPolicyTourScopeInvalid);
 
         RuleFor(x => x.Tiers)
-            .NotNull().WithMessage("Tiers are required")
-            .NotEmpty().WithMessage("At least one tier is required");
+            .NotNull().WithMessage(ValidationMessages.CancellationPolicyTiersRequired)
+            .NotEmpty().WithMessage(ValidationMessages.CancellationPolicyTiersMinOne);
 
         RuleForEach(x => x.Tiers).ChildRules(tier =>
         {
             tier.RuleFor(t => t.MinDaysBeforeDeparture)
-                .GreaterThanOrEqualTo(0).WithMessage("Min days must be >= 0");
+                .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.CancellationPolicyTierMinDaysNonNegative);
             tier.RuleFor(t => t.MaxDaysBeforeDeparture)
                 .GreaterThanOrEqualTo(t => t.MinDaysBeforeDeparture)
-                .WithMessage("Max days must be >= min days");
+                .WithMessage(ValidationMessages.CancellationPolicyTierMaxDaysGreaterThanMinDays);
             tier.RuleFor(t => t.PenaltyPercentage)
-                .InclusiveBetween(0, 100).WithMessage("Penalty percentage must be between 0 and 100");
+                .InclusiveBetween(0, 100).WithMessage(ValidationMessages.CancellationPolicyTierPenaltyPercentageRange);
         });
     }
 }

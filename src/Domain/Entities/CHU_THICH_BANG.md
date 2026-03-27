@@ -44,7 +44,6 @@ Tài liệu này mô tả công dụng của các entity trong thư mục `panth
 | `SupplierReceiptEntity.cs` | `SupplierReceipts` | Lưu chứng từ chi tiền/thanh toán cho nhà cung cấp. |
 | `TaxConfigEntity.cs` | `TaxConfigs` | Lưu cấu hình thuế có hiệu lực theo mốc thời gian. |
 | `PricingPolicy.cs` | `PricingPolicies` | Lưu bộ chính sách giá động theo loại tour và tier giá. |
-| `DynamicPricingTierEntity.cs` | `DynamicPricingTiers` | Lưu từng bậc giá theo số lượng khách trong chính sách giá động. |
 | `DepositPolicyEntity.cs` | `DepositPolicies` | Lưu quy tắc đặt cọc (kiểu cọc, ngưỡng thời gian, phạm vi áp dụng). |
 | `CancellationEntity.cs` | `CancellationPolicies` | Lưu chính sách hủy tour theo mốc ngày và phần trăm phạt. |
 

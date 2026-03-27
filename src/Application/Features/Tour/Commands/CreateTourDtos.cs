@@ -78,6 +78,13 @@ public sealed record AccommodationDto(
     string? Note,
     string? RoomType,
     int? RoomCapacity,
+    string? MealsIncluded,
+    decimal? RoomPrice,
+    int? NumberOfRooms,
+    int? NumberOfNights,
+    decimal? Latitude,
+    decimal? Longitude,
+    string? SpecialRequest,
     Dictionary<string, TourPlanAccommodationTranslationData>? Translations = null
 );
 

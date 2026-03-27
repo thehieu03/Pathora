@@ -21,6 +21,8 @@ public sealed class PublicTourControllerTests
             "Short desc",
             "Long desc",
             TourStatus.Active,
+            TourScope.Domestic,
+            CustomerSegment.Group,
             null,
             null,
             false,
