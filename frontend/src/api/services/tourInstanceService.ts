@@ -21,6 +21,7 @@ export interface CreateTourInstancePayload {
   startDate: string;
   endDate: string;
   maxParticipation: number;
+  basePrice: number;
   location?: string;
   confirmationDeadline?: string;
   includedServices?: string[];
@@ -163,6 +164,7 @@ export const tourInstanceService = {
       startDate: data.startDate,
       endDate: data.endDate,
       maxParticipation: data.maxParticipation,
+      basePrice: data.basePrice,
       location: data.location?.trim() || null,
       confirmationDeadline: data.confirmationDeadline || null,
       includedServices: normalizeStringArray(data.includedServices),

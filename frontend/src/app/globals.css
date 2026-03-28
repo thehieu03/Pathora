@@ -146,6 +146,32 @@ body.bold-theme {
   --spotlight-glow: 0 0 0 2px rgba(249, 115, 22, 0.35);
 }
 
+/* ─── Landing Page Design Tokens ─── */
+:root {
+  /* Landing page accent — orange (CTAs only) */
+  --landing-accent: #fa8b02;
+  --landing-accent-hover: #e67a00;
+  --landing-accent-muted: #fff7ed;
+
+  /* Landing page — deep navy (prices, headings) */
+  --landing-navy: #1a1a2e;
+  --landing-navy-light: #2d2d4a;
+
+  /* Landing page surface */
+  --landing-surface: #ffffff;
+  --landing-surface-muted: #f7f6f3;
+  --landing-border: #f1f1f1;
+  --landing-border-hover: #e5e5e5;
+
+  /* Landing page semantic */
+  --landing-success: #16a34a;
+  --landing-success-muted: #f0fdf4;
+  --landing-danger: #dc2626;
+  --landing-danger-muted: #fef2f2;
+  --landing-gray: #6b7280;
+  --landing-gray-muted: #f9fafb;
+}
+
 /* ─── Tailwind Theme Mapping ─── */
 @theme inline {
   --color-background: var(--background);
@@ -457,9 +483,20 @@ img, picture, video, canvas {
 @utility skeleton {
   background: linear-gradient(
     90deg,
-    var(--muted) 25%,
-    var(--surface-raised) 50%,
-    var(--muted) 75%
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@utility skeleton-pulse {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e8e8e8 50%,
+    #f0f0f0 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -469,6 +506,29 @@ img, picture, video, canvas {
 *:focus-visible {
   outline: none;
   box-shadow: var(--shadow-focus);
+}
+
+/* ─── Landing Page Custom Utilities ─── */
+@utility badge-base {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+}
+
+@utility transition-colors-200 {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+@utility transition-transform-300 {
+  transition: transform 0.3s ease;
+}
+
+@utility transition-transform-500 {
+  transition: transform 0.5s ease;
 }
 
 /* ─── Scrollbar ─── */

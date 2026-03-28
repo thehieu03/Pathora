@@ -1,3 +1,41 @@
+// Translation data types
+export interface TourDayActivityTranslationData {
+  title: string;
+  description?: string | null;
+  note?: string | null;
+  transportationType?: string | null;
+  transportationName?: string | null;
+}
+
+export interface TourPlanRouteTranslationData {
+  fromLocationName?: string | null;
+  toLocationName?: string | null;
+  transportationType?: string | null;
+  transportationName?: string | null;
+  ticketInfo?: string | null;
+  note?: string | null;
+}
+
+export interface TourDayTranslationData {
+  title: string;
+  description?: string | null;
+}
+
+export interface TourClassificationTranslationData {
+  name: string;
+  description: string;
+}
+
+export interface TourResourceTranslationData {
+  name: string;
+  description?: string | null;
+  note?: string | null;
+  fromLocationName?: string | null;
+  toLocationName?: string | null;
+  transportationName?: string | null;
+  ticketInfo?: string | null;
+}
+
 // Tour detail types matching backend DTOs
 
 export interface ImageDto {
@@ -39,6 +77,7 @@ export interface TourPlanRouteDto {
   price: number | null;
   bookingReference: string | null;
   note: string | null;
+  translations?: Record<string, TourPlanRouteTranslationData>;
 }
 
 export interface TourPlanAccommodationDto {
@@ -78,6 +117,9 @@ export interface TourDayActivityDto {
   endTime: string | null;
   routes: TourPlanRouteDto[];
   accommodation: TourPlanAccommodationDto | null;
+  translations?: Record<string, TourDayActivityTranslationData>;
+  enTransportationType?: string | null;
+  enTransportationName?: string | null;
   // Location fields — populated from TourPlanLocations for all activity types
   locationName?: string | null;
   locationCity?: string | null;
@@ -106,6 +148,7 @@ export interface TourDayDto {
   title: string;
   description: string | null;
   activities: TourDayActivityDto[];
+  translations?: Record<string, TourDayTranslationData>;
 }
 
 export interface TourInsuranceDto {
@@ -134,6 +177,7 @@ export interface TourClassificationDto {
   dynamicPricing?: DynamicPricingDto[];
   plans: TourDayDto[];
   insurances: TourInsuranceDto[];
+  translations?: Record<string, TourClassificationTranslationData>;
 }
 
 export interface ServiceDto {
@@ -144,6 +188,7 @@ export interface ServiceDto {
   salePrice?: number;
   email?: string;
   contactNumber?: string;
+  translations?: Record<string, TourResourceTranslationData>;
 }
 
 export interface TourDto {

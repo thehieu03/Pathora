@@ -159,23 +159,24 @@ export const FilterDrawer = ({
                       key={option.value}
                       className="flex items-center gap-3 cursor-pointer py-2 text-sm text-gray-600"
                     >
+                      {/* Native checkbox with custom styling */}
                       <input
                         type="checkbox"
                         checked={selectedClassifications.includes(option.value)}
                         onChange={() => onClassificationToggle(option.value)}
-                        className="sr-only"
+                        className="appearance-none w-4 h-4 rounded border-2 border-gray-300 bg-white cursor-pointer relative
+                          checked:bg-[#fa8b02] checked:border-[#fa8b02]
+                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fa8b02]
+                          transition-colors duration-200"
+                        style={{
+                          backgroundImage: selectedClassifications.includes(option.value)
+                            ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
+                            : "none",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "center",
+                          backgroundSize: "12px",
+                        }}
                       />
-                      <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                          selectedClassifications.includes(option.value)
-                            ? "border-[#fa8b02] bg-[#fa8b02]"
-                            : "border-gray-300 bg-white"
-                        }`}
-                      >
-                        {selectedClassifications.includes(option.value) && (
-                          <Icon icon="heroicons-outline:check" className="w-3 h-3 text-white" />
-                        )}
-                      </div>
                       <span>{t(option.labelKey, option.fallback)}</span>
                     </label>
                   ))}
@@ -193,23 +194,24 @@ export const FilterDrawer = ({
                       key={option.value}
                       className="flex items-center gap-3 cursor-pointer py-2 text-sm text-gray-600"
                     >
+                      {/* Native checkbox with custom styling */}
                       <input
                         type="checkbox"
                         checked={selectedCategories.includes(option.value)}
                         onChange={() => onCategoryToggle(option.value)}
-                        className="sr-only"
+                        className="appearance-none w-4 h-4 rounded border-2 border-gray-300 bg-white cursor-pointer relative
+                          checked:bg-[#fa8b02] checked:border-[#fa8b02]
+                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fa8b02]
+                          transition-colors duration-200"
+                        style={{
+                          backgroundImage: selectedCategories.includes(option.value)
+                            ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
+                            : "none",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "center",
+                          backgroundSize: "12px",
+                        }}
                       />
-                      <div
-                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                          selectedCategories.includes(option.value)
-                            ? "border-[#fa8b02] bg-[#fa8b02]"
-                            : "border-gray-300 bg-white"
-                        }`}
-                      >
-                        {selectedCategories.includes(option.value) && (
-                          <Icon icon="heroicons-outline:check" className="w-3 h-3 text-white" />
-                        )}
-                      </div>
                       <span>{t(option.labelKey, option.fallback)}</span>
                     </label>
                   ))}

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Pathora is an admin dashboard/portal with a frontend in `frontend/` built on **Next.js 16 and **React  (App Router)**19**. It communicates with a backend API gateway via Axios and receives real-time updates via SignalR.
+Pathora is an admin dashboard/portal with a frontend in `frontend/` built on **Next.js 16 and **React (App Router)**19**. It communicates with a backend API gateway via Axios and receives real-time updates via SignalR.
 
 ## Project Structure
 
@@ -48,32 +48,38 @@ npm run lint && npm run build   # Full validation gate
 ## Coding Style & Conventions
 
 ### Formatting
+
 - **2-space indentation**, semicolons required, **double quotes**, LF line endings
 - Follow ESLint in `eslint.config.mjs`
 
 ### TypeScript
+
 - Use strict typing where possible
 - Define domain types in `src/store/domain/`
 - Use interfaces for objects, types for unions/primitives
 
 ### Path Aliases
+
 Use `@/*` imports (maps to `./src/*`):
+
 ```typescript
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/contexts/AuthContext";
 ```
 
 ### Naming Conventions
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `UserProfile.tsx`, `OrderList.tsx` |
-| Hooks | camelCase + `use` prefix | `useAuth.ts`, `useRealtimeRefresh.ts` |
-| Constants | UPPER_SNAKE_CASE | `API_ENDPOINTS`, `MAX_UPLOAD_SIZE` |
-| Interfaces/Types | PascalCase | `User`, `OrderItem`, `ApiResponse<T>` |
-| Route folders | lowercase | `(dashboard)/orders/page.tsx` |
-| Utilities | camelCase | `formatCurrency.ts`, `apiResponse.ts` |
+
+| Type             | Convention               | Example                               |
+| ---------------- | ------------------------ | ------------------------------------- |
+| Components       | PascalCase               | `UserProfile.tsx`, `OrderList.tsx`    |
+| Hooks            | camelCase + `use` prefix | `useAuth.ts`, `useRealtimeRefresh.ts` |
+| Constants        | UPPER_SNAKE_CASE         | `API_ENDPOINTS`, `MAX_UPLOAD_SIZE`    |
+| Interfaces/Types | PascalCase               | `User`, `OrderItem`, `ApiResponse<T>` |
+| Route folders    | lowercase                | `(dashboard)/orders/page.tsx`         |
+| Utilities        | camelCase                | `formatCurrency.ts`, `apiResponse.ts` |
 
 ### Imports Order
+
 1. React/Next.js imports
 2. External libraries (axios, redux, etc.)
 3. Path alias imports (`@/...`)
@@ -170,6 +176,7 @@ SignalR via `src/services/signalRService.ts`. Use `useRealtimeRefresh` hook to t
 ## Validation
 
 Before marking work complete, run:
+
 ```bash
 cd frontend && npm run lint && npm run build
 ```
@@ -177,6 +184,7 @@ cd frontend && npm run lint && npm run build
 Ensure no ESLint errors and build succeeds.
 
 <!-- gitnexus:start -->
+
 # GitNexus — Code Intelligence
 
 This project is indexed by GitNexus as **pathora** (2080 symbols, 3780 relationships, 43 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
@@ -213,35 +221,36 @@ This project is indexed by GitNexus as **pathora** (2080 symbols, 3780 relations
 
 ## Tools Quick Reference
 
-| Tool | When to use | Command |
-|------|-------------|---------|
-| `query` | Find code by concept | `gitnexus_query({query: "auth validation"})` |
-| `context` | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})` |
-| `impact` | Blast radius before editing | `gitnexus_impact({target: "X", direction: "upstream"})` |
-| `detect_changes` | Pre-commit scope check | `gitnexus_detect_changes({scope: "staged"})` |
-| `rename` | Safe multi-file rename | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
-| `cypher` | Custom graph queries | `gitnexus_cypher({query: "MATCH ..."})` |
+| Tool             | When to use                   | Command                                                                 |
+| ---------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| `query`          | Find code by concept          | `gitnexus_query({query: "auth validation"})`                            |
+| `context`        | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})`                              |
+| `impact`         | Blast radius before editing   | `gitnexus_impact({target: "X", direction: "upstream"})`                 |
+| `detect_changes` | Pre-commit scope check        | `gitnexus_detect_changes({scope: "staged"})`                            |
+| `rename`         | Safe multi-file rename        | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
+| `cypher`         | Custom graph queries          | `gitnexus_cypher({query: "MATCH ..."})`                                 |
 
 ## Impact Risk Levels
 
-| Depth | Meaning | Action |
-|-------|---------|--------|
-| d=1 | WILL BREAK — direct callers/importers | MUST update these |
-| d=2 | LIKELY AFFECTED — indirect deps | Should test |
-| d=3 | MAY NEED TESTING — transitive | Test if critical path |
+| Depth | Meaning                               | Action                |
+| ----- | ------------------------------------- | --------------------- |
+| d=1   | WILL BREAK — direct callers/importers | MUST update these     |
+| d=2   | LIKELY AFFECTED — indirect deps       | Should test           |
+| d=3   | MAY NEED TESTING — transitive         | Test if critical path |
 
 ## Resources
 
-| Resource | Use for |
-|----------|---------|
-| `gitnexus://repo/pathora/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/pathora/clusters` | All functional areas |
-| `gitnexus://repo/pathora/processes` | All execution flows |
-| `gitnexus://repo/pathora/process/{name}` | Step-by-step execution trace |
+| Resource                                 | Use for                                  |
+| ---------------------------------------- | ---------------------------------------- |
+| `gitnexus://repo/pathora/context`        | Codebase overview, check index freshness |
+| `gitnexus://repo/pathora/clusters`       | All functional areas                     |
+| `gitnexus://repo/pathora/processes`      | All execution flows                      |
+| `gitnexus://repo/pathora/process/{name}` | Step-by-step execution trace             |
 
 ## Self-Check Before Finishing
 
 Before completing any code modification task, verify:
+
 1. `gitnexus_impact` was run for all modified symbols
 2. No HIGH/CRITICAL risk warnings were ignored
 3. `gitnexus_detect_changes()` confirms changes match expected scope
@@ -267,13 +276,35 @@ To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.
 
 ## CLI
 
-| Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
+| Task                                         | Read this skill file                                        |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`       |
+| Blast radius / "What breaks if I change X?"  | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?"             | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md`       |
+| Rename / extract / split / refactor          | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`     |
+| Tools, resources, schema reference           | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md`           |
+| Index, status, clean, wiki CLI commands      | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md`             |
 
 <!-- gitnexus:end -->
+
+## gstack
+
+Use gstack skills for work in this repository.
+
+Use the /browse skill from gstack for all web browsing.
+Never use mcp**claude-in-chrome**\* tools.
+
+Prefer these gstack commands for backend work:
+
+- /office-hours for scoping and planning
+- /review for code review
+- /investigate for debugging and issue analysis
+- /ship before release preparation
+- /browse when external documentation is needed
+
+Available gstack skills:
+/office-hours
+/review
+/investigate
+/ship
+/browse

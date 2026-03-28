@@ -34,7 +34,7 @@ const INITIAL_FORM: FormState = {
   tourId: "",
   classificationId: "",
   title: "",
-  instanceType: "0",
+  instanceType: "1",
   startDate: "",
   endDate: "",
   maxParticipation: "",
@@ -390,10 +390,10 @@ function InstanceDetailsStep({
                 updateField("instanceType", event.target.value)
               }
             >
-              <option value="0">
+              <option value="1">
                 {t("tourInstance.private", "Private")}
               </option>
-              <option value="1">
+              <option value="2">
                 {t("tourInstance.public", "Public")}
               </option>
             </select>
@@ -866,10 +866,12 @@ export function CreateTourInstancePage() {
         "tourInstance.validation.maxParticipantsRequired",
         "Maximum participants must be greater than 0",
       );
-    if (
-      form.basePrice !== "" &&
-      Number(form.basePrice) < 0
-    )
+    if (form.basePrice === "" || form.basePrice === null || form.basePrice === undefined)
+      newErrors.basePrice = t(
+        "tourInstance.validation.basePriceRequired",
+        "Base price is required",
+      );
+    else if (Number(form.basePrice) < 0)
       newErrors.basePrice = t(
         "tourInstance.validation.basePriceNonNegative",
         "Base price must be 0 or greater",
@@ -891,6 +893,7 @@ export function CreateTourInstancePage() {
         startDate: form.startDate,
         endDate: form.endDate,
         maxParticipation: Number(form.maxParticipation),
+        basePrice: Number(form.basePrice),
         location: form.location.trim() || undefined,
         confirmationDeadline: form.confirmationDeadline || undefined,
         includedServices: form.includedServices

@@ -783,6 +783,9 @@ describe("buildTourFormData", () => {
                   accommodationName: "", enAccommodationName: "",
                   accommodationAddress: "", enAccommodationAddress: "",
                   accommodationPhone: "", checkInTime: "", checkOutTime: "",
+                  roomType: "", roomCapacity: "", mealsIncluded: "",
+                  roomPrice: "", numberOfRooms: "", numberOfNights: "",
+                  specialRequest: "", latitude: "", longitude: "",
                 },
               ],
             },
@@ -994,6 +997,7 @@ describe("buildTourFormData", () => {
         services: [
           {
             serviceName: "Guide Service",
+            enServiceName: "",
             pricingType: "0",
             price: "100",
             salePrice: "80",
@@ -1046,6 +1050,7 @@ describe("buildTourFormData", () => {
         services: [
           {
             serviceName: "",
+            enServiceName: "",
             pricingType: "0",
             price: "100",
             salePrice: "",
@@ -1054,6 +1059,7 @@ describe("buildTourFormData", () => {
           },
           {
             serviceName: "Valid Service",
+            enServiceName: "",
             pricingType: "1",
             price: "50",
             salePrice: "",
@@ -1137,6 +1143,7 @@ describe("buildTourFormData", () => {
         services: [
           {
             serviceName: "",
+            enServiceName: "",
             pricingType: "",
             price: "",
             salePrice: "",
@@ -1157,6 +1164,7 @@ describe("buildTourFormData", () => {
       const result = buildServicesPayload([
         {
           serviceName: "Guide",
+          enServiceName: "",
           pricingType: "0",
           price: "200",
           salePrice: "150",
@@ -1177,6 +1185,7 @@ describe("buildTourFormData", () => {
       const result = buildServicesPayload([
         {
           serviceName: "Guide",
+          enServiceName: "",
           pricingType: "",
           price: "",
           salePrice: "",

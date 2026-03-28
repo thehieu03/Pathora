@@ -143,6 +143,18 @@ const nextConfig: NextConfig = {
         port: "9000",
         pathname: "/**",
       },
+      {
+        protocol: "http",
+        hostname: "34.143.220.132",
+        port: "9001",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "34.143.220.132",
+        port: "9001",
+        pathname: "/**",
+      },
       ...defaultRemotePatterns,
       ...envRemotePatterns,
     ],

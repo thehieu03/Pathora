@@ -154,6 +154,7 @@ interface InsuranceForm {
 
 interface ServiceForm {
   serviceName: string;
+  enServiceName: string;
   pricingType: string;
   price: string;
   salePrice: string;
@@ -408,6 +409,7 @@ const emptyInsurance = (): InsuranceForm => ({
 
 const emptyService = (): ServiceForm => ({
   serviceName: "",
+  enServiceName: "",
   pricingType: "",
   price: "",
   salePrice: "",
@@ -660,9 +662,9 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
       const clsForms: ClassificationForm[] = tour.classifications.map((cls) => ({
         id: cls.id,
         name: cls.name ?? "",
-        enName: "",
+        enName: cls.translations?.en?.name ?? "",
         description: cls.description ?? "",
-        enDescription: "",
+        enDescription: cls.translations?.en?.description ?? "",
         basePrice: String(cls.basePrice ?? cls.price ?? ""),
         durationDays: String(cls.durationDays ?? ""),
       }));
@@ -673,18 +675,18 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
           id: day.id,
           dayNumber: String(day.dayNumber),
           title: day.title ?? "",
-          enTitle: "",
+          enTitle: day.translations?.en?.title ?? "",
           description: day.description ?? "",
-          enDescription: "",
+          enDescription: day.translations?.en?.description ?? "",
           activities: (day.activities ?? []).map((act) => ({
             id: act.id,
             activityType: String(act.activityType),
             title: act.title ?? "",
-            enTitle: "",
+            enTitle: act.translations?.en?.title ?? "",
             description: act.description ?? "",
-            enDescription: "",
+            enDescription: act.translations?.en?.description ?? "",
             note: act.note ?? "",
-            enNote: "",
+            enNote: act.translations?.en?.note ?? "",
             estimatedCost: String(act.estimatedCost ?? ""),
             isOptional: act.isOptional ?? false,
             startTime: act.startTime ?? "",
@@ -694,18 +696,18 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
               id: route.id,
               fromLocationIndex: "",
               fromLocationCustom: route.fromLocation?.locationName ?? "",
-              enFromLocationCustom: "",
+              enFromLocationCustom: route.translations?.en?.fromLocationName ?? "",
               toLocationIndex: "",
               toLocationCustom: route.toLocation?.locationName ?? "",
-              enToLocationCustom: "",
+              enToLocationCustom: route.translations?.en?.toLocationName ?? "",
               transportationType: String(route.transportationType),
-              enTransportationType: "",
+              enTransportationType: route.translations?.en?.transportationType ?? "",
               transportationName: route.transportationName ?? "",
-              enTransportationName: "",
+              enTransportationName: route.translations?.en?.transportationName ?? "",
               durationMinutes: String(route.durationMinutes ?? ""),
               price: String(route.price ?? ""),
               note: route.note ?? "",
-              enNote: "",
+              enNote: route.translations?.en?.note ?? "",
             })),
             // Location fields — all activity types
             locationName: act.locationName ?? "",
@@ -723,9 +725,9 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
             toLocation: act.toLocation ?? "",
             enToLocation: "",
             transportationType: act.transportationType ?? "0",
-            enTransportationType: "",
+            enTransportationType: act.translations?.en?.transportationType ?? "",
             transportationName: act.transportationName ?? "",
-            enTransportationName: "",
+            enTransportationName: act.translations?.en?.transportationName ?? "",
             durationMinutes: String(act.durationMinutes ?? ""),
             price: String(act.price ?? ""),
             // Accommodation fields — type 8
@@ -736,6 +738,15 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
             accommodationPhone: act.accommodationPhone ?? "",
             checkInTime: act.checkInTime ?? "",
             checkOutTime: act.checkOutTime ?? "",
+            roomType: "",
+            roomCapacity: "",
+            mealsIncluded: "",
+            roomPrice: "",
+            numberOfRooms: "",
+            numberOfNights: "",
+            specialRequest: "",
+            latitude: "",
+            longitude: "",
           })),
         })),
       );
@@ -758,6 +769,34 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
         })),
       );
       setInsurances(insForms);
+    }
+
+    // Initialize policy selectors from tour data
+    if (tour.pricingPolicyId) {
+      setSelectedPricingPolicyId(String(tour.pricingPolicyId));
+    }
+    if (tour.depositPolicyId) {
+      setSelectedDepositPolicyId(String(tour.depositPolicyId));
+    }
+    if (tour.cancellationPolicyId) {
+      setSelectedCancellationPolicyId(String(tour.cancellationPolicyId));
+    }
+    if (tour.visaPolicyId) {
+      setSelectedVisaPolicyId(String(tour.visaPolicyId));
+    }
+
+    // Initialize services from tour data
+    if (tour.services && tour.services.length > 0) {
+      const svcForms: ServiceForm[] = tour.services.map((svc) => ({
+        serviceName: svc.serviceName ?? "",
+        enServiceName: svc.translations?.en?.name ?? "",
+        pricingType: svc.pricingType ?? "",
+        price: svc.price != null ? String(svc.price) : "",
+        salePrice: svc.salePrice != null ? String(svc.salePrice) : "",
+        email: svc.email ?? "",
+        contactNumber: svc.contactNumber ?? "",
+      }));
+      setServices(svcForms);
     }
   }, [isEditMode, initialData]);
 
@@ -3388,6 +3427,19 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
                         {errors[`svc_${svcI}_name`] && (
                           <p className="text-red-500 text-xs mt-1">{errors[`svc_${svcI}_name`]}</p>
                         )}
+                      </div>
+                      {/* English Service Name */}
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                          {t("tourAdmin.services.serviceName")} (English)
+                        </label>
+                        <input
+                          type="text"
+                          value={svc.enServiceName}
+                          onChange={(e) => updateService(svcI, "enServiceName", e.target.value)}
+                          placeholder={t("tourAdmin.services.placeholderServiceNameEn", "Enter English service name")}
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                        />
                       </div>
                       {/* Pricing Type + Price + Sale Price */}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

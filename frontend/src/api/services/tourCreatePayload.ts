@@ -163,6 +163,7 @@ interface ActivityRoutePayloadInput {
 
 interface ServicePayloadInput {
   serviceName: string;
+  enServiceName: string;
   pricingType: string;
   price: string;
   salePrice: string;
@@ -242,16 +243,27 @@ const buildActivityTranslations = (
   enTitle: string,
   enDesc: string,
   enNote: string,
-): Record<string, Record<string, string>> => {
-  const result: Record<string, Record<string, string>> = {
+  enTransportationType?: string,
+): Record<string, Record<string, string | undefined>> => {
+  const result: Record<string, Record<string, string | undefined>> = {
     vi: { title: viTitle, description: viDesc, note: viNote },
   };
+  const hasEnTransportation = (enTransportationType?.trim().length ?? 0) > 0;
   if (
     enTitle.trim().length > 0 ||
     enDesc.trim().length > 0 ||
-    enNote.trim().length > 0
+    enNote.trim().length > 0 ||
+    hasEnTransportation
   ) {
-    result.en = { title: enTitle, description: enDesc, note: enNote };
+    const enObj: Record<string, string | undefined> = {
+      title: enTitle,
+      description: enDesc,
+      note: enNote,
+    };
+    if (hasEnTransportation) {
+      enObj.transportationType = enTransportationType;
+    }
+    result.en = enObj;
   }
   return result;
 };
@@ -419,6 +431,7 @@ const buildClassificationsPayload = (
           activity.enTitle,
           activity.enDescription,
           activity.enNote,
+          activity.enTransportationType,
         ),
       })),
     }));
@@ -551,6 +564,9 @@ export const buildServicesPayload = (services: ServicePayloadInput[]) =>
       salePrice: parseDecimal(svc.salePrice, 0),
       email: toOptionalString(svc.email),
       contactNumber: toOptionalString(svc.contactNumber),
+      translations: svc.enServiceName.trim().length > 0
+        ? { en: { name: svc.enServiceName } }
+        : undefined,
     }));
 
 // ── Main export ─────────────────────────────────────────────────────

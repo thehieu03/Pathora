@@ -138,23 +138,27 @@ const FilterCheckboxList = ({
         key={option.value}
         className="flex items-center gap-3 cursor-pointer py-1 text-sm text-gray-600 hover:text-gray-900 transition-colors"
       >
+        {/* Native checkbox with custom styling */}
         <input
           type="checkbox"
           checked={selected.includes(option.value)}
           onChange={() => onToggle(option.value)}
-          className="sr-only"
+          className="appearance-none w-4 h-4 rounded border-2 border-gray-300 bg-white cursor-pointer relative
+            checked:bg-[#fa8b02] checked:border-[#fa8b02]
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fa8b02]
+            transition-colors duration-200
+            checked:before:absolute checked:before:inset-0 checked:before:flex checked:before:items-center checked:before:justify-center
+            before:content-['']"
+          style={{
+            // Use pseudo-element for checkmark via inline SVG background
+            backgroundImage: selected.includes(option.value)
+              ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2 6l3 3 5-5' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
+              : "none",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            backgroundSize: "12px",
+          }}
         />
-        <div
-          className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-            selected.includes(option.value)
-              ? "border-[#fa8b02] bg-[#fa8b02]"
-              : "border-gray-300 bg-white"
-          }`}
-        >
-          {selected.includes(option.value) && (
-            <Icon icon="heroicons-outline:check" className="w-3 h-3 text-white" />
-          )}
-        </div>
         <span>{getLabel(option.labelKey, option.fallback)}</span>
       </label>
     ))}
