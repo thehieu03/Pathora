@@ -579,6 +579,7 @@ public sealed class TourActivityResourceLinkUpdateTests
         typeof(Entity<Guid>).GetProperty("Id")!.SetValue(activity, activityId);
 
         _tourRepository.FindById(tourId, false).Returns(tour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(tour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), tourId).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -667,6 +668,7 @@ public sealed class TourActivityResourceLinkUpdateTests
         typeof(Entity<Guid>).GetProperty("Id")!.SetValue(activity, activityId);
 
         _tourRepository.FindById(tourId, false).Returns(tour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(tour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), tourId).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -740,6 +742,7 @@ public sealed class TourActivityResourceLinkUpdateTests
         var tour = CreateTourWithActivityAndLinks(tourId);
 
         _tourRepository.FindById(tourId, false).Returns(tour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(tour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), tourId).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -795,6 +798,7 @@ public sealed class TourActivityResourceLinkUpdateTests
         tour.Classifications.Add(classification);
 
         _tourRepository.FindById(tourId, false).Returns(tour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(tour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), tourId).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);

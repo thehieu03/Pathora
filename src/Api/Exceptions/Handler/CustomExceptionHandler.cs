@@ -1,4 +1,5 @@
 using Api.Exceptions;
+using Application.Common.Constant;
 using Common.Constants;
 using Contracts.ModelResponse;
 using Domain.Constant;
@@ -6,6 +7,7 @@ using ErrorOr;
 using FluentValidation;
 using Infrastructure.Loging;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Exceptions.Handler;
 
@@ -74,6 +76,12 @@ public sealed class CustomExceptionHandler(
                 errorMessage = exception.Message;
                 innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
                 break;
+            case DbUpdateConcurrencyException:
+                statusCode = StatusCodes.Status409Conflict;
+                details = MessageCode.ConcurrencyConflict;
+                errorMessage = ErrorConstants.Common.ConcurrencyConflictDescription.En;
+                innerException = includeInnerEx ? exception.GetType().Name : string.Empty;
+                break;
             default:
                 statusCode = StatusCodes.Status500InternalServerError;
                 details = includeStackTrace ? exception.StackTrace : null;
@@ -120,6 +128,10 @@ public sealed class CustomExceptionHandler(
         else if (exception is ArgumentException argumentException)
         {
             errors.Add(new ErrorResult(argumentException.Message, argumentException.ParamName ?? string.Empty));
+        }
+        else if (exception is DbUpdateConcurrencyException)
+        {
+            errors.Add(new ErrorResult(ErrorConstants.Common.ConcurrencyConflictDescription.En, ErrorConstants.Common.ConcurrencyConflictCode));
         }
         else
         {

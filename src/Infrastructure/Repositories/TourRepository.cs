@@ -24,6 +24,40 @@ public class TourRepository(AppDbContext context) : ITourRepository
         return await query.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 
+    public async Task<TourEntity?> FindByIdForUpdate(Guid id)
+    {
+        return await _context.Tours
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.FromLocation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Routes)
+                            .ThenInclude(r => r.ToLocation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.Accommodation)
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Plans)
+                    .ThenInclude(p => p.Activities)
+                        .ThenInclude(a => a.ResourceLinks.OrderBy(l => l.Order))
+            .Include(t => t.Classifications)
+                .ThenInclude(c => c.Insurances)
+            .Include(t => t.PlanLocations)
+            .Include(t => t.Resources)
+            .Include(t => t.Thumbnail)
+            .Include(t => t.Images)
+            .Include(t => t.PricingPolicy)
+            .Include(t => t.DepositPolicy)
+            .Include(t => t.CancellationPolicy)
+            .Include(t => t.VisaPolicy)
+            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+    }
+
     private IQueryable<TourEntity> BuildTourDetailQueryNoTracking()
     {
         return _context.Tours

@@ -1,9 +1,9 @@
 using Application.Common.Interfaces;
 using System.Net;
 using System.Net.Http.Headers;
+using CloudinaryDotNet;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Minio;
 
 namespace Infrastructure.Files;
 
@@ -11,35 +11,22 @@ public static class DependencyInjection
 {
     internal static IServiceCollection AddFileService(this IServiceCollection services, IConfiguration configuration)
     {
-        services
-            //.AddMinio(configureClient => configureClient
-            //.WithEndpoint(configuration["MinIO:Endpoint"] ?? "localhost:9000")
-            //.WithCredentials(
-            //    configuration["MinIO:AccessKey"] ?? "minioadmin",
-            //    configuration["MinIO:SecretKey"] ?? "minioadmin123")
-            //.WithSSL(bool.TryParse(configuration["MinIO:UseSSL"], out var useSsl) && useSsl)
-            //.Build());
-            .AddMinio(configureClient =>
-            {
-                var endpoint = configuration["MinIO:Endpoint"];
-                var accessKey = configuration["MinIO:AccessKey"];
-                var secretKey = configuration["MinIO:SecretKey"];
+        services.AddSingleton(sp =>
+        {
+            var cloudName = configuration["Cloudinary:CloudName"]
+                ?? throw new Exception("Cloudinary:CloudName is missing");
+            var apiKey = configuration["Cloudinary:ApiKey"]
+                ?? throw new Exception("Cloudinary:ApiKey is missing");
+            var apiSecret = configuration["Cloudinary:ApiSecret"]
+                ?? throw new Exception("Cloudinary:ApiSecret is missing");
 
-                if (string.IsNullOrWhiteSpace(accessKey) ||
-                    string.IsNullOrWhiteSpace(secretKey))
-                {
-                    throw new Exception("MinIO AccessKey/SecretKey is missing");
-                }
-
-                configureClient
-                    .WithEndpoint(endpoint)
-                    .WithCredentials(accessKey, secretKey)
-                    .WithSSL(false)
-                    .Build();
-            });
-
+            return new Cloudinary(new Account(cloudName, apiKey, apiSecret));
+        });
+        services.AddScoped<ICloudinaryClient, CloudinaryClientAdapter>();
         services.AddScoped<IFileManager, FileManager>();
-        services.AddScoped<IMinIOCloudService, MinIOCloudService>();
+        services.AddScoped<ICloudinaryService, CloudinaryCloudService>();
+
+        // SeaweedFS client — kept separate from Cloudinary migration
         services.AddHttpClient<ISeaweedClient, SeaweedClient>(client =>
             {
                 var seaweedUrl = configuration["Seaweed:Url"];

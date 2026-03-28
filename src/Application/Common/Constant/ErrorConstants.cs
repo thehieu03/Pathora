@@ -370,6 +370,15 @@ public static class ErrorConstants
             new("Không tìm thấy chính sách giá.", "Pricing policy not found.");
     }
 
+    public static class Common
+    {
+        public const string ConcurrencyConflictCode = "CONCURRENCY_CONFLICT";
+        public static readonly LocalizedMessage ConcurrencyConflictDescription =
+            new(
+                "Tài nguyên đã bị thay đổi bởi một yêu cầu khác. Vui lòng tải lại trang và thử lại.",
+                "The resource was modified by another request. Please refresh and try again.");
+    }
+
     public static string ResolveByCode(string? code, string? lang, string fallbackDescription)
     {
         if (string.IsNullOrWhiteSpace(code))
