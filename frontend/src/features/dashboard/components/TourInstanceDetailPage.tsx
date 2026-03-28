@@ -324,6 +324,7 @@ export default function TourInstanceDetailPage() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      toast.error(t("tourInstance.validationFailed", "Please fill in all required fields"));
       return;
     }
 
@@ -341,12 +342,14 @@ export default function TourInstanceDetailPage() {
       const payload: UpdateTourInstancePayload = {
         id: data.id,
         title: form.title.trim(),
-        startDate: form.startDate,
-        endDate: form.endDate,
+        startDate: form.startDate + "T00:00:00Z",
+        endDate: form.endDate + "T00:00:00Z",
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice) || 0,
         location: form.location.trim() || undefined,
-        confirmationDeadline: form.confirmationDeadline || undefined,
+        confirmationDeadline: form.confirmationDeadline
+          ? form.confirmationDeadline + "T00:00:00Z"
+          : undefined,
         includedServices:
           includedServices.length > 0 ? includedServices : undefined,
         guideUserIds: form.guideUserIds,

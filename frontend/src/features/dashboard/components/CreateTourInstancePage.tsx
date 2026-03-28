@@ -534,6 +534,9 @@ function InstanceDetailsStep({
                   updateField("confirmationDeadline", event.target.value)
                 }
               />
+              {errors.confirmationDeadline && (
+                <p className="text-xs text-red-600">{errors.confirmationDeadline}</p>
+              )}
             </div>
           </div>
         </div>
@@ -906,6 +909,16 @@ export function CreateTourInstancePage() {
         "tourInstance.validation.endDateRequired",
         "End date is required",
       );
+    else if (form.startDate && form.endDate) {
+      const start = new Date(form.startDate);
+      const end = new Date(form.endDate);
+      if (end <= start) {
+        newErrors.endDate = t(
+          "tourInstance.validation.endDateAfterStart",
+          "End date must be after start date",
+        );
+      }
+    }
     if (!form.maxParticipation || Number(form.maxParticipation) <= 0)
       newErrors.maxParticipation = t(
         "tourInstance.validation.maxParticipantsRequired",
@@ -936,6 +949,7 @@ export function CreateTourInstancePage() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      toast.error(t("tourInstance.validationFailed", "Please fill in all required fields"));
       return;
     }
 
@@ -947,12 +961,14 @@ export function CreateTourInstancePage() {
         classificationId: form.classificationId,
         title: form.title.trim(),
         instanceType: Number(form.instanceType),
-        startDate: form.startDate,
-        endDate: form.endDate,
+        startDate: form.startDate + "T00:00:00Z",
+        endDate: form.endDate + "T00:00:00Z",
         maxParticipation: Number(form.maxParticipation),
         basePrice: Number(form.basePrice),
         location: form.location.trim() || undefined,
-        confirmationDeadline: form.confirmationDeadline || undefined,
+        confirmationDeadline: form.confirmationDeadline
+          ? form.confirmationDeadline + "T00:00:00Z"
+          : undefined,
         includedServices: form.includedServices
           .map((s) => s.trim())
           .filter(Boolean),

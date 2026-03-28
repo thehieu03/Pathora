@@ -183,7 +183,7 @@ export const tourInstanceService = {
       thumbnailUrl: data.thumbnailUrl || null,
     };
 
-    const response = await api.post<ApiResponse<{ value: string }>(
+    const response = await api.post<ApiResponse<{ value: string }>>(
       API_ENDPOINTS.TOUR_INSTANCE.CREATE,
       payload,
     );
@@ -211,7 +211,6 @@ export const tourInstanceService = {
       endDate: data.endDate,
       maxParticipation: data.maxParticipation,
       basePrice: data.basePrice,
-      location: data.location?.trim() || null,
       confirmationDeadline: data.confirmationDeadline || null,
       includedServices: normalizeStringArray(data.includedServices),
       guideUserIds: data.guideUserIds ?? [],
