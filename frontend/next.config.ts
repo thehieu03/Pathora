@@ -98,8 +98,7 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    // When MinIO runs on localhost (private IP), Next.js image optimizer
-    // blocks it. Set NEXT_PUBLIC_IMAGES_UNOPTIMIZED=true to bypass.
+    // Set NEXT_PUBLIC_IMAGES_UNOPTIMIZED=true to bypass image optimization.
     unoptimized: allowUnoptimized,
     remotePatterns: [
       {
@@ -138,11 +137,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "9000",
+        protocol: "https",
+        hostname: "res.cloudinary.com",
         pathname: "/**",
       },
+      // Legacy: old MinIO URLs still stored in DB from test data
+      // Can be removed after test data is refreshed with Cloudinary URLs
       {
         protocol: "http",
         hostname: "34.143.220.132",
