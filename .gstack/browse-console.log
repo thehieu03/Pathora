@@ -1,0 +1,1056 @@
+[2026-03-28T01:34:23.180Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-28T01:34:23.392Z] [info] 🌐 i18next is maintained with support from Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
+[2026-03-28T01:34:24.731Z] [log] [HMR] connected
+[2026-03-28T01:34:25.817Z] [info] Connecting to 'http://localhost:5182/api/public/stats' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:34:25.821Z] [info] Connecting to 'http://localhost:5182/api/public/stats' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:34:26.011Z] [info] Connecting to 'http://localhost:5182/api/public/tour-instances/available?page=1&pageSize=6&lang=en' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:34:26.012Z] [info] Connecting to 'http://localhost:5182/api/public/tours/featured?limit=8&lang=en' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:34:26.013Z] [info] Connecting to 'http://localhost:5182/api/public/tours/latest?limit=6&lang=en' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:34:26.014Z] [info] Connecting to 'http://localhost:5182/api/public/reviews/top?limit=6' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:34:28.168Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/stats, baseUrl: http://localhost:5182, requestUrl: /api/public/stats}
+[2026-03-28T01:34:28.169Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:34:28.176Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:34:28.360Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/tour-instances/available?page=1&pageSize=6&lang=en, baseUrl: http://localhost:5182, requestUrl: /api/public/tour-instances/available?page=1&pageSize=6&lang=en}
+[2026-03-28T01:34:28.361Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:34:28.366Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:34:28.367Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/tours/featured?limit=8&lang=en, baseUrl: http://localhost:5182, requestUrl: /api/public/tours/featured?limit=8&lang=en}
+[2026-03-28T01:34:28.367Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:34:28.375Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:34:28.375Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/tours/latest?limit=6&lang=en, baseUrl: http://localhost:5182, requestUrl: /api/public/tours/latest?limit=6&lang=en}
+[2026-03-28T01:34:28.376Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:34:28.383Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:34:28.384Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/reviews/top?limit=6, baseUrl: http://localhost:5182, requestUrl: /api/public/reviews/top?limit=6}
+[2026-03-28T01:34:28.384Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:34:28.393Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:34:28.420Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/stats, baseUrl: http://localhost:5182, requestUrl: /api/public/stats}
+[2026-03-28T01:34:28.421Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:34:28.430Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:45:37.872Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:45:46.483Z] [log] [Fast Refresh] done in 8612ms
+[2026-03-28T01:45:49.145Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:45:52.093Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:45:52.093Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:45:57.037Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:45:59.454Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:45:59.454Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:46:00.870Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:46:02.679Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:46:02.679Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:46:03.372Z] [error] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[2026-03-28T01:46:03.514Z] [error] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[2026-03-28T01:46:03.530Z] [error] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[2026-03-28T01:46:04.044Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-28T01:46:04.511Z] [log] [HMR] connected
+[2026-03-28T01:46:04.511Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:46:04.511Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+[2026-03-28T01:46:04.511Z] [clear] console.clear
+[2026-03-28T01:46:04.511Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:46:04.511Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+[2026-03-28T01:46:35.026Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:46:39.008Z] [clear] console.clear
+[2026-03-28T01:46:39.010Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:46:39.010Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:47:12.371Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:47:15.994Z] [clear] console.clear
+[2026-03-28T01:47:15.996Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:47:15.996Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:47:32.206Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:47:36.715Z] [clear] console.clear
+[2026-03-28T01:47:36.715Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:47:36.715Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:47:36.936Z] [error] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[2026-03-28T01:47:37.573Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-28T01:47:38.184Z] [log] [HMR] connected
+[2026-03-28T01:47:38.184Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:47:38.185Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+[2026-03-28T01:47:53.529Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:47:58.639Z] [clear] console.clear
+[2026-03-28T01:47:58.641Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:47:58.641Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:47:58.800Z] [error] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+[2026-03-28T01:47:59.375Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-28T01:47:59.882Z] [log] [HMR] connected
+[2026-03-28T01:47:59.883Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:47:59.883Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+[2026-03-28T01:47:59.883Z] [clear] console.clear
+[2026-03-28T01:47:59.883Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:47:59.883Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+[2026-03-28T01:48:41.448Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:48:44.801Z] [clear] console.clear
+[2026-03-28T01:48:44.802Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:48:44.802Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:01.282Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:03.589Z] [clear] console.clear
+[2026-03-28T01:49:03.590Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:03.590Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:10.903Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:13.009Z] [clear] console.clear
+[2026-03-28T01:49:13.010Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:13.011Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:25.053Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:26.962Z] [clear] console.clear
+[2026-03-28T01:49:26.962Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:26.963Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:32.713Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:35.776Z] [clear] console.clear
+[2026-03-28T01:49:35.776Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:35.776Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:40.381Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:43.716Z] [clear] console.clear
+[2026-03-28T01:49:43.717Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:43.717Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:43.754Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:45.582Z] [clear] console.clear
+[2026-03-28T01:49:45.583Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:45.583Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:49.075Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:51.688Z] [clear] console.clear
+[2026-03-28T01:49:51.688Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:51.688Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:49:53.350Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:49:55.744Z] [clear] console.clear
+[2026-03-28T01:49:55.745Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:49:55.746Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:50:05.896Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:50:08.742Z] [clear] console.clear
+[2026-03-28T01:50:08.742Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:50:08.742Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:50:39.431Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:50:41.111Z] [clear] console.clear
+[2026-03-28T01:50:41.113Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:50:41.113Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:50:46.680Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:50:47.749Z] [clear] console.clear
+[2026-03-28T01:50:47.750Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:50:47.751Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:50:54.221Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:50:56.466Z] [clear] console.clear
+[2026-03-28T01:50:56.467Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:50:56.467Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:51:05.168Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:51:06.535Z] [clear] console.clear
+[2026-03-28T01:51:06.536Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:51:06.536Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:51:34.472Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:51:36.027Z] [clear] console.clear
+[2026-03-28T01:51:36.028Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:51:36.028Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:52:25.296Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:52:29.780Z] [clear] console.clear
+[2026-03-28T01:52:29.782Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:52:29.783Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:52:38.851Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:52:40.303Z] [clear] console.clear
+[2026-03-28T01:52:40.304Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:52:40.304Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:52:40.330Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:52:41.441Z] [clear] console.clear
+[2026-03-28T01:52:41.442Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:52:41.442Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:52:47.160Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:52:48.361Z] [clear] console.clear
+[2026-03-28T01:52:48.361Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:52:48.361Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:52:56.949Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:52:58.245Z] [clear] console.clear
+[2026-03-28T01:52:58.246Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:52:58.246Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:53:26.969Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:53:28.256Z] [clear] console.clear
+[2026-03-28T01:53:28.257Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:53:28.258Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:53:49.951Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:53:51.160Z] [clear] console.clear
+[2026-03-28T01:53:51.161Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:53:51.161Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:53:58.184Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:53:59.613Z] [clear] console.clear
+[2026-03-28T01:53:59.614Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:53:59.614Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:54:11.205Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:54:13.605Z] [clear] console.clear
+[2026-03-28T01:54:13.606Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:54:13.606Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:55:20.148Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:55:22.773Z] [clear] console.clear
+[2026-03-28T01:55:22.775Z] [error] ./src/app/globals.css:1:1
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter.
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+[2026-03-28T01:55:22.775Z] [error] ./src/app/globals.css
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+-- inner error --
+Syntax error: tailwindcss: D:\DoAn\pathora\frontend\src\app\globals.css `@utility card-hover:hover` defines an invalid utility name. Utilities should be alphanumeric and start with a lowercase letter. (1:1)
+
+> 1 | @import "tailwindcss";
+    | ^
+  2 | 
+  3 | /* ─── Google Fonts: Outfit + Bold Theme Fonts ─── */
+Generated code for D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\css-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[2]!D:\DoAn\pathora\frontend\node_modules\next\dist\build\webpack\loaders\postcss-loader\src\index.js??ruleSet[1].rules[15].oneOf[10].use[3]!D:\DoAn\pathora\frontend\src\app\globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+[2026-03-28T01:55:58.971Z] [log] [Fast Refresh] rebuilding
+[2026-03-28T01:56:05.970Z] [clear] console.clear
+[2026-03-28T01:56:06.030Z] [error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[2026-03-28T01:56:06.031Z] [warning] [Fast Refresh] performing full reload because your application had an unrecoverable error
+[2026-03-28T01:56:10.106Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-03-28T01:56:10.443Z] [info] 🌐 i18next is maintained with support from Locize — consider powering your project with managed localization (AI, CDN, integrations): https://locize.com 💙
+[2026-03-28T01:56:11.323Z] [log] [HMR] connected
+[2026-03-28T01:56:14.389Z] [info] Connecting to 'http://localhost:5182/api/public/stats' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:56:14.389Z] [info] Connecting to 'http://localhost:5182/api/public/stats' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:56:14.389Z] [info] Connecting to 'http://localhost:5182/api/public/tour-instances/available?page=1&pageSize=6&lang=en' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:56:14.389Z] [info] Connecting to 'http://localhost:5182/api/public/tours/featured?limit=8&lang=en' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:56:14.389Z] [info] Connecting to 'http://localhost:5182/api/public/tours/latest?limit=6&lang=en' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:56:14.389Z] [info] Connecting to 'http://localhost:5182/api/public/reviews/top?limit=6' violates the following Content Security Policy directive: "connect-src 'self' https: wss: http://host.docker.internal:8080". The policy is report-only, so the violation has been logged but no further action has been taken.
+[2026-03-28T01:56:15.910Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/stats, baseUrl: http://localhost:5182, requestUrl: /api/public/stats}
+[2026-03-28T01:56:15.910Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:56:15.910Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:56:16.123Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/tour-instances/available?page=1&pageSize=6&lang=en, baseUrl: http://localhost:5182, requestUrl: /api/public/tour-instances/available?page=1&pageSize=6&lang=en}
+[2026-03-28T01:56:16.124Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:56:16.133Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:56:16.133Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/tours/featured?limit=8&lang=en, baseUrl: http://localhost:5182, requestUrl: /api/public/tours/featured?limit=8&lang=en}
+[2026-03-28T01:56:16.133Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:56:16.152Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:56:16.152Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/tours/latest?limit=6&lang=en, baseUrl: http://localhost:5182, requestUrl: /api/public/tours/latest?limit=6&lang=en}
+[2026-03-28T01:56:16.152Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:56:16.176Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:56:16.176Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/reviews/top?limit=6, baseUrl: http://localhost:5182, requestUrl: /api/public/reviews/top?limit=6}
+[2026-03-28T01:56:16.176Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:56:16.194Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
+[2026-03-28T01:56:16.194Z] [warning] [API_ERROR] {message: Network Error, code: ERR_NETWORK, endpoint: http://localhost:5182/api/public/stats, baseUrl: http://localhost:5182, requestUrl: /api/public/stats}
+[2026-03-28T01:56:16.194Z] [debug] [API_ERROR_FULL] AxiosError: Network Error
+    at XMLHttpRequest.handleError (webpack-internal:///(app-pages-browser)/./node_modules/axios/lib/adapters/xhr.js:126:20)
+[2026-03-28T01:56:16.207Z] [error] Failed to load resource: net::ERR_CONNECTION_REFUSED
