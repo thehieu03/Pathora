@@ -58,7 +58,7 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
 
         RuleFor(x => x.ManagerUserIds)
             .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage(ValidationMessages.TourInstanceGuideIdsNotDuplicate)
+            .WithMessage(ValidationMessages.TourInstanceManagerIdsNotDuplicate)
             .When(x => x.ManagerUserIds is { Count: > 0 });
 
         RuleFor(x => x)

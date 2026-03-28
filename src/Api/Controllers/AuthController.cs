@@ -34,7 +34,7 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
             AuthCookieWriter.WriteAuthCookies(Response, result.Value, Request.IsHttps, jwtOptions.Value);
         }
 
-        return HandleResult(result);
+        return base.HandleResult(result);
     }
 
     [HttpPost(AuthEndpoint.Register)]
@@ -78,7 +78,14 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
         }
         else if (result.Errors.Any(error => error.Type is ErrorType.Unauthorized or ErrorType.NotFound))
         {
-            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            try
+            {
+                AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            }
+            catch (InvalidOperationException)
+            {
+                // Response has already started — cookies cannot be cleared.
+            }
         }
 
         return HandleResult(result);
@@ -115,7 +122,14 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
         var result = await Sender.Send(command with { RefreshToken = refreshToken });
         if (!result.IsError)
         {
-            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            try
+            {
+                AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            }
+            catch (InvalidOperationException)
+            {
+                // Response has already started — cookies cannot be cleared.
+            }
         }
 
         return HandleResult(result);
@@ -130,6 +144,14 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
     }
 
     [Authorize]
+    [HttpPut(AuthEndpoint.ChangePassword)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
+
+    [Authorize]
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()
     {
@@ -137,8 +159,15 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
 
         if (!result.IsError)
         {
-            AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
-            AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
+            try
+            {
+                AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+                AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
+            }
+            catch (InvalidOperationException)
+            {
+                // Response has already started — cookies cannot be set.
+            }
         }
 
         return HandleResult(result);
@@ -256,7 +285,7 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
 
         if (string.IsNullOrEmpty(googleId) || string.IsNullOrEmpty(email))
         {
-            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            try { AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps); } catch (InvalidOperationException) { }
             return Redirect(frontendUrl + "/auth/callback?error=missing_claims");
         }
 
@@ -267,7 +296,7 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
 
         if (result.IsError)
         {
-            AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            try { AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps); } catch (InvalidOperationException) { }
             return Redirect(frontendUrl + "/auth/callback?error=login_failed");
         }
 

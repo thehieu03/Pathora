@@ -65,6 +65,16 @@ public class TourInstanceController : BaseApiController
         var result = await Sender.Send(new ChangeTourInstanceStatusCommand(id, request.Status));
         return HandleResult(result);
     }
+
+    [HttpGet(TourInstanceEndpoint.CheckDuplicate)]
+    public async Task<IActionResult> CheckDuplicate(
+        [FromQuery] Guid tourId,
+        [FromQuery] Guid classificationId,
+        [FromQuery] DateTimeOffset startDate)
+    {
+        var result = await Sender.Send(new CheckDuplicateTourInstanceQuery(tourId, classificationId, startDate));
+        return HandleResult(result);
+    }
 }
 
 public sealed record ChangeTourInstanceStatusRequest(TourInstanceStatus Status);

@@ -151,4 +151,49 @@ public sealed class UserControllerTests
             expectedData: Result.Success);
         Assert.Equal(command, probe.CapturedRequest);
     }
+
+    [Fact]
+    public async Task ChangePassword_WhenUserNotFound_ShouldReturnNotFoundResponse()
+    {
+        var userId = Guid.CreateVersion7();
+        var command = new ChangePasswordCommand(userId);
+        var (controller, probe) = ApiControllerTestHelper
+            .BuildController<UserController, ChangePasswordCommand, Success>(
+                Error.NotFound("User.NotFound", "Không tìm thấy người dùng"),
+                "/api/user/change-password");
+
+        var actionResult = await controller.ChangePassword(command);
+
+        ApiControllerTestHelper.AssertErrorResponse(
+            actionResult,
+            expectedStatusCode: StatusCodes.Status404NotFound,
+            expectedCode: "User.NotFound",
+            expectedMessage: "Không tìm thấy người dùng",
+            expectedInstance: "/api/user/change-password");
+        Assert.Equal(command, probe.CapturedRequest);
+    }
+
+    [Fact]
+    public async Task ChangePassword_WhenUnexpectedError_ShouldReturnInternalServerErrorResponse()
+    {
+        var command = new ChangePasswordCommand(Guid.CreateVersion7());
+        var (controller, probe) = ApiControllerTestHelper
+            .BuildController<UserController, ChangePasswordCommand, Success>(
+                Error.Failure("Server.Error", "Lỗi máy chủ không xác định"),
+                "/api/user/change-password");
+
+        var actionResult = await controller.ChangePassword(command);
+
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        Assert.Equal(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
+
+        var payload = Assert.IsType<ResultSharedResponse<object>>(objectResult.Value);
+        Assert.Equal(StatusCodes.Status500InternalServerError, payload.StatusCode);
+        Assert.Equal("/api/user/change-password", payload.Instance);
+        Assert.NotNull(payload.Errors);
+        Assert.Single(payload.Errors);
+        Assert.Equal("Server.Error", payload.Errors[0].Details);
+        Assert.Equal("Lỗi máy chủ không xác định", payload.Errors[0].ErrorMessage);
+        Assert.Equal(command, probe.CapturedRequest);
+    }
 }

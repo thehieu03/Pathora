@@ -42,8 +42,8 @@ public sealed class GetFeaturedToursQueryHandler(ITourRepository tourRepository)
                 GetMainLocation(t),
                 0m,
                 classification?.NumberOfDay ?? 0,
-                classification?.BasePrice ?? 0,
-                0m,
+                classification?.BasePrice ?? 0m,
+                null,
                 classification?.Name);
         }).ToList();
 
