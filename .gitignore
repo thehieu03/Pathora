@@ -27,3 +27,5 @@ node_modules/
 frontend/node_modules/
 frontend/.worktrees/transportation-routes/
 .gstack/
+.gstack/browse-console.log
+.gstack/browse-network.log

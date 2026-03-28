@@ -106,6 +106,25 @@ const mapToTranslationKey = (errorMessage: string): string => {
   if (errorMessage === "User.Disabled" || errorMessage === "User.IsDisabled") {
     return "error_response.USER_DISABLED";
   }
+  // Map FluentValidation messages for password change
+  if (errorMessage === "Old password is required.") {
+    return "error_response.PASSWORD_OLD_REQUIRED";
+  }
+  if (errorMessage === "New password is required.") {
+    return "error_response.PASSWORD_IS_REQUIRED";
+  }
+  if (
+    errorMessage ===
+    "Password must be at least 8 characters and include at least one uppercase letter, one lowercase letter, one digit, and one special character."
+  ) {
+    return "error_response.PASSWORD_COMPLEXITY";
+  }
+  if (errorMessage === "New password must not be the same as the old password.") {
+    return "error_response.PASSWORD_MUST_DIFFER";
+  }
+  if (errorMessage === "Current password is incorrect.") {
+    return "error_response.INVALID_CREDENTIALS";
+  }
   // Return original to allow fallback to error_response lookup
   return errorMessage;
 };
@@ -171,10 +190,11 @@ export const handleApiError = (error: unknown): ApiError => {
       error?: string;
     };
     const { rawMessage, rawCode, rawDetails } = extractBackendErrorPayload(rtkError.data);
-    const fallbackMessage = rtkError.error ?? rawMessage;
     const rawMappingCandidate = shouldUseDetailsAsErrorCode(rawDetails)
       ? rawDetails
-      : fallbackMessage;
+      : rawMessage !== "DEFAULT_ERROR"
+        ? rawMessage
+        : (rtkError.error ?? rawMessage);
 
     if (process.env.NODE_ENV === "development") {
       console.warn("[handleApiError][rtk]", {

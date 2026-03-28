@@ -190,9 +190,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
      * PUT /api/user/change-password
      * Change user password.
      */
-    changePassword: builder.mutation<ApiSharedResponse<void>, { currentPassword: string; newPassword: string }>({
+    changePassword: builder.mutation<ApiSharedResponse<void>, { oldPassword: string; newPassword: string }>({
       query: (body) => ({
-        url: "/api/user/change-password",
+        url: "/api/auth/change-password",
         method: "PUT",
         body,
       }),
@@ -202,9 +202,31 @@ export const authApiSlice = apiSlice.injectEndpoints({
      * PUT /api/auth/me
      * Update current user profile.
      */
-    updateUser: builder.mutation<ApiSharedResponse<void>, { fullName?: string; phoneNumber?: string; address?: string }>({
+    updateUser: builder.mutation<ApiSharedResponse<void>, { fullName?: string; phoneNumber?: string; address?: string; avatar?: string }>({
       query: (body) => ({
         url: "/api/auth/me",
+        method: "PUT",
+        body: { request: body },
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+
+    /**
+     * GET /api/user/notification-preferences
+     * Get user notification preferences.
+     */
+    getNotificationPreferences: builder.query<ApiSharedResponse<{ emailNotifications: boolean; smsNotifications: boolean; newsletter: boolean }>, void>({
+      query: () => "/api/user/notification-preferences",
+      providesTags: ["Auth"],
+    }),
+
+    /**
+     * PUT /api/user/notification-preferences
+     * Update user notification preferences.
+     */
+    updateNotificationPreferences: builder.mutation<ApiSharedResponse<void>, { emailNotifications: boolean; smsNotifications: boolean; newsletter: boolean }>({
+      query: (body) => ({
+        url: "/api/user/notification-preferences",
         method: "PUT",
         body,
       }),
@@ -222,4 +244,6 @@ export const {
   useLogoutMutation,
   useChangePasswordMutation,
   useUpdateUserMutation,
+  useGetNotificationPreferencesQuery,
+  useUpdateNotificationPreferencesMutation,
 } = authApiSlice;
