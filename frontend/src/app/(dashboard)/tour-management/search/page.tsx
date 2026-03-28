@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { Suspense, useState, useEffect, useCallback } from "react";
 import Card from "@/components/ui/Card";
@@ -26,6 +26,7 @@ type SearchState = "loading" | "ready" | "empty" | "error";
 function SearchContent() {
   const { t } = useTranslation();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [state, setState] = useState<SearchState>("loading");
   const [results, setResults] = useState<TourListItem[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
@@ -83,7 +84,7 @@ function SearchContent() {
         <Button
           type="button"
           className="btn btn-dark btn-sm"
-          onClick={() => window.location.href = "/tour-management/create"}>
+          onClick={() => router.push("/tour-management?create=true")}>
           <Icon icon="heroicons:plus" className="size-4" />
           Create Tour
         </Button>

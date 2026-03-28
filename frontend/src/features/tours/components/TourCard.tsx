@@ -14,6 +14,12 @@ interface TourCardProps {
 export const TourCard = ({ tour }: TourCardProps) => {
   const { t } = useTranslation();
 
+  // Guard: only show price row if basePrice > 0
+  const hasPrice = (tour.basePrice ?? 0) > 0;
+
+  // Guard: only show location row if truthy
+  const hasLocation = Boolean(tour.location);
+
   return (
     <Link href={`/tours/${tour.id}`} className="group block">
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
@@ -36,24 +42,24 @@ export const TourCard = ({ tour }: TourCardProps) => {
             </div>
           )}
 
-          {/* Classification badge */}
+          {/* Classification badge — guard: only render if truthy */}
           {tour.classificationName && (
             <div className="absolute top-3 left-3">
-              <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
+              <span className="badge-base bg-white/90 text-gray-700">
                 {tour.classificationName}
               </span>
             </div>
           )}
 
-          {/* Rating Badge */}
-          {tour.rating && (
+          {/* Rating Badge — guard: only render if rating > 0 */}
+          {(tour.rating ?? 0) > 0 && (
             <div className="absolute top-3 right-3">
               <span className="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2 py-1 text-xs font-bold text-gray-700 rounded-full">
                 <Icon
                   icon="heroicons-solid:star"
                   className="w-3.5 h-3.5 text-[#fa8b02]"
                 />
-                {tour.rating.toFixed(1)}
+                {tour.rating!.toFixed(1)}
               </span>
             </div>
           )}
@@ -61,11 +67,13 @@ export const TourCard = ({ tour }: TourCardProps) => {
 
         {/* Content */}
         <div className="p-4">
-          {/* Location */}
-          <div className="flex items-center gap-1 text-sm text-gray-500 mb-1.5">
-            <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
-            <span>{tour.location || t("common.noData", "N/A")}</span>
-          </div>
+          {/* Location — guard: hide entire row if falsy */}
+          {hasLocation && (
+            <div className="flex items-center gap-1 text-sm text-gray-500 mb-1.5">
+              <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
+              <span>{tour.location}</span>
+            </div>
+          )}
 
           {/* Title */}
           <h3 className="text-xl font-semibold text-gray-900 leading-tight mb-2.5 line-clamp-2 min-h-[56px] group-hover:text-[#fa8b02] transition-colors">
@@ -82,17 +90,19 @@ export const TourCard = ({ tour }: TourCardProps) => {
             </div>
           </div>
 
-          {/* Price */}
-          <div className="flex flex-col gap-0.5 mt-2">
-            <div className="flex items-baseline gap-2">
-              <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
-                {formatCurrency(tour.basePrice)}
-              </span>
-              <span className="text-sm text-gray-400">
-                {t("tourInstance.perPersonShort", "/person")}
-              </span>
+          {/* Price — guard: only render if basePrice > 0 */}
+          {hasPrice && (
+            <div className="flex flex-col gap-0.5 mt-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold text-[#1a1a2e] md:text-xl">
+                  {formatCurrency(tour.basePrice!)}
+                </span>
+                <span className="text-sm text-gray-400">
+                  {t("tourInstance.perPersonShort", "/person")}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </Link>

@@ -2253,7 +2253,16 @@
       "invalidBasePrice": "Invalid base price",
       "atLeastOneImage": "At least one image is required",
       "atLeastOnePackage": "At least one package is required",
-      "locationRemoved": "Referenced location was removed"
+      "locationRemoved": "Referenced location was removed",
+      "invalidRoomCapacity": "Room capacity must be at least 1",
+      "invalidNumberOfRooms": "Number of rooms must be between 1 and 999",
+      "invalidNumberOfNights": "Number of nights must be between 1 and 999",
+      "invalidRoomPrice": "Room price must be 0 or greater",
+      "invalidLatitude": "Latitude must be between -90 and 90",
+      "invalidLongitude": "Longitude must be between -180 and 180",
+      "invalidEstimatedCost": "Estimated cost must be 0 or greater",
+      "invalidLinkUrl": "Please enter a valid URL starting with http:// or https://",
+      "invalidCoverageAmount": "Coverage amount must be greater than 0"
     },
     "invalidDuration": "Invalid duration",
     "basicInfo": {
@@ -2282,6 +2291,63 @@
       "searchDepositPolicy": "Search deposit policy…",
       "searchCancellationPolicy": "Search cancellation policy…",
       "searchVisaPolicy": "Search visa policy…"
+    },
+    "tourScope": {
+      "label": "Tour Scope",
+      "domestic": "Domestic",
+      "international": "International"
+    },
+    "customerSegment": {
+      "label": "Customer Segment",
+      "individual": "Individual",
+      "group": "Group",
+      "family": "Family",
+      "corporate": "Corporate"
+    },
+    "accommodation": {
+      "roomDetails": "Room Details",
+      "roomType": "Room Type",
+      "roomCapacity": "Room Capacity",
+      "numberOfRooms": "Number of Rooms",
+      "numberOfNights": "Number of Nights",
+      "mealsIncluded": "Meals Included",
+      "roomPrice": "Room Price",
+      "specialRequest": "Special Request",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "roomTypeOptions": {
+        "single": "Single",
+        "double": "Double",
+        "triple": "Triple",
+        "quad": "Quad",
+        "suite": "Suite",
+        "villa": "Villa"
+      },
+      "mealsOptions": {
+        "none": "None",
+        "breakfast": "Breakfast",
+        "lunch": "Lunch",
+        "dinner": "Dinner",
+        "breakfast_lunch": "Breakfast & Lunch",
+        "breakfast_dinner": "Breakfast & Dinner",
+        "lunch_dinner": "Lunch & Dinner",
+        "all": "All"
+      }
+    },
+    "confirmDelete": {
+      "title": "Confirm Delete?",
+      "message": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "preview": {
+      "sectionTitle": "Tour Preview",
+      "basicInfo": "Basic Information",
+      "packages": "Packages",
+      "services": "Services",
+      "insurances": "Insurances",
+      "confirmCreate": "Confirm Create Tour",
+      "backToEdit": "Back to Edit"
     },
     "shortDescription": "Short Description",
     "longDescription": "Long Description",
@@ -2374,6 +2440,7 @@
       "transportation": "Transportation",
       "services": "Services",
       "insurance": "Insurance",
+      "preview": "Preview",
       "review": "Review"
     },
     "buttons": {
@@ -2435,6 +2502,9 @@
       "addRoute": "Add Route",
       "removeRoute": "Remove Route",
       "noRoutesYet": "No routes yet",
+      "placeholderLocation": "Location name...",
+      "placeholderFromLocation": "Departure location...",
+      "placeholderToLocation": "Arrival location...",
       "fromLocation": "From",
       "toLocation": "To",
       "requiredFromLocation": "From location is required",
@@ -2451,6 +2521,7 @@
       "accommodationNumber": "Accommodation #{number}",
       "accommodationName": "Accommodation Name",
       "address": "Address",
+      "accommodationAddress": "Address",
       "contactPhone": "Contact Phone",
       "checkInTime": "Check-in Time",
       "checkOutTime": "Check-out Time",

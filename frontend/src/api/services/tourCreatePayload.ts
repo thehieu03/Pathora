@@ -24,6 +24,7 @@ interface ClassificationPayloadInput {
   durationDays: string;
 }
 
+// Extended activity — includes location, type-7 transport, and type-8 accommodation fields
 interface ActivityPayloadInput {
   activityType: string;
   title: string;
@@ -37,6 +38,47 @@ interface ActivityPayloadInput {
   startTime: string;
   endTime: string;
   routes: ActivityRoutePayloadInput[];
+
+  // Location fields — all activity types (replaces standalone Locations step)
+  locationName: string;
+  enLocationName: string;
+  locationCity: string;
+  enLocationCity: string;
+  locationCountry: string;
+  enLocationCountry: string;
+  locationAddress: string;
+  enLocationAddress: string;
+  locationEntranceFee: string;
+
+  // Transportation fields — type 7 (replaces standalone Transportation step)
+  fromLocation: string;
+  enFromLocation: string;
+  toLocation: string;
+  enToLocation: string;
+  transportationType: string;
+  enTransportationType: string;
+  transportationName: string;
+  enTransportationName: string;
+  durationMinutes: string;
+  price: string;
+
+  // Accommodation fields — type 8 (replaces standalone Accommodations step)
+  accommodationName: string;
+  enAccommodationName: string;
+  accommodationAddress: string;
+  enAccommodationAddress: string;
+  accommodationPhone: string;
+  checkInTime: string;
+  checkOutTime: string;
+  roomType: string;
+  roomCapacity: string;
+  mealsIncluded: string;
+  roomPrice: string;
+  numberOfRooms: string;
+  numberOfNights: string;
+  specialRequest: string;
+  latitude: string;
+  longitude: string;
 }
 
 interface DayPlanPayloadInput {
@@ -62,6 +104,7 @@ interface InsurancePayloadInput {
   enNote: string;
 }
 
+// Keep these for the extracted/payload versions (used internally)
 interface AccommodationPayloadInput {
   accommodationName: string;
   enAccommodationName: string;
@@ -72,6 +115,15 @@ interface AccommodationPayloadInput {
   checkOutTime: string;
   note: string;
   enNote: string;
+  roomType: string;
+  roomCapacity: string;
+  mealsIncluded: string;
+  roomPrice: string;
+  numberOfRooms: string;
+  numberOfNights: string;
+  specialRequest: string;
+  latitude: string;
+  longitude: string;
 }
 
 interface LocationPayloadInput {
@@ -89,27 +141,6 @@ interface LocationPayloadInput {
   address: string;
   enAddress: string;
 }
-
-interface TransportationPayloadInput {
-  fromLocation: string;
-  enFromLocation: string;
-  toLocation: string;
-  enToLocation: string;
-  transportationType: string;
-  enTransportationType: string;
-  transportationName: string;
-  enTransportationName: string;
-  durationMinutes: string;
-  pricingType: string;
-  price: string;
-  requiresIndividualTicket: boolean;
-  ticketInfo: string;
-  enTicketInfo: string;
-  note: string;
-  enNote: string;
-}
-
-
 
 // Route within an activity
 interface ActivityRoutePayloadInput {
@@ -132,6 +163,7 @@ interface ActivityRoutePayloadInput {
 
 interface ServicePayloadInput {
   serviceName: string;
+  enServiceName: string;
   pricingType: string;
   price: string;
   salePrice: string;
@@ -149,9 +181,7 @@ interface CreateTourPayloadOptions {
   dayPlans: DayPlanPayloadInput[][];
   insurances: InsurancePayloadInput[][];
   services?: ServicePayloadInput[];
-  accommodations?: AccommodationPayloadInput[];
-  locations?: LocationPayloadInput[];
-  transportations?: TransportationPayloadInput[];
+  // NOTE: accommodations, locations, transportations removed — data now lives in activities
   selectedPricingPolicyId?: string;
   selectedDepositPolicyId?: string;
   selectedCancellationPolicyId?: string;
@@ -213,16 +243,27 @@ const buildActivityTranslations = (
   enTitle: string,
   enDesc: string,
   enNote: string,
-): Record<string, Record<string, string>> => {
-  const result: Record<string, Record<string, string>> = {
+  enTransportationType?: string,
+): Record<string, Record<string, string | undefined>> => {
+  const result: Record<string, Record<string, string | undefined>> = {
     vi: { title: viTitle, description: viDesc, note: viNote },
   };
+  const hasEnTransportation = (enTransportationType?.trim().length ?? 0) > 0;
   if (
     enTitle.trim().length > 0 ||
     enDesc.trim().length > 0 ||
-    enNote.trim().length > 0
+    enNote.trim().length > 0 ||
+    hasEnTransportation
   ) {
-    result.en = { title: enTitle, description: enDesc, note: enNote };
+    const enObj: Record<string, string | undefined> = {
+      title: enTitle,
+      description: enDesc,
+      note: enNote,
+    };
+    if (hasEnTransportation) {
+      enObj.transportationType = enTransportationType;
+    }
+    result.en = enObj;
   }
   return result;
 };
@@ -242,17 +283,175 @@ const buildInsuranceTranslations = (
   return result;
 };
 
+// ── Deduplication helper ──────────────────────────────────────────────
+
+/** Deduplicate locations/accommodations by name to avoid sending duplicates to API */
+const deduplicateByName = <T extends { locationName?: string; accommodationName?: string }>(
+  items: T[],
+): T[] => {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = item.locationName ?? item.accommodationName ?? "";
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
 // ── Classification payload builder ──────────────────────────────────
 
 const buildClassificationsPayload = (
   classifications: ClassificationPayloadInput[],
   dayPlans: DayPlanPayloadInput[][],
   insurances: InsurancePayloadInput[][],
-  locations: LocationPayloadInput[],
 ) => {
   return classifications.map((classification, classificationIndex) => {
     const numberOfDay = Math.max(parseIntValue(classification.durationDays, 1), 1);
     const basePrice = parseDecimal(classification.basePrice, 0);
+
+    const plans = dayPlans[classificationIndex] ?? [];
+
+    // Extract locations and accommodations from activities (deduplicated)
+    const activityLocations: LocationPayloadInput[] = [];
+    const activityAccommodations: AccommodationPayloadInput[] = [];
+
+    for (const dayPlan of plans) {
+      for (const activity of dayPlan.activities) {
+        // Location from all activity types
+        if (activity.locationName?.trim()) {
+          activityLocations.push({
+            locationName: activity.locationName,
+            enLocationName: activity.enLocationName ?? "",
+            type: "activity",
+            enType: "",
+            description: "",
+            enDescription: "",
+            city: activity.locationCity ?? "",
+            enCity: activity.enLocationCity ?? "",
+            country: activity.locationCountry ?? "",
+            enCountry: activity.enLocationCountry ?? "",
+            entranceFee: activity.locationEntranceFee ?? "",
+            address: activity.locationAddress ?? "",
+            enAddress: activity.enLocationAddress ?? "",
+          });
+        }
+
+        // Accommodation from type 8
+        if (activity.activityType === "8" && activity.accommodationName?.trim()) {
+          activityAccommodations.push({
+            accommodationName: activity.accommodationName,
+            enAccommodationName: activity.enAccommodationName ?? "",
+            address: activity.accommodationAddress ?? "",
+            enAddress: activity.enAccommodationAddress ?? "",
+            contactPhone: activity.accommodationPhone ?? "",
+            checkInTime: activity.checkInTime ?? "",
+            checkOutTime: activity.checkOutTime ?? "",
+            note: "",
+            enNote: "",
+            roomType: activity.roomType ?? "",
+            roomCapacity: activity.roomCapacity ?? "",
+            mealsIncluded: activity.mealsIncluded ?? "",
+            roomPrice: activity.roomPrice ?? "",
+            numberOfRooms: activity.numberOfRooms ?? "",
+            numberOfNights: activity.numberOfNights ?? "",
+            specialRequest: activity.specialRequest ?? "",
+            latitude: activity.latitude ?? "",
+            longitude: activity.longitude ?? "",
+          });
+        }
+      }
+    }
+
+    const uniqueLocations = deduplicateByName(activityLocations);
+    const uniqueAccommodations = deduplicateByName(activityAccommodations);
+
+    // Build the plans with activities (all new fields included)
+    const builtPlans = plans.map((dayPlan) => ({
+      dayNumber: Math.max(parseIntValue(dayPlan.dayNumber, 1), 1),
+      title: dayPlan.title,
+      description: toOptionalString(dayPlan.description),
+      translations: buildDayPlanTranslations(
+        dayPlan.title,
+        dayPlan.description,
+        dayPlan.enTitle,
+        dayPlan.enDescription,
+      ),
+      activities: dayPlan.activities.map((activity) => ({
+        activityType: activity.activityType,
+        title: activity.title,
+        description: toOptionalString(activity.description),
+        note: toOptionalString(activity.note),
+        estimatedCost: parseDecimal(activity.estimatedCost, 0),
+        isOptional: activity.isOptional,
+        startTime: toOptionalString(activity.startTime),
+        endTime: toOptionalString(activity.endTime),
+        routes: buildRoutesPayload(activity.routes, uniqueLocations),
+        accommodation: null,
+        // Include activity-level location/transport/accommodation data
+        // for backend to populate TourPlanLocations / TourPlanRoutes / TourPlanAccommodations
+        locationName: activity.locationName ?? "",
+        enLocationName: activity.enLocationName ?? "",
+        locationCity: activity.locationCity ?? "",
+        enLocationCity: activity.enLocationCity ?? "",
+        locationCountry: activity.locationCountry ?? "",
+        enLocationCountry: activity.enLocationCountry ?? "",
+        locationAddress: activity.locationAddress ?? "",
+        enLocationAddress: activity.enLocationAddress ?? "",
+        locationEntranceFee: activity.locationEntranceFee ?? "",
+        fromLocation: activity.fromLocation ?? "",
+        enFromLocation: activity.enFromLocation ?? "",
+        toLocation: activity.toLocation ?? "",
+        enToLocation: activity.enToLocation ?? "",
+        transportationType: activity.transportationType ?? "",
+        enTransportationType: activity.enTransportationType ?? "",
+        transportationName: activity.transportationName ?? "",
+        enTransportationName: activity.enTransportationName ?? "",
+        durationMinutes: activity.durationMinutes ?? "",
+        price: activity.price ?? "",
+        accommodationName: activity.accommodationName ?? "",
+        enAccommodationName: activity.enAccommodationName ?? "",
+        accommodationAddress: activity.accommodationAddress ?? "",
+        enAccommodationAddress: activity.enAccommodationAddress ?? "",
+        accommodationPhone: activity.accommodationPhone ?? "",
+        checkInTime: activity.checkInTime ?? "",
+        checkOutTime: activity.checkOutTime ?? "",
+        roomType: activity.roomType ?? "",
+        roomCapacity: activity.roomCapacity ?? "",
+        mealsIncluded: activity.mealsIncluded ?? "",
+        roomPrice: activity.roomPrice ?? "",
+        numberOfRooms: activity.numberOfRooms ?? "",
+        numberOfNights: activity.numberOfNights ?? "",
+        specialRequest: activity.specialRequest ?? "",
+        latitude: activity.latitude ?? "",
+        longitude: activity.longitude ?? "",
+        translations: buildActivityTranslations(
+          activity.title,
+          activity.description,
+          activity.note,
+          activity.enTitle,
+          activity.enDescription,
+          activity.enNote,
+          activity.enTransportationType,
+        ),
+      })),
+    }));
+
+    const builtInsurances = (insurances[classificationIndex] ?? []).map((insurance) => ({
+      insuranceName: insurance.insuranceName,
+      insuranceType: insurance.insuranceType,
+      insuranceProvider: insurance.insuranceProvider,
+      coverageDescription: insurance.coverageDescription,
+      coverageAmount: parseDecimal(insurance.coverageAmount, 0),
+      coverageFee: parseDecimal(insurance.coverageFee, 0),
+      isOptional: insurance.isOptional,
+      note: toOptionalString(insurance.note),
+      translations: buildInsuranceTranslations(
+        insurance.insuranceName,
+        insurance.coverageDescription,
+        insurance.enInsuranceName,
+        insurance.enCoverageDescription,
+      ),
+    }));
 
     return {
       name: classification.name,
@@ -266,169 +465,15 @@ const buildClassificationsPayload = (
         classification.enName,
         classification.enDescription,
       ),
-      plans: (dayPlans[classificationIndex] ?? []).map((dayPlan) => ({
-        dayNumber: Math.max(parseIntValue(dayPlan.dayNumber, 1), 1),
-        title: dayPlan.title,
-        description: toOptionalString(dayPlan.description),
-        translations: buildDayPlanTranslations(
-          dayPlan.title,
-          dayPlan.description,
-          dayPlan.enTitle,
-          dayPlan.enDescription,
-        ),
-        activities: dayPlan.activities.map((activity) => ({
-          activityType: activity.activityType,
-          title: activity.title,
-          description: toOptionalString(activity.description),
-          note: toOptionalString(activity.note),
-          estimatedCost: parseDecimal(activity.estimatedCost, 0),
-          isOptional: activity.isOptional,
-          startTime: toOptionalString(activity.startTime),
-          endTime: toOptionalString(activity.endTime),
-          routes: buildRoutesPayload(activity.routes, locations),
-          accommodation: null,
-          translations: buildActivityTranslations(
-            activity.title,
-            activity.description,
-            activity.note,
-            activity.enTitle,
-            activity.enDescription,
-            activity.enNote,
-          ),
-        })),
-      })),
-      insurances: (insurances[classificationIndex] ?? []).map((insurance) => ({
-        insuranceName: insurance.insuranceName,
-        insuranceType: insurance.insuranceType,
-        insuranceProvider: insurance.insuranceProvider,
-        coverageDescription: insurance.coverageDescription,
-        coverageAmount: parseDecimal(insurance.coverageAmount, 0),
-        coverageFee: parseDecimal(insurance.coverageFee, 0),
-        isOptional: insurance.isOptional,
-        note: toOptionalString(insurance.note),
-        translations: buildInsuranceTranslations(
-          insurance.insuranceName,
-          insurance.coverageDescription,
-          insurance.enInsuranceName,
-          insurance.enCoverageDescription,
-        ),
-      })),
+      plans: builtPlans,
+      locations: uniqueLocations,
+      accommodations: uniqueAccommodations,
+      insurances: builtInsurances,
     };
   });
 };
 
-// ── Accommodation / Location / Transportation payload builders ──────────
-
-const buildAccommodationsPayload = (
-  accommodations: AccommodationPayloadInput[],
-) =>
-  accommodations.map((acc) => ({
-    accommodationName: acc.accommodationName,
-    address: acc.address,
-    contactPhone: acc.contactPhone,
-    checkInTime: toOptionalString(acc.checkInTime),
-    checkOutTime: toOptionalString(acc.checkOutTime),
-    note: toOptionalString(acc.note),
-    translations: {
-      vi: {
-        accommodationName: acc.accommodationName,
-        address: acc.address,
-        note: acc.note ?? "",
-      },
-      ...(acc.enAccommodationName.trim().length > 0 ||
-      acc.enAddress.trim().length > 0 ||
-      (acc.enNote ?? "").trim().length > 0
-        ? {
-            en: {
-              accommodationName: acc.enAccommodationName,
-              address: acc.enAddress,
-              note: acc.enNote ?? "",
-            },
-          }
-        : {}),
-    },
-  }));
-
-const buildLocationsPayload = (locations: LocationPayloadInput[]) =>
-  locations.map((loc) => ({
-    locationName: loc.locationName,
-    locationType: loc.type,
-    description: loc.description,
-    city: loc.city,
-    country: loc.country,
-    entranceFee: parseDecimal(loc.entranceFee, 0),
-    address: loc.address,
-    translations: {
-      vi: {
-        locationName: loc.locationName,
-        locationDescription: loc.description,
-        city: loc.city,
-        country: loc.country,
-        address: loc.address,
-      },
-      ...(loc.enLocationName.trim().length > 0 ||
-      loc.enDescription.trim().length > 0 ||
-      loc.enCity.trim().length > 0 ||
-      loc.enCountry.trim().length > 0 ||
-      loc.enAddress.trim().length > 0
-        ? {
-            en: {
-              locationName: loc.enLocationName,
-              locationDescription: loc.enDescription,
-              city: loc.enCity,
-              country: loc.enCountry,
-              address: loc.enAddress,
-            },
-          }
-        : {}),
-    },
-  }));
-
-const buildTransportationsPayload = (
-  transportations: TransportationPayloadInput[],
-) =>
-  transportations.map((tr) => ({
-    fromLocationName: tr.fromLocation,
-    toLocationName: tr.toLocation,
-    transportationType: tr.transportationType,
-    transportationName: tr.transportationName,
-    durationMinutes: parseIntValue(tr.durationMinutes, 0),
-    pricingType: tr.pricingType,
-    price: parseDecimal(tr.price, 0),
-    requiresIndividualTicket: tr.requiresIndividualTicket,
-    ticketInfo: toOptionalString(tr.ticketInfo),
-    note: toOptionalString(tr.note),
-    translations: {
-      vi: {
-        fromLocationName: tr.fromLocation,
-        toLocationName: tr.toLocation,
-        transportationType: tr.transportationType,
-        transportationName: tr.transportationName,
-        ticketInfo: tr.ticketInfo ?? "",
-        note: tr.note ?? "",
-      },
-      ...(tr.enFromLocation.trim().length > 0 ||
-      tr.enToLocation.trim().length > 0 ||
-      tr.enTransportationType.trim().length > 0 ||
-      tr.enTransportationName.trim().length > 0 ||
-      (tr.enTicketInfo ?? "").trim().length > 0 ||
-      (tr.enNote ?? "").trim().length > 0
-        ? {
-            en: {
-              fromLocationName: tr.enFromLocation,
-              toLocationName: tr.enToLocation,
-              transportationType: tr.enTransportationType,
-              transportationName: tr.enTransportationName,
-              ticketInfo: tr.enTicketInfo ?? "",
-              note: tr.enNote ?? "",
-            },
-          }
-        : {}),
-    },
-  }));
-
-
-// ── Route payload builder ───────────────────────────────────────
+// ── Route payload builder ─────────────────────────────────────────────
 
 const buildRoutesPayload = (
   routes: ActivityRoutePayloadInput[],
@@ -519,6 +564,9 @@ export const buildServicesPayload = (services: ServicePayloadInput[]) =>
       salePrice: parseDecimal(svc.salePrice, 0),
       email: toOptionalString(svc.email),
       contactNumber: toOptionalString(svc.contactNumber),
+      translations: svc.enServiceName.trim().length > 0
+        ? { en: { name: svc.enServiceName } }
+        : undefined,
     }));
 
 // ── Main export ─────────────────────────────────────────────────────
@@ -533,9 +581,7 @@ export const buildTourFormData = ({
   dayPlans,
   insurances,
   services = [],
-  accommodations = [],
-  locations = [],
-  transportations = [],
+  // NOTE: accommodations, locations, transportations removed from signature
   selectedPricingPolicyId,
   selectedDepositPolicyId,
   selectedCancellationPolicyId,
@@ -586,11 +632,11 @@ export const buildTourFormData = ({
   );
   formData.append("translations", JSON.stringify(translationsPayload));
 
+  // accommodations, locations are now derived from activities inside classifications
   const classificationsPayload = buildClassificationsPayload(
     classifications,
     dayPlans,
     insurances,
-    locations,
   );
 
   if (classificationsPayload.length > 0) {
@@ -604,20 +650,9 @@ export const buildTourFormData = ({
     }
   }
 
-  if (accommodations.length > 0) {
-    const accommodationsPayload = buildAccommodationsPayload(accommodations);
-    formData.append("accommodations", JSON.stringify(accommodationsPayload));
-  }
-
-  if (locations.length > 0) {
-    const locationsPayload = buildLocationsPayload(locations);
-    formData.append("locations", JSON.stringify(locationsPayload));
-  }
-
-  if (transportations.length > 0) {
-    const transportationsPayload = buildTransportationsPayload(transportations);
-    formData.append("transportations", JSON.stringify(transportationsPayload));
-  }
+  // NOTE: standalone accommodations, locations, transportations steps removed.
+  // Their data is now embedded in activity forms and routed through classifications payload.
+  // Keeping the builder functions above for reference but not calling them here.
 
   return formData;
 };

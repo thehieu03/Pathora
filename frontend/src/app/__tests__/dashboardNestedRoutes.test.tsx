@@ -32,7 +32,7 @@ describe("dashboard nested routes", () => {
 
   it("redirects legacy dashboard create-tour route", () => {
     DashboardCreateTourManagementPage();
-    expect(redirectMock).toHaveBeenCalledWith("/tour-management/create");
+    expect(redirectMock).toHaveBeenCalledWith("/tour-management?create=true");
   });
 
   it("redirects legacy dashboard tour-instances route", () => {

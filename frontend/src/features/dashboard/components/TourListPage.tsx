@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "@/components/ui";
 import { SkeletonTable } from "@/components/ui/SkeletonTable";
 import { tourService } from "@/api/services/tourService";
 import { handleApiError } from "@/utils/apiResponse";
 import { useDebounce } from "@/hooks/useDebounce";
-import { TourVm } from "@/types/tour";
+import { TourVm, TourDto } from "@/types/tour";
 import { AdminSidebar, TopBar } from "./AdminSidebar";
+import TourForm from "./TourForm";
 
 /* ── Animation Variants ───────────────────────────────────── */
 const containerVariants = {
@@ -114,8 +116,20 @@ function StatusBadge({ status }: { status: string }) {
 export function TourListPage() {
   const { t } = useTranslation();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(() =>
+    searchParams.get("create") === "true"
+  );
+
+  const closeCreateForm = () => {
+    setShowCreateForm(false);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("create");
+    const newUrl = params.toString() ? `/tour-management?${params}` : "/tour-management";
+    router.push(newUrl, { scroll: false });
+  };
   const [tours, setTours] = useState<TourVm[]>([]);
   const [dataState, setDataState] = useState<TourListDataState>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -127,6 +141,46 @@ export function TourListPage() {
   const [pageSize, setPageSize] = useState(10);
   const [failedThumbnailIds, setFailedThumbnailIds] = useState<Set<string>>(new Set());
   const [reloadToken, setReloadToken] = useState(0);
+  const [editTourId, setEditTourId] = useState<string | null>(() =>
+    searchParams.get("edit") === "true" ? searchParams.get("id") : null
+  );
+  const [editLoading, setEditLoading] = useState(false);
+  const [editTour, setEditTour] = useState<TourDto | null>(null);
+
+  const closeEditModal = useCallback(() => {
+    setEditTourId(null);
+    setEditTour(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("edit");
+    params.delete("id");
+    const newUrl = params.toString() ? `/tour-management?${params}` : "/tour-management";
+    router.push(newUrl, { scroll: false });
+  }, [router, searchParams]);
+
+  const openEditModal = useCallback(async (tourId: string) => {
+    setEditTourId(tourId);
+    setEditLoading(true);
+    try {
+      const data = await tourService.getTourDetail(tourId);
+      if (data) {
+        setEditTour(data);
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("edit", "true");
+        params.set("id", tourId);
+        router.push(`/tour-management?${params}`, { scroll: false });
+      } else {
+        toast.error("Tour not found");
+        setEditTourId(null);
+      }
+    } catch (error: unknown) {
+      const handledError = handleApiError(error);
+      console.error("Failed to load tour for edit:", handledError.message);
+      toast.error("Failed to load tour");
+      setEditTourId(null);
+    } finally {
+      setEditLoading(false);
+    }
+  }, [router, searchParams]);
 
   /* ── Fetch tours (always uses page 1, resets on search/filter change) ── */
   useEffect(() => {
@@ -165,16 +219,18 @@ export function TourListPage() {
     return () => { active = false; };
   }, [debouncedSearch, pageSize, reloadToken]);
 
+  /* ── Filtered tours ───────────────────────────────────────── */
+  const filteredTours = statusFilter === "all"
+    ? tours
+    : tours.filter((tour) => (tour.status?.toLowerCase() ?? "") === statusFilter);
+
   /* ── Derived stat counts ──────────────────────────────────── */
   const statCounts = {
-    total: totalItems,
-    active: totalItems,
-    inactive: 0,
-    draft: 0,
+    total: filteredTours.length,
+    active: filteredTours.filter((tour) => (tour.status?.toLowerCase() ?? "") === "active").length,
+    inactive: filteredTours.filter((tour) => (tour.status?.toLowerCase() ?? "") === "inactive").length,
+    draft: filteredTours.filter((tour) => (tour.status?.toLowerCase() ?? "") === "draft").length,
   };
-
-  /* ── Filtered tours ───────────────────────────────────────── */
-  const filteredTours = tours;
 
   /* ── Pagination ───────────────────────────────────────────── */
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -201,7 +257,7 @@ export function TourListPage() {
             </p>
           </div>
           <button
-            onClick={() => router.push("/tour-management/create")}
+            onClick={() => setShowCreateForm(true)}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-[0.98] text-white text-sm font-semibold rounded-2xl transition-all duration-200 shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 shrink-0">
             <Icon icon="heroicons:plus" className="size-4" />
             {t("tourList.addNewTour", "Add New Tour")}
@@ -446,9 +502,7 @@ export function TourListPage() {
                               <Icon icon="heroicons:eye" className="size-4" />
                             </button>
                             <button
-                              onClick={() =>
-                                router.push(`/tour-management/${tour.id}/edit`)
-                              }
+                              onClick={() => openEditModal(tour.id)}
                               aria-label={`Edit ${tour.tourName}`}
                               className="p-2.5 rounded-xl text-stone-400 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200 active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset">
                               <Icon
@@ -549,6 +603,89 @@ export function TourListPage() {
           </div>
         )}
       </main>
+
+      {/* ── Edit Tour Modal ──────────────────────────────── */}
+      <AnimatePresence>
+        {editTourId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-8"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeEditModal();
+            }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="w-full max-w-4xl mx-4 bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
+              {editLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-amber-500 border-t-transparent" />
+                </div>
+              ) : editTour ? (
+                <TourForm
+                  mode="edit"
+                  initialData={editTour}
+                  existingImages={editTour.images ?? []}
+                  onSubmit={async (formData) => {
+                    toast.loading("Updating tour...", { toastId: "updating-tour" });
+                    try {
+                      await tourService.updateTour(formData);
+                      toast.dismiss("updating-tour");
+                      toast.success("Tour updated successfully!");
+                      closeEditModal();
+                      setReloadToken((v) => v + 1);
+                    } catch (err: unknown) {
+                      toast.dismiss("updating-tour");
+                      const apiError = err as { message?: string; details?: unknown };
+                      const errorMsg = apiError?.message || t("tourAdmin.updateError", "Failed to update tour");
+                      toast.error(errorMsg);
+                    }
+                  }}
+                  onCancel={closeEditModal}
+                />
+              ) : null}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Create Tour Modal ─────────────────────────────── */}
+      <AnimatePresence>
+        {showCreateForm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 backdrop-blur-sm overflow-y-auto py-8"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) closeCreateForm();
+            }}>
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="w-full max-w-4xl mx-4 bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
+              <TourForm
+                mode="create"
+                onSubmit={async (formData) => {
+                  toast.loading("Creating tour...", { toastId: "creating-tour" });
+                  await tourService.createTour(formData);
+                  toast.dismiss("creating-tour");
+                  toast.success("Tour created successfully!");
+                  closeCreateForm();
+                  setReloadToken((v) => v + 1);
+                }}
+                onCancel={closeCreateForm}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AdminSidebar>
   );
 }

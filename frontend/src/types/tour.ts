@@ -1,3 +1,41 @@
+// Translation data types
+export interface TourDayActivityTranslationData {
+  title: string;
+  description?: string | null;
+  note?: string | null;
+  transportationType?: string | null;
+  transportationName?: string | null;
+}
+
+export interface TourPlanRouteTranslationData {
+  fromLocationName?: string | null;
+  toLocationName?: string | null;
+  transportationType?: string | null;
+  transportationName?: string | null;
+  ticketInfo?: string | null;
+  note?: string | null;
+}
+
+export interface TourDayTranslationData {
+  title: string;
+  description?: string | null;
+}
+
+export interface TourClassificationTranslationData {
+  name: string;
+  description: string;
+}
+
+export interface TourResourceTranslationData {
+  name: string;
+  description?: string | null;
+  note?: string | null;
+  fromLocationName?: string | null;
+  toLocationName?: string | null;
+  transportationName?: string | null;
+  ticketInfo?: string | null;
+}
+
 // Tour detail types matching backend DTOs
 
 export interface ImageDto {
@@ -39,6 +77,7 @@ export interface TourPlanRouteDto {
   price: number | null;
   bookingReference: string | null;
   note: string | null;
+  translations?: Record<string, TourPlanRouteTranslationData>;
 }
 
 export interface TourPlanAccommodationDto {
@@ -78,6 +117,28 @@ export interface TourDayActivityDto {
   endTime: string | null;
   routes: TourPlanRouteDto[];
   accommodation: TourPlanAccommodationDto | null;
+  translations?: Record<string, TourDayActivityTranslationData>;
+  enTransportationType?: string | null;
+  enTransportationName?: string | null;
+  // Location fields — populated from TourPlanLocations for all activity types
+  locationName?: string | null;
+  locationCity?: string | null;
+  locationCountry?: string | null;
+  locationAddress?: string | null;
+  locationEntranceFee?: number | null;
+  // Transportation fields — for type 7 (Transportation) activities
+  fromLocation?: string | null;
+  toLocation?: string | null;
+  transportationType?: string | null;
+  transportationName?: string | null;
+  durationMinutes?: number | null;
+  price?: number | null;
+  // Accommodation fields — for type 8 (Accommodation) activities
+  accommodationName?: string | null;
+  accommodationAddress?: string | null;
+  accommodationPhone?: string | null;
+  checkInTime?: string | null;
+  checkOutTime?: string | null;
 }
 
 export interface TourDayDto {
@@ -87,6 +148,7 @@ export interface TourDayDto {
   title: string;
   description: string | null;
   activities: TourDayActivityDto[];
+  translations?: Record<string, TourDayTranslationData>;
 }
 
 export interface TourInsuranceDto {
@@ -115,6 +177,18 @@ export interface TourClassificationDto {
   dynamicPricing?: DynamicPricingDto[];
   plans: TourDayDto[];
   insurances: TourInsuranceDto[];
+  translations?: Record<string, TourClassificationTranslationData>;
+}
+
+export interface ServiceDto {
+  id?: string;
+  serviceName: string;
+  pricingType?: string;
+  price?: number;
+  salePrice?: number;
+  email?: string;
+  contactNumber?: string;
+  translations?: Record<string, TourResourceTranslationData>;
 }
 
 export interface TourDto {
@@ -124,6 +198,8 @@ export interface TourDto {
   shortDescription: string;
   longDescription: string;
   status: number;
+  tourScope?: number;
+  customerSegment?: number;
   seoTitle: string | null;
   seoDescription: string | null;
   isDeleted: boolean;
@@ -137,6 +213,11 @@ export interface TourDto {
   createdOnUtc: string;
   lastModifiedBy: string | null;
   lastModifiedOnUtc: string | null;
+  pricingPolicyId?: string;
+  depositPolicyId?: string;
+  cancellationPolicyId?: string;
+  visaPolicyId?: string;
+  services?: ServiceDto[];
 }
 
 export interface TourTranslationData {

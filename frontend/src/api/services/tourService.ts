@@ -118,19 +118,23 @@ export const tourService = {
   },
 
   createTour: async (formData: FormData) => {
+    // NOTE: Do NOT set Content-Type header manually for FormData.
+    // Axios must set it automatically with the correct boundary parameter,
+    // otherwise ASP.NET Core [FromForm] will fail to parse IFormFile fields (null).
     const response = await api.post<ApiResponse<string>>(
       API_ENDPOINTS.TOUR.CREATE,
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return extractResult<string>(response.data);
   },
 
   updateTour: async (formData: FormData) => {
+    // NOTE: Do NOT set Content-Type header manually for FormData.
+    // Axios must set it automatically with the correct boundary parameter,
+    // otherwise ASP.NET Core [FromForm] will fail to parse IFormFile fields (null).
     const response = await api.put<ApiResponse<unknown>>(
       API_ENDPOINTS.TOUR.UPDATE,
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } },
     );
     return extractResult<unknown>(response.data);
   },

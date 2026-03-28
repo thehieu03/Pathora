@@ -1,22 +1,69 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import { BoldTiltCard } from "./BoldTiltCard";
+import { homeService } from "@/api/services/homeService";
+import type { NormalizedTourInstanceVm } from "@/types/tour";
 
-const destinations = [
-  { name: "Hanoi", country: "Vietnam", image: "https://images.unsplash.com/photo-1509030969356-4dd11f51c5e8?w=600&q=80", tours: 120 },
-  { name: "Ho Chi Minh City", country: "Vietnam", image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=80", tours: 95 },
-  { name: "Da Nang", country: "Vietnam", image: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?w=600&q=80", tours: 78 },
-  { name: "Hue", country: "Vietnam", image: "https://images.unsplash.com/photo-1584979093722-1be5c7c0c35f?w=600&q=80", tours: 45 },
-  { name: "Mekong Delta", country: "Vietnam", image: "https://images.unsplash.com/photo-1583425921686-c5daf6b3d820?w=600&q=80", tours: 62 },
-];
+type DestinationCard = {
+  id: string;
+  name: string;
+  country: string;
+  image: string;
+  tours: number;
+};
+
+const fallbackImage =
+  "https://images.unsplash.com/photo-1509030969356-4dd11f51c5e8?w=600&q=80";
+
+const mapInstancesToDestinations = (
+  data: NormalizedTourInstanceVm[]
+): DestinationCard[] =>
+  data.map((instance) => ({
+    id: instance.id,
+    name: instance.location || instance.tourName || "Unknown Destination",
+    country: "Vietnam",
+    image:
+      instance.thumbnail?.publicURL ||
+      instance.images?.[0]?.publicURL ||
+      fallbackImage,
+    tours: 1,
+  }));
 
 export const BoldTrendingDestinations = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [titleRef, titleVisible] = useScrollAnimation<HTMLDivElement>();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [destinations, setDestinations] = useState<DestinationCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchDestinations = React.useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const result = await homeService.getAvailablePublicInstances(
+        undefined,
+        1,
+        6,
+        i18n.resolvedLanguage ?? i18n.language
+      );
+      setDestinations(mapInstancesToDestinations(result?.data ?? []));
+    } catch {
+      setError(
+        t("landing.destinations.loadError") || "Unable to load destinations"
+      );
+      setDestinations([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [i18n.language, i18n.resolvedLanguage, t]);
+
+  React.useEffect(() => {
+    fetchDestinations();
+  }, [fetchDestinations]);
 
   return (
     <section className="py-20 md:py-28 bg-[#0a0a1a]">
@@ -47,27 +94,57 @@ export const BoldTrendingDestinations = () => {
           </Link>
         </div>
 
-        <div
-          ref={scrollRef}
-          className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {destinations.map((dest, idx) => (
-            <div
-              key={dest.name}
-              className="snap-center shrink-0"
-              style={{ animationDelay: `${idx * 100}ms` }}
+        {error ? (
+          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-5 text-center text-sm text-red-200">
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={fetchDestinations}
+              className="mt-3 inline-flex items-center rounded-full border border-red-300/30 px-4 py-2 text-xs font-medium text-red-100 hover:bg-red-500/20 transition-colors"
             >
-              <BoldTiltCard
-                image={dest.image}
-                title={dest.name}
-                subtitle={dest.country}
-                badge={`${dest.tours} ${t("landing.destinations.tours") || "tours"}`}
-                href="/tours"
-              />
-            </div>
-          ))}
-        </div>
+              {t("landing.destinations.retry") || "Retry"}
+            </button>
+          </div>
+        ) : isLoading ? (
+          <div
+            ref={scrollRef}
+            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <div key={idx} className="snap-center shrink-0 animate-pulse">
+                <div className="w-[260px] h-[260px] rounded-2xl bg-white/10" />
+              </div>
+            ))}
+          </div>
+        ) : destinations.length === 0 ? (
+          <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-white/60">
+            {t("landing.destinations.empty") ||
+              "No destinations available at the moment."}
+          </div>
+        ) : (
+          <div
+            ref={scrollRef}
+            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {destinations.map((dest, idx) => (
+              <div
+                key={dest.id}
+                className="snap-center shrink-0"
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <BoldTiltCard
+                  image={dest.image}
+                  title={dest.name}
+                  subtitle={dest.country}
+                  badge={`${dest.tours} ${t("landing.destinations.tours") || "tour"}`}
+                  href="/tours"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

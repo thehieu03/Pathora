@@ -17,8 +17,18 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
     (i18n.resolvedLanguage || i18n.language || "en").toLowerCase() === "vi"
       ? "vi-VN"
       : "en-US";
+
   const imageUrl = tour.thumbnail?.publicURL || "/images/placeholder-tour.jpg";
-  const location = tour.location || t("common.noData", "N/A");
+
+  // Guard: only show location row if truthy
+  const hasLocation = Boolean(tour.location);
+
+  // Guard: only show classification badge if truthy
+  const hasClassification = Boolean(tour.classificationName);
+
+  // Guard: only show price if basePrice > 0
+  const hasPrice = (tour.basePrice ?? 0) > 0;
+
   const statusKey = tour.status?.trim().toLowerCase().replace(/[\s_]+/g, "");
   const statusLabel = statusKey
     ? t(`tourInstance.statusLabels.${statusKey}`, tour.status)
@@ -36,16 +46,16 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          {/* Badge */}
-          <div className="absolute top-3 left-3">
-              <span className="inline-block px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-medium rounded-full">
-                {tour.classificationName ||
-                  t(
-                    "landing.tourDiscovery.classificationOptions.standard",
-                    "Standard Tour",
-                  )}
+
+          {/* Classification badge — guard: only render if truthy */}
+          {hasClassification && (
+            <div className="absolute top-3 left-3">
+              <span className="badge-base bg-white/90 text-gray-700">
+                {tour.classificationName}
               </span>
             </div>
+          )}
+
           {/* Status Badge */}
           {tour.status && (
             <div className="absolute top-3 right-3">
@@ -62,11 +72,13 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
 
         {/* Content */}
         <div className="p-4">
-          {/* Location */}
-          <div className="flex items-center gap-1 text-sm text-gray-500 mb-1.5">
-            <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
-            <span>{location}</span>
-          </div>
+          {/* Location — guard: hide entire row if falsy */}
+          {hasLocation && (
+            <div className="flex items-center gap-1 text-sm text-gray-500 mb-1.5">
+              <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
+              <span>{tour.location}</span>
+            </div>
+          )}
 
           {/* Title */}
           <h3 className="text-xl font-semibold text-gray-900 leading-tight mb-2.5 line-clamp-2 min-h-[56px] group-hover:text-[#fa8b02] transition-colors">
@@ -99,15 +111,19 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
             </div>
           </div>
 
-          {/* Price */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-[#fa8b02] md:text-xl">
-              {formatCurrency(tour.basePrice)}
-            </span>
-            <span className="text-sm text-gray-400">
-              {t("tourInstance.perPersonShort", "/person")}
-            </span>
-          </div>
+          {/* Price — guard: only render if basePrice > 0 */}
+          {hasPrice && (
+            <div className="flex flex-col gap-0.5 mt-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold text-[#1a1a2e] md:text-xl">
+                  {formatCurrency(tour.basePrice!)}
+                </span>
+                <span className="text-sm text-gray-400">
+                  {t("tourInstance.perPersonShort", "/person")}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Available spots */}
           {tour.maxParticipation && (
