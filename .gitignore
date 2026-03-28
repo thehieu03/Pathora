@@ -319,3 +319,4 @@ volume/postgres/*
 
 # Auto Claude data directory
 .auto-claude/
+.gstack/

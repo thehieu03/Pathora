@@ -100,6 +100,7 @@ public sealed record LocationDto(
 );
 
 public sealed record ServiceDto(
+    Guid? Id,
     string ServiceName,
     string? PricingType,
     decimal? Price,

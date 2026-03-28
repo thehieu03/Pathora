@@ -88,6 +88,22 @@ public class TourService(
             depositPolicyId: request.DepositPolicyId,
             pricingPolicyId: request.PricingPolicyId,
             cancellationPolicyId: request.CancellationPolicyId);
+
+            const int maxTourCodeGenerationAttempts = 10;
+            var tourCodeGenerationAttempts = 0;
+            while (await _tourRepository.ExistsByTourCode(tour.TourCode) && tourCodeGenerationAttempts < maxTourCodeGenerationAttempts)
+            {
+                tour.TourCode = TourEntity.GenerateTourCode();
+                tourCodeGenerationAttempts++;
+            }
+
+            if (await _tourRepository.ExistsByTourCode(tour.TourCode))
+            {
+                return Error.Conflict(
+                    ErrorConstants.Tour.DuplicateCodeCode,
+                    string.Format(ErrorConstants.Tour.DuplicateCodeDescriptionTemplate, tour.TourCode));
+            }
+
             tour.Translations = NormalizeTranslations(request.Translations);
 
             // Add Classifications with Plans, Activities, Insurances
@@ -156,10 +172,6 @@ public class TourService(
                                 var routeOrder = act.Routes.IndexOf(route) + 1;
                                 var fromLocation = await ResolveLocationAsync(route.FromLocationId, route.FromLocationName, tour.Id);
                                 var toLocation = await ResolveLocationAsync(route.ToLocationId, route.ToLocationName, tour.Id);
-
-                                // Apply route translations to locations
-                                fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
-                                toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
 
                                 // Validator guarantees TransportationType is a valid enum — parse with assertion
                                 _ = EnumHelper.TryParseDefinedEnum<TransportationType>(route.TransportationType, out var routeTransportType);
@@ -926,8 +938,6 @@ public class TourService(
                         _user.Id ?? string.Empty,
                         tourId,
                         tourDayActivityId: day.Id);
-                    fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
-                    toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
                     var routeEntity = TourPlanRouteEntity.Create(
                         routeOrder,
                         transportationType,
@@ -944,6 +954,8 @@ public class TourService(
                     routeEntity.Translations = NormalizeTranslationsFromPayload(route.RouteTranslations);
                     routeEntity.FromLocation = fromLocation;
                     routeEntity.ToLocation = toLocation;
+                    // Do NOT assign route.Translations to fromLocation/toLocation — that overwrites
+                    // shared location entities when multiple routes reference the same location.
                     activity.Routes.Add(routeEntity);
                 }
             }
@@ -982,8 +994,6 @@ public class TourService(
                         _user.Id ?? string.Empty,
                         tourId,
                         tourDayActivityId: day.Id);
-                    fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
-                    toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
                     var routeEntity = TourPlanRouteEntity.Create(
                         routeOrder,
                         transportationType,
@@ -1000,6 +1010,8 @@ public class TourService(
                     routeEntity.Translations = NormalizeTranslationsFromPayload(route.RouteTranslations);
                     routeEntity.FromLocation = fromLocation;
                     routeEntity.ToLocation = toLocation;
+                    // Do NOT assign route.Translations to fromLocation/toLocation — that overwrites
+                    // shared location entities when multiple routes reference the same location.
                     activity.Routes.Add(routeEntity);
                 }
 

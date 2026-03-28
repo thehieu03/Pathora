@@ -1438,6 +1438,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: "",
                 PricingType: "Per booking",
                 Price: 100,
@@ -1456,6 +1457,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: CreateString(201),
                 PricingType: "Per booking",
                 Price: 100,
@@ -1474,6 +1476,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: "Tour Guide Service",
                 PricingType: "Per booking",
                 Price: 100,
@@ -1495,6 +1498,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: "Guide",
                 PricingType: "Per booking",
                 Price: -50,

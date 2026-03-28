@@ -18,6 +18,15 @@ namespace Api.Controllers;
 [Route(TourEndpoint.Base)]
 public class TourController(IFileService fileService, IFileManager fileManager) : BaseApiController
 {
+    private static readonly HashSet<string> AllowedImageMimeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/avif"
+    };
+
     private static readonly JsonSerializerOptions TranslationJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -293,8 +302,18 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         return HandleResult(result);
     }
 
+    private static bool IsValidImageFile(IFormFile file)
+    {
+        return file.Length > 0 && AllowedImageMimeTypes.Contains(file.ContentType ?? string.Empty);
+    }
+
     private async Task<ImageInputDto> UploadSingleFile(IFormFile file)
     {
+        if (!IsValidImageFile(file))
+        {
+            throw new BadHttpRequestException("Invalid file type. Allowed types: image/jpeg, image/png, image/webp, image/gif, image/avif.");
+        }
+
         await using var stream = file.OpenReadStream();
         var meta = await fileService.UploadFileAsync(
             new Application.Contracts.File.UploadFileRequest(
