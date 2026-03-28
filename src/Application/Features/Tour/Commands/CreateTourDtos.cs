@@ -106,7 +106,8 @@ public sealed record ServiceDto(
     decimal? Price,
     decimal? SalePrice,
     string? Email,
-    string? ContactNumber
+    string? ContactNumber,
+    Dictionary<string, TourResourceTranslationData>? Translations = null
 );
 
 public sealed record TransportationDto(

@@ -78,7 +78,10 @@ public static class ValidationMessages
     public const string TourInstanceStatusRequired = "Status is required.";
     public const string TourInstanceIdRequired = "Tour instance ID is required.";
     public const string TourInstanceTitleRequired = "Title is required.";
+    public const string TourInstanceBasePriceRequired = "Base price is required.";
     public const string TourInstanceBasePriceNonNegative = "Base price must not be negative.";
+    public const string TourInstanceConfirmationDeadlineBeforeStart = "Confirmation deadline must be before the tour start date.";
+    public const string TourInstanceInstanceTypeInvalid = "Instance type must be a valid value (Private, Public, or Group).";
     public const string TourInstanceSellingPriceNonNegative = "Selling price must not be negative.";
     public const string TourInstanceOperatingCostNonNegative = "Operating cost must not be negative.";
     public const string TourInstanceDepositPerPersonNonNegative = "Deposit per person must not be negative.";
@@ -175,6 +178,7 @@ public static class ValidationMessages
 
     // ── TourInstance ────────────────────────────────────────────
     public const string TourInstanceGuideIdsNotDuplicate = "Guide IDs không được trùng nhau.";
+    public const string TourInstanceManagerIdsNotDuplicate = "Manager IDs không được trùng nhau.";
     public const string TourInstanceUserCannotBeBothGuideAndManager = "Một user không thể vừa là Guide vừa là Manager.";
 
     // ── Tour Detail ─────────────────────────────────────────────

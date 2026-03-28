@@ -11,22 +11,27 @@ public sealed class TourProfile : Profile
     {
         CreateMap<ImageEntity, ImageDto>();
 
-        CreateMap<TourClassificationEntity, TourClassificationDto>();
+        CreateMap<TourClassificationEntity, TourClassificationDto>()
+            .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 
-        CreateMap<TourDayEntity, TourDayDto>();
+        CreateMap<TourDayEntity, TourDayDto>()
+            .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 
         CreateMap<TourDayActivityEntity, TourDayActivityDto>()
             .ForCtorParam(
                 nameof(TourDayActivityDto.linkToResources),
                 opt => opt.MapFrom(src => src.ResourceLinks
                     .OrderBy(l => l.Order)
-                    .Select(l => l.Url).ToList()));
+                    .Select(l => l.Url).ToList()))
+            .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 
-        CreateMap<TourInsuranceEntity, TourInsuranceDto>();
+        CreateMap<TourInsuranceEntity, TourInsuranceDto>()
+            .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 
         CreateMap<TourPlanLocationEntity, TourPlanLocationDto>();
 
-        CreateMap<TourPlanRouteEntity, TourPlanRouteDto>();
+        CreateMap<TourPlanRouteEntity, TourPlanRouteDto>()
+            .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 
         CreateMap<TourPlanAccommodationEntity, TourPlanAccommodationDto>();
 
@@ -39,7 +44,8 @@ public sealed class TourProfile : Profile
             .ForCtorParam(nameof(ServiceDto.Price), opt => opt.MapFrom(src => src.Price))
             .ForCtorParam(nameof(ServiceDto.SalePrice), opt => opt.MapFrom(_ => (decimal?)null))
             .ForCtorParam(nameof(ServiceDto.Email), opt => opt.MapFrom(src => src.ContactEmail))
-            .ForCtorParam(nameof(ServiceDto.ContactNumber), opt => opt.MapFrom(src => src.ContactPhone));
+            .ForCtorParam(nameof(ServiceDto.ContactNumber), opt => opt.MapFrom(src => src.ContactPhone))
+            .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 
         CreateMap<TourEntity, TourDto>()
             .ForMember(dest => dest.PricingPolicyId, opt => opt.MapFrom(src => src.PricingPolicyId))

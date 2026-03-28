@@ -512,6 +512,7 @@ public class TourService(
                     contactPhone: svc.ContactNumber,
                     price: svc.Price ?? svc.SalePrice,
                     pricingType: svc.PricingType);
+                resource.Translations = NormalizeTranslationsFromPayload(svc.Translations);
                 tour.Resources.Add(resource);
             }
         }

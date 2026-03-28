@@ -51,7 +51,6 @@ public class TourInstanceService(
 
         var performedBy = _user.Id ?? string.Empty;
 
-        // BasePrice là snapshot từ Classification tại thời điểm tạo instance
         var entity = TourInstanceEntity.Create(
             tourId: request.TourId,
             classificationId: request.ClassificationId,
@@ -63,7 +62,7 @@ public class TourInstanceService(
             startDate: request.StartDate,
             endDate: request.EndDate,
             maxParticipation: request.MaxParticipation,
-            basePrice: classification.BasePrice,
+            basePrice: request.BasePrice,
             performedBy: performedBy,
             location: request.Location,
             thumbnail: null,

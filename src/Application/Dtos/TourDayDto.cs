@@ -1,3 +1,5 @@
+using Domain.Entities.Translations;
+
 namespace Application.Dtos;
 
 public sealed record TourDayDto(
@@ -10,5 +12,6 @@ public sealed record TourDayDto(
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,
-    DateTimeOffset? LastModifiedOnUtc
+    DateTimeOffset? LastModifiedOnUtc,
+    Dictionary<string, TourDayTranslationData>? Translations = null
 );
