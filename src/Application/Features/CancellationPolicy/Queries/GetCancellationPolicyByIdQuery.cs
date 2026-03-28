@@ -1,6 +1,7 @@
 using Application.Contracts.CancellationPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
+using Application.Common.Constant;
 using ErrorOr;
 using FluentValidation;
 
@@ -13,7 +14,7 @@ public sealed class GetCancellationPolicyByIdQueryValidator : AbstractValidator<
     public GetCancellationPolicyByIdQueryValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required");
+            .NotEmpty().WithMessage(ValidationMessages.CancellationPolicyIdRequired);
     }
 }
 

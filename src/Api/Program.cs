@@ -49,6 +49,29 @@ await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAs
 // exceptions via custom middleware + IExceptionHandler registered in DI.
 app.Environment.IsDevelopment(); // Suppress auto-UseDeveloperExceptionPage
 
+// === TEMPORARY DIAGNOSTIC MIDDLEWARE FOR GOOGLE OAUTH 500 INVESTIGATION ===
+// TODO: Remove after diagnosis (B.4)
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value ?? "";
+    var hasStartedBefore = context.Response.HasStarted;
+    Console.WriteLine($"[DIAG] >>> {context.Request.Method} {path} — HasStarted BEFORE pipeline: {hasStartedBefore}");
+    try
+    {
+        await next(context);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DIAG] !!! EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+        throw;
+    }
+    finally
+    {
+        Console.WriteLine($"[DIAG] <<< {context.Request.Method} {path} — HasStarted AFTER pipeline: {context.Response.HasStarted}, Status: {context.Response.StatusCode}");
+    }
+});
+// === END TEMPORARY DIAGNOSTIC ===
+
 // Exception handling middleware is FIRST to wrap the entire pipeline, including
 // authentication/authorization middleware where "StatusCode cannot be set" exceptions
 // can be thrown from JwtBearerHandler.HandleChallengeAsync.

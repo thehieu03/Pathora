@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.VisaPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
@@ -21,12 +22,12 @@ public sealed class CreateVisaPolicyCommandValidator : AbstractValidator<CreateV
     public CreateVisaPolicyCommandValidator()
     {
         RuleFor(x => x.Region)
-            .NotEmpty().WithMessage("Region is required.")
-            .MaximumLength(100).WithMessage("Region must not exceed 100 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.VisaPolicyRegionRequired)
+            .MaximumLength(100).WithMessage(ValidationMessages.VisaPolicyRegionMaxLength100);
         RuleFor(x => x.ProcessingDays)
-            .GreaterThan(0).WithMessage("Processing days must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.VisaPolicyProcessingDaysGreaterThanZero);
         RuleFor(x => x.BufferDays)
-            .GreaterThanOrEqualTo(0).WithMessage("Buffer days cannot be negative.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.VisaPolicyBufferDaysNonNegative);
     }
 }
 
@@ -62,14 +63,14 @@ public sealed class UpdateVisaPolicyCommandValidator : AbstractValidator<UpdateV
     public UpdateVisaPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.VisaPolicyIdRequired);
         RuleFor(x => x.Region)
-            .NotEmpty().WithMessage("Region is required.")
-            .MaximumLength(100).WithMessage("Region must not exceed 100 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.VisaPolicyRegionRequired)
+            .MaximumLength(100).WithMessage(ValidationMessages.VisaPolicyRegionMaxLength100);
         RuleFor(x => x.ProcessingDays)
-            .GreaterThan(0).WithMessage("Processing days must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.VisaPolicyProcessingDaysGreaterThanZero);
         RuleFor(x => x.BufferDays)
-            .GreaterThanOrEqualTo(0).WithMessage("Buffer days cannot be negative.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.VisaPolicyBufferDaysNonNegative);
     }
 }
 
@@ -99,7 +100,7 @@ public sealed class DeleteVisaPolicyCommandValidator : AbstractValidator<DeleteV
     public DeleteVisaPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.VisaPolicyIdRequired);
     }
 }
 

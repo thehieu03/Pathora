@@ -18,6 +18,15 @@ namespace Api.Controllers;
 [Route(TourEndpoint.Base)]
 public class TourController(IFileService fileService, IFileManager fileManager) : BaseApiController
 {
+    private static readonly HashSet<string> AllowedImageMimeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/avif"
+    };
+
     private static readonly JsonSerializerOptions TranslationJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -49,20 +58,6 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         var result = await Sender.Send(new GetTourDetailQuery(id));
         return HandleResult(result);
-    }
-
-    [HttpGet(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> GetClassificationPricingTiers(Guid classificationId)
-    {
-        var result = await Sender.Send(new GetClassificationPricingTiersQuery(classificationId));
-        return HandleResult(result);
-    }
-
-    [HttpPut(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> UpsertClassificationPricingTiers(Guid classificationId, [FromBody] List<DynamicPricingDto> tiers)
-    {
-        var result = await Sender.Send(new UpsertClassificationPricingTiersCommand(classificationId, tiers));
-        return HandleUpdated(result);
     }
 
     [HttpPost]
@@ -207,7 +202,9 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] Guid? pricingPolicyId = null,
         [FromForm] Guid? cancellationPolicyId = null,
         [FromForm] string? deletedClassificationIds = null,
-        [FromForm] string? deletedActivityIds = null)
+        [FromForm] string? deletedActivityIds = null,
+        [FromForm] TourScope tourScope = TourScope.Domestic,
+        [FromForm] CustomerSegment customerSegment = CustomerSegment.Group)
     {
         // Validate JSON fields before processing
         var validationErrors = new Dictionary<string, string[]>();
@@ -291,7 +288,8 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
             seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData,
             classificationData, accommodationData, locationData, transportationData, serviceData,
             visaPolicyId, depositPolicyId, pricingPolicyId, cancellationPolicyId,
-            parsedDeletedClassificationIds, parsedDeletedActivityIds);
+            parsedDeletedClassificationIds, parsedDeletedActivityIds,
+            tourScope, customerSegment);
 
         var result = await Sender.Send(command);
         return HandleResult(result);
@@ -304,8 +302,18 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         return HandleResult(result);
     }
 
+    private static bool IsValidImageFile(IFormFile file)
+    {
+        return file.Length > 0 && AllowedImageMimeTypes.Contains(file.ContentType ?? string.Empty);
+    }
+
     private async Task<ImageInputDto> UploadSingleFile(IFormFile file)
     {
+        if (!IsValidImageFile(file))
+        {
+            throw new BadHttpRequestException("Invalid file type. Allowed types: image/jpeg, image/png, image/webp, image/gif, image/avif.");
+        }
+
         await using var stream = file.OpenReadStream();
         var meta = await fileService.UploadFileAsync(
             new Application.Contracts.File.UploadFileRequest(

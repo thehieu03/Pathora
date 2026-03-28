@@ -33,15 +33,15 @@ public sealed class GetAllTourRequestsQueryValidator : AbstractValidator<GetAllT
     public GetAllTourRequestsQueryValidator()
     {
         RuleFor(x => x.PageNumber)
-            .GreaterThan(0).WithMessage("Page number must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.TourRequestPageNumberGreaterThanZero);
 
         RuleFor(x => x.PageSize)
-            .InclusiveBetween(1, 100).WithMessage("Page size must be between 1 and 100.");
+            .InclusiveBetween(1, 100).WithMessage(ValidationMessages.TourRequestPageSizeRange);
 
         RuleFor(x => x.ToDate)
             .GreaterThanOrEqualTo(x => x.FromDate!.Value)
             .When(x => x.FromDate.HasValue && x.ToDate.HasValue)
-            .WithMessage("To date must be greater than or equal to from date.");
+            .WithMessage(ValidationMessages.TourRequestToDateGreaterThanOrEqualFromDate);
     }
 }
 

@@ -1,4 +1,5 @@
 using Application.Common;
+using Application.Common.Constant;
 using Application.Contracts.DepositPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
@@ -21,16 +22,16 @@ public sealed class CreateDepositPolicyCommandValidator : AbstractValidator<Crea
     public CreateDepositPolicyCommandValidator()
     {
         RuleFor(x => x.TourScope)
-            .InclusiveBetween(1, 2).WithMessage("Tour scope must be 1 (Domestic) or 2 (International).");
+            .InclusiveBetween(1, 2).WithMessage(ValidationMessages.DepositPolicyScopeRange);
 
         RuleFor(x => x.DepositType)
-            .InclusiveBetween(1, 2).WithMessage("Deposit type must be 1 (Percentage) or 2 (Fixed Amount).");
+            .InclusiveBetween(1, 2).WithMessage(ValidationMessages.DepositPolicyTypeRange);
 
         RuleFor(x => x.DepositValue)
-            .GreaterThan(0).WithMessage("Deposit value must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.DepositPolicyValueGreaterThanZero);
 
         RuleFor(x => x.MinDaysBeforeDeparture)
-            .GreaterThanOrEqualTo(0).WithMessage("Min days cannot be negative.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.DepositPolicyMinDaysNonNegative);
     }
 }
 
@@ -67,19 +68,19 @@ public sealed class UpdateDepositPolicyCommandValidator : AbstractValidator<Upda
     public UpdateDepositPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.DepositPolicyIdRequired);
 
         RuleFor(x => x.TourScope)
-            .InclusiveBetween(1, 2).WithMessage("Tour scope must be 1 (Domestic) or 2 (International).");
+            .InclusiveBetween(1, 2).WithMessage(ValidationMessages.DepositPolicyScopeRange);
 
         RuleFor(x => x.DepositType)
-            .InclusiveBetween(1, 2).WithMessage("Deposit type must be 1 (Percentage) or 2 (Fixed Amount).");
+            .InclusiveBetween(1, 2).WithMessage(ValidationMessages.DepositPolicyTypeRange);
 
         RuleFor(x => x.DepositValue)
-            .GreaterThan(0).WithMessage("Deposit value must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.DepositPolicyValueGreaterThanZero);
 
         RuleFor(x => x.MinDaysBeforeDeparture)
-            .GreaterThanOrEqualTo(0).WithMessage("Min days cannot be negative.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.DepositPolicyMinDaysNonNegative);
     }
 }
 
@@ -110,7 +111,7 @@ public sealed class DeleteDepositPolicyCommandValidator : AbstractValidator<Dele
     public DeleteDepositPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.DepositPolicyIdRequired);
     }
 }
 

@@ -40,6 +40,10 @@ public sealed class TourDayActivityTranslationData
     public string? Description { get; set; }
     [JsonPropertyName("note")]
     public string? Note { get; set; }
+    [JsonPropertyName("transportationType")]
+    public string? TransportationType { get; set; }
+    [JsonPropertyName("transportationName")]
+    public string? TransportationName { get; set; }
 }
 
 public sealed class TourPlanLocationTranslationData

@@ -4,6 +4,7 @@ using BuildingBlocks.CORS;
 using Domain.Entities.Translations;
 using Domain.ValueObjects;
 using Contracts;
+using Application.Common.Constant;
 using ErrorOr;
 using FluentValidation;
 
@@ -22,13 +23,13 @@ public sealed class UpdatePricingPolicyCommandValidator : AbstractValidator<Upda
     public UpdatePricingPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Policy ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyIdRequired);
 
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Policy name is required.");
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyNameRequired);
 
         RuleFor(x => x.Tiers)
-            .NotEmpty().WithMessage("At least one pricing tier is required.")
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyTiersMinOne)
             .ForEach(tier => tier.SetValidator(new PricingPolicyTierValidator()));
     }
 }

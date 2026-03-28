@@ -14,23 +14,33 @@ public sealed class PublicTourControllerTests
     public async Task GetTourDetail_WhenQuerySucceeds_ShouldReturnOkAndPayload()
     {
         var id = Guid.CreateVersion7();
-        var tourDto = new TourDto(
-            id,
-            "TOUR-001",
-            "Paris Tour",
-            "Short desc",
-            "Long desc",
-            TourStatus.Active,
-            null,
-            null,
-            false,
-            new ImageDto(null, null, null, null),
-            [],
-            [],
-            "tester",
-            DateTimeOffset.UtcNow,
-            "tester",
-            DateTimeOffset.UtcNow);
+        var tourDto = new TourDto
+        {
+            Id = id,
+            TourCode = "TOUR-001",
+            TourName = "Paris Tour",
+            ShortDescription = "Short desc",
+            LongDescription = "Long desc",
+            Status = TourStatus.Active,
+            TourScope = TourScope.Domestic,
+            CustomerSegment = CustomerSegment.Group,
+            SEOTitle = null,
+            SEODescription = null,
+            IsDeleted = false,
+            Thumbnail = new ImageDto(null, null, null, null),
+            Images = [],
+            Classifications = [],
+            CreatedBy = "tester",
+            CreatedOnUtc = DateTimeOffset.UtcNow,
+            LastModifiedBy = "tester",
+            LastModifiedOnUtc = DateTimeOffset.UtcNow,
+            PricingPolicyId = null,
+            DepositPolicyId = null,
+            CancellationPolicyId = null,
+            VisaPolicyId = null,
+            Translations = null,
+            Services = null
+        };
 
         var (controller, probe) = ApiControllerTestHelper
             .BuildController<PublicTourController, GetPublicTourDetailQuery, TourDto>(

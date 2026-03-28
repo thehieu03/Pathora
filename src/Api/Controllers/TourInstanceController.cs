@@ -31,34 +31,6 @@ public class TourInstanceController : BaseApiController
         return HandleResult(result);
     }
 
-    [HttpGet(TourInstanceEndpoint.PricingTiers)]
-    public async Task<IActionResult> GetPricingTiers(Guid id)
-    {
-        var result = await Sender.Send(new GetTourInstancePricingTiersQuery(id));
-        return HandleResult(result);
-    }
-
-    [HttpPut(TourInstanceEndpoint.PricingTiers)]
-    public async Task<IActionResult> UpsertPricingTiers(Guid id, [FromBody] List<DynamicPricingDto> tiers)
-    {
-        var result = await Sender.Send(new UpsertTourInstancePricingTiersCommand(id, tiers));
-        return HandleUpdated(result);
-    }
-
-    [HttpDelete(TourInstanceEndpoint.ClearPricingTiers)]
-    public async Task<IActionResult> ClearPricingTiers(Guid id)
-    {
-        var result = await Sender.Send(new ClearTourInstancePricingTiersCommand(id));
-        return HandleDeleted(result);
-    }
-
-    [HttpGet(TourInstanceEndpoint.ResolvePricing)]
-    public async Task<IActionResult> ResolvePricing(Guid id, [FromQuery] int participants)
-    {
-        var result = await Sender.Send(new ResolveTourInstancePricingQuery(id, participants));
-        return HandleResult(result);
-    }
-
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTourInstanceCommand command)
     {

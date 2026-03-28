@@ -92,6 +92,52 @@ public sealed class TourServiceTests
         Assert.False(result.IsError);
     }
 
+    [Fact]
+    public async Task Create_WhenTourCodeExists_ShouldRetryAndSucceed()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.Create(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+        _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
+
+        // First call returns conflict, subsequent calls return not-found (simulating retry)
+        var callCount = 0;
+        _tourRepository.ExistsByTourCode(Arg.Any<string>())
+            .Returns(async _ => { callCount++; return callCount <= 1; });
+
+        var command = CreateBaseValidCommand();
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.False(result.IsError);
+        Assert.True(callCount >= 2, $"Expected at least 2 ExistsByTourCode calls for retry, got {callCount}");
+        await _tourRepository.Received(1).Create(Arg.Any<TourEntity>());
+    }
+
+    [Fact]
+    public async Task Create_WhenTourCodeConflictsExceedMaxRetry_ShouldReturnConflictError()
+    {
+        // Arrange
+        _user.Id.Returns("admin@test.com");
+        _tourRepository.Create(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
+
+        // Always return "exists" — retry always finds conflict
+        _tourRepository.ExistsByTourCode(Arg.Any<string>()).Returns(true);
+
+        var command = CreateBaseValidCommand();
+        var service = CreateService();
+
+        // Act
+        var result = await service.Create(command);
+
+        // Assert
+        Assert.True(result.IsError);
+        Assert.Equal(ErrorConstants.Tour.DuplicateCodeCode, result.Errors[0].Code);
+    }
+
     #endregion
 
     #region TC03: Tour entity has correct basic fields set
@@ -224,6 +270,13 @@ public sealed class TourServiceTests
                                         Note: "Late check-in available",
                                         RoomType: null,
                                         RoomCapacity: null,
+                                        MealsIncluded: null,
+                                        RoomPrice: null,
+                                        NumberOfRooms: null,
+                                        NumberOfNights: null,
+                                        Latitude: null,
+                                        Longitude: null,
+                                        SpecialRequest: null,
                                         Translations: null),
                                     Translations: null)
                             ],
@@ -561,6 +614,13 @@ public sealed class TourServiceTests
                     Note: null,
                     RoomType: null,
                     RoomCapacity: null,
+                    MealsIncluded: null,
+                    RoomPrice: null,
+                    NumberOfRooms: null,
+                    NumberOfNights: null,
+                    Latitude: null,
+                    Longitude: null,
+                    SpecialRequest: null,
                     Translations: null)
             ],
             Locations =
@@ -742,6 +802,7 @@ public sealed class TourServiceTests
             Services =
             [
                 new ServiceDto(
+                    Id: null,
                     ServiceName: "Guide Service",
                     PricingType: "Per Person",
                     Price: 50,
@@ -783,6 +844,7 @@ public sealed class TourServiceTests
             Services =
             [
                 new ServiceDto(
+                    Id: null,
                     ServiceName: "Guide",
                     PricingType: null,
                     Price: 100,
@@ -1596,6 +1658,13 @@ public sealed class TourServiceTests
                     Note: null,
                     RoomType: null,
                     RoomCapacity: null,
+                    MealsIncluded: null,
+                    RoomPrice: null,
+                    NumberOfRooms: null,
+                    NumberOfNights: null,
+                    Latitude: null,
+                    Longitude: null,
+                    SpecialRequest: null,
                     Translations: null)
             ]
         };
@@ -1719,6 +1788,7 @@ public sealed class TourServiceTests
             Services =
             [
                 new ServiceDto(
+                    Id: null,
                     ServiceName: "Guide Service",
                     PricingType: "Per Person",
                     Price: 50,

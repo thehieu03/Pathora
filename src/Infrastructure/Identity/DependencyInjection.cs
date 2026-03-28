@@ -151,6 +151,9 @@ internal static class DependencyInjection
                                     : """{"code":"TOKEN_INVALID","message":"Authentication failed. Please check your credentials.","statusCode":401}"""
                             };
 
+                            // HandleResponse() stops the pipeline so the controller doesn't run and
+                            // can't try to write Set-Cookie headers to an already-started response.
+                            context.HandleResponse();
                             return context.Response.WriteAsync(challengeJson);
                         }
                         catch (InvalidOperationException) when (context.Response.HasStarted)

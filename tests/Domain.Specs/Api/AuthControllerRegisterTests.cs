@@ -2,10 +2,12 @@ using Api.Controllers;
 using Application.Features.Identity.Commands;
 using Contracts.ModelResponse;
 using ErrorOr;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Domain.Specs.Api;
 
@@ -143,7 +145,11 @@ public sealed class AuthControllerRegisterTests
         };
         httpContext.Request.Path = "/api/auth/register";
 
-        var controller = new AuthController
+        var controller = new AuthController(Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }))
         {
             ControllerContext = new ControllerContext
             {

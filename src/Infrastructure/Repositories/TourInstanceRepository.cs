@@ -17,7 +17,6 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
             : _context.TourInstances;
 
         return await query
-            .Include(t => t.DynamicPricingTiers)
             .Include(t => t.Managers).ThenInclude(m => m.User)
             .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
@@ -163,7 +162,6 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
             .AsSplitQuery()
             .Include(t => t.Thumbnail)
             .Include(t => t.Images)
-            .Include(t => t.DynamicPricingTiers)
             .Include(t => t.Managers).ThenInclude(m => m.User)
             .Include(t => t.InstanceDays).ThenInclude(d => d.TourDay).ThenInclude(td => td.Activities).ThenInclude(a => a.Routes).ThenInclude(r => r.FromLocation)
             .Include(t => t.InstanceDays).ThenInclude(d => d.TourDay).ThenInclude(td => td.Activities).ThenInclude(a => a.Routes).ThenInclude(r => r.ToLocation)

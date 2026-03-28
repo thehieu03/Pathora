@@ -78,6 +78,13 @@ public sealed record AccommodationDto(
     string? Note,
     string? RoomType,
     int? RoomCapacity,
+    string? MealsIncluded,
+    decimal? RoomPrice,
+    int? NumberOfRooms,
+    int? NumberOfNights,
+    decimal? Latitude,
+    decimal? Longitude,
+    string? SpecialRequest,
     Dictionary<string, TourPlanAccommodationTranslationData>? Translations = null
 );
 
@@ -93,12 +100,14 @@ public sealed record LocationDto(
 );
 
 public sealed record ServiceDto(
+    Guid? Id,
     string ServiceName,
     string? PricingType,
     decimal? Price,
     decimal? SalePrice,
     string? Email,
-    string? ContactNumber
+    string? ContactNumber,
+    Dictionary<string, TourResourceTranslationData>? Translations = null
 );
 
 public sealed record TransportationDto(
