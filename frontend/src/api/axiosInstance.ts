@@ -81,6 +81,13 @@ const attachInterceptors = (instance: AxiosInstance): void => {
       }
       config.headers["Accept-Language"] = getCurrentApiLanguage();
 
+      // If body is FormData, let Axios set the correct Content-Type with boundary.
+      // Without this, the default Content-Type: application/json would cause
+      // ASP.NET [Consumes("multipart/form-data")] endpoints to reject with 415.
+      if (config.data instanceof FormData) {
+        delete config.headers["Content-Type"];
+      }
+
       return config;
     },
     (error) => {

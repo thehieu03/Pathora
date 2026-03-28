@@ -1,13 +1,39 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui";
 import { BoldNavbar } from "./BoldNavbar";
+import { homeService } from "@/api/services/homeService";
 
 const HERO_VIDEO = "/hero-video.mp4"; // Placeholder — replace with actual video asset
 
+interface HeroStats {
+  tours: number;
+  travellers: number;
+}
+
 export const BoldHeroSection = () => {
   const { t } = useTranslation();
+  const [stats, setStats] = useState<HeroStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    homeService
+      .getHomeStats()
+      .then((data) => {
+        if (cancelled) return;
+        setStats({ tours: data.totalTours, travellers: data.totalTravelers });
+        setStatsLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setStatsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section className="relative w-full h-screen min-h-[600px] overflow-hidden bg-[#0a0a1a]">
@@ -112,11 +138,15 @@ export const BoldHeroSection = () => {
         <div className="flex items-center gap-8 mt-8 text-white/40 text-sm">
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#fb8b02]" />
-            1200+ {t("landing.stats.items.totalTours") || "Tours"}
+            {statsLoading
+              ? "..."
+              : `${Math.max(0, stats?.tours ?? 0).toLocaleString()}+`} {t("landing.stats.items.totalTours") || "Tours"}
           </span>
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#3b82f6]" />
-            50K+ {t("landing.stats.items.totalTravellers") || "Travelers"}
+            {statsLoading
+              ? "..."
+              : `${Math.max(0, Math.round((stats?.travellers ?? 0) / 1000))}K+`} {t("landing.stats.items.totalTravellers") || "Travelers"}
           </span>
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#ec4899]" />

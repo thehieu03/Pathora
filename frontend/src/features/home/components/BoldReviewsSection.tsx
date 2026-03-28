@@ -2,46 +2,79 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
+import Image from "next/image";
+import { homeService } from "@/api/services/homeService";
+import type { TopReview } from "@/types/home";
 
-const reviews = [
-  {
-    name: "Sarah Johnson",
-    location: "United Kingdom",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
-    rating: 5,
-    text: "Absolutely incredible experience! The Ha Long Bay tour exceeded all expectations. The guides were knowledgeable and the scenery was breathtaking.",
-  },
-  {
-    name: "Michael Chen",
-    location: "Singapore",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
-    rating: 5,
-    text: "Pathora made planning our Vietnam trip effortless. The booking process was smooth and the tours were well-organized. Highly recommended!",
-  },
-  {
-    name: "Emma Williams",
-    location: "Australia",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
-    rating: 5,
-    text: "Best travel experience ever! The local guides gave us insights we never would have gotten on our own. Every detail was perfect.",
-  },
-];
+type ReviewCard = {
+  name: string;
+  location: string;
+  avatar: string;
+  rating: number;
+  text: string;
+};
+
+const fallbackAvatar =
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80";
+
+const mapTopReviews = (reviews: TopReview[]): ReviewCard[] =>
+  reviews.map((review) => ({
+    name: review.userName,
+    location: review.tourName,
+    avatar: review.userAvatar || fallbackAvatar,
+    rating: Math.max(1, Math.min(5, Math.round(review.rating))),
+    text:
+      review.comment ||
+      "Great experience with Pathora. Everything was smooth and memorable.",
+  }));
 
 export const BoldReviewsSection = () => {
   const { t } = useTranslation();
   const [ref, isVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.1 });
+  const [reviews, setReviews] = useState<ReviewCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const fetchTopReviews = React.useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await homeService.getTopReviews(6);
+      const mapped = mapTopReviews(data ?? []);
+      setReviews(mapped);
+      setActiveIndex(0);
+    } catch {
+      setError(t("landing.reviews.loadError") || "Unable to load reviews");
+      setReviews([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [t]);
+
   useEffect(() => {
+    fetchTopReviews();
+  }, [fetchTopReviews]);
+
+  useEffect(() => {
+    if (reviews.length === 0) {
+      return;
+    }
     intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % reviews.length);
     }, 5000);
-    return () => clearInterval(intervalRef.current);
-  }, []);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [reviews.length]);
 
-  const handleMouseEnter = () => clearInterval(intervalRef.current);
+  const handleMouseEnter = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
+
   const handleMouseLeave = () => {
+    if (reviews.length === 0) return;
     intervalRef.current = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % reviews.length);
     }, 5000);
@@ -70,61 +103,97 @@ export const BoldReviewsSection = () => {
           </h2>
         </div>
 
-        {/* Review Cards */}
-        <div className="relative">
-          {reviews.map((review, idx) => (
-            <div
-              key={idx}
-              className={`transition-all duration-700 ${
-                idx === activeIndex
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-4 absolute inset-0 pointer-events-none"
-              }`}
+        {error ? (
+          <div className="rounded-xl border border-red-400/20 bg-red-500/10 p-5 text-center text-sm text-red-200">
+            <p>{error}</p>
+            <button
+              type="button"
+              onClick={fetchTopReviews}
+              className="mt-3 inline-flex items-center rounded-full border border-red-300/30 px-4 py-2 text-xs font-medium text-red-100 hover:bg-red-500/20 transition-colors"
             >
-              <div className="p-8 md:p-10 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
-                {/* Stars */}
-                <div className="flex gap-1 mb-6">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <span key={i} className="text-[#fb8b02] text-lg">★</span>
-                  ))}
-                </div>
-
-                {/* Quote */}
-                <blockquote className="text-white/80 text-lg md:text-xl leading-relaxed mb-8 italic">
-                  {`\u201C${review.text}\u201D`}
-                </blockquote>
-
-                {/* Author */}
-                <div className="flex items-center gap-4">
-                  <img
-                    src={review.avatar}
-                    alt={review.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-white/10"
-                  />
-                  <div>
-                    <p className="font-semibold text-white">{review.name}</p>
-                    <p className="text-white/40 text-sm">📍 {review.location}</p>
-                  </div>
-                </div>
+              {t("landing.reviews.retry") || "Retry"}
+            </button>
+          </div>
+        ) : isLoading ? (
+          <div className="animate-pulse p-8 md:p-10 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+            <div className="h-5 w-24 bg-white/10 rounded mb-6" />
+            <div className="h-6 w-full bg-white/10 rounded mb-3" />
+            <div className="h-6 w-4/5 bg-white/10 rounded mb-8" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-white/10" />
+              <div>
+                <div className="h-4 w-28 bg-white/10 rounded mb-2" />
+                <div className="h-3 w-20 bg-white/10 rounded" />
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : reviews.length === 0 ? (
+          <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center text-white/60">
+            {t("landing.reviews.empty") || "No reviews available yet."}
+          </div>
+        ) : (
+          <>
+            {/* Review Cards */}
+            <div className="relative">
+              {reviews.map((review, idx) => (
+                <div
+                  key={`${review.name}-${idx}`}
+                  className={`transition-all duration-700 ${
+                    idx === activeIndex
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-4 absolute inset-0 pointer-events-none"
+                  }`}
+                >
+                  <div className="p-8 md:p-10 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+                    {/* Stars */}
+                    <div className="flex gap-1 mb-6">
+                      {Array.from({ length: review.rating }).map((_, i) => (
+                        <span key={i} className="text-[#fb8b02] text-lg">
+                          ★
+                        </span>
+                      ))}
+                    </div>
 
-        {/* Dots */}
-        <div className="flex justify-center gap-2 mt-8">
-          {reviews.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setActiveIndex(idx)}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                idx === activeIndex
-                  ? "w-6 bg-[#fb8b02]"
-                  : "w-2 bg-white/20 hover:bg-white/40"
-              }`}
-            />
-          ))}
-        </div>
+                    {/* Quote */}
+                    <blockquote className="text-white/80 text-lg md:text-xl leading-relaxed mb-8 italic">
+                      {`“${review.text}”`}
+                    </blockquote>
+
+                    {/* Author */}
+                    <div className="flex items-center gap-4">
+                      <Image
+                        src={review.avatar}
+                        alt={review.name}
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-white/10"
+                      />
+                      <div>
+                        <p className="font-semibold text-white">{review.name}</p>
+                        <p className="text-white/40 text-sm">📍 {review.location}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Dots */}
+            <div className="flex justify-center gap-2 mt-8">
+              {reviews.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveIndex(idx)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    idx === activeIndex
+                      ? "w-6 bg-[#fb8b02]"
+                      : "w-2 bg-white/20 hover:bg-white/40"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

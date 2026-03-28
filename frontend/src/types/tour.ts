@@ -136,6 +136,16 @@ export interface TourClassificationDto {
   insurances: TourInsuranceDto[];
 }
 
+export interface ServiceDto {
+  id?: string;
+  serviceName: string;
+  pricingType?: string;
+  price?: number;
+  salePrice?: number;
+  email?: string;
+  contactNumber?: string;
+}
+
 export interface TourDto {
   id: string;
   tourCode: string;
@@ -158,6 +168,11 @@ export interface TourDto {
   createdOnUtc: string;
   lastModifiedBy: string | null;
   lastModifiedOnUtc: string | null;
+  pricingPolicyId?: string;
+  depositPolicyId?: string;
+  cancellationPolicyId?: string;
+  visaPolicyId?: string;
+  services?: ServiceDto[];
 }
 
 export interface TourTranslationData {
