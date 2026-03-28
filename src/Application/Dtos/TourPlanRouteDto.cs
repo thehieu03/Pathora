@@ -1,3 +1,4 @@
+using Domain.Entities.Translations;
 using Domain.Enums;
 
 namespace Application.Dtos;
@@ -20,5 +21,6 @@ public sealed record TourPlanRouteDto(
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,
-    DateTimeOffset? LastModifiedOnUtc
+    DateTimeOffset? LastModifiedOnUtc,
+    Dictionary<string, TourPlanRouteTranslationData>? Translations = null
 );

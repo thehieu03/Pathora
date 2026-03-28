@@ -9,6 +9,9 @@ namespace Domain.Specs.Api;
 
 internal static class ApiControllerTestHelper
 {
+    /// <summary>
+    /// For controllers with a parameterless constructor.
+    /// </summary>
     internal static (TController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TController, TRequest, TResponse>(
         ErrorOr<TResponse> response,
         string path)
@@ -39,8 +42,8 @@ internal static class ApiControllerTestHelper
     }
 
     /// <summary>
-    /// Overload for controllers with primary-constructor dependencies (no parameterless ctor).
-    /// Pass extra constructor arguments after <paramref name="path"/>.
+    /// For controllers with primary-constructor dependencies (no parameterless ctor).
+    /// Pass extra constructor arguments after path.
     /// </summary>
     internal static (TController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TController, TRequest, TResponse>(
         ErrorOr<TResponse> response,
@@ -65,6 +68,36 @@ internal static class ApiControllerTestHelper
         controller.ControllerContext = new ControllerContext
         {
             HttpContext = httpContext
+        };
+
+        return (controller, probe);
+    }
+
+    /// <summary>
+    /// For controllers with primary-constructor dependencies AND a custom HttpContext.
+    /// Use this when testing response-committed scenarios.
+    /// </summary>
+    internal static (TController Controller, RequestProbe<TRequest, TResponse> Probe) BuildController<TController, TRequest, TResponse>(
+        ErrorOr<TResponse> response,
+        string path,
+        HttpContext context,
+        params object[] ctorArgs)
+        where TController : ControllerBase
+        where TRequest : IRequest<ErrorOr<TResponse>>
+    {
+        var services = new ServiceCollection();
+        var probe = new RequestProbe<TRequest, TResponse>(response);
+        services.AddSingleton(probe);
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<RequestProbeHandler<TRequest, TResponse>>());
+        services.AddTransient<IRequestHandler<TRequest, ErrorOr<TResponse>>, RequestProbeHandler<TRequest, TResponse>>();
+
+        context.RequestServices = services.BuildServiceProvider();
+        context.Request.Path = path;
+
+        var controller = (TController)Activator.CreateInstance(typeof(TController), ctorArgs)!;
+        controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = context
         };
 
         return (controller, probe);

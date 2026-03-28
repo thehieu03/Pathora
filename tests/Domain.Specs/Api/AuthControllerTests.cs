@@ -4,6 +4,7 @@ using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
 using Contracts.ModelResponse;
 using ErrorOr;
+using Infrastructure.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Domain.Specs.Api;
@@ -493,7 +495,11 @@ public sealed class AuthControllerTests
         };
         httpContext.Request.Path = path;
 
-        var controller = new AuthController
+        var controller = new AuthController(Microsoft.Extensions.Options.Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }))
         {
             ControllerContext = new ControllerContext
             {
@@ -567,7 +573,11 @@ public sealed class AuthControllerTests
         };
         httpContext.Request.Path = path;
 
-        var controller = new AuthController
+        var controller = new AuthController(Microsoft.Extensions.Options.Options.Create(new JwtOptions
+        {
+            AccessTokenCookieExpirationHours = 1,
+            RefreshTokenExpirationHours = 168
+        }))
         {
             ControllerContext = new ControllerContext
             {

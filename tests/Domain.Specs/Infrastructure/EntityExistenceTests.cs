@@ -138,9 +138,9 @@ public sealed class EntityExistenceTests
         // Arrange & Act
         var entityMappings = GetAllEntityMappings().ToList();
 
-        // Assert - we have around 52 DbSet properties (some entities mapped twice like DynamicPricingTierEntity)
-        Assert.True(entityMappings.Count >= 48,
-            $"Expected at least 48 DbSet mappings, but found {entityMappings.Count}");
+        // Assert - we have around 51 DbSet properties
+        Assert.True(entityMappings.Count >= 47,
+            $"Expected at least 47 DbSet mappings, but found {entityMappings.Count}");
     }
 
     private static string GetSolutionRoot()

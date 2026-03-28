@@ -41,10 +41,5 @@ public class TourClassificationConfiguration : IEntityTypeConfiguration<TourClas
             .WithOne(d => d.Classification)
             .HasForeignKey(d => d.ClassificationId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(c => c.DynamicPricingTiers)
-            .WithOne(d => d.TourClassification)
-            .HasForeignKey(d => d.TourClassificationId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

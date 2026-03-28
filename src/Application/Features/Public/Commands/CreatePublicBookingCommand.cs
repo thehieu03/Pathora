@@ -29,32 +29,32 @@ public sealed class CreatePublicBookingCommandValidator : AbstractValidator<Crea
     public CreatePublicBookingCommandValidator()
     {
         RuleFor(x => x.TourInstanceId)
-            .NotEmpty().WithMessage("ID tour không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.CommonIdRequired);
 
         RuleFor(x => x.CustomerName)
-            .NotEmpty().WithMessage("Tên khách hàng không được để trống.")
-            .MaximumLength(200).WithMessage("Tên khách hàng không được vượt quá 200 ký tự.");
+            .NotEmpty().WithMessage(ValidationMessages.PublicBookingCustomerNameRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.PublicBookingCustomerNameMaxLength200);
 
         RuleFor(x => x.CustomerPhone)
-            .NotEmpty().WithMessage("Số điện thoại không được để trống.")
+            .NotEmpty().WithMessage(ValidationMessages.PublicBookingCustomerPhoneRequired)
             .Matches(@"^\+?[0-9\s\-]{8,20}$")
-            .WithMessage("Số điện thoại không hợp lệ.");
+            .WithMessage(ValidationMessages.PublicBookingCustomerPhoneInvalid);
 
         RuleFor(x => x.CustomerEmail)
-            .EmailAddress().WithMessage("Email không hợp lệ.")
+            .EmailAddress().WithMessage(ValidationMessages.PublicBookingCustomerEmailInvalid)
             .When(x => !string.IsNullOrWhiteSpace(x.CustomerEmail));
 
         RuleFor(x => x.NumberAdult)
-            .GreaterThan(0).WithMessage("Số người lớn phải lớn hơn 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.PublicBookingAdultsGreaterThanZero);
 
         RuleFor(x => x.NumberChild)
-            .GreaterThanOrEqualTo(0).WithMessage("Số trẻ em không được âm.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.PublicBookingChildNonNegative);
 
         RuleFor(x => x.NumberInfant)
-            .GreaterThanOrEqualTo(0).WithMessage("Số em bé không được âm.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.PublicBookingInfantNonNegative);
 
         RuleFor(x => x.PaymentMethod)
-            .IsInEnum().WithMessage("Phương thức thanh toán không hợp lệ.");
+            .IsInEnum().WithMessage(ValidationMessages.PublicBookingPaymentMethodInvalid);
     }
 }
 

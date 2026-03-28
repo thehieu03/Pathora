@@ -18,6 +18,15 @@ namespace Api.Controllers;
 [Route(TourEndpoint.Base)]
 public class TourController(IFileService fileService, IFileManager fileManager) : BaseApiController
 {
+    private static readonly HashSet<string> AllowedImageMimeTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/avif"
+    };
+
     private static readonly JsonSerializerOptions TranslationJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -27,6 +36,11 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         PropertyNameCaseInsensitive = true,
         NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+    };
+
+    private static readonly JsonSerializerOptions ImageInputJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
     };
 
     [HttpGet]
@@ -44,20 +58,6 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     {
         var result = await Sender.Send(new GetTourDetailQuery(id));
         return HandleResult(result);
-    }
-
-    [HttpGet(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> GetClassificationPricingTiers(Guid classificationId)
-    {
-        var result = await Sender.Send(new GetClassificationPricingTiersQuery(classificationId));
-        return HandleResult(result);
-    }
-
-    [HttpPut(TourEndpoint.ClassificationPricingTiers)]
-    public async Task<IActionResult> UpsertClassificationPricingTiers(Guid classificationId, [FromBody] List<DynamicPricingDto> tiers)
-    {
-        var result = await Sender.Send(new UpsertClassificationPricingTiersCommand(classificationId, tiers));
-        return HandleUpdated(result);
     }
 
     [HttpPost]
@@ -190,6 +190,7 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] TourStatus status,
         IFormFile? thumbnail,
         [FromForm] List<IFormFile>? images,
+        [FromForm] string? existingImages = null,
         [FromForm] string? translations = null,
         [FromForm] string? classifications = null,
         [FromForm] string? accommodations = null,
@@ -199,7 +200,11 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         [FromForm] Guid? visaPolicyId = null,
         [FromForm] Guid? depositPolicyId = null,
         [FromForm] Guid? pricingPolicyId = null,
-        [FromForm] Guid? cancellationPolicyId = null)
+        [FromForm] Guid? cancellationPolicyId = null,
+        [FromForm] string? deletedClassificationIds = null,
+        [FromForm] string? deletedActivityIds = null,
+        [FromForm] TourScope tourScope = TourScope.Domestic,
+        [FromForm] CustomerSegment customerSegment = CustomerSegment.Group)
     {
         // Validate JSON fields before processing
         var validationErrors = new Dictionary<string, string[]>();
@@ -216,14 +221,32 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
             validationErrors["transportations"] = [transportationError!];
         if (!TryParseServices(services, out _, out var serviceError))
             validationErrors["services"] = [serviceError!];
+        if (!string.IsNullOrEmpty(existingImages) && !TryParseExistingImages(existingImages, out _, out var existingImagesError))
+            validationErrors["existingImages"] = [existingImagesError!];
 
         if (validationErrors.Count > 0)
             return BadRequest(new ValidationProblemDetails(validationErrors));
 
-        var thumbnailDto = thumbnail is not null ? await UploadSingleFile(thumbnail) : null;
-        var imageDtos = images is not null && images.Count > 0
-            ? await UploadFiles(images)
-            : null;
+        // Upload new thumbnail
+        ImageInputDto? thumbnailDto = null;
+        if (thumbnail is not null)
+            thumbnailDto = await UploadSingleFile(thumbnail);
+
+        // Upload new images and merge with existing ones
+        List<ImageInputDto>? imageDtos = null;
+        var existingImageList = ParseExistingImages(existingImages);
+        if (images is not null && images.Count > 0)
+        {
+            var uploaded = await UploadFiles(images);
+            imageDtos = existingImageList is not null
+                ? [.. existingImageList, .. uploaded]
+                : uploaded;
+        }
+        else if (existingImageList is not null)
+        {
+            imageDtos = existingImageList;
+        }
+
         var translationData = ParseTranslations(translations);
         var classificationData = ParseClassifications(classifications);
         var accommodationData = ParseAccommodations(accommodations);
@@ -231,11 +254,42 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         var transportationData = ParseTransportations(transportations);
         var serviceData = ParseServices(services);
 
+        // Parse deleted IDs for cascade soft-delete
+        List<Guid>? parsedDeletedClassificationIds = null;
+        if (!string.IsNullOrEmpty(deletedClassificationIds))
+        {
+            try
+            {
+                parsedDeletedClassificationIds = System.Text.Json.JsonSerializer
+                    .Deserialize<List<Guid>>(deletedClassificationIds);
+            }
+            catch
+            {
+                // Ignore malformed JSON — service handles gracefully
+            }
+        }
+
+        List<Guid>? parsedDeletedActivityIds = null;
+        if (!string.IsNullOrEmpty(deletedActivityIds))
+        {
+            try
+            {
+                parsedDeletedActivityIds = System.Text.Json.JsonSerializer
+                    .Deserialize<List<Guid>>(deletedActivityIds);
+            }
+            catch
+            {
+                // Ignore malformed JSON — service handles gracefully
+            }
+        }
+
         var command = new UpdateTourCommand(
             id, tourName, shortDescription, longDescription,
             seoTitle, seoDescription, status, thumbnailDto, imageDtos, translationData,
             classificationData, accommodationData, locationData, transportationData, serviceData,
-            visaPolicyId, depositPolicyId, pricingPolicyId, cancellationPolicyId);
+            visaPolicyId, depositPolicyId, pricingPolicyId, cancellationPolicyId,
+            parsedDeletedClassificationIds, parsedDeletedActivityIds,
+            tourScope, customerSegment);
 
         var result = await Sender.Send(command);
         return HandleResult(result);
@@ -248,8 +302,18 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
         return HandleResult(result);
     }
 
+    private static bool IsValidImageFile(IFormFile file)
+    {
+        return file.Length > 0 && AllowedImageMimeTypes.Contains(file.ContentType ?? string.Empty);
+    }
+
     private async Task<ImageInputDto> UploadSingleFile(IFormFile file)
     {
+        if (!IsValidImageFile(file))
+        {
+            throw new BadHttpRequestException("Invalid file type. Allowed types: image/jpeg, image/png, image/webp, image/gif, image/avif.");
+        }
+
         await using var stream = file.OpenReadStream();
         var meta = await fileService.UploadFileAsync(
             new Application.Contracts.File.UploadFileRequest(
@@ -517,6 +581,46 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
             result = null;
             error = $"invalid JSON format: {ex.Message}";
             return false;
+        }
+    }
+
+    private static bool TryParseExistingImages(string? existingImages, out List<ImageInputDto>? result, out string? error)
+    {
+        if (string.IsNullOrWhiteSpace(existingImages))
+        {
+            result = null;
+            error = null;
+            return true;
+        }
+
+        try
+        {
+            result = JsonSerializer.Deserialize<List<ImageInputDto>>(existingImages, ImageInputJsonOptions);
+            error = null;
+            return true;
+        }
+        catch (JsonException ex)
+        {
+            result = null;
+            error = $"invalid JSON format: {ex.Message}";
+            return false;
+        }
+    }
+
+    private static List<ImageInputDto>? ParseExistingImages(string? existingImages)
+    {
+        if (string.IsNullOrWhiteSpace(existingImages))
+        {
+            return null;
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<ImageInputDto>>(existingImages, ImageInputJsonOptions);
+        }
+        catch (JsonException)
+        {
+            return null;
         }
     }
 

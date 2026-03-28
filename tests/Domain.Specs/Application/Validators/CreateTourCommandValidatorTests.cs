@@ -525,7 +525,14 @@ public class CreateTourCommandValidatorTests
                             CheckOutTime: "12:00",
                             Note: null,
                             RoomType: null,
-                            RoomCapacity: null))])],
+                            RoomCapacity: null,
+                            MealsIncluded: null,
+                            RoomPrice: null,
+                            NumberOfRooms: null,
+                            NumberOfNights: null,
+                            Latitude: null,
+                            Longitude: null,
+                            SpecialRequest: null))])],
                 Insurances: [])
             ]
         };
@@ -570,7 +577,14 @@ public class CreateTourCommandValidatorTests
                             CheckOutTime: null,
                             Note: null,
                             RoomType: null,
-                            RoomCapacity: null))])],
+                            RoomCapacity: null,
+                            MealsIncluded: null,
+                            RoomPrice: null,
+                            NumberOfRooms: null,
+                            NumberOfNights: null,
+                            Latitude: null,
+                            Longitude: null,
+                            SpecialRequest: null))])],
                 Insurances: [])
             ]
         };
@@ -616,7 +630,14 @@ public class CreateTourCommandValidatorTests
                             CheckOutTime: null,
                             Note: null,
                             RoomType: null,
-                            RoomCapacity: null))])],
+                            RoomCapacity: null,
+                            MealsIncluded: null,
+                            RoomPrice: null,
+                            NumberOfRooms: null,
+                            NumberOfNights: null,
+                            Latitude: null,
+                            Longitude: null,
+                            SpecialRequest: null))])],
                 Insurances: [])
             ]
         };
@@ -1417,6 +1438,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: "",
                 PricingType: "Per booking",
                 Price: 100,
@@ -1435,6 +1457,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: CreateString(201),
                 PricingType: "Per booking",
                 Price: 100,
@@ -1453,6 +1476,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: "Tour Guide Service",
                 PricingType: "Per booking",
                 Price: 100,
@@ -1474,6 +1498,7 @@ public class CreateTourCommandValidatorTests
         var command = CreateBaseValidCommand() with
         {
             Services = [new ServiceDto(
+                Id: null,
                 ServiceName: "Guide",
                 PricingType: "Per booking",
                 Price: -50,

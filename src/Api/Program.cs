@@ -44,19 +44,43 @@ var app = builder.Build();
 
 await app.Services.GetRequiredService<DatabaseStartupInitializer>().InitializeAsync();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHsts();
-    //    app.UseHttpsRedirection();
-}
+// Note: DeveloperExceptionPage is intentionally NOT used in any environment.
+// In Development, ASP.NET Core auto-registers it unless we suppress it. We handle all
+// exceptions via custom middleware + IExceptionHandler registered in DI.
+app.Environment.IsDevelopment(); // Suppress auto-UseDeveloperExceptionPage
 
-// Authentication and Authorization must be before exception handling
-// so that auth challenges (401/403) can set status codes before any response body is written.
+// === TEMPORARY DIAGNOSTIC MIDDLEWARE FOR GOOGLE OAUTH 500 INVESTIGATION ===
+// TODO: Remove after diagnosis (B.4)
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value ?? "";
+    var hasStartedBefore = context.Response.HasStarted;
+    Console.WriteLine($"[DIAG] >>> {context.Request.Method} {path} — HasStarted BEFORE pipeline: {hasStartedBefore}");
+    try
+    {
+        await next(context);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DIAG] !!! EXCEPTION: {ex.GetType().Name}: {ex.Message}");
+        throw;
+    }
+    finally
+    {
+        Console.WriteLine($"[DIAG] <<< {context.Request.Method} {path} — HasStarted AFTER pipeline: {context.Response.HasStarted}, Status: {context.Response.StatusCode}");
+    }
+});
+// === END TEMPORARY DIAGNOSTIC ===
+
+// Exception handling middleware is FIRST to wrap the entire pipeline, including
+// authentication/authorization middleware where "StatusCode cannot be set" exceptions
+// can be thrown from JwtBearerHandler.HandleChallengeAsync.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+// Authentication and Authorization.
 app.UseCors("DefaultCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Exception handler is registered via DI (AddExceptionHandler<CustomExceptionHandler>) in AddApiServices().
 
 app.UseResponseCompression();
 

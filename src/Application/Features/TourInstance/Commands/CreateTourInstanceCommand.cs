@@ -18,6 +18,7 @@ public sealed record CreateTourInstanceCommand(
     DateTimeOffset StartDate,
     DateTimeOffset EndDate,
     int MaxParticipation,
+    decimal BasePrice,
     string? Location = null,
     DateTimeOffset? ConfirmationDeadline = null,
     List<string>? IncludedServices = null,
@@ -50,20 +51,32 @@ public sealed class CreateTourInstanceCommandValidator : AbstractValidator<Creat
         RuleFor(x => x.MaxParticipation)
             .GreaterThan(0).WithMessage(ValidationMessages.TourInstanceMaxParticipantsGreaterThanZero);
 
+        RuleFor(x => x.BasePrice)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceBasePriceRequired)
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceBasePriceNonNegative);
+
+        RuleFor(x => x)
+            .Must(x => x.ConfirmationDeadline == null || x.ConfirmationDeadline < x.StartDate)
+            .WithMessage(ValidationMessages.TourInstanceConfirmationDeadlineBeforeStart)
+            .When(x => x.ConfirmationDeadline != null);
+
+        RuleFor(x => x.InstanceType)
+            .IsInEnum().WithMessage(ValidationMessages.TourInstanceInstanceTypeInvalid);
+
         RuleFor(x => x.GuideUserIds)
             .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage("Guide IDs không được trùng nhau")
+            .WithMessage(ValidationMessages.TourInstanceGuideIdsNotDuplicate)
             .When(x => x.GuideUserIds is { Count: > 0 });
 
         RuleFor(x => x.ManagerUserIds)
             .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage("Manager IDs không được trùng nhau")
+            .WithMessage(ValidationMessages.TourInstanceManagerIdsNotDuplicate)
             .When(x => x.ManagerUserIds is { Count: > 0 });
 
         RuleFor(x => x)
             .Must(x => x.GuideUserIds == null || x.ManagerUserIds == null ||
                        !x.GuideUserIds.Any(g => x.ManagerUserIds.Contains(g)))
-            .WithMessage("Một user không thể vừa là Guide vừa là Manager");
+            .WithMessage(ValidationMessages.TourInstanceUserCannotBeBothGuideAndManager);
     }
 }
 

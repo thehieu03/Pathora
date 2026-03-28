@@ -88,6 +88,22 @@ public class TourService(
             depositPolicyId: request.DepositPolicyId,
             pricingPolicyId: request.PricingPolicyId,
             cancellationPolicyId: request.CancellationPolicyId);
+
+            const int maxTourCodeGenerationAttempts = 10;
+            var tourCodeGenerationAttempts = 0;
+            while (await _tourRepository.ExistsByTourCode(tour.TourCode) && tourCodeGenerationAttempts < maxTourCodeGenerationAttempts)
+            {
+                tour.TourCode = TourEntity.GenerateTourCode();
+                tourCodeGenerationAttempts++;
+            }
+
+            if (await _tourRepository.ExistsByTourCode(tour.TourCode))
+            {
+                return Error.Conflict(
+                    ErrorConstants.Tour.DuplicateCodeCode,
+                    string.Format(ErrorConstants.Tour.DuplicateCodeDescriptionTemplate, tour.TourCode));
+            }
+
             tour.Translations = NormalizeTranslations(request.Translations);
 
             // Add Classifications with Plans, Activities, Insurances
@@ -156,10 +172,6 @@ public class TourService(
                                 var routeOrder = act.Routes.IndexOf(route) + 1;
                                 var fromLocation = await ResolveLocationAsync(route.FromLocationId, route.FromLocationName, tour.Id);
                                 var toLocation = await ResolveLocationAsync(route.ToLocationId, route.ToLocationName, tour.Id);
-
-                                // Apply route translations to locations
-                                fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
-                                toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
 
                                 // Validator guarantees TransportationType is a valid enum — parse with assertion
                                 _ = EnumHelper.TryParseDefinedEnum<TransportationType>(route.TransportationType, out var routeTransportType);
@@ -349,8 +361,47 @@ public class TourService(
                 ErrorConstants.Tour.DuplicateCodeCode,
                 string.Format(ErrorConstants.Tour.DuplicateCodeDescriptionTemplate, tour.TourCode));
 
-        var thumbnail = request.Thumbnail is not null ? ToImageEntity(request.Thumbnail) : null;
-        var images = request.Images?.Select(ToImageEntity).ToList();
+        // Update thumbnail in-place if provided (avoids shared-type EF Core issue)
+        // Update images in-place — EF Core can track owned entities this way
+        if (request.Thumbnail is not null)
+        {
+            tour.Thumbnail ??= new ImageEntity();
+            tour.Thumbnail.FileId = request.Thumbnail.FileId;
+            tour.Thumbnail.OriginalFileName = request.Thumbnail.OriginalFileName;
+            tour.Thumbnail.FileName = request.Thumbnail.FileName;
+            tour.Thumbnail.PublicURL = request.Thumbnail.PublicURL;
+        }
+
+        // Update Images in-place — EF Core can track owned entities this way
+        if (request.Images is not null)
+        {
+            var newFileIds = request.Images.Where(i => i.FileId is not null).Select(i => i.FileId!).ToHashSet();
+            // Remove images not in the new list
+            var toRemove = tour.Images.Where(i => i.FileId is null || !newFileIds.Contains(i.FileId)).ToList();
+            foreach (var img in toRemove) tour.Images.Remove(img);
+
+            // Update or add images
+            foreach (var dto in request.Images)
+            {
+                var existing = tour.Images.FirstOrDefault(i => i.FileId == dto.FileId);
+                if (existing is not null)
+                {
+                    existing.OriginalFileName = dto.OriginalFileName;
+                    existing.FileName = dto.FileName;
+                    existing.PublicURL = dto.PublicURL;
+                }
+                else
+                {
+                    tour.Images.Add(new ImageEntity
+                    {
+                        FileId = dto.FileId,
+                        OriginalFileName = dto.OriginalFileName,
+                        FileName = dto.FileName,
+                        PublicURL = dto.PublicURL,
+                    });
+                }
+            }
+        }
 
         tour.Update(
             request.TourName,
@@ -358,10 +409,10 @@ public class TourService(
             request.LongDescription,
             request.Status,
             _user.Id ?? string.Empty,
+            tourScope: request.TourScope,
+            customerSegment: request.CustomerSegment,
             seoTitle: request.SEOTitle,
             seoDescription: request.SEODescription,
-            thumbnail: thumbnail,
-            images: images,
             visaPolicyId: request.VisaPolicyId,
             depositPolicyId: request.DepositPolicyId,
             pricingPolicyId: request.PricingPolicyId,
@@ -372,6 +423,18 @@ public class TourService(
         if (request.Classifications != null)
         {
             await UpdateClassificationsAsync(tour, request.Classifications);
+        }
+
+        // Cascade soft-delete removed classifications and their nested entities
+        if (request.DeletedClassificationIds != null && request.DeletedClassificationIds.Count > 0)
+        {
+            await CascadeDeleteClassificationsAsync(tour, request.DeletedClassificationIds);
+        }
+
+        // Cascade soft-delete removed activities and their nested routes/accommodations
+        if (request.DeletedActivityIds != null && request.DeletedActivityIds.Count > 0)
+        {
+            await CascadeDeleteActivitiesAsync(tour, request.DeletedActivityIds);
         }
 
         // Standalone Accommodations, Locations, Transportations and Services are merged as TourResources
@@ -449,6 +512,7 @@ public class TourService(
                     contactPhone: svc.ContactNumber,
                     price: svc.Price ?? svc.SalePrice,
                     pricingType: svc.PricingType);
+                resource.Translations = NormalizeTranslationsFromPayload(svc.Translations);
                 tour.Resources.Add(resource);
             }
         }
@@ -875,8 +939,6 @@ public class TourService(
                         _user.Id ?? string.Empty,
                         tourId,
                         tourDayActivityId: day.Id);
-                    fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
-                    toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
                     var routeEntity = TourPlanRouteEntity.Create(
                         routeOrder,
                         transportationType,
@@ -893,6 +955,8 @@ public class TourService(
                     routeEntity.Translations = NormalizeTranslationsFromPayload(route.RouteTranslations);
                     routeEntity.FromLocation = fromLocation;
                     routeEntity.ToLocation = toLocation;
+                    // Do NOT assign route.Translations to fromLocation/toLocation — that overwrites
+                    // shared location entities when multiple routes reference the same location.
                     activity.Routes.Add(routeEntity);
                 }
             }
@@ -931,8 +995,6 @@ public class TourService(
                         _user.Id ?? string.Empty,
                         tourId,
                         tourDayActivityId: day.Id);
-                    fromLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
-                    toLocation.Translations = NormalizeTranslationsFromPayload(route.Translations);
                     var routeEntity = TourPlanRouteEntity.Create(
                         routeOrder,
                         transportationType,
@@ -949,10 +1011,47 @@ public class TourService(
                     routeEntity.Translations = NormalizeTranslationsFromPayload(route.RouteTranslations);
                     routeEntity.FromLocation = fromLocation;
                     routeEntity.ToLocation = toLocation;
+                    // Do NOT assign route.Translations to fromLocation/toLocation — that overwrites
+                    // shared location entities when multiple routes reference the same location.
                     activity.Routes.Add(routeEntity);
                 }
 
                 day.Activities.Add(activity);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Cascade soft-deletes classifications and all their nested entities
+    /// (Plans, Activities, Routes, Locations, Insurances, Accommodations).
+    /// </summary>
+    private async Task CascadeDeleteClassificationsAsync(TourEntity tour, List<Guid> deletedIds)
+    {
+        var deletedSet = new HashSet<Guid>(deletedIds);
+        var toDelete = tour.Classifications.Where(c => deletedSet.Contains(c.Id)).ToList();
+
+        foreach (var classification in toDelete)
+        {
+            CascadeSoftDeleteClassification(classification, _user.Id ?? string.Empty);
+        }
+    }
+
+    /// <summary>
+    /// Cascade soft-deletes standalone activities (from day plans) and their
+    /// nested routes and accommodations.
+    /// </summary>
+    private async Task CascadeDeleteActivitiesAsync(TourEntity tour, List<Guid> deletedActivityIds)
+    {
+        var deletedSet = new HashSet<Guid>(deletedActivityIds);
+        foreach (var classification in tour.Classifications)
+        {
+            foreach (var plan in classification.Plans)
+            {
+                var toDelete = plan.Activities.Where(a => deletedSet.Contains(a.Id)).ToList();
+                foreach (var activity in toDelete)
+                {
+                    CascadeSoftDeleteActivity(activity, _user.Id ?? string.Empty);
+                }
             }
         }
     }

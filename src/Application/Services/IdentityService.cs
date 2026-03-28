@@ -28,6 +28,7 @@ public interface IIdentityService
     Task<ErrorOr<Success>> SendOtp(string email);
     Task<ErrorOr<UserInfoVm>> GetUserInfo();
     Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request);
+    Task<ErrorOr<Success>> UpdateMyProfile(UpdateMyProfileRequest request);
     Task<ErrorOr<List<TabVm>>> GetTabs();
     Task<ErrorOr<Success>> ConfirmRegister(ConfirmRegisterRequest request);
 }
@@ -437,12 +438,35 @@ public class IdentityService(
             roles,
             [],
             portalRouting.Portal,
-            portalRouting.DefaultPath);
+            portalRouting.DefaultPath,
+            userEntity.PhoneNumber,
+            userEntity.Address);
     }
 
     public Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ErrorOr<Success>> UpdateMyProfile(UpdateMyProfileRequest request)
+    {
+        var userId = _user.Id;
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var uid))
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
+
+        var userEntity = await _userRepository.FindById(uid);
+        if (userEntity is null)
+            return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
+
+        userEntity.UpdateProfile(
+            request.FullName,
+            request.PhoneNumber,
+            request.Address,
+            request.Avatar);
+
+        _userRepository.Update(userEntity);
+
+        return Result.Success;
     }
 
     public async Task<ErrorOr<List<TabVm>>> GetTabs()

@@ -7,6 +7,7 @@ using Application.Features.Identity.Commands;
 using Application.Features.Identity.Queries;
 using ErrorOr;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -14,30 +15,23 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Api.Controllers;
 
 [Route(AuthEndpoint.Base)]
 [EnableRateLimiting("auth-strict")]
-public class AuthController : BaseApiController
+public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
 {
     [HttpPost(AuthEndpoint.Login)]
     public async Task<IActionResult> Login([FromBody] LoginCommand command)
     {
         var result = await Sender.Send(command);
 
-        if (!result.IsError)
+        if (!result.IsError && !Response.HasStarted)
         {
-            try
-            {
-                AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
-                AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
-            }
-            catch (InvalidOperationException)
-            {
-                // Response has already started (headers committed) — cookies cannot be set.
-            }
+            AuthCookieWriter.WriteAuthCookies(Response, result.Value, Request.IsHttps, jwtOptions.Value);
         }
 
         return base.HandleResult(result);
@@ -57,15 +51,30 @@ public class AuthController : BaseApiController
 
         if (!result.IsError)
         {
-            try
+            // Write both tokens to cookies so backend AuthTokenResolver and frontend can read them.
+            // access_token is non-HttpOnly (JS-readable) so frontend can set Authorization headers.
+            // refresh_token is HttpOnly (secure) so XSS cannot steal it.
+            // Expiration values come from appsettings.json via JwtOptions.
+            Response.Cookies.Append("access_token", result.Value.AccessToken, new CookieOptions
             {
-                AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
-                AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
-            }
-            catch (InvalidOperationException)
+                HttpOnly = false, // JS-readable for frontend Authorization header
+                IsEssential = true,
+                MaxAge = TimeSpan.FromHours(jwtOptions.Value.AccessTokenCookieExpirationHours),
+                Path = "/",
+                SameSite = SameSiteMode.Lax,
+                Secure = Request.IsHttps
+            });
+            Response.Cookies.Append("refresh_token", result.Value.RefreshToken, new CookieOptions
             {
-                // Response has already started — cookies cannot be set.
-            }
+                HttpOnly = true, // Secure: JS cannot read this
+                IsEssential = true,
+                MaxAge = TimeSpan.FromHours(jwtOptions.Value.RefreshTokenExpirationHours),
+                Path = "/",
+                SameSite = SameSiteMode.Lax,
+                Secure = Request.IsHttps
+            });
+            AuthCookieWriter.WriteAuthStatusCookie(Response, Request.IsHttps);
+            AuthCookieWriter.WriteAuthPortalCookie(Response, result.Value.Portal, Request.IsHttps);
         }
         else if (result.Errors.Any(error => error.Type is ErrorType.Unauthorized or ErrorType.NotFound))
         {
@@ -125,6 +134,15 @@ public class AuthController : BaseApiController
 
         return HandleResult(result);
     }
+
+    [Authorize]
+    [HttpPut(AuthEndpoint.Me)]
+    public async Task<IActionResult> UpdateMyProfile([FromBody] Application.Features.Identity.Commands.UpdateMyProfileCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
+
     [Authorize]
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()
@@ -229,6 +247,7 @@ public class AuthController : BaseApiController
         });
     }
 
+    [AllowAnonymous]
     [HttpGet(AuthEndpoint.GoogleLogin)]
     public IActionResult GoogleLogin([FromServices] IConfiguration configuration)
     {
@@ -242,6 +261,7 @@ public class AuthController : BaseApiController
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
+    [AllowAnonymous]
     [HttpGet(AuthEndpoint.GoogleCallback)]
     public async Task<IActionResult> GoogleCallback([FromServices] IConfiguration configuration)
     {
@@ -273,7 +293,7 @@ public class AuthController : BaseApiController
         }
 
         var response = result.Value;
-        try { AuthCookieWriter.WriteAuthCookies(Response, response, Request.IsHttps); } catch (InvalidOperationException) { }
+        AuthCookieWriter.WriteAuthCookies(Response, response, Request.IsHttps, jwtOptions.Value);
         return Redirect($"{frontendUrl}/auth/callback");
     }
 

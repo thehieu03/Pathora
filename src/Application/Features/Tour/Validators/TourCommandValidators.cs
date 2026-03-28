@@ -12,18 +12,18 @@ public sealed class ImageInputDtoValidator : AbstractValidator<ImageInputDto>
     public ImageInputDtoValidator()
     {
         RuleFor(x => x.FileId)
-            .NotEmpty().WithMessage("Thumbnail file ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.ImageFileIdRequired);
 
         RuleFor(x => x.OriginalFileName)
-            .NotEmpty().WithMessage("Original file name is required.");
+            .NotEmpty().WithMessage(ValidationMessages.ImageOriginalFileNameRequired);
 
         RuleFor(x => x.FileName)
-            .NotEmpty().WithMessage("File name is required.");
+            .NotEmpty().WithMessage(ValidationMessages.ImageFileNameRequired);
 
         RuleFor(x => x.PublicURL)
-            .NotEmpty().WithMessage("Public URL is required.")
+            .NotEmpty().WithMessage(ValidationMessages.ImagePublicUrlRequired)
             .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
-            .WithMessage("Public URL must be a valid URL.");
+            .WithMessage(ValidationMessages.ImagePublicUrlInvalid);
     }
 }
 
@@ -32,20 +32,20 @@ public sealed class ClassificationDtoValidator : AbstractValidator<Classificatio
     public ClassificationDtoValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Classification name is required.")
-            .MaximumLength(200).WithMessage("Classification name must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.ClassificationNameRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.ClassificationNameMaxLength200);
 
         RuleFor(x => x.Description)
-            .MaximumLength(1000).WithMessage("Classification description must not exceed 1000 characters.");
+            .MaximumLength(1000).WithMessage(ValidationMessages.ClassificationDescriptionMaxLength1000);
 
         RuleFor(x => x.BasePrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Base price must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.ClassificationBasePriceNonNegative);
 
         RuleFor(x => x.NumberOfDay)
-            .GreaterThan(0).WithMessage("Number of days must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.ClassificationNumberOfDaysPositive);
 
         RuleFor(x => x.NumberOfNight)
-            .GreaterThanOrEqualTo(0).WithMessage("Number of nights must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.ClassificationNumberOfNightsNonNegative);
 
         RuleForEach(x => x.Plans)
             .SetValidator(new DayPlanDtoValidator())
@@ -62,14 +62,14 @@ public sealed class DayPlanDtoValidator : AbstractValidator<DayPlanDto>
     public DayPlanDtoValidator()
     {
         RuleFor(x => x.DayNumber)
-            .GreaterThan(0).WithMessage("Day number must be greater than 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.DayPlanDayNumberPositive);
 
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Day plan title is required.")
-            .MaximumLength(200).WithMessage("Day plan title must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.DayPlanTitleRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.DayPlanTitleMaxLength200);
 
         RuleFor(x => x.Description)
-            .MaximumLength(2000).WithMessage("Day plan description must not exceed 2000 characters.");
+            .MaximumLength(2000).WithMessage(ValidationMessages.DayPlanDescriptionMaxLength2000);
 
         RuleForEach(x => x.Activities)
             .SetValidator(new ActivityDtoValidator())
@@ -82,7 +82,7 @@ public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
     public ActivityDtoValidator()
     {
         RuleFor(x => x.ActivityType)
-            .NotEmpty().WithMessage("Activity type is required.");
+            .NotEmpty().WithMessage(ValidationMessages.ActivityTypeRequired);
 
         RuleFor(x => x.ActivityType)
             .Custom((value, context) =>
@@ -94,14 +94,14 @@ public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
             });
 
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Activity title is required.")
-            .MaximumLength(200).WithMessage("Activity title must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.ActivityTitleRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.ActivityTitleMaxLength200);
 
         RuleFor(x => x.Description)
-            .MaximumLength(1000).WithMessage("Activity description must not exceed 1000 characters.");
+            .MaximumLength(1000).WithMessage(ValidationMessages.ActivityDescriptionMaxLength1000);
 
         RuleFor(x => x.EstimatedCost)
-            .GreaterThanOrEqualTo(0).WithMessage("Estimated cost must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.ActivityEstimatedCostNonNegative);
 
         RuleForEach(x => x.Routes)
             .SetValidator(new RouteDtoValidator())
@@ -113,12 +113,12 @@ public sealed class ActivityDtoValidator : AbstractValidator<ActivityDto>
 
         RuleForEach(x => x.LinkToResources)
             .Must(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri?.Scheme == "http" || uri?.Scheme == "https"))
-            .WithMessage("Each resource link must be a valid absolute URL with http or https scheme (e.g., https://example.com).")
+            .WithMessage(ValidationMessages.ActivityResourceLinkInvalid)
             .When(x => x.LinkToResources != null && x.LinkToResources.Count > 0);
 
         RuleForEach(x => x.LinkToResources)
             .MaximumLength(2048)
-            .WithMessage("Each resource link URL must not exceed 2048 characters.")
+            .WithMessage(ValidationMessages.ActivityResourceLinkMaxLength2048)
             .When(x => x.LinkToResources != null && x.LinkToResources.Count > 0);
     }
 }
@@ -129,7 +129,7 @@ public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
     {
         // TransportationType is always required
         RuleFor(x => x.TransportationType)
-            .NotEmpty().WithMessage("Transportation type is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TransportationTypeRequired);
 
         RuleFor(x => x.TransportationType)
             .Custom((value, context) =>
@@ -144,20 +144,20 @@ public sealed class RouteDtoValidator : AbstractValidator<RouteDto>
         When(x => !x.FromLocationId.HasValue, () =>
         {
             RuleFor(x => x.FromLocationName)
-                .NotEmpty().WithMessage("From location name is required when FromLocationId is not provided.");
+                .NotEmpty().WithMessage(ValidationMessages.RouteFromLocationNameRequired);
         });
 
         When(x => !x.ToLocationId.HasValue, () =>
         {
             RuleFor(x => x.ToLocationName)
-                .NotEmpty().WithMessage("To location name is required when ToLocationId is not provided.");
+                .NotEmpty().WithMessage(ValidationMessages.RouteToLocationNameRequired);
         });
 
         RuleFor(x => x.DurationMinutes)
-            .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.RouteDurationNonNegative);
 
         RuleFor(x => x.Price)
-            .GreaterThanOrEqualTo(0).WithMessage("Route price must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.RoutePriceNonNegative);
     }
 }
 
@@ -166,7 +166,7 @@ public sealed class TransportationDtoValidator : AbstractValidator<Transportatio
     public TransportationDtoValidator()
     {
         RuleFor(x => x.TransportationType)
-            .NotEmpty().WithMessage("Transportation type is required.");
+            .NotEmpty().WithMessage(ValidationMessages.TransportationTypeRequired);
 
         RuleFor(x => x.TransportationType)
             .Custom((value, context) =>
@@ -180,31 +180,31 @@ public sealed class TransportationDtoValidator : AbstractValidator<Transportatio
         When(x => !x.FromLocationId.HasValue, () =>
         {
             RuleFor(x => x.FromLocationName)
-                .NotEmpty().WithMessage("From location name is required when FromLocationId is not provided.");
+                .NotEmpty().WithMessage(ValidationMessages.RouteFromLocationNameRequired);
         });
 
         When(x => !x.ToLocationId.HasValue, () =>
         {
             RuleFor(x => x.ToLocationName)
-                .NotEmpty().WithMessage("To location name is required when ToLocationId is not provided.");
+                .NotEmpty().WithMessage(ValidationMessages.RouteToLocationNameRequired);
         });
 
         RuleFor(x => x.DurationMinutes)
-            .GreaterThanOrEqualTo(0).WithMessage("Duration must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.RouteDurationNonNegative);
 
         RuleFor(x => x.Price)
-            .GreaterThanOrEqualTo(0).WithMessage("Transportation price must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TransportationPriceNonNegative);
 
         RuleFor(x => x.TransportationName)
-            .MaximumLength(300).WithMessage("Transportation name must not exceed 300 characters.")
+            .MaximumLength(300).WithMessage(ValidationMessages.TransportationNameMaxLength300)
             .When(x => x.TransportationName != null);
 
         RuleFor(x => x.TicketInfo)
-            .MaximumLength(500).WithMessage("Ticket info must not exceed 500 characters.")
+            .MaximumLength(500).WithMessage(ValidationMessages.TransportationTicketInfoMaxLength500)
             .When(x => x.TicketInfo != null);
 
         RuleFor(x => x.Note)
-            .MaximumLength(1000).WithMessage("Note must not exceed 1000 characters.")
+            .MaximumLength(1000).WithMessage(ValidationMessages.TransportationNoteMaxLength1000)
             .When(x => x.Note != null);
     }
 }
@@ -214,29 +214,57 @@ public sealed class AccommodationDtoValidator : AbstractValidator<AccommodationD
     public AccommodationDtoValidator()
     {
         RuleFor(x => x.AccommodationName)
-            .NotEmpty().WithMessage("Accommodation name is required.")
-            .MaximumLength(200).WithMessage("Accommodation name must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.AccommodationNameRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.AccommodationNameMaxLength200);
 
         RuleFor(x => x.Address)
-            .MaximumLength(500).WithMessage("Address must not exceed 500 characters.");
+            .MaximumLength(500).WithMessage(ValidationMessages.AccommodationAddressMaxLength500);
 
         RuleFor(x => x.ContactPhone)
-            .Matches(@"^[\d\s\-\+\(\)]+$").WithMessage("Invalid phone number format.")
+            .Matches(@"^[\d\s\-\+\(\)]+$").WithMessage(ValidationMessages.PhoneNumberInvalid)
             .When(x => !string.IsNullOrEmpty(x.ContactPhone));
 
         RuleFor(x => x.CheckInTime)
-            .MaximumLength(50).WithMessage("Check-in time must not exceed 50 characters.");
+            .MaximumLength(50).WithMessage(ValidationMessages.AccommodationCheckInTimeMaxLength50);
 
         RuleFor(x => x.CheckOutTime)
-            .MaximumLength(50).WithMessage("Check-out time must not exceed 50 characters.");
+            .MaximumLength(50).WithMessage(ValidationMessages.AccommodationCheckOutTimeMaxLength50);
 
         RuleFor(x => x.RoomType)
-            .MaximumLength(50).WithMessage("Room type must not exceed 50 characters.")
+            .MaximumLength(50).WithMessage(ValidationMessages.AccommodationRoomTypeMaxLength50)
             .When(x => x.RoomType != null);
 
         RuleFor(x => x.RoomCapacity)
-            .GreaterThan(0).WithMessage("Room capacity must be greater than 0.")
+            .GreaterThan(0).WithMessage(ValidationMessages.AccommodationRoomCapacityPositive)
             .When(x => x.RoomCapacity.HasValue);
+
+        RuleFor(x => x.NumberOfRooms)
+            .InclusiveBetween(1, 999).WithMessage(ValidationMessages.AccommodationNumberOfRoomsRange)
+            .When(x => x.NumberOfRooms.HasValue);
+
+        RuleFor(x => x.NumberOfNights)
+            .InclusiveBetween(1, 999).WithMessage(ValidationMessages.AccommodationNumberOfNightsRange)
+            .When(x => x.NumberOfNights.HasValue);
+
+        RuleFor(x => x.RoomPrice)
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.AccommodationRoomPriceNonNegative)
+            .When(x => x.RoomPrice.HasValue);
+
+        RuleFor(x => x.Latitude)
+            .InclusiveBetween(-90m, 90m).WithMessage(ValidationMessages.AccommodationLatitudeRange)
+            .When(x => x.Latitude.HasValue);
+
+        RuleFor(x => x.Longitude)
+            .InclusiveBetween(-180m, 180m).WithMessage(ValidationMessages.AccommodationLongitudeRange)
+            .When(x => x.Longitude.HasValue);
+
+        RuleFor(x => x.SpecialRequest)
+            .MaximumLength(1000).WithMessage(ValidationMessages.AccommodationSpecialRequestMaxLength1000)
+            .When(x => x.SpecialRequest != null);
+
+        RuleFor(x => x.MealsIncluded)
+            .MaximumLength(100).WithMessage(ValidationMessages.AccommodationMealsIncludedMaxLength100)
+            .When(x => x.MealsIncluded != null);
     }
 }
 
@@ -245,11 +273,11 @@ public sealed class InsuranceDtoValidator : AbstractValidator<InsuranceDto>
     public InsuranceDtoValidator()
     {
         RuleFor(x => x.InsuranceName)
-            .NotEmpty().WithMessage("Insurance name is required.")
-            .MaximumLength(200).WithMessage("Insurance name must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.InsuranceNameRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.InsuranceNameMaxLength200);
 
         RuleFor(x => x.InsuranceType)
-            .NotEmpty().WithMessage("Insurance type is required.");
+            .NotEmpty().WithMessage(ValidationMessages.InsuranceTypeRequired);
 
         RuleFor(x => x.InsuranceType)
             .Custom((value, context) =>
@@ -261,16 +289,16 @@ public sealed class InsuranceDtoValidator : AbstractValidator<InsuranceDto>
             });
 
         RuleFor(x => x.InsuranceProvider)
-            .MaximumLength(200).WithMessage("Insurance provider must not exceed 200 characters.");
+            .MaximumLength(200).WithMessage(ValidationMessages.InsuranceProviderMaxLength200);
 
         RuleFor(x => x.CoverageDescription)
-            .MaximumLength(1000).WithMessage("Coverage description must not exceed 1000 characters.");
+            .MaximumLength(1000).WithMessage(ValidationMessages.InsuranceCoverageDescriptionMaxLength1000);
 
         RuleFor(x => x.CoverageAmount)
-            .GreaterThanOrEqualTo(0).WithMessage("Coverage amount must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.InsuranceCoverageAmountNonNegative);
 
         RuleFor(x => x.CoverageFee)
-            .GreaterThanOrEqualTo(0).WithMessage("Coverage fee must be greater than or equal to 0.");
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.InsuranceCoverageFeeNonNegative);
     }
 }
 
@@ -279,11 +307,11 @@ public sealed class LocationDtoValidator : AbstractValidator<LocationDto>
     public LocationDtoValidator()
     {
         RuleFor(x => x.LocationName)
-            .NotEmpty().WithMessage("Location name is required.")
-            .MaximumLength(200).WithMessage("Location name must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.LocationNameRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.LocationNameMaxLength200);
 
         RuleFor(x => x.LocationType)
-            .NotEmpty().WithMessage("Location type is required.");
+            .NotEmpty().WithMessage(ValidationMessages.LocationTypeRequired);
 
         RuleFor(x => x.LocationType)
             .Custom((value, context) =>
@@ -295,23 +323,23 @@ public sealed class LocationDtoValidator : AbstractValidator<LocationDto>
             });
 
         RuleFor(x => x.Description)
-            .MaximumLength(1000).WithMessage("Location description must not exceed 1000 characters.")
+            .MaximumLength(1000).WithMessage(ValidationMessages.LocationDescriptionMaxLength1000)
             .When(x => x.Description != null);
 
         RuleFor(x => x.City)
-            .MaximumLength(200).WithMessage("City must not exceed 200 characters.")
+            .MaximumLength(200).WithMessage(ValidationMessages.LocationCityMaxLength200)
             .When(x => x.City != null);
 
         RuleFor(x => x.Country)
-            .MaximumLength(200).WithMessage("Country must not exceed 200 characters.")
+            .MaximumLength(200).WithMessage(ValidationMessages.LocationCountryMaxLength200)
             .When(x => x.Country != null);
 
         RuleFor(x => x.EntranceFee)
-            .GreaterThanOrEqualTo(0).WithMessage("Entrance fee must be greater than or equal to 0.")
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.LocationEntranceFeeNonNegative)
             .When(x => x.EntranceFee.HasValue);
 
         RuleFor(x => x.Address)
-            .MaximumLength(500).WithMessage("Address must not exceed 500 characters.")
+            .MaximumLength(500).WithMessage(ValidationMessages.LocationAddressMaxLength500)
             .When(x => x.Address != null);
     }
 }
@@ -321,23 +349,23 @@ public sealed class ServiceDtoValidator : AbstractValidator<ServiceDto>
     public ServiceDtoValidator()
     {
         RuleFor(x => x.ServiceName)
-            .NotEmpty().WithMessage("Service name is required.")
-            .MaximumLength(200).WithMessage("Service name must not exceed 200 characters.");
+            .NotEmpty().WithMessage(ValidationMessages.ServiceNameRequired)
+            .MaximumLength(200).WithMessage(ValidationMessages.ServiceNameMaxLength200);
 
         RuleFor(x => x.Price)
-            .GreaterThanOrEqualTo(0).WithMessage("Price must be greater than or equal to 0.")
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.ServicePriceNonNegative)
             .When(x => x.Price.HasValue);
 
         RuleFor(x => x.SalePrice)
-            .GreaterThanOrEqualTo(0).WithMessage("Sale price must be greater than or equal to 0.")
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.ServiceSalePriceNonNegative)
             .When(x => x.SalePrice.HasValue);
 
         RuleFor(x => x.Email)
-            .EmailAddress().WithMessage("Invalid email format.")
+            .EmailAddress().WithMessage(ValidationMessages.ServiceEmailInvalid)
             .When(x => !string.IsNullOrEmpty(x.Email));
 
         RuleFor(x => x.ContactNumber)
-            .Matches(@"^[\d\s\-\+\(\)]+$").WithMessage("Invalid phone number format.")
+            .Matches(@"^[\d\s\-\+\(\)]+$").WithMessage(ValidationMessages.PhoneNumberInvalid)
             .When(x => !string.IsNullOrEmpty(x.ContactNumber));
     }
 }
@@ -375,6 +403,14 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage(ValidationMessages.TourStatusInvalid);
 
+        // TourScope - Optional with default
+        RuleFor(x => x.TourScope)
+            .IsInEnum().WithMessage(ValidationMessages.TourScopeInvalid);
+
+        // CustomerSegment - Optional with default
+        RuleFor(x => x.CustomerSegment)
+            .IsInEnum().WithMessage(ValidationMessages.CustomerSegmentInvalid);
+
         // Thumbnail - Optional but must be valid if provided
         RuleFor(x => x.Thumbnail)
             .SetValidator(new ImageInputDtoValidator()!)
@@ -383,7 +419,7 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         // Classifications - Optional but if provided must have at least 1 item
         RuleFor(x => x.Classifications)
             .Must(cls => cls == null || cls.Count > 0)
-            .WithMessage("At least one classification is required when Classifications are provided.");
+            .WithMessage(ValidationMessages.TourClassificationsMinOne);
 
         RuleForEach(x => x.Classifications)
             .SetValidator(new ClassificationDtoValidator())
@@ -392,7 +428,7 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         // Images - Optional but if provided must have at least 1 item
         RuleFor(x => x.Images)
             .Must(images => images == null || images.Count > 0)
-            .WithMessage("At least one image is required when Images are provided.");
+            .WithMessage(ValidationMessages.TourImagesMinOne);
 
         RuleForEach(x => x.Images)
             .SetValidator(new ImageInputDtoValidator()!)
@@ -401,7 +437,7 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         // Accommodations - Optional but if provided must have at least 1 item
         RuleFor(x => x.Accommodations)
             .Must(acc => acc == null || acc.Count > 0)
-            .WithMessage("At least one accommodation is required when Accommodations are provided.");
+            .WithMessage(ValidationMessages.TourAccommodationsMinOne);
 
         RuleForEach(x => x.Accommodations)
             .SetValidator(new AccommodationDtoValidator())
@@ -410,7 +446,7 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         // Locations - Optional but if provided must have at least 1 item
         RuleFor(x => x.Locations)
             .Must(loc => loc == null || loc.Count > 0)
-            .WithMessage("At least one location is required when Locations are provided.");
+            .WithMessage(ValidationMessages.TourLocationsMinOne);
 
         RuleForEach(x => x.Locations)
             .SetValidator(new LocationDtoValidator())
@@ -419,7 +455,7 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         // Transportations - Optional but if provided must have at least 1 item
         RuleFor(x => x.Transportations)
             .Must(tr => tr == null || tr.Count > 0)
-            .WithMessage("At least one transportation is required when Transportations are provided.");
+            .WithMessage(ValidationMessages.TourTransportationsMinOne);
 
         RuleForEach(x => x.Transportations)
             .SetValidator(new TransportationDtoValidator())
@@ -428,11 +464,21 @@ public sealed class UpdateTourCommandValidator : AbstractValidator<UpdateTourCom
         // Services - Optional but if provided must have at least 1 item
         RuleFor(x => x.Services)
             .Must(svc => svc == null || svc.Count > 0)
-            .WithMessage("At least one service is required when Services are provided.");
+            .WithMessage(ValidationMessages.TourServicesMinOne);
 
         RuleForEach(x => x.Services)
             .SetValidator(new ServiceDtoValidator())
             .When(x => x.Services != null && x.Services.Any());
+
+        // DeletedClassificationIds - optional list of IDs to soft-delete
+        RuleForEach(x => x.DeletedClassificationIds)
+            .NotEmpty().WithMessage(ValidationMessages.DeletedClassificationIdRequired)
+            .When(x => x.DeletedClassificationIds != null && x.DeletedClassificationIds.Count > 0);
+
+        // DeletedActivityIds - optional list of IDs to soft-delete
+        RuleForEach(x => x.DeletedActivityIds)
+            .NotEmpty().WithMessage(ValidationMessages.DeletedActivityIdRequired)
+            .When(x => x.DeletedActivityIds != null && x.DeletedActivityIds.Count > 0);
     }
 }
 

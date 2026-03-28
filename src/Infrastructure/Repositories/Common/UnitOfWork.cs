@@ -36,6 +36,8 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task RollbackTransactionAsync()
     {
+        if (ContextDb.Database.CurrentTransaction is null)
+            return;
         await ContextDb.Database.RollbackTransactionAsync();
     }
 

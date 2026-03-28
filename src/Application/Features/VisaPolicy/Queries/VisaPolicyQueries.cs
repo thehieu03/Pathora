@@ -1,3 +1,4 @@
+using Application.Common.Constant;
 using Application.Contracts.VisaPolicy;
 using Application.Services;
 using BuildingBlocks.CORS;
@@ -26,7 +27,7 @@ public sealed class GetVisaPolicyByIdQueryValidator : AbstractValidator<GetVisaP
     public GetVisaPolicyByIdQueryValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.VisaPolicyIdRequired);
     }
 }
 

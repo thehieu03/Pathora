@@ -17,7 +17,6 @@ Each `*ContextSeed` class that loads file-based data must have exactly one JSON 
 | `CustomerDepositContextSeed` | `customer-deposit.json` |
 | `CustomerPaymentContextSeed` | `customer-payment.json` |
 | `DepartmentContextSeed` | `department.json` |
-| `DynamicPricingTierContextSeed` | `dynamic-pricing-tier.json` |
 | `FileMetadataContextSeed` | `file-metadata.json` |
 | `FunctionContextSeed` | `function.json` |
 | `OtpContextSeed` | `otp.json` |

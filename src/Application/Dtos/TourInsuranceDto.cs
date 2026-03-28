@@ -1,3 +1,4 @@
+using Domain.Entities.Translations;
 using Domain.Enums;
 
 namespace Application.Dtos;
@@ -15,5 +16,6 @@ public sealed record TourInsuranceDto(
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,
-    DateTimeOffset? LastModifiedOnUtc
+    DateTimeOffset? LastModifiedOnUtc,
+    Dictionary<string, TourClassificationTranslationData>? Translations = null
 );

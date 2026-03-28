@@ -1,6 +1,7 @@
 using Application.Services;
 using BuildingBlocks.CORS;
 using Contracts;
+using Application.Common.Constant;
 using ErrorOr;
 using FluentValidation;
 
@@ -13,7 +14,7 @@ public sealed class DeletePricingPolicyCommandValidator : AbstractValidator<Dele
     public DeletePricingPolicyCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Policy ID is required.");
+            .NotEmpty().WithMessage(ValidationMessages.PricingPolicyIdRequired);
     }
 }
 

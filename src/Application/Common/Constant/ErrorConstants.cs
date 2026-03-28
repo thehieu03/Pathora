@@ -63,17 +63,6 @@ public static class ErrorConstants
                 "Tour instance not found or unavailable");
     }
 
-    public static class DynamicPricing
-    {
-        public const string InvalidRangeCode = "DynamicPricing.InvalidRange";
-        public static readonly LocalizedMessage InvalidRangeDescription =
-            new("Khoảng số lượng khách không hợp lệ", "Invalid participant range");
-
-        public const string OverlapCode = "DynamicPricing.Overlap";
-        public static readonly LocalizedMessage OverlapDescription =
-            new("Khoảng dynamic pricing bị chồng lấn", "Dynamic pricing ranges overlap");
-    }
-
     public static class TourRequest
     {
         public const string NotFoundCode = "TourRequest.NotFound";
@@ -471,8 +460,6 @@ public static class ErrorConstants
             var value when value == RefreshToken.NotFoundCode => RefreshToken.NotFoundDescription,
             var value when value == RefreshToken.ExpiredCode => RefreshToken.ExpiredDescription,
             var value when value == Role.NotFoundCode => Role.NotFoundDescription,
-            var value when value == DynamicPricing.InvalidRangeCode => DynamicPricing.InvalidRangeDescription,
-            var value when value == DynamicPricing.OverlapCode => DynamicPricing.OverlapDescription,
             var value when value == TourRequest.NotFoundCode => TourRequest.NotFoundDescription,
             var value when value == TourRequest.ForbiddenCode => TourRequest.ForbiddenDescription,
             var value when value == TourRequest.AdminOnlyCode => TourRequest.AdminOnlyDescription,

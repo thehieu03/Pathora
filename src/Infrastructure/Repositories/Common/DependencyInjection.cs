@@ -28,7 +28,6 @@ internal static class DependencyInjection
 
         services.AddScoped<ITourRepository, TourRepository>();
         services.AddScoped<ITourInstanceRepository, TourInstanceRepository>();
-        services.AddScoped<IDynamicPricingTierRepository, DynamicPricingTierRepository>();
         services.AddScoped<IPricingPolicyRepository, PricingPolicyRepository>();
         services.AddScoped<ICancellationPolicyRepository, CancellationPolicyRepository>();
 

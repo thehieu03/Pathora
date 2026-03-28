@@ -10,9 +10,11 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
 {
     public async Task<UserEntity?> FindByEmail(string email)
     {
-        return await _context.Users
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        var result = await _context.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+            .FirstOrDefaultAsync(u => u.Email != null && u.Email.Trim().ToLower() == normalizedEmail && !u.IsDeleted);
+        return result;
     }
 
     public async Task<UserEntity?> FindById(Guid id)
@@ -86,6 +88,7 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
 
     public async Task<bool> IsEmailUnique(string email)
     {
-        return !await _context.Users.AnyAsync(u => u.Email == email && !u.IsDeleted);
+        var normalizedEmail = email.Trim().ToLowerInvariant();
+        return !await _context.Users.AnyAsync(u => u.Email != null && u.Email.Trim().ToLower() == normalizedEmail && !u.IsDeleted);
     }
 }

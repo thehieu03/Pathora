@@ -10,7 +10,9 @@ public record UserInfoVm(
     IEnumerable<UserRoleVm> Roles,
     IEnumerable<UserDepartmentVm> Departments,
     string? Portal = null,
-    string? DefaultPath = null
+    string? DefaultPath = null,
+    string? PhoneNumber = null,
+    string? Address = null
 );
 
 public record UserRoleVm(int Type, string Id, string Name);

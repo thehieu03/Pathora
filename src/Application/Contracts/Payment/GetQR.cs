@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Common.Constant;
+using Application.Services;
 using BuildingBlocks.CORS;
 using ErrorOr;
 using FluentValidation;
@@ -12,10 +13,10 @@ namespace Application.Contracts.Payment
         public GetQRCommandValidator()
         {
             RuleFor(x => x.note)
-                .NotEmpty().WithMessage("Nội dung chuyển khoản không được để trống.");
+                .NotEmpty().WithMessage(ValidationMessages.GetQRContentRequired);
 
             RuleFor(x => x.amount)
-                .GreaterThan(0).WithMessage("Số tiền phải lớn hơn 0.");
+                .GreaterThan(0).WithMessage(ValidationMessages.GetQRAmountGreaterThanZero);
         }
     }
     public sealed class GetQRCommandHandler(IPaymentService paymentService)

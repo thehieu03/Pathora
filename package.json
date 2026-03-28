@@ -1,0 +1,12 @@
+{
+  "name": "panthora_be",
+  "private": true,
+  "scripts": {
+    "gitnexus:status": "npx gitnexus status",
+    "gitnexus:analyze": "npx gitnexus analyze",
+    "gitnexus:check": "npm run gitnexus:analyze && npm run gitnexus:status"
+  },
+  "dependencies": {
+    "gitnexus": "^1.4.9"
+  }
+}

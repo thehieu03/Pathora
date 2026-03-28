@@ -28,7 +28,11 @@ public sealed record UpdateTourCommand(
     Guid? VisaPolicyId = null,
     Guid? DepositPolicyId = null,
     Guid? PricingPolicyId = null,
-    Guid? CancellationPolicyId = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+    Guid? CancellationPolicyId = null,
+    List<Guid>? DeletedClassificationIds = null,
+    List<Guid>? DeletedActivityIds = null,
+    TourScope TourScope = TourScope.Domestic,
+    CustomerSegment CustomerSegment = CustomerSegment.Group) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.Tour];
 }

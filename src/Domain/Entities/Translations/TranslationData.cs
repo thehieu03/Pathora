@@ -40,6 +40,10 @@ public sealed class TourDayActivityTranslationData
     public string? Description { get; set; }
     [JsonPropertyName("note")]
     public string? Note { get; set; }
+    [JsonPropertyName("transportationType")]
+    public string? TransportationType { get; set; }
+    [JsonPropertyName("transportationName")]
+    public string? TransportationName { get; set; }
 }
 
 public sealed class TourPlanLocationTranslationData
@@ -96,6 +100,16 @@ public sealed class TourInstanceTranslationData
     public List<string> IncludedServices { get; set; } = [];
     [JsonPropertyName("cancellationReason")]
     public string? CancellationReason { get; set; }
+}
+
+public sealed class TourInstanceDayTranslationData
+{
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
 }
 
 public sealed class VisaPolicyTranslationData

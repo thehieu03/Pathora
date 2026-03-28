@@ -26,17 +26,17 @@ public class CreatePaymentTransactionCommandValidator : AbstractValidator<Create
     public CreatePaymentTransactionCommandValidator()
     {
         RuleFor(x => x.BookingId)
-            .NotEmpty().WithMessage("Booking ID không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentBookingIdRequired);
 
         RuleFor(x => x.Amount)
-            .GreaterThan(0).WithMessage("Số tiền phải lớn hơn 0.");
+            .GreaterThan(0).WithMessage(ValidationMessages.PaymentAmountGreaterThanZero);
 
         RuleFor(x => x.PaymentNote)
-            .NotEmpty().WithMessage("Nội dung thanh toán không được để trống.")
-            .MaximumLength(500).WithMessage("Nội dung thanh toán không được vượt quá 500 ký tự.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentContentRequired)
+            .MaximumLength(500).WithMessage(ValidationMessages.PaymentContentMaxLength500);
 
         RuleFor(x => x.CreatedBy)
-            .NotEmpty().WithMessage("Người tạo không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentCreatorRequired);
     }
 }
 
@@ -98,7 +98,7 @@ public class ExpirePaymentTransactionCommandValidator : AbstractValidator<Expire
     public ExpirePaymentTransactionCommandValidator()
     {
         RuleFor(x => x.TransactionCode)
-            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentTransactionIdRequired);
     }
 }
 
@@ -121,7 +121,7 @@ public class GetNormalizedPaymentStatusQueryValidator : AbstractValidator<GetNor
     public GetNormalizedPaymentStatusQueryValidator()
     {
         RuleFor(x => x.TransactionCode)
-            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentTransactionIdRequired);
     }
 }
 
@@ -144,7 +144,7 @@ public class ReconcilePaymentReturnCommandValidator : AbstractValidator<Reconcil
     public ReconcilePaymentReturnCommandValidator()
     {
         RuleFor(x => x.TransactionCode)
-            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentTransactionIdRequired);
     }
 }
 
@@ -167,7 +167,7 @@ public class ReconcilePaymentCancelCommandValidator : AbstractValidator<Reconcil
     public ReconcilePaymentCancelCommandValidator()
     {
         RuleFor(x => x.TransactionCode)
-            .NotEmpty().WithMessage("Mã giao dịch không được để trống.");
+            .NotEmpty().WithMessage(ValidationMessages.PaymentTransactionIdRequired);
     }
 }
 

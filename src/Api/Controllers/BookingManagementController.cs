@@ -17,6 +17,7 @@ namespace Api.Controllers;
 [Route(BookingManagementEndpoint.Base)]
 public class BookingManagementController : BaseApiController
 {
+    [Authorize(Roles = RoleConstants.SuperAdmin_Admin_Customer)]
     [HttpGet(BookingManagementEndpoint.MyRecent)]
     public async Task<IActionResult> GetMyRecentBookings([FromQuery] int count = 3)
     {
