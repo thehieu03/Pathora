@@ -26,7 +26,18 @@ export interface CreateTourInstancePayload {
   confirmationDeadline?: string;
   includedServices?: string[];
   guideUserIds?: string[];
-  managerUserIds?: string[];
+  thumbnailUrl?: string | null;
+}
+
+export interface CheckDuplicateResult {
+  exists: boolean;
+  count: number;
+  existingInstances: {
+    id: string;
+    title: string;
+    startDate: string;
+    status: string;
+  }[];
 }
 
 export interface UpdateTourInstancePayload {
@@ -168,15 +179,28 @@ export const tourInstanceService = {
       location: data.location?.trim() || null,
       confirmationDeadline: data.confirmationDeadline || null,
       includedServices: normalizeStringArray(data.includedServices),
-      guideUserIds: data.guideUserIds ?? [],
-      managerUserIds: data.managerUserIds ?? [],
+      guideUserIds: data.guideUserIds,
+      thumbnailUrl: data.thumbnailUrl || null,
     };
 
-    const response = await api.post<ApiResponse<string>>(
+    const response = await api.post<ApiResponse<{ value: string }>(
       API_ENDPOINTS.TOUR_INSTANCE.CREATE,
       payload,
     );
-    return extractResult<string>(response.data);
+    const result = extractResult<{ value: string }>(response.data);
+    return result?.value ?? null;
+  },
+
+  checkDuplicate: async (tourId: string, classificationId: string, startDate: string) => {
+    const params = new URLSearchParams({
+      tourId,
+      classificationId,
+      startDate,
+    });
+    const response = await api.get<ApiResponse<CheckDuplicateResult>>(
+      `${API_ENDPOINTS.TOUR_INSTANCE.CHECK_DUPLICATE}?${params.toString()}`,
+    );
+    return extractResult<CheckDuplicateResult>(response.data);
   },
 
   updateInstance: async (data: UpdateTourInstancePayload) => {

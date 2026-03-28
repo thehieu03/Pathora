@@ -38,7 +38,31 @@
       "settingsSectionTitle": "Notification Preferences",
       "settingsSectionDesc": "Choose how you want to receive notifications from us",
       "updateSuccess": "Profile updated successfully",
-      "updateFailed": "Failed to update profile"
+      "updateFailed": "Failed to update profile",
+      "fullNameRequired": "Full name is required",
+      "fullNameTooLong": "Full name must be 100 characters or less",
+      "addressTooLong": "Address must be 500 characters or less",
+      "notificationPreferences": {
+        "title": "Notification Preferences",
+        "comingSoon": "Notification preferences will be available soon."
+      },
+      "password": {
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "changedSuccess": "Password changed successfully",
+        "constraints": "At least 8 characters, with uppercase, lowercase, digit and special character"
+      },
+      "avatar": {
+        "pasteUrl": "Paste image URL",
+        "preview": "Preview",
+        "remove": "Remove",
+        "invalidUrl": "Invalid image URL",
+        "urlTooLong": "Avatar URL is too long",
+        "previewTimeout": "Avatar preview timed out",
+        "smsDisabled": "Add a phone number to enable SMS",
+        "alt": "Avatar preview"
+      }
     },
     "settingsPage": {
       "emailNotifications": "Email Notifications",
@@ -1067,6 +1091,9 @@
     "PASSWORD_IS_REQUIRED": "Password is required",
     "CONFIRM_PASSWORD_IS_REQUIRED": "Confirm password is required",
     "CONFIRM_PASSWORD_IS_NOT_MATCH": "Confirm password does not match",
+    "PASSWORD_COMPLEXITY": "Password must be at least 8 characters, with uppercase, lowercase, digit, and special character.",
+    "PASSWORD_OLD_REQUIRED": "Current password is required.",
+    "PASSWORD_MUST_DIFFER": "New password must not be the same as the current password.",
     "USER_NOT_FOUND": "User not found",
     "USER_ALREADY_EXISTS": "User already exists",
     "ACTION_IS_REQUIRED": "Action is required",
@@ -2232,7 +2259,12 @@
     "actions": "Actions",
     "edit": "Edit",
     "delete": "Delete",
-    "confirmDelete": "Confirm Delete",
+    "confirmDelete": {
+      "title": "Confirm Delete?",
+      "message": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
     "deleteTitle": "Delete Tour?",
     "cancel": "Cancel",
     "confirmDeleteBtn": "Delete",
@@ -2333,12 +2365,6 @@
         "lunch_dinner": "Lunch & Dinner",
         "all": "All"
       }
-    },
-    "confirmDelete": {
-      "title": "Confirm Delete?",
-      "message": "This action cannot be undone.",
-      "cancel": "Cancel",
-      "confirm": "Delete"
     },
     "preview": {
       "sectionTitle": "Tour Preview",
@@ -2828,24 +2854,8 @@
       "saturday": "Saturday"
     },
     "form": {
-      "basicInfo": "Basic information",
-      "scheduleAndCapacity": "Schedule and capacity",
-      "editInformation": "Edit tour instance",
-      "title": "Title",
-      "titlePlaceholder": "Ex: Ha Long 3N2D - June Departure",
-      "minParticipation": "Minimum participants",
-      "sellingPrice": "Selling price",
-      "operatingCost": "Operating cost",
-      "depositPerPerson": "Deposit per person",
-      "locationPlaceholder": "Ex: Ha Long",
-      "empty": {
-        "title": "No tour instances found",
-        "description": "There are no scheduled tour instances yet. Create your first instance to get started."
-      },
-      "error": {
-        "title": "Could not load tour instances",
-        "fallback": "Unable to load tour instance data. Please try again."
-      }
+      "thumbnailUrl": "Thumbnail URL",
+      "thumbnailUrlPlaceholder": "https://example.com/image.jpg"
     },
     "includedServicesPlaceholder": "Ex: Shuttle bus",
     "addService": "Add service",
@@ -2874,14 +2884,34 @@
       "section": {
         "basicInfo": "Basic Information",
         "scheduleAndPricing": "Schedule & Pricing",
-        "services": "Included Services",
+        "services": "Optional Services",
         "guide": "Guide",
         "media": "Media",
         "dynamicPricing": "Dynamic Pricing"
       }
     },
     "currentParticipation": "Current participants",
-    "cancellationReason": "Cancellation reason"
+    "cancellationReason": "Cancellation reason",
+    "duplicateWarning": {
+      "title": "Duplicate tour instance detected",
+      "message": "An instance for this tour, classification, and start date already exists. Please verify if you want to create a duplicate."
+    },
+    "unsavedChanges": {
+      "message": "You have unsaved changes. Are you sure you want to leave?"
+    },
+    "validation": {
+      "titleRequired": "Title is required",
+      "startDateRequired": "Start date is required",
+      "endDateRequired": "End date is required",
+      "maxParticipantsRequired": "Maximum participants must be greater than 0",
+      "basePriceRequired": "Base price is required",
+      "basePriceNonNegative": "Base price must be 0 or greater",
+      "confirmationDeadlineBeforeStart": "Confirmation deadline must be before the start date"
+    },
+    "createdBanner": {
+      "title": "Tour instance created successfully!",
+      "dismiss": "Dismiss"
+    }
   },
   "pricingPolicy": {
     "title": "Pricing Policies",

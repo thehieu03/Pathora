@@ -1,7 +1,13 @@
 import { api } from "@/api/axiosInstance";
 import { API_ENDPOINTS } from "@/api/endpoints";
 import { UserInfo } from "@/types/tour";
-import { extractItems } from "@/utils/apiResponse";
+import { extractResult } from "@/utils/apiResponse";
+
+type PaginatedUsersResponse = {
+  total: number;
+  data: UserInfo[];
+  buttonShow?: Record<string, boolean>;
+};
 
 export const userService = {
   getAll: async (textSearch?: string, pageNumber = 1, pageSize = 100) => {
@@ -11,6 +17,7 @@ export const userService = {
     params.append("pageSize", pageSize.toString());
 
     const response = await api.get(`${API_ENDPOINTS.USER.GET_ALL}?${params.toString()}`);
-    return extractItems<UserInfo>(response.data);
+    const result = extractResult<PaginatedUsersResponse>(response.data);
+    return result?.data ?? [];
   },
 };

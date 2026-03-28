@@ -25,6 +25,7 @@ export interface TourInstanceEndpoints {
   UPSERT_PRICING_TIERS: EndpointWithId;
   CLEAR_PRICING_TIERS: EndpointWithId;
   RESOLVE_PRICING: (id: string, participants: number) => string;
+  CHECK_DUPLICATE: string;
 }
 
 export interface PublicTourInstanceEndpoints {
@@ -59,6 +60,7 @@ export const TOUR_INSTANCE: TourInstanceEndpoints = {
   CLEAR_PRICING_TIERS: (id: string): string => `/api/tour-instance/${id}/pricing-tiers/clear`,
   RESOLVE_PRICING: (id: string, participants: number): string =>
     `/api/tour-instance/${id}/pricing/resolve?participants=${participants}`,
+  CHECK_DUPLICATE: "/api/tour-instance/check-duplicate",
 };
 
 export const PUBLIC_TOUR_INSTANCE: PublicTourInstanceEndpoints = {

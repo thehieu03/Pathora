@@ -125,6 +125,19 @@ export default function TourInstanceDetailPage() {
   const [form, setForm] = useState<EditForm | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
   const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
+  const [showCreatedBanner, setShowCreatedBanner] = useState(false);
+
+  // Check if navigated from creation
+  useEffect(() => {
+    const createdId = sessionStorage.getItem("tourInstanceCreated");
+    if (createdId === id) {
+      setShowCreatedBanner(true);
+      sessionStorage.removeItem("tourInstanceCreated");
+      // Auto-dismiss after 5 seconds
+      const timer = setTimeout(() => setShowCreatedBanner(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [id]);
 
   const participantRatio = useMemo(() => {
     if (!data || data.maxParticipation <= 0) return 0;
@@ -426,6 +439,26 @@ export default function TourInstanceDetailPage() {
 
   return (
     <main className="min-h-screen bg-stone-50 p-6 md:p-8">
+      {showCreatedBanner && (
+        <div className="mx-auto max-w-6xl mb-4">
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <Icon icon="heroicons:check-circle" className="size-5 text-emerald-600" />
+              <span className="text-sm font-medium text-emerald-800">
+                {t("tourInstance.createdBanner.title", "Tour instance created successfully!")}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCreatedBanner(false)}
+              className="text-emerald-600 hover:text-emerald-800 transition-colors"
+              aria-label={t("tourInstance.createdBanner.dismiss", "Dismiss")}
+            >
+              <Icon icon="heroicons:x-mark" className="size-4" />
+            </button>
+          </div>
+        </div>
+      )}
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <header className="rounded-[2.5rem] border border-stone-200 bg-white p-4 md:p-5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]">
           <div className="flex flex-wrap items-center justify-between gap-3">

@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Icon, CollapsibleSection } from "@/components/ui";
 import {
   CreateTourInstancePayload,
+  CheckDuplicateResult,
   tourInstanceService,
 } from "@/api/services/tourInstanceService";
 import { tourService } from "@/api/services/tourService";
 import { userService } from "@/api/services/userService";
 import { handleApiError } from "@/utils/apiResponse";
+import { useDebounce } from "@/hooks/useDebounce";
 import { SearchTourVm, TourClassificationDto, TourDto, UserInfo } from "@/types/tour";
 
 type FormState = {
@@ -27,7 +29,7 @@ type FormState = {
   confirmationDeadline: string;
   includedServices: string[];
   guideUserIds: string[];
-  managerUserIds: string[];
+  thumbnailUrl: string;
 };
 
 const INITIAL_FORM: FormState = {
@@ -43,7 +45,7 @@ const INITIAL_FORM: FormState = {
   confirmationDeadline: "",
   includedServices: [],
   guideUserIds: [],
-  managerUserIds: [],
+  thumbnailUrl: "",
 };
 
 // ─── Wizard Step Constants ────────────────────────────────────────────────────
@@ -284,15 +286,11 @@ interface InstanceDetailsStepProps {
   allUsers: UserInfo[];
   submitting: boolean;
   selectedClassification: TourClassificationDto | null;
+  duplicateWarning: CheckDuplicateResult | null;
+  availableServices: string[];
   onSubmit: () => void;
   onPrevious: () => void;
-  appendListItem: (field: "includedServices") => void;
-  removeListItem: (field: "includedServices", index: number) => void;
-  updateListItem: (
-    field: "includedServices",
-    index: number,
-    value: string,
-  ) => void;
+  toggleService: (service: string) => void;
 }
 
 function InstanceDetailsStep({
@@ -304,36 +302,21 @@ function InstanceDetailsStep({
   allUsers,
   submitting,
   selectedClassification,
+  duplicateWarning,
+  availableServices,
   onSubmit,
   onPrevious,
-  appendListItem,
-  removeListItem,
-  updateListItem,
+  toggleService,
 }: InstanceDetailsStepProps) {
   const guides = useMemo(
     () => allUsers.filter((u) => !u.isDeleted),
     [allUsers],
   );
 
-  const selectedGuides = useMemo(
-    () => guides.filter((u) => form.guideUserIds.includes(u.id)),
+  const selectedGuide = useMemo(
+    () => guides.find((u) => form.guideUserIds.includes(u.id)) ?? null,
     [guides, form.guideUserIds],
   );
-  const selectedManagers = useMemo(
-    () => guides.filter((u) => form.managerUserIds.includes(u.id)),
-    [guides, form.managerUserIds],
-  );
-
-  const toggleUser = (
-    userId: string,
-    field: "guideUserIds" | "managerUserIds",
-  ) => {
-    const current = form[field];
-    const next = current.includes(userId)
-      ? current.filter((id) => id !== userId)
-      : [...current, userId];
-    updateField(field, next);
-  };
 
   return (
     <div className="space-y-5">
@@ -352,6 +335,35 @@ function InstanceDetailsStep({
               {Number(selectedClassification.basePrice).toLocaleString("vi-VN")} VND
             </span>
           )}
+        </div>
+      )}
+
+      {/* Duplicate Warning */}
+      {duplicateWarning?.exists && (
+        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.06)]">
+          <div className="flex items-start gap-3">
+            <Icon icon="heroicons:exclamation-triangle" className="size-5 shrink-0 mt-0.5 text-amber-600" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-900">
+                {t("tourInstance.duplicateWarning.title", "Duplicate tour instance detected")}
+              </p>
+              <p className="text-sm text-amber-700 mt-1">
+                {t("tourInstance.duplicateWarning.message", "An instance for this tour, classification, and start date already exists. Please verify if you want to create a duplicate.")}
+              </p>
+              {duplicateWarning.existingInstances.map((inst) => (
+                <a
+                  key={inst.id}
+                  href={`/tour-instances/${inst.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 flex items-center gap-1.5 text-sm text-amber-800 hover:text-amber-600 underline underline-offset-2"
+                >
+                  <Icon icon="heroicons:external-link" className="size-3.5" />
+                  {inst.title} ({inst.status})
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -527,122 +539,105 @@ function InstanceDetailsStep({
         </div>
       </CollapsibleSection>
 
-      {/* Guides */}
+      {/* Guide */}
       <CollapsibleSection
-        title={t("tourInstance.wizard.section.guides", "Guides")}
+        title={t("tourInstance.wizard.section.guide", "Guide")}
         defaultOpen={false}
       >
         <div className="space-y-3">
-          {selectedGuides.length > 0 && (
+          {selectedGuide && (
             <div className="flex flex-wrap gap-2">
-              {selectedGuides.map((guide) => (
-                <ManagerChip
-                  key={guide.id}
-                  user={guide}
-                  onRemove={() => toggleUser(guide.id, "guideUserIds")}
-                  t={t}
-                />
-              ))}
-            </div>
-          )}
-          <select
-            className={inputClassName}
-            value=""
-            onChange={(e) => {
-              if (e.target.value) toggleUser(e.target.value, "guideUserIds");
-              e.target.value = "";
-            }}
-          >
-            <option value="">
-              {t("tourInstance.form.addGuide", "+ Add guide")}
-            </option>
-            {guides
-              .filter((u) => !form.guideUserIds.includes(u.id))
-              .map((guide) => (
-                <option key={guide.id} value={guide.id}>
-                  {guide.fullName || guide.username || guide.email}
-                </option>
-              ))}
-          </select>
-        </div>
-      </CollapsibleSection>
-
-      {/* Managers */}
-      <CollapsibleSection
-        title={t("tourInstance.wizard.section.managers", "Managers")}
-        defaultOpen={false}
-      >
-        <div className="space-y-3">
-          {selectedManagers.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {selectedManagers.map((mgr) => (
-                <ManagerChip
-                  key={mgr.id}
-                  user={mgr}
-                  onRemove={() => toggleUser(mgr.id, "managerUserIds")}
-                  t={t}
-                />
-              ))}
-            </div>
-          )}
-          <select
-            className={inputClassName}
-            value=""
-            onChange={(e) => {
-              if (e.target.value)
-                toggleUser(e.target.value, "managerUserIds");
-              e.target.value = "";
-            }}
-          >
-            <option value="">
-              {t("tourInstance.form.addManager", "+ Add manager")}
-            </option>
-            {guides
-              .filter((u) => !form.managerUserIds.includes(u.id))
-              .map((mgr) => (
-                <option key={mgr.id} value={mgr.id}>
-                  {mgr.fullName || mgr.username || mgr.email}
-                </option>
-              ))}
-          </select>
-        </div>
-      </CollapsibleSection>
-
-      {/* Included Services */}
-      <CollapsibleSection
-        title={t("tourInstance.wizard.section.services", "Included Services")}
-        defaultOpen={false}
-      >
-        <div className="space-y-2">
-          {form.includedServices.map((service, index) => (
-            <div key={`svc-${index}`} className="flex items-center gap-2">
-              <input
-                className={inputClassName}
-                value={service}
-                onChange={(event) =>
-                  updateListItem("includedServices", index, event.target.value)
-                }
-                placeholder={t(
-                  "tourInstance.form.includedServicesPlaceholder",
-                  "Ex: Shuttle bus",
-                )}
+              <ManagerChip
+                user={selectedGuide}
+                onRemove={() => updateField("guideUserIds", [])}
+                t={t}
               />
-              <button
-                type="button"
-                onClick={() => removeListItem("includedServices", index)}
-                className="rounded-xl border border-stone-200 px-3 py-2 text-sm text-stone-700 hover:bg-stone-100 whitespace-nowrap"
-              >
-                {t("common.remove", "Remove")}
-              </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={() => appendListItem("includedServices")}
-            className="rounded-xl border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-50"
+          )}
+          <select
+            className={inputClassName}
+            value={selectedGuide?.id ?? ""}
+            onChange={(e) => {
+              const guideId = e.target.value;
+              updateField("guideUserIds", guideId ? [guideId] : []);
+            }}
           >
-            + {t("tourInstance.form.addService", "Add service")}
-          </button>
+            <option value="">
+              {t("tourInstance.form.selectGuideOptional", "Select guide (optional)")}
+            </option>
+            {guides.map((guide) => (
+              <option key={guide.id} value={guide.id}>
+                {guide.fullName || guide.username || guide.email}
+              </option>
+            ))}
+          </select>
+        </div>
+      </CollapsibleSection>
+
+      {/* Optional Services */}
+      <CollapsibleSection
+        title={t("tourInstance.wizard.section.services", "Optional Services")}
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          {availableServices.length === 0 ? (
+            <p className="text-xs text-stone-500">
+              {t("tourInstance.form.noServicesAvailable", "No services available for this tour.")}
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {availableServices.map((service) => {
+                const checked = form.includedServices.includes(service);
+                return (
+                  <label key={service} className="flex items-center gap-2 text-sm text-stone-700">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleService(service)}
+                      className="size-4 rounded border-stone-300 text-orange-500 focus:ring-orange-500"
+                    />
+                    <span>{service}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </CollapsibleSection>
+
+      {/* Media */}
+      <CollapsibleSection
+        title={t("tourInstance.wizard.section.media", "Media")}
+        defaultOpen={false}
+      >
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-stone-700">
+              {t("tourInstance.form.thumbnailUrl", "Thumbnail URL")}
+            </label>
+            <input
+              className={inputClassName}
+              value={form.thumbnailUrl}
+              onChange={(event) => updateField("thumbnailUrl", event.target.value)}
+              placeholder={t(
+                "tourInstance.form.thumbnailUrlPlaceholder",
+                "https://example.com/image.jpg",
+              )}
+            />
+            {form.thumbnailUrl && (
+              <div className="mt-2 rounded-xl overflow-hidden border border-stone-200 w-32 h-32">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={form.thumbnailUrl}
+                  alt="Thumbnail preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </CollapsibleSection>
 
@@ -688,6 +683,13 @@ export function CreateTourInstancePage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [reloadToken, setReloadToken] = useState(0);
   const [allUsers, setAllUsers] = useState<UserInfo[]>([]);
+  const [availableServices, setAvailableServices] = useState<string[]>([]);
+  const [duplicateWarning, setDuplicateWarning] = useState<CheckDuplicateResult | null>(null);
+  const [checkingDuplicate, setCheckingDuplicate] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const debouncedStartDate = useDebounce(form.startDate, 500);
+  const prevDebouncedStartDate = useRef<string>("");
 
   const selectedTour = useMemo(
     () => tours.find((tour) => tour.id === form.tourId) ?? null,
@@ -718,7 +720,7 @@ export function CreateTourInstancePage() {
     }
   }, []);
 
-  // Fetch all users for guide/manager selection
+  // Fetch all users for optional guide selection
   const fetchUsers = useCallback(async () => {
     try {
       const users = await userService.getAll(undefined, 1, 100);
@@ -738,7 +740,8 @@ export function CreateTourInstancePage() {
   useEffect(() => {
     if (!form.tourId) {
       setTourDetail(null);
-      setForm((current) => ({ ...current, classificationId: "" }));
+      setAvailableServices([]);
+      setForm((current) => ({ ...current, classificationId: "", includedServices: [] }));
       return;
     }
 
@@ -747,6 +750,13 @@ export function CreateTourInstancePage() {
         setLoadingTour(true);
         const detail = await tourService.getTourDetail(form.tourId);
         setTourDetail(detail);
+
+        const defaults = ["Shuttle bus", "Meals", "Insurance"];
+        const mergedServices = Array.from(
+          new Set([...(detail?.includedServices ?? []), ...defaults]),
+        );
+        setAvailableServices(mergedServices);
+
         setForm((current) => {
           const next = { ...current, classificationId: "" };
 
@@ -804,6 +814,52 @@ export function CreateTourInstancePage() {
     });
   }, [selectedClassification, selectedTour?.tourName]);
 
+  // Check for duplicate on startDate change (debounced)
+  useEffect(() => {
+    // Only check on Step 2, when all required fields are present
+    if (
+      currentStep !== INSTANCE_DETAILS_STEP ||
+      !form.tourId ||
+      !form.classificationId ||
+      !debouncedStartDate ||
+      debouncedStartDate === prevDebouncedStartDate.current
+    ) {
+      return;
+    }
+
+    prevDebouncedStartDate.current = debouncedStartDate;
+
+    const check = async () => {
+      try {
+        setCheckingDuplicate(true);
+        const result = await tourInstanceService.checkDuplicate(
+          form.tourId,
+          form.classificationId,
+          debouncedStartDate,
+        );
+        setDuplicateWarning(result);
+      } catch {
+        // Silently ignore — duplicate check is non-critical
+        setDuplicateWarning(null);
+      } finally {
+        setCheckingDuplicate(false);
+      }
+    };
+
+    void check();
+  }, [debouncedStartDate, form.tourId, form.classificationId, currentStep]);
+
+  // Navigation guard — beforeunload
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
   const updateField = <K extends keyof FormState>(
     field: K,
     value: FormState[K],
@@ -815,34 +871,23 @@ export function CreateTourInstancePage() {
       delete next[field as string];
       return next;
     });
+    // Mark form dirty
+    setIsDirty(true);
+    // Clear duplicate warning when startDate is cleared
+    if (field === "startDate" && !value) {
+      setDuplicateWarning(null);
+    }
   };
 
-  const appendListItem = (field: "includedServices") => {
-    setForm((current) => ({
-      ...current,
-      [field]: [...current[field], ""],
-    }));
-  };
-
-  const removeListItem = (
-    field: "includedServices",
-    index: number,
-  ) => {
-    setForm((current) => ({
-      ...current,
-      [field]: current[field].filter((_, i) => i !== index),
-    }));
-  };
-
-  const updateListItem = (
-    field: "includedServices",
-    index: number,
-    value: string,
-  ) => {
+  const toggleService = (service: string) => {
     setForm((current) => {
-      const items = [...current[field]];
-      items[index] = value;
-      return { ...current, [field]: items };
+      const exists = current.includedServices.includes(service);
+      return {
+        ...current,
+        includedServices: exists
+          ? current.includedServices.filter((s) => s !== service)
+          : [...current.includedServices, service],
+      };
     });
   };
 
@@ -877,6 +922,18 @@ export function CreateTourInstancePage() {
         "Base price must be 0 or greater",
       );
 
+    // Confirmation deadline validation
+    if (form.confirmationDeadline && form.startDate) {
+      const deadline = new Date(form.confirmationDeadline);
+      const start = new Date(form.startDate);
+      if (deadline >= start) {
+        newErrors.confirmationDeadline = t(
+          "tourInstance.validation.confirmationDeadlineBeforeStart",
+          "Confirmation deadline must be before the start date",
+        );
+      }
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -900,14 +957,19 @@ export function CreateTourInstancePage() {
           .map((s) => s.trim())
           .filter(Boolean),
         guideUserIds: form.guideUserIds,
-        managerUserIds: form.managerUserIds,
+        thumbnailUrl: form.thumbnailUrl.trim() || undefined,
       };
 
-      await tourInstanceService.createInstance(payload);
-      toast.success(
-        t("tourInstance.created", "Tour instance created successfully!"),
-      );
-      router.push("/tour-instances");
+      const instanceId = await tourInstanceService.createInstance(payload);
+      if (instanceId) {
+        setIsDirty(false);
+        toast.success(
+          t("tourInstance.created", "Tour instance created successfully!"),
+        );
+        // Store creation flag for detail page banner
+        sessionStorage.setItem("tourInstanceCreated", instanceId);
+        router.push(`/tour-instances/${instanceId}`);
+      }
     } catch (error: unknown) {
       const handledError = handleApiError(error);
       console.error(
@@ -976,11 +1038,11 @@ export function CreateTourInstancePage() {
             allUsers={allUsers}
             submitting={submitting}
             selectedClassification={selectedClassification}
+            duplicateWarning={duplicateWarning}
+            availableServices={availableServices}
             onSubmit={handleSubmit}
             onPrevious={() => setCurrentStep(SELECT_TOUR_STEP)}
-            appendListItem={appendListItem}
-            removeListItem={removeListItem}
-            updateListItem={updateListItem}
+            toggleService={toggleService}
             updateField={updateField}
             inputClassName={inputClassName}
             t={t}

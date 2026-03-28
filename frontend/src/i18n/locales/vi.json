@@ -38,7 +38,31 @@
       "settingsSectionTitle": "Tùy chọn thông báo",
       "settingsSectionDesc": "Chọn cách bạn muốn nhận thông báo từ chúng tôi",
       "updateSuccess": "Cập nhật thông tin thành công",
-      "updateFailed": "Cập nhật thất bại"
+      "updateFailed": "Cập nhật thất bại",
+      "fullNameRequired": "Họ và tên là bắt buộc",
+      "fullNameTooLong": "Họ và tên không được vượt quá 100 ký tự",
+      "addressTooLong": "Địa chỉ không được vượt quá 500 ký tự",
+      "notificationPreferences": {
+        "title": "Tùy chọn thông báo",
+        "comingSoon": "Tùy chọn thông báo sẽ sớm khả dụng."
+      },
+      "password": {
+        "currentPassword": "Mật khẩu hiện tại",
+        "newPassword": "Mật khẩu mới",
+        "confirmPassword": "Xác nhận mật khẩu mới",
+        "changedSuccess": "Đổi mật khẩu thành công",
+        "constraints": "Ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt"
+      },
+      "avatar": {
+        "pasteUrl": "Dán URL ảnh",
+        "preview": "Xem trước",
+        "remove": "Xóa",
+        "invalidUrl": "URL ảnh không hợp lệ",
+        "urlTooLong": "URL ảnh đại diện quá dài",
+        "previewTimeout": "Hết thời gian tải ảnh xem trước",
+        "smsDisabled": "Thêm số điện thoại để bật thông báo SMS",
+        "alt": "Ảnh đại diện xem trước"
+      }
     },
     "settingsPage": {
       "emailNotifications": "Thông báo qua email",
@@ -1067,6 +1091,9 @@
     "PASSWORD_IS_REQUIRED": "Mật khẩu là bắt buộc",
     "CONFIRM_PASSWORD_IS_REQUIRED": "Xác nhận mật khẩu là bắt buộc",
     "CONFIRM_PASSWORD_IS_NOT_MATCH": "Xác nhận mật khẩu không khớp",
+    "PASSWORD_COMPLEXITY": "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.",
+    "PASSWORD_OLD_REQUIRED": "Mật khẩu cũ là bắt buộc.",
+    "PASSWORD_MUST_DIFFER": "Mật khẩu mới không được trùng với mật khẩu cũ.",
     "USER_NOT_FOUND": "Không tìm thấy người dùng",
     "USER_ALREADY_EXISTS": "Người dùng đã tồn tại",
     "ACTION_IS_REQUIRED": "Hành động là bắt buộc",
@@ -2210,7 +2237,12 @@
     "actions": "Thao tác",
     "edit": "Sửa",
     "delete": "Xóa",
-    "confirmDelete": "Xác nhận xóa",
+    "confirmDelete": {
+      "title": "Xác nhận xóa?",
+      "message": "Hành động này không thể hoàn tác.",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
+    },
     "deleteTitle": "Xóa Tour?",
     "cancel": "Hủy",
     "confirmDeleteBtn": "Xóa",
@@ -2311,12 +2343,6 @@
         "lunch_dinner": "Bữa trưa & Tối",
         "all": "Tất cả"
       }
-    },
-    "confirmDelete": {
-      "title": "Xác nhận xóa?",
-      "message": "Hành động này không thể hoàn tác.",
-      "cancel": "Hủy",
-      "confirm": "Xóa"
     },
     "preview": {
       "sectionTitle": "Xem trước Tour",
@@ -2493,8 +2519,6 @@
       "addRoute": "Thêm tuyến đường",
       "removeRoute": "Xóa tuyến đường",
       "noRoutesYet": "Chưa có tuyến đường nào",
-      "fromLocation": "Từ",
-      "toLocation": "Đến",
       "requiredFromLocation": "Cần chọn hoặc nhập địa điểm đi",
       "requiredToLocation": "Cần chọn hoặc nhập địa điểm đến",
       "customLocation": "Địa điểm tùy chỉnh...",
@@ -2825,6 +2849,8 @@
       "operatingCost": "Chi phí vận hành",
       "depositPerPerson": "Tiền cọc mỗi người",
       "locationPlaceholder": "Ví dụ: Hạ Long",
+      "selectGuideOptional": "Chọn hướng dẫn viên (tùy chọn)",
+      "noServicesAvailable": "Không có dịch vụ nào cho tour này.",
       "empty": {
         "title": "Không tìm thấy lịch khởi hành nào",
         "description": "Chưa có lịch khởi hành nào. Tạo lịch khởi hành đầu tiên của bạn để bắt đầu."
@@ -2853,7 +2879,31 @@
       "maxParticipants": "Tối đa",
       "pricePerPerson": "Giá mỗi người",
       "currentParticipation": "Số người hiện tại",
-      "cancellationReason": "Lý do hủy"
+      "cancellationReason": "Lý do hủy",
+      "duplicateWarning": {
+        "title": "Phát hiện tour instance trùng lặp",
+        "message": "Đã có một instance cho tour, phân loại và ngày khởi hành này. Vui lòng xác nhận nếu bạn muốn tạo trùng lặp."
+      },
+      "unsavedChanges": {
+        "message": "Bạn có thay đổi chưa lưu. Bạn có chắc muốn rời đi?"
+      },
+      "validation": {
+        "titleRequired": "Tiêu đề là bắt buộc",
+        "startDateRequired": "Ngày khởi hành là bắt buộc",
+        "endDateRequired": "Ngày kết thúc là bắt buộc",
+        "maxParticipantsRequired": "Số người tối đa phải lớn hơn 0",
+        "basePriceRequired": "Giá cơ bản là bắt buộc",
+        "basePriceNonNegative": "Giá cơ bản phải bằng 0 hoặc lớn hơn",
+        "confirmationDeadlineBeforeStart": "Hạn xác nhận phải trước ngày khởi hành"
+      },
+      "form": {
+        "thumbnailUrl": "URL Ảnh đại diện",
+        "thumbnailUrlPlaceholder": "https://example.com/image.jpg"
+      },
+      "createdBanner": {
+        "title": "Tạo tour instance thành công!",
+        "dismiss": "Đóng"
+      }
     },
     "wizard": {
       "step": "Bước",
@@ -2864,7 +2914,7 @@
       "section": {
         "basicInfo": "Thông Tin Cơ Bản",
         "scheduleAndPricing": "Lịch Trình & Giá",
-        "services": "Dịch Vụ Bao Gồm",
+        "services": "Dịch Vụ Tùy Chọn",
         "guide": "Hướng Dẫn Viên",
         "media": "Hình Ảnh",
         "dynamicPricing": "Giá Linh Hoạt"
