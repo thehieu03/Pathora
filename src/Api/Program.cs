@@ -1,8 +1,8 @@
 using Api;
 using Api.Middleware;
 using Api.Configuration;
-using Api.Swagger.Extensions;
 using Api.Services;
+using Api.Swagger.Extensions;
 using Application;
 using Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +23,7 @@ builder.Services.AddHostedService<OutboxWorkerService>();
 
 builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("API is running"))
-    .AddCheck<DatabaseHealthCheck>("database")
-    .AddCheck<MinIOHealthCheck>("minio");
-
-// Initialize MinIO buckets at startup
-builder.Services.AddHostedService<MinIOBucketInitializer>();
+    .AddCheck<DatabaseHealthCheck>("database");
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
 builder.Services.AddCors(options =>
@@ -102,7 +98,7 @@ app.MapHealthChecks("/health/live", new()
 });
 app.MapHealthChecks("/health/ready", new()
 {
-    Predicate = check => check.Name == "database" || check.Name == "minio"
+    Predicate = check => check.Name == "database"
 });
 
 app.MapControllers();

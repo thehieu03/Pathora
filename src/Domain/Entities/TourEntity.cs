@@ -28,6 +28,13 @@ public class TourEntity : Aggregate<Guid>
     public virtual PricingPolicy? PricingPolicy { get; set; }
     public Guid? CancellationPolicyId { get; set; }
     public virtual CancellationPolicyEntity? CancellationPolicy { get; set; }
+
+    private uint _rowVersion;
+    public uint RowVersion
+    {
+        get => _rowVersion;
+        set => _rowVersion = value;
+    }
     public static string GenerateTourCode()
     {
         var datePart = DateTimeOffset.UtcNow.ToString("yyyyMMdd");

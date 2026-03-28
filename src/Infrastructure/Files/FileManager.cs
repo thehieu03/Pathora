@@ -7,11 +7,11 @@ using Microsoft.Extensions.Configuration;
 namespace Infrastructure.Files;
 
 public class FileManager(
-    IMinIOCloudService minIOCloudService,
+    ICloudinaryService cloudinaryService,
     IConfiguration configuration,
     IFileRepository fileRepository) : IFileManager
 {
-    private string DefaultBucket => configuration["MinIO:DefaultBucket"] ?? "panthora";
+    private string DefaultFolder => configuration["Cloudinary:DefaultFolder"] ?? "panthora";
 
     private static async Task<byte[]> ReadBytesAsync(Stream stream, CancellationToken ct)
     {
@@ -37,10 +37,9 @@ public class FileManager(
         CancellationToken cancellationToken = default)
     {
         var bytes = await ReadBytesAsync(stream, cancellationToken);
-        var results = await minIOCloudService.UploadFilesAsync(
+        var results = await cloudinaryService.UploadFilesAsync(
             [new UploadFileBytes { FileName = fileName, ContentType = GuessContentType(fileName), Bytes = bytes }],
-            DefaultBucket,
-            isPublicBucket: true,
+            DefaultFolder,
             cancellationToken);
         return results.FirstOrDefault()?.PublicUrl ?? string.Empty;
     }
@@ -62,10 +61,9 @@ public class FileManager(
             };
         }));
 
-        var results = await minIOCloudService.UploadFilesAsync(
+        var results = await cloudinaryService.UploadFilesAsync(
             uploadFiles.ToList(),
-            DefaultBucket,
-            isPublicBucket: true,
+            DefaultFolder,
             cancellationToken);
 
         return results.Select(r => FileMetadataEntity.Create(
@@ -91,12 +89,12 @@ public class FileManager(
             throw new InvalidOperationException(result.FirstError.Description);
     }
 
-    public async Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default)
+    public async Task DeleteUploadedFilesAsync(List<string> publicIds, CancellationToken cancellationToken = default)
     {
-        if (objectNames.Count == 0)
+        if (publicIds.Count == 0)
             return;
 
-        await minIOCloudService.DeleteFilesAsync(DefaultBucket, objectNames, cancellationToken);
+        await cloudinaryService.DeleteFilesAsync(publicIds, cancellationToken);
     }
 
     public Task<Stream> DownloadFileAsync(string fileUrl, CancellationToken cancellationToken = default)

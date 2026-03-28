@@ -63,7 +63,9 @@ public sealed class CustomExceptionHandlerTests
 
         Assert.True(handled);
         Assert.True(httpContext.Response.HasStarted);
-        Assert.Equal(StatusCodes.Status500InternalServerError, httpContext.Response.StatusCode);
+        // When HasStarted is true, the handler returns early without modifying the response,
+        // so the status code remains at its initial value (200 by default).
+        Assert.Equal(200, httpContext.Response.StatusCode);
     }
 
     private static CustomExceptionHandler BuildHandler(bool includeInnerException, bool includeStackTrace)

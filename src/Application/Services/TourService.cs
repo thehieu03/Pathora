@@ -352,7 +352,7 @@ public class TourService(
 
     public async Task<ErrorOr<Success>> Update(UpdateTourCommand request)
     {
-        var tour = await _tourRepository.FindById(request.Id);
+        var tour = await _tourRepository.FindByIdForUpdate(request.Id);
         if (tour is null)
             return Error.NotFound(ErrorConstants.Tour.NotFoundCode, ErrorConstants.Tour.NotFoundDescription);
 

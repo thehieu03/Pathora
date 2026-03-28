@@ -1641,6 +1641,7 @@ public sealed class TourServiceTests
         _user.Id.Returns("admin@test.com");
         TourEntity? existingTour = CreateExistingTour(tourId);
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -1691,6 +1692,7 @@ public sealed class TourServiceTests
         _user.Id.Returns("admin@test.com");
         TourEntity? existingTour = CreateExistingTour(tourId);
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -1733,6 +1735,7 @@ public sealed class TourServiceTests
         _user.Id.Returns("admin@test.com");
         TourEntity? existingTour = CreateExistingTour(tourId);
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -1779,6 +1782,7 @@ public sealed class TourServiceTests
         _user.Id.Returns("admin@test.com");
         TourEntity? existingTour = CreateExistingTour(tourId);
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -1864,6 +1868,7 @@ public sealed class TourServiceTests
 
         _user.Id.Returns("admin@test.com");
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -1935,6 +1940,7 @@ public sealed class TourServiceTests
 
         _user.Id.Returns("admin@test.com");
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);
@@ -1989,6 +1995,7 @@ public sealed class TourServiceTests
 
         _user.Id.Returns("admin@test.com");
         _tourRepository.FindById(tourId, Arg.Any<bool>()).Returns(existingTour);
+        _tourRepository.FindByIdForUpdate(tourId).Returns(existingTour);
         _tourRepository.ExistsByTourCode(Arg.Any<string>(), Arg.Any<Guid>()).Returns(false);
         _tourRepository.Update(Arg.Any<TourEntity>()).Returns(Task.CompletedTask);
         _unitOfWork.SaveChangeAsync(Arg.Any<CancellationToken>()).Returns(1);

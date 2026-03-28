@@ -105,5 +105,12 @@ public class TourConfiguration : IEntityTypeConfiguration<TourEntity>
             .WithMany()
             .HasForeignKey(t => t.CancellationPolicyId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // xmin concurrency token — maps to PostgreSQL's system xmin column
+        builder.Property(t => t.RowVersion)
+            .HasColumnName("xmin")
+            .HasColumnType("xid")
+            .ValueGeneratedOnAddOrUpdate()
+            .IsConcurrencyToken();
     }
 }

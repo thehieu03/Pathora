@@ -21,7 +21,7 @@ public interface IFileManager
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Deletes files from MinIO storage by their object names.
+    /// Deletes files from cloud storage by their public IDs.
     /// Used for rollback when an operation (e.g., tour creation) fails after files were uploaded.
     /// </summary>
     public Task DeleteUploadedFilesAsync(List<string> objectNames, CancellationToken cancellationToken = default);
