@@ -12,6 +12,7 @@ using Domain.Entities.Translations;
 using Domain.Enums;
 using Domain.ValueObjects;
 using ErrorOr;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services;
 
@@ -26,18 +27,21 @@ public interface ITourInstanceService
     Task<ErrorOr<TourInstanceStatsDto>> GetStats();
     Task<ErrorOr<PaginatedList<TourInstanceVm>>> GetPublicAvailable(string? destination, string? sortBy, int page, int pageSize, string? language = null);
     Task<ErrorOr<TourInstanceDto>> GetPublicDetail(Guid id, string? language = null);
+    Task<ErrorOr<CheckDuplicateTourInstanceResultDto>> CheckDuplicate(Guid tourId, Guid classificationId, DateTimeOffset startDate);
 }
 
 public class TourInstanceService(
     ITourInstanceRepository tourInstanceRepository,
     ITourRepository tourRepository,
     IUser user,
-    IMapper mapper) : ITourInstanceService
+    IMapper mapper,
+    ILogger<TourInstanceService> logger) : ITourInstanceService
 {
     private readonly ITourInstanceRepository _tourInstanceRepository = tourInstanceRepository;
     private readonly ITourRepository _tourRepository = tourRepository;
     private readonly IUser _user = user;
     private readonly IMapper _mapper = mapper;
+    private readonly ILogger<TourInstanceService> _logger = logger;
 
     public async Task<ErrorOr<Guid>> Create(CreateTourInstanceCommand request)
     {
@@ -49,7 +53,21 @@ public class TourInstanceService(
         if (classification is null)
             return Error.NotFound(ErrorConstants.Classification.NotFoundCode, ErrorConstants.Classification.NotFoundDescription);
 
-        var performedBy = _user.Id ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(_user.Id))
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
+
+        if (!Guid.TryParse(_user.Id, out var creatorUserId))
+            return Error.Validation(ErrorConstants.User.InvalidIdCode, ErrorConstants.User.InvalidIdFormatDescription);
+
+        var performedBy = _user.Id;
+
+        var thumbnail = string.IsNullOrWhiteSpace(request.ThumbnailUrl)
+            ? null
+            : ImageEntity.Create(
+                fileId: null!,
+                originalFileName: null!,
+                fileName: null!,
+                publicURL: request.ThumbnailUrl);
 
         var entity = TourInstanceEntity.Create(
             tourId: request.TourId,
@@ -65,32 +83,34 @@ public class TourInstanceService(
             basePrice: request.BasePrice,
             performedBy: performedBy,
             location: request.Location,
-            thumbnail: null,
+            thumbnail: thumbnail,
             images: null,
             confirmationDeadline: request.ConfirmationDeadline,
             includedServices: request.IncludedServices);
 
-        // Add managers (guides)
         if (request.GuideUserIds?.Count > 0)
         {
-            foreach (var userId in request.GuideUserIds)
+            foreach (var userId in request.GuideUserIds.Distinct())
             {
                 entity.Managers.Add(TourInstanceManagerEntity.Create(
                     entity.Id, userId, TourInstanceManagerRole.Guide, performedBy));
             }
         }
-        // Add managers (tour managers)
-        if (request.ManagerUserIds?.Count > 0)
-        {
-            foreach (var userId in request.ManagerUserIds)
-            {
-                entity.Managers.Add(TourInstanceManagerEntity.Create(
-                    entity.Id, userId, TourInstanceManagerRole.Manager, performedBy));
-            }
-        }
 
-        await _tourInstanceRepository.Create(entity);
-        return entity.Id;
+        entity.Managers.Add(TourInstanceManagerEntity.Create(
+            entity.Id, creatorUserId, TourInstanceManagerRole.Manager, performedBy));
+
+        try
+        {
+            await _tourInstanceRepository.Create(entity);
+            _logger.LogInformation("TourInstance {TourInstanceId} created with manager {ManagerId} bound by creator", entity.Id, creatorUserId);
+            return entity.Id;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create TourInstance for TourId {TourId}, ClassificationId {ClassificationId}", request.TourId, request.ClassificationId);
+            return Error.Failure("TourInstance.CreateFailed", "Failed to create tour instance");
+        }
     }
 
     public async Task<ErrorOr<Success>> Update(UpdateTourInstanceCommand request)
@@ -206,5 +226,22 @@ public class TourInstanceService(
 
         entity.ApplyResolvedTranslation(PublicLanguageResolver.Resolve(language));
         return _mapper.Map<TourInstanceDto>(entity);
+    }
+
+    public async Task<ErrorOr<CheckDuplicateTourInstanceResultDto>> CheckDuplicate(Guid tourId, Guid classificationId, DateTimeOffset startDate)
+    {
+        var instances = await _tourInstanceRepository.FindDuplicate(tourId, classificationId, startDate);
+        var summaries = instances.Select(e => new DuplicateInstanceSummaryDto(
+            e.Id,
+            e.Title,
+            e.StartDate,
+            e.Status.ToString()
+        )).ToList();
+
+        return new CheckDuplicateTourInstanceResultDto(
+            Exists: summaries.Count > 0,
+            Count: summaries.Count,
+            ExistingInstances: summaries
+        );
     }
 }

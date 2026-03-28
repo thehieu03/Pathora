@@ -3,6 +3,7 @@ using Application.Common.Constant;
 using Application.Dtos;
 using Contracts.Interfaces;
 using BuildingBlocks.CORS;
+using Domain.Entities;
 using Domain.Enums;
 using ErrorOr;
 using FluentValidation;
@@ -23,7 +24,7 @@ public sealed record CreateTourInstanceCommand(
     DateTimeOffset? ConfirmationDeadline = null,
     List<string>? IncludedServices = null,
     List<Guid>? GuideUserIds = null,
-    List<Guid>? ManagerUserIds = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+    string? ThumbnailUrl = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.TourInstance];
 }
@@ -62,21 +63,6 @@ public sealed class CreateTourInstanceCommandValidator : AbstractValidator<Creat
 
         RuleFor(x => x.InstanceType)
             .IsInEnum().WithMessage(ValidationMessages.TourInstanceInstanceTypeInvalid);
-
-        RuleFor(x => x.GuideUserIds)
-            .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage(ValidationMessages.TourInstanceGuideIdsNotDuplicate)
-            .When(x => x.GuideUserIds is { Count: > 0 });
-
-        RuleFor(x => x.ManagerUserIds)
-            .Must(ids => ids == null || ids.Distinct().Count() == ids.Count)
-            .WithMessage(ValidationMessages.TourInstanceManagerIdsNotDuplicate)
-            .When(x => x.ManagerUserIds is { Count: > 0 });
-
-        RuleFor(x => x)
-            .Must(x => x.GuideUserIds == null || x.ManagerUserIds == null ||
-                       !x.GuideUserIds.Any(g => x.ManagerUserIds.Contains(g)))
-            .WithMessage(ValidationMessages.TourInstanceUserCannotBeBothGuideAndManager);
     }
 }
 

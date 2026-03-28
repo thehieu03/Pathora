@@ -172,4 +172,15 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
                 && t.InstanceType == TourType.Public
                 && t.Status == TourInstanceStatus.Available);
     }
+
+    public async Task<List<TourInstanceEntity>> FindDuplicate(Guid tourId, Guid classificationId, DateTimeOffset startDate)
+    {
+        return await _context.TourInstances
+            .AsNoTracking()
+            .Where(t => !t.IsDeleted
+                && t.TourId == tourId
+                && t.ClassificationId == classificationId
+                && t.StartDate.Date == startDate.Date)
+            .ToListAsync();
+    }
 }

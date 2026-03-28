@@ -144,6 +144,14 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
     }
 
     [Authorize]
+    [HttpPut(AuthEndpoint.ChangePassword)]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+    {
+        var result = await Sender.Send(command);
+        return HandleResult(result);
+    }
+
+    [Authorize]
     [HttpGet(AuthEndpoint.Me)]
     public async Task<IActionResult> GetUserInfo()
     {

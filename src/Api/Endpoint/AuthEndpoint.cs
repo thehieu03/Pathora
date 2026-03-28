@@ -16,4 +16,5 @@ public static class AuthEndpoint
     public const string ConfirmRegister = "confirm-register";
     public const string ForgotPassword = "forgot-password";
     public const string ResetPassword = "reset-password";
+    public const string ChangePassword = "change-password";
 }

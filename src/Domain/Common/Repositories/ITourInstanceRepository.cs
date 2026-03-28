@@ -15,4 +15,5 @@ public interface ITourInstanceRepository
     Task<List<TourInstanceEntity>> FindPublicAvailable(string? destination, string? sortBy, int page, int pageSize);
     Task<int> CountPublicAvailable(string? destination);
     Task<TourInstanceEntity?> FindPublicById(Guid id);
+    Task<List<TourInstanceEntity>> FindDuplicate(Guid tourId, Guid classificationId, DateTimeOffset startDate);
 }

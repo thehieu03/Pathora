@@ -308,6 +308,7 @@ public class IdentityService(
 
         userEntity.ChangePassword(_passwordHasher.HashPassword(request.NewPassword), _user.Id ?? string.Empty);
         _userRepository.Update(userEntity);
+        await _unitOfWork.SaveChangeAsync();
 
         return Result.Success;
     }
@@ -465,6 +466,7 @@ public class IdentityService(
             request.Avatar);
 
         _userRepository.Update(userEntity);
+        await _unitOfWork.SaveChangeAsync();
 
         return Result.Success;
     }
