@@ -109,6 +109,9 @@ public class UserService(
         {
             await _unitOfWork.BeginTransactionAsync();
             await _userRepository.Create(userEntity);
+            var settingsRepo = _unitOfWork.GenericRepository<UserSettingEntity>();
+            var settings = UserSettingEntity.Create(userEntity.Id, _user.Id ?? "system");
+            await settingsRepo.AddAsync(settings);
             if (request.RoleIds.Count > 0)
                 await _roleRepository.AddUser(userEntity.Id, request.RoleIds);
             await _unitOfWork.CommitTransactionAsync();
@@ -154,8 +157,10 @@ public class UserService(
         if (userEntity is null)
             return Error.NotFound(ErrorConstants.User.NotFoundCode, ErrorConstants.User.NotFoundDescription);
 
-        var newPassword = PasswordGenerator.Generate();
-        userEntity.ChangePassword(_passwordHasher.HashPassword(newPassword), _user.Id ?? string.Empty, forcePasswordChange: true);
+        var passwordToSet = string.IsNullOrEmpty(request.NewPassword)
+            ? PasswordGenerator.Generate()
+            : request.NewPassword;
+        userEntity.ChangePassword(_passwordHasher.HashPassword(passwordToSet), _user.Id ?? string.Empty, forcePasswordChange: true);
         _userRepository.Update(userEntity);
         await _unitOfWork.SaveChangeAsync();
 

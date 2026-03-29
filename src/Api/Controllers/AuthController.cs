@@ -181,6 +181,40 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
         return HandleResult(result);
     }
 
+    [Authorize]
+    [HttpGet(AuthEndpoint.MeSettings)]
+    public async Task<IActionResult> GetUserSettings()
+    {
+        var result = await Sender.Send(new GetUserSettingsQuery(CurrentUserId));
+        return HandleResult(result);
+    }
+
+    [Authorize]
+    [HttpPut(AuthEndpoint.MeSettings)]
+    public async Task<IActionResult> UpdateUserSettings([FromBody] UpdateUserSettingsCommand command)
+    {
+        var result = await Sender.Send(command with { CurrentUserId = CurrentUserId });
+        return HandleResult(result);
+    }
+
+    [Authorize]
+    [HttpPost(UploadEndpoint.Avatar)]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadAvatar(IFormFile file)
+    {
+        if (file.Length == 0)
+            return BadRequest(new { message = "File is empty." });
+
+        await using var stream = file.OpenReadStream();
+        var result = await Sender.Send(new UploadAvatarCommand(
+            stream,
+            file.FileName,
+            file.ContentType ?? "application/octet-stream",
+            file.Length,
+            CurrentUserId));
+        return HandleResult(result);
+    }
+
     /// <summary>DEV ONLY – reset a user password without authentication.</summary>
     [AllowAnonymous]
     [HttpPost(AuthEndpoint.DevResetPassword)]
@@ -282,6 +316,8 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
         var googleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
         var fullName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        var picture = claims.FirstOrDefault(c => c.Type == "picture")?.Value
+                   ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.Uri)?.Value;
 
         if (string.IsNullOrEmpty(googleId) || string.IsNullOrEmpty(email))
         {
@@ -289,7 +325,7 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
             return Redirect(frontendUrl + "/auth/callback?error=missing_claims");
         }
 
-        var result = await Sender.Send(new ExternalLoginCommand(googleId, email, fullName ?? ""));
+        var result = await Sender.Send(new ExternalLoginCommand(googleId, email, fullName ?? "", picture));
 
         // Sign out the cookie used during the OAuth flow
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

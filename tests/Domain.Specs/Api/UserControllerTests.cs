@@ -1,10 +1,12 @@
 using Api.Controllers;
 using Contracts;
+using Contracts.ModelResponse;
 using Application.Contracts.User;
 using Application.Features.User.Commands;
 using Application.Features.User.Queries;
 using ErrorOr;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Domain.Specs.Api;
 

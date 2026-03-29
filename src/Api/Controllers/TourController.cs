@@ -5,6 +5,7 @@ using Application.Common.Constant;
 using Application.Common.Interfaces;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
+using Application.Features.Tour.Commands.PurgeTour;
 using Application.Features.Tour.Queries;
 using Application.Services;
 using Domain.Entities.Translations;
@@ -299,6 +300,13 @@ public class TourController(IFileService fileService, IFileManager fileManager) 
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await Sender.Send(new DeleteTourCommand(id));
+        return HandleResult(result);
+    }
+    [AllowAnonymous]
+    [HttpDelete(TourEndpoint.Id + "/purge")]
+    public async Task<IActionResult> Purge(Guid id)
+    {
+        var result = await Sender.Send(new PurgeTourCommand(id));
         return HandleResult(result);
     }
 

@@ -10,7 +10,8 @@ namespace Application.Features.Identity.Commands;
 public sealed record ExternalLoginCommand(
     string ProviderKey,
     string ProviderEmail,
-    string FullName) : ICommand<ErrorOr<ExternalLoginResponse>>;
+    string FullName,
+    string? Picture = null) : ICommand<ErrorOr<ExternalLoginResponse>>;
 
 public sealed class ExternalLoginCommandValidator : AbstractValidator<ExternalLoginCommand>
 {
@@ -33,6 +34,6 @@ public sealed class ExternalLoginCommandHandler(IIdentityService identityService
         CancellationToken cancellationToken)
     {
         return await identityService.ExternalLogin(
-            new ExternalLoginRequest(AuthProviders.Google, request.ProviderKey, request.ProviderEmail, request.FullName));
+            new ExternalLoginRequest(AuthProviders.Google, request.ProviderKey, request.ProviderEmail, request.FullName, request.Picture));
     }
 }

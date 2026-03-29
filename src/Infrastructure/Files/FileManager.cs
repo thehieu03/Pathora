@@ -31,6 +31,23 @@ public class FileManager(
             _ => "application/octet-stream"
         };
 
+    public async Task<AvatarUploadResult> UploadAvatarAsync(
+        Stream stream,
+        string fileName,
+        CancellationToken cancellationToken = default)
+    {
+        var bytes = await ReadBytesAsync(stream, cancellationToken);
+        var results = await cloudinaryService.UploadFilesAsync(
+            [new UploadFileBytes { FileName = fileName, ContentType = GuessContentType(fileName), Bytes = bytes }],
+            DefaultFolder,
+            cancellationToken);
+        var result = results.FirstOrDefault();
+        if (result is null)
+            throw new InvalidOperationException("Cloudinary upload returned no result.");
+
+        return new AvatarUploadResult(result.PublicUrl!, result.FileId ?? string.Empty);
+    }
+
     public async Task<string> UploadFileAsync(
         Stream stream,
         string fileName,

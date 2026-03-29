@@ -21,6 +21,7 @@ public class UserRepository(AppDbContext context) : Repository<UserEntity>(conte
     {
         return await _context.Users
             .AsNoTracking()
+            .Include(u => u.UserSetting)
             .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
     }
 

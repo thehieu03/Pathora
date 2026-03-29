@@ -2,9 +2,20 @@ using Domain.Entities;
 
 namespace Application.Common.Interfaces;
 
+public sealed record AvatarUploadResult(string Url, string PublicId);
+
 public interface IFileManager
 {
     public Task<string> UploadFileAsync(
+        Stream stream,
+        string fileName,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Uploads an avatar image to cloud storage and returns both URL and PublicId.
+    /// Use this for avatar uploads where rollback via PublicId is needed.
+    /// </summary>
+    public Task<AvatarUploadResult> UploadAvatarAsync(
         Stream stream,
         string fileName,
         CancellationToken cancellationToken = default);
@@ -30,4 +41,3 @@ public interface IFileManager
         string fileUrl,
         CancellationToken cancellationToken = default);
 }
-

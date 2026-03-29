@@ -1,5 +1,7 @@
 
 using Application.Common.Interfaces;
+using Application.Features.Tour.Commands.PurgeTour;
+using Infrastructure.Repositories.Tour;
 using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.UnitOfWork;
@@ -64,6 +66,8 @@ internal static class DependencyInjection
         services.AddScoped<IRegisterRepository, RegisterRepository>();
 
         services.AddScoped<ISiteContentRepository, SiteContentRepository>();
+
+        services.AddScoped<ITourPurgeExecutor, TourPurgeExecutor>();
 
         return services;
     }

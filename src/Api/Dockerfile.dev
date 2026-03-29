@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+WORKDIR /src
+COPY ["Directory.Packages.props", "."]
+COPY ["Directory.Build.props", "."]
+COPY ["nuget.config", "."]
+COPY ["src/Api/Api.csproj", "src/Api/"]
+COPY ["src/Application/Application.csproj", "src/Application/"]
+COPY ["Share/BuildingBlocks/BuildingBlocks.csproj", "Share/BuildingBlocks/"]
+COPY ["Share/Common/Common.csproj", "Share/Common/"]
+COPY ["Share/Contracts/Contracts.csproj", "Share/Contracts/"]
+COPY ["src/Domain/Domain.csproj", "src/Domain/"]
+COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
+RUN dotnet restore "./src/Api/Api.csproj"
+WORKDIR "/src/src/Api"
+ENTRYPOINT ["dotnet", "run", "--project", "Api.csproj", "--urls", "http://0.0.0.0:8080"]

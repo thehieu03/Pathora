@@ -1,3 +1,6 @@
+using System.Net.Http.Headers;
+using System.Text.Json;
+using Application.Common.Interfaces;
 using Application.Services;
 using Domain.ApiThirdPatyResponse;
 using Domain.Common.Repositories;
@@ -7,8 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace Api.Services;
 
@@ -44,6 +45,9 @@ public class OutboxWorkerService(
         PropertyNameCaseInsensitive = true
     };
 
+    private const string PaymentCheckType = "PaymentCheck";
+    private const string TourMediaCleanupType = "TourMediaCleanup";
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Outbox Worker starting with interval {IntervalMs}ms", _options.PollingIntervalMs);
@@ -65,7 +69,6 @@ public class OutboxWorkerService(
             }
             catch (OperationCanceledException)
             {
-                // Host is stopping — exit gracefully
                 break;
             }
         }
@@ -78,6 +81,7 @@ public class OutboxWorkerService(
         using var scope = serviceProvider.CreateScope();
         var outboxRepository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
         var paymentService = scope.ServiceProvider.GetRequiredService<IPaymentService>();
+        var fileManager = scope.ServiceProvider.GetRequiredService<IFileManager>();
 
         var messages = await outboxRepository.GetPendingMessagesAsync(_options.BatchSize, cancellationToken);
 
@@ -88,7 +92,7 @@ public class OutboxWorkerService(
 
             try
             {
-                await ProcessMessageAsync(message, paymentService, outboxRepository, cancellationToken);
+                await ProcessMessageAsync(message, paymentService, fileManager, outboxRepository, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -103,18 +107,72 @@ public class OutboxWorkerService(
     private async Task ProcessMessageAsync(
         OutboxMessage message,
         IPaymentService paymentService,
+        IFileManager fileManager,
         IOutboxRepository outboxRepository,
         CancellationToken cancellationToken)
     {
-        if (message.Type != "PaymentCheck")
+        switch (message.Type)
         {
-            logger.LogWarning("Unknown outbox message type: {Type}", message.Type);
-            message.MarkAsDeadLetter("Unknown message type");
+            case PaymentCheckType:
+                await ProcessPaymentCheckMessageAsync(message, paymentService, outboxRepository, cancellationToken);
+                break;
+            case TourMediaCleanupType:
+                await ProcessTourMediaCleanupMessageAsync(message, fileManager, outboxRepository, cancellationToken);
+                break;
+            default:
+                logger.LogWarning("Unknown outbox message type: {Type}", message.Type);
+                message.MarkAsDeadLetter("Unknown message type");
+                await outboxRepository.UpdateAsync(message, cancellationToken);
+                break;
+        }
+    }
+
+    private async Task ProcessTourMediaCleanupMessageAsync(
+        OutboxMessage message,
+        IFileManager fileManager,
+        IOutboxRepository outboxRepository,
+        CancellationToken cancellationToken)
+    {
+        var payload = JsonSerializer.Deserialize<TourMediaCleanupPayload>(message.Payload, JsonOptions);
+        if (payload == null || payload.ObjectNames.Count == 0)
+        {
+            message.MarkAsProcessed();
             await outboxRepository.UpdateAsync(message, cancellationToken);
             return;
         }
 
-        var payload = JsonSerializer.Deserialize<PaymentCheckPayload>(message.Payload);
+        message.MarkAsProcessing();
+        await outboxRepository.UpdateAsync(message, cancellationToken);
+
+        logger.LogInformation(
+            "Deleting {Count} media objects for purged tour {TourId}",
+            payload.ObjectNames.Count, payload.TourId);
+
+        try
+        {
+            await fileManager.DeleteUploadedFilesAsync(payload.ObjectNames, cancellationToken);
+            message.MarkAsProcessed();
+            logger.LogInformation(
+                "Successfully deleted {Count} media objects for tour {TourId}",
+                payload.ObjectNames.Count, payload.TourId);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to delete media objects for tour {TourId}", payload.TourId);
+            var delay = GetRetryDelay(message.RetryCount);
+            message.MarkAsFailed(ex.Message, delay);
+        }
+
+        await outboxRepository.UpdateAsync(message, cancellationToken);
+    }
+
+    private async Task ProcessPaymentCheckMessageAsync(
+        OutboxMessage message,
+        IPaymentService paymentService,
+        IOutboxRepository outboxRepository,
+        CancellationToken cancellationToken)
+    {
+        var payload = JsonSerializer.Deserialize<PaymentCheckPayload>(message.Payload, JsonOptions);
         if (payload == null)
         {
             message.MarkAsDeadLetter("Invalid payload");
@@ -122,18 +180,15 @@ public class OutboxWorkerService(
             return;
         }
 
-        // Mark as processing
         message.MarkAsProcessing();
         await outboxRepository.UpdateAsync(message, cancellationToken);
 
         logger.LogInformation("Checking payment status for transaction {TransactionCode}, Amount: {Amount}",
             payload.TransactionCode, payload.Amount);
 
-        // Check if payment configuration is available
         if (string.IsNullOrWhiteSpace(_authenticationKey) || string.IsNullOrWhiteSpace(_accountNumber))
         {
             logger.LogWarning("Payment configuration missing, skipping payment check for {TransactionCode}", payload.TransactionCode);
-            // Don't mark as processed - will retry next interval
             message.MarkAsFailed("Payment configuration missing", TimeSpan.FromMinutes(5));
             await outboxRepository.UpdateAsync(message, cancellationToken);
             return;
@@ -141,12 +196,10 @@ public class OutboxWorkerService(
 
         try
         {
-            // Call SePay API to check for matching transaction
             var matchedTransaction = await CheckPaymentFromSePayAsync(payload, cancellationToken);
 
             if (matchedTransaction != null)
             {
-                // Process the payment
                 var transactionData = new SepayTransactionData
                 {
                     TransactionId = matchedTransaction.id ?? string.Empty,
@@ -178,11 +231,10 @@ public class OutboxWorkerService(
                 logger.LogDebug("No payment found for transaction {TransactionCode}, amount {Amount}",
                     payload.TransactionCode, payload.Amount);
 
-                // Check if transaction has expired
                 var transaction = await paymentService.GetTransactionByCodeAsync(payload.TransactionCode);
                 if (transaction.IsError)
                 {
-                    message.MarkAsProcessed(); // Transaction not found, stop checking
+                    message.MarkAsProcessed();
                 }
                 else if (transaction.Value.IsExpired())
                 {
@@ -192,7 +244,6 @@ public class OutboxWorkerService(
                 }
                 else
                 {
-                    // Still pending, will retry on next interval
                     message.MarkAsFailed("Payment not received yet", TimeSpan.FromMinutes(5));
                 }
             }
@@ -224,7 +275,6 @@ public class OutboxWorkerService(
             if (sepayResponse?.Transactions == null)
                 return null;
 
-            // Find matching transaction by content (contains transaction code) and amount
             var transactionCode = payload.TransactionCode;
             var expectedAmount = (long)payload.Amount;
 
@@ -233,7 +283,6 @@ public class OutboxWorkerService(
                 var amount = ParseDecimal(transaction.amount_in);
                 var content = transaction.transaction_content ?? "";
 
-                // Match by transaction code in content and amount
                 if (content.Contains(transactionCode) && amount >= expectedAmount)
                 {
                     logger.LogInformation("Found matching SePay transaction: {TransactionId}, Amount: {Amount}",
@@ -301,11 +350,12 @@ public class OutboxWorkerService(
     }
 
     private record PaymentCheckPayload(Guid TransactionId, string TransactionCode, Guid BookingId, decimal Amount, DateTimeOffset CreatedAt);
+    private record TourMediaCleanupPayload(Guid TourId, List<string> ObjectNames);
 }
 
 public class OutboxWorkerOptions
 {
-    public int PollingIntervalMs { get; set; } = 30000; // 30 seconds
+    public int PollingIntervalMs { get; set; } = 30000;
     public int BatchSize { get; set; } = 10;
     public int MaxRetries { get; set; } = 10;
 }

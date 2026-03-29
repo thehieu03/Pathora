@@ -98,6 +98,7 @@ public class AppDbContext : DbContext
     public DbSet<TourResourceEntity> TourResources => Set<TourResourceEntity>();
     public DbSet<TourInstanceManagerEntity> TourInstanceManagers => Set<TourInstanceManagerEntity>();
     public DbSet<TourInstanceDayEntity> TourInstanceDays => Set<TourInstanceDayEntity>();
+    public DbSet<UserSettingEntity> UserSettings => Set<UserSettingEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

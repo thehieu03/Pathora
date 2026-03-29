@@ -12,7 +12,8 @@ public record UserInfoVm(
     string? Portal = null,
     string? DefaultPath = null,
     string? PhoneNumber = null,
-    string? Address = null
+    string? Address = null,
+    string? PreferredLanguage = null
 );
 
 public record UserRoleVm(int Type, string Id, string Name);

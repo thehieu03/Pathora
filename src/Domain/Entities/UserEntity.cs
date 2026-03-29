@@ -89,6 +89,8 @@ public class UserEntity : Aggregate<Guid>
         };
     }
 
+    public UserSettingEntity? UserSetting { get; set; }
+
     public void SoftDelete(string performedBy)
     {
         IsDeleted = true;

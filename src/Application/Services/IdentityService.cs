@@ -25,9 +25,7 @@ public interface IIdentityService
     Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request);
     Task<ErrorOr<Success>> ForgotPassword(ForgotPasswordRequest request);
     Task<ErrorOr<Success>> ResetPassword(ResetPasswordRequest request);
-    Task<ErrorOr<Success>> SendOtp(string email);
     Task<ErrorOr<UserInfoVm>> GetUserInfo();
-    Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request);
     Task<ErrorOr<Success>> UpdateMyProfile(UpdateMyProfileRequest request);
     Task<ErrorOr<List<TabVm>>> GetTabs();
     Task<ErrorOr<Success>> ConfirmRegister(ConfirmRegisterRequest request);
@@ -211,7 +209,7 @@ public class IdentityService(
                     request.ProviderKey,
                     request.ProviderEmail,
                     request.FullName,
-                    null);
+                    request.Picture);
 
                 try
                 {
@@ -407,10 +405,6 @@ public class IdentityService(
         return Result.Success;
     }
 
-    public Task<ErrorOr<Success>> SendOtp(string email)
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<ErrorOr<UserInfoVm>> GetUserInfo()
     {
@@ -429,6 +423,8 @@ public class IdentityService(
 
         var portalRouting = AuthPortalResolver.Resolve(roles.Select(role => role.Type));
 
+        var preferredLanguage = userEntity.UserSetting?.PreferredLanguage ?? "vi";
+
         return new UserInfoVm(
             userEntity.Id,
             userEntity.Username,
@@ -441,13 +437,10 @@ public class IdentityService(
             portalRouting.Portal,
             portalRouting.DefaultPath,
             userEntity.PhoneNumber,
-            userEntity.Address);
+            userEntity.Address,
+            preferredLanguage);
     }
 
-    public Task<ErrorOr<Success>> UpdateUserInfo(UpdateUserInfoRequest request)
-    {
-        throw new NotImplementedException();
-    }
 
     public async Task<ErrorOr<Success>> UpdateMyProfile(UpdateMyProfileRequest request)
     {
@@ -495,6 +488,7 @@ public class IdentityService(
             {
                 var userRepo = _unitOfWork.GenericRepository<UserEntity>();
                 var registerRepo = _unitOfWork.GenericRepository<RegisterEntity>();
+                var settingsRepo = _unitOfWork.GenericRepository<UserSettingEntity>();
 
                 var user = new UserEntity
                 {
@@ -505,6 +499,10 @@ public class IdentityService(
                 };
 
                 await userRepo.AddAsync(user);
+
+                var settings = UserSettingEntity.Create(user.Id, "register");
+                await settingsRepo.AddAsync(settings);
+
                 await registerRepo.DeleteAsync(guidCode);
             });
 

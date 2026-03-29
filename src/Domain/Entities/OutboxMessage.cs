@@ -13,7 +13,7 @@ public class OutboxMessage : Entity<Guid>
     public string? ErrorMessage { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
-    private OutboxMessage() { }
+    protected OutboxMessage() { }
 
     public static OutboxMessage Create(string type, string payload)
     {

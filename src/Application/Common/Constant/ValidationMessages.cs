@@ -77,6 +77,7 @@ public static class ValidationMessages
     public const string TourInstanceMinParticipantsNonNegative = "Min participants must not be negative.";
     public const string TourInstanceStatusRequired = "Status is required.";
     public const string TourInstanceIdRequired = "Tour instance ID is required.";
+    public const string TourIdRequired = "Tour ID is required.";
     public const string TourInstanceTitleRequired = "Title is required.";
     public const string TourInstanceBasePriceRequired = "Base price is required.";
     public const string TourInstanceBasePriceNonNegative = "Base price must not be negative.";

@@ -42,6 +42,8 @@ public sealed class TourControllerTranslationTests
     {
         public Task<string> UploadFileAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
             => Task.FromResult("http://cdn/default");
+        public Task<AvatarUploadResult> UploadAvatarAsync(Stream stream, string fileName, CancellationToken cancellationToken = default)
+            => Task.FromResult(new AvatarUploadResult("http://cdn/default", "default-public-id"));
         public Task<IEnumerable<Domain.Entities.FileMetadataEntity>> UploadMultipleFilesAsync(Guid entityId, (Stream Stream, string FileName, string ContentType, long Length)[] files, CancellationToken cancellationToken = default)
             => Task.FromResult<IEnumerable<Domain.Entities.FileMetadataEntity>>([]);
         public Task<Dictionary<Guid, Domain.Entities.FileMetadataEntity[]>> FindFiles(string[] entityIds)
