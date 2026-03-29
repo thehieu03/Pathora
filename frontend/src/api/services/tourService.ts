@@ -146,6 +146,19 @@ export const tourService = {
     return extractResult<unknown>(response.data);
   },
 
+  updateTourStatus: async (tourId: string, status: number) => {
+    const formData = new FormData();
+    formData.append("id", tourId);
+    formData.append("status", String(status));
+    // NOTE: Do NOT set Content-Type header manually for FormData.
+    // Axios must set it automatically with the correct boundary parameter.
+    const response = await api.put<ApiResponse<unknown>>(
+      API_ENDPOINTS.TOUR.UPDATE,
+      formData,
+    );
+    return extractResult<unknown>(response.data);
+  },
+
   getPublicTourDetail: async (id: string, language?: string) => {
     const response = await api.get<ApiResponse<TourDto>>(
       buildPublicTourDetailUrl(id, language),

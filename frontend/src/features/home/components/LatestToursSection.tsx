@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { homeService } from "@/api/services/homeService";
 import { LatestTour } from "@/types/home";
 
-const TOUR_IMAGE_FALLBACK = "/tour-placeholder.svg";
+const TOUR_IMAGE_FALLBACK = "/explore-bg.png";
 
 const FALLBACK_TOURS = [
   {

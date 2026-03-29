@@ -3,6 +3,7 @@ import { setUser, setToken, logOut } from "../../infrastructure/authSlice";
 import type { UserInfo } from "../../domain/auth";
 import type { ApiSharedResponse } from "@/types";
 import { isAdminPortal } from "@/utils/authRouting";
+import i18next from "i18next";
 
 // ─── Cookie helpers ────────────────────────────────────────────────────────
 
@@ -57,6 +58,22 @@ export interface RegisterRequest {
   password: string;
 }
 
+export interface UserSettingsData {
+  preferredLanguage: string;
+  notificationEmail: boolean;
+  notificationSms: boolean;
+  notificationPush: boolean;
+  theme: string;
+}
+
+export interface UpdateUserSettingsRequest {
+  preferredLanguage?: string;
+  notificationEmail?: boolean;
+  notificationSms?: boolean;
+  notificationPush?: boolean;
+  theme?: string;
+}
+
 // ─── RTK Query endpoints ───────────────────────────────────────────────────
 
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -102,6 +119,22 @@ export const authApiSlice = apiSlice.injectEndpoints({
           );
           if ("data" in result && result.data?.data) {
             dispatch(setUser(result.data.data));
+
+            // Sync i18n language on login
+            const preferredLang = result.data.data.preferredLanguage;
+            if (preferredLang) {
+              if (i18next.isInitialized) {
+                if (i18next.language !== preferredLang) {
+                  void i18next.changeLanguage(preferredLang);
+                }
+              } else {
+                i18next.on("initialized", () => {
+                  if (i18next.language !== preferredLang) {
+                    void i18next.changeLanguage(preferredLang);
+                  }
+                });
+              }
+            }
           }
         } catch {
           // errors are handled by axiosInstance / apiSlice globally
@@ -111,7 +144,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
     /**
      * GET /api/auth/me
-     * Returns current user info and syncs it to Redux auth state.
+     * Returns current user info and syncs it to Redux auth state + i18n language.
      */
     getUserInfo: builder.query<ApiSharedResponse<UserInfo>, void>({
       query: () => "/api/auth/me",
@@ -121,6 +154,23 @@ export const authApiSlice = apiSlice.injectEndpoints({
           const { data } = await queryFulfilled;
           if (data.data) {
             dispatch(setUser(data.data));
+
+            // Sync i18n language from user settings (Task 5.6: race condition fix)
+            const preferredLang = data.data.preferredLanguage;
+            if (preferredLang) {
+              if (i18next.isInitialized) {
+                if (i18next.language !== preferredLang) {
+                  void i18next.changeLanguage(preferredLang);
+                }
+              } else {
+                // Defer until i18n initializes
+                i18next.on("initialized", () => {
+                  if (i18next.language !== preferredLang) {
+                    void i18next.changeLanguage(preferredLang);
+                  }
+                });
+              }
+            }
           }
         } catch {
           // unauthenticated — leave state as-is
@@ -212,21 +262,21 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
 
     /**
-     * GET /api/user/notification-preferences
-     * Get user notification preferences.
+     * GET /api/auth/me/settings
+     * Get user settings (language, notifications, theme).
      */
-    getNotificationPreferences: builder.query<ApiSharedResponse<{ emailNotifications: boolean; smsNotifications: boolean; newsletter: boolean }>, void>({
-      query: () => "/api/user/notification-preferences",
+    getUserSettings: builder.query<ApiSharedResponse<UserSettingsData>, void>({
+      query: () => "/api/auth/me/settings",
       providesTags: ["Auth"],
     }),
 
     /**
-     * PUT /api/user/notification-preferences
-     * Update user notification preferences.
+     * PUT /api/auth/me/settings
+     * Update user settings (partial update — only non-null fields are applied).
      */
-    updateNotificationPreferences: builder.mutation<ApiSharedResponse<void>, { emailNotifications: boolean; smsNotifications: boolean; newsletter: boolean }>({
+    updateUserSettings: builder.mutation<ApiSharedResponse<void>, UpdateUserSettingsRequest>({
       query: (body) => ({
-        url: "/api/user/notification-preferences",
+        url: "/api/auth/me/settings",
         method: "PUT",
         body,
       }),
@@ -244,6 +294,6 @@ export const {
   useLogoutMutation,
   useChangePasswordMutation,
   useUpdateUserMutation,
-  useGetNotificationPreferencesQuery,
-  useUpdateNotificationPreferencesMutation,
+  useGetUserSettingsQuery,
+  useUpdateUserSettingsMutation,
 } = authApiSlice;

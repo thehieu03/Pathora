@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { homeService } from "@/api/services/homeService";
 import { FeaturedTour, SearchTour } from "@/types/home";
 
-const TOUR_IMAGE_FALLBACK = "/tour-placeholder.svg";
+const TOUR_IMAGE_FALLBACK = "/stats-bg.png";
 
 const FALLBACK_TRIPS = [
   {

@@ -25,4 +25,20 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   newsletter: true,
 };
 
+export interface UserSettings {
+  preferredLanguage: string;
+  notificationEmail: boolean;
+  notificationSms: boolean;
+  notificationPush: boolean;
+  theme: string;
+}
+
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+  preferredLanguage: "vi",
+  notificationEmail: true,
+  notificationSms: true,
+  notificationPush: false,
+  theme: "light",
+};
+
 export const VIETNAM_PHONE_REGEX = /^(\+84|84|0)[1-9]\d{8}$/;

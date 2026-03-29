@@ -51,7 +51,25 @@
         "newPassword": "New Password",
         "confirmPassword": "Confirm New Password",
         "changedSuccess": "Password changed successfully",
-        "constraints": "At least 8 characters, with uppercase, lowercase, digit and special character"
+        "constraints": "At least 8 characters, with uppercase, lowercase, digit and special character",
+        "oldPasswordRequired": "Please enter your current password",
+        "newPasswordRequired": "Please enter a new password",
+        "passwordRequirements": "Password must include: ",
+        "passwordTooWeak": "Password is not strong enough",
+        "confirmPasswordRequired": "Please confirm your password",
+        "passwordMismatch": "Passwords do not match",
+        "passwordsMatch": "Passwords match",
+        "passwordsDontMatch": "Passwords do not match",
+        "strengthWeak": "Weak",
+        "strengthFair": "Fair",
+        "strengthGood": "Good",
+        "strengthStrong": "Strong",
+        "ruleMinLength": "At least 8 characters",
+        "ruleUppercase": "At least 1 uppercase letter (A-Z)",
+        "ruleLowercase": "At least 1 lowercase letter (a-z)",
+        "ruleDigit": "At least 1 number (0-9)",
+        "ruleSpecial": "At least 1 special character (@$!%*?&)",
+        "changing": "Changing..."
       },
       "avatar": {
         "pasteUrl": "Paste image URL",
@@ -61,7 +79,11 @@
         "urlTooLong": "Avatar URL is too long",
         "previewTimeout": "Avatar preview timed out",
         "smsDisabled": "Add a phone number to enable SMS",
-        "alt": "Avatar preview"
+        "alt": "Avatar preview",
+        "changePhoto": "Change photo",
+        "hint": "Click the avatar to change your profile photo",
+        "uploadSuccess": "Profile photo updated successfully",
+        "uploadFailed": "Could not save profile photo"
       }
     },
     "settingsPage": {
@@ -70,7 +92,10 @@
       "smsNotifications": "SMS Notifications",
       "smsNotificationsDesc": "Receive notifications via SMS",
       "newsletter": "Newsletter",
-      "newsletterDesc": "Receive newsletters and promotions"
+      "newsletterDesc": "Receive newsletters and promotions",
+      "languagePreference": "Language / Ngôn ngữ",
+      "languagePreferenceDesc": "Choose your display language",
+      "languageChanged": "Language preference saved."
     },
     "email": "Email",
     "password": "Password",

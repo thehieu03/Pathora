@@ -60,8 +60,8 @@ export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
           {tour.status && (
             <div className="absolute top-3 right-3">
               <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
-                tour.status === "available" ? "bg-green-100 text-green-700" :
-                tour.status === "soldout" ? "bg-red-100 text-red-700" :
+                statusKey === "available" ? "bg-green-100 text-green-700" :
+                statusKey === "soldout" ? "bg-red-100 text-red-700" :
                 "bg-gray-100 text-gray-700"
               }`}>
                 {statusLabel}

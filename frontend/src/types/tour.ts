@@ -280,6 +280,28 @@ export const TourStatusMap: Record<number, string> = {
   4: "Rejected",
 };
 
+// TourPlanStatus — matches backend enum (TourPlanStatus.cs)
+export const TourPlanStatus = {
+  Draft: 0,
+  Planning: 1,
+  Ready: 2,
+  Published: 3,
+  InProgress: 4,
+  Completed: 5,
+  Cancelled: 6,
+} as const;
+export type TourPlanStatusValue = typeof TourPlanStatus[keyof typeof TourPlanStatus];
+
+export const TourPlanStatusMap: Record<number, string> = {
+  0: "Draft",
+  1: "Planning",
+  2: "Ready",
+  3: "Published",
+  4: "InProgress",
+  5: "Completed",
+  6: "Cancelled",
+};
+
 export const ActivityTypeMap: Record<number, string> = {
   0: "Sightseeing",
   1: "Dining",

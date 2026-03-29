@@ -19,6 +19,7 @@ import type { DepositPolicy } from "@/types/depositPolicy";
 import type { CancellationPolicy } from "@/types/cancellationPolicy";
 import type { VisaPolicy } from "@/types/visaPolicy";
 import type { TourDto, ImageDto } from "@/types/tour";
+import { TourStatusMap } from "@/types/tour";
 import { handleApiError } from "@/utils/apiResponse";
 
 /* ── TourForm Props ─────────────────────────────────────────── */
@@ -501,6 +502,7 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
     seoDescription: "",
   });
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [existingThumbnail, setExistingThumbnail] = useState<ImageDto | null>(null);
   const [images, setImages] = useState<File[]>([]);
 
   /* ── Delete Confirmation (Edit Mode) ─────────────────────── */
@@ -647,6 +649,8 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
       tourScope: tour.tourScope != null ? String(tour.tourScope) : "1",
       customerSegment: tour.customerSegment != null ? String(tour.customerSegment) : "2",
     });
+
+    setExistingThumbnail(tour.thumbnail ?? null);
 
     if (tour.translations?.en) {
       setEnTranslation({
@@ -1806,6 +1810,35 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
                 </div>
               </div>
 
+              {/* Tour Status */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                  {t("tourAdmin.status.label", "Status")}
+                </label>
+                <div className="flex items-center gap-3">
+                  <select
+                    value={basicInfo.status}
+                    onChange={(e) =>
+                      setBasicInfo((prev) => ({ ...prev, status: e.target.value }))
+                    }
+                    className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition"
+                  >
+                    <option value="1">{TourStatusMap[1]}</option>
+                    <option value="2">{TourStatusMap[2]}</option>
+                    <option value="3">{TourStatusMap[3]}</option>
+                    <option value="4">{TourStatusMap[4]}</option>
+                  </select>
+                  {isEditMode && (
+                    <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      {t("tourAdmin.status.currently", "Currently:")}{" "}
+                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                        {TourStatusMap[Number(basicInfo.status)] ?? basicInfo.status}
+                      </span>
+                    </span>
+                  )}
+                </div>
+              </div>
+
               {/* ── Vietnamese Content ── */}
               {activeLang === "vi" && (
                 <div className="space-y-5">
@@ -1974,6 +2007,8 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
                         prev.filter((e) => e.fileId !== img.fileId),
                       );
                     }}
+                    existingThumbnail={existingThumbnail}
+                    onRemoveExistingThumbnail={() => setExistingThumbnail(null)}
                   />
                 </div>
               )}
@@ -3873,11 +3908,13 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">Status:</span>
-                        <p className="font-medium text-slate-900 dark:text-white">{basicInfo.status}</p>
+                        <p className="font-medium text-slate-900 dark:text-white">
+                          {TourStatusMap[Number(basicInfo.status)] ?? basicInfo.status}
+                        </p>
                       </div>
                     </div>
                     {/* Thumbnail */}
-                    {thumbnail && (
+                    {thumbnail ? (
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">Thumbnail:</span>
                         <div className="mt-1">
@@ -3888,7 +3925,18 @@ export default function TourForm({ mode, initialData, existingImages: initialExi
                           />
                         </div>
                       </div>
-                    )}
+                    ) : existingThumbnail?.publicURL ? (
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Thumbnail:</span>
+                        <div className="mt-1">
+                          <img
+                            src={existingThumbnail.publicURL}
+                            alt="Existing thumbnail"
+                            className="h-24 w-auto rounded-lg object-cover"
+                          />
+                        </div>
+                      </div>
+                    ) : null}
                     {/* Images */}
                     {images.length > 0 && (
                       <div>

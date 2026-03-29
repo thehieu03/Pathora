@@ -1,22 +1,5 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "My Custom Tour Requests | Pathora",
-  description:
-    "View and manage your custom tour requests with Pathora. Track the status of your inquiries and receive personalized travel offers.",
-  openGraph: {
-    title: "My Custom Tour Requests | Pathora",
-    description:
-      "View and manage your custom tour requests. Track the status of your inquiries and receive personalized travel offers.",
-    type: "website",
-  },
-  twitter: { card: "summary" },
-};
-
-export default function MyCustomTourRequestsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <>{children}</>;
+export default function MyCustomTourRequestsLayout() {
+  redirect("/tours/my-requests");
 }

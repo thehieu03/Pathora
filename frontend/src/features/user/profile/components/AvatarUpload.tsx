@@ -1,7 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
+import { handleApiError } from "@/utils/apiResponse";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const ACCEPTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
 
 interface AvatarUploadProps {
   value: string;
@@ -11,8 +18,7 @@ interface AvatarUploadProps {
   onValidationChange?: (error: string) => void;
 }
 
-const MAX_AVATAR_URL_LENGTH = 500;
-const PREVIEW_TIMEOUT_MS = 5000;
+type UploadState = "idle" | "selected" | "uploading" | "success" | "error";
 
 const getInitials = (fullName: string) => {
   const words = fullName.trim().split(/\s+/).filter(Boolean);
@@ -21,159 +27,191 @@ const getInitials = (fullName: string) => {
   return `${words[0].charAt(0)}${words[words.length - 1].charAt(0)}`.toUpperCase();
 };
 
-const isBlockedScheme = (value: string): boolean => /^(javascript:|data:)/i.test(value.trim());
-
-const isHttpUrl = (value: string): boolean => {
-  try {
-    const parsed = new URL(value);
-    return parsed.protocol === "http:" || parsed.protocol === "https:";
-  } catch {
-    return false;
+const validateFile = (file: File): string => {
+  const ext = "." + file.name.split(".").pop()?.toLowerCase();
+  if (!ACCEPTED_EXTENSIONS.includes(ext)) {
+    return "Chỉ chấp nhận file JPEG, PNG, WebP.";
   }
+  if (!ACCEPTED_TYPES.includes(file.type)) {
+    return "Loại file không hợp lệ.";
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return "File quá lớn (tối đa 5MB).";
+  }
+  return "";
 };
+
+async function uploadAvatar(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch("/api/upload/avatar", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let message = "Tải lên thất bại.";
+    try {
+      const json = await response.json();
+      message = json.message || message;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
+  }
+
+  const json = await response.json();
+  // Backend returns { data: { avatarUrl: "..." } }
+  const url = json.data?.avatarUrl ?? json.avatarUrl;
+  if (!url) throw new Error("Phản hồi không hợp lệ từ server.");
+  return url;
+}
 
 export function AvatarUpload({ value, fullName, disabled = false, onChange, onValidationChange }: AvatarUploadProps) {
   const { t } = useTranslation();
-  const [input, setInput] = useState(value || "");
+  const [state, setState] = useState<UploadState>("idle");
   const [previewUrl, setPreviewUrl] = useState(value || "");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const previousValueRef = useRef(value);
 
-  const notifyValidation = (nextError: string) => {
-    onValidationChange?.(nextError);
-  };
-  const initials = useMemo(() => getInitials(fullName), [fullName]);
+  const initials = getInitials(fullName);
 
-  const clearPreviewTimeout = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
+  // Sync preview when value changes externally (e.g., after profile update)
+  useEffect(() => {
+    if (state === "idle" || state === "success") {
+      setPreviewUrl(value || "");
     }
-  };
+    previousValueRef.current = value;
+  }, [value, state]);
 
-  const validateInput = (nextValue: string): string => {
-    if (!nextValue.trim()) return "";
-    if (nextValue.length > MAX_AVATAR_URL_LENGTH) {
-      return t("common.profilePage.avatar.urlTooLong") || "Avatar URL is too long";
-    }
-    if (isBlockedScheme(nextValue)) {
-      return t("common.profilePage.avatar.invalidUrl") || "Invalid image URL";
-    }
-    if (!isHttpUrl(nextValue)) {
-      return t("common.profilePage.avatar.invalidUrl") || "Invalid image URL";
-    }
-    return "";
-  };
+  const handleFileSelect = useCallback((file: File | null) => {
+    if (!file) return;
 
-  const handlePreview = () => {
-    const nextError = validateInput(input);
-    if (nextError) {
-      setError(nextError);
-      notifyValidation(nextError);
+    const validationError = validateFile(file);
+    if (validationError) {
+      setErrorMsg(validationError);
+      setState("error");
+      onValidationChange?.(validationError);
       return;
     }
 
-    setError("");
-    notifyValidation("");
-    setIsLoading(true);
-    setPreviewUrl(input.trim());
+    // Show local preview immediately (before upload)
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setErrorMsg("");
+    setState("selected");
 
-    clearPreviewTimeout();
-    timeoutRef.current = setTimeout(() => {
-      setIsLoading(false);
-      const timeoutError = t("common.profilePage.avatar.previewTimeout") || "Preview timed out";
-      setError(timeoutError);
-      notifyValidation(timeoutError);
-    }, PREVIEW_TIMEOUT_MS);
-  };
+    // Upload
+    setState("uploading");
 
-  const handleImageLoaded = () => {
-    clearPreviewTimeout();
-    setIsLoading(false);
-    setError("");
-    notifyValidation("");
-    onChange(previewUrl);
-  };
+    (async () => {
+      try {
+        const uploadedUrl = await uploadAvatar(file);
 
-  const handleImageError = () => {
-    clearPreviewTimeout();
-    setIsLoading(false);
-    const invalidError = t("common.profilePage.avatar.invalidUrl") || "Invalid image URL";
-    setError(invalidError);
-    notifyValidation(invalidError);
-  };
+        // Both upload and profile update succeeded
+        setPreviewUrl(uploadedUrl);
+        setState("success");
+        onChange(uploadedUrl);
+        onValidationChange?.("");
+        toast.success(t("common.profilePage.avatar.uploadSuccess") || "Cập nhật ảnh thành công");
 
-  const handleRemove = () => {
-    clearPreviewTimeout();
-    setInput("");
-    setPreviewUrl("");
-    setIsLoading(false);
-    setError("");
-    notifyValidation("");
-    onChange("");
-  };
+        // Clean up object URL
+        URL.revokeObjectURL(objectUrl);
+      } catch (err) {
+        // Revert to previous avatar
+        URL.revokeObjectURL(objectUrl);
+        const apiError = handleApiError(err as unknown as Parameters<typeof handleApiError>[0]);
+        setErrorMsg(apiError.message || "Tải lên thất bại.");
+        setState("error");
+        onValidationChange?.(apiError.message || "Tải lên thất bại.");
+
+        // Revert preview to previous avatar
+        setPreviewUrl(previousValueRef.current || "");
+
+        toast.error(t("common.profilePage.avatar.uploadFailed") || "Không thể lưu ảnh đại diện");
+      }
+    })();
+  }, [onChange, onValidationChange, t]);
+
+  const handleAvatarClick = useCallback(() => {
+    if (disabled || state === "uploading") return;
+    fileInputRef.current?.click();
+  }, [disabled, state]);
+
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    handleFileSelect(file);
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+  }, [handleFileSelect]);
 
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-4">
-        <div className="relative h-24 w-24 rounded-full overflow-hidden border border-gray-200 bg-orange-500/10 flex items-center justify-center">
-          {previewUrl && !error ? (
+        {/* Avatar circle */}
+        <div
+          className="relative h-24 w-24 rounded-full overflow-hidden flex items-center justify-center cursor-pointer group"
+          style={{ border: `1px solid var(--border)`, backgroundColor: "var(--accent-muted)" }}
+          onClick={handleAvatarClick}
+          title={t("common.profilePage.avatar.changePhoto") || "Đổi ảnh"}
+        >
+          {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              key={previewUrl}
               src={previewUrl}
-              alt={t("common.profilePage.avatar.alt") || "Avatar preview"}
+              alt={t("common.profilePage.avatar.alt") || "Avatar"}
               className="h-full w-full object-cover"
-              onLoad={handleImageLoaded}
-              onError={handleImageError}
             />
           ) : (
-            <span className="text-xl font-semibold text-orange-600">{initials}</span>
+            <span style={{ color: "var(--accent)" }} className="text-xl font-semibold">{initials}</span>
           )}
-          {isLoading && (
-            <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-              <div className="h-6 w-6 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+
+          {/* Upload overlay */}
+          {(state === "uploading" || state === "selected") && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div
+                style={{ borderColor: "#fff", borderTopColor: "transparent" }}
+                className="h-7 w-7 rounded-full border-2 animate-spin"
+              />
+            </div>
+          )}
+
+          {/* Hover overlay */}
+          {state === "idle" && !disabled && (
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-white text-xs font-medium">
+                {t("common.profilePage.avatar.changePhoto") || "Đổi ảnh"}
+              </span>
             </div>
           )}
         </div>
 
         <div className="flex-1 space-y-2">
-          <input
-            type="url"
-            value={input}
-            disabled={disabled}
-            onChange={(event) => {
-              const nextValue = event.target.value;
-              setInput(nextValue);
-              const nextError = validateInput(nextValue);
-              setError(nextError);
-              notifyValidation(nextError);
-            }}
-            placeholder={t("common.profilePage.avatar.pasteUrl") || "Paste image URL"}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100"
-          />
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={disabled || !input.trim()}
-              onClick={handlePreview}
-              className="px-3 py-1.5 text-sm rounded-md bg-orange-500 text-white hover:bg-orange-600 disabled:bg-gray-300"
-            >
-              {t("common.profilePage.avatar.preview") || "Preview"}
-            </button>
-            <button
-              type="button"
-              disabled={disabled || (!input && !previewUrl)}
-              onClick={handleRemove}
-              className="px-3 py-1.5 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:text-gray-400"
-            >
-              {t("common.profilePage.avatar.remove") || "Remove"}
-            </button>
-          </div>
+          <p style={{ color: "var(--text-secondary)" }} className="text-sm">
+            {t("common.profilePage.avatar.hint") || "Nhấn vào ảnh để đổi ảnh đại diện"}
+          </p>
+          <p style={{ color: "var(--text-muted)" }} className="text-xs">
+            JPEG, PNG, WebP • Tối đa 5MB
+          </p>
         </div>
+
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleInputChange}
+          disabled={disabled}
+        />
       </div>
-      {error ? <p className="text-xs text-red-500">{error}</p> : null}
+
+      {errorMsg ? (
+        <p style={{ color: "var(--danger)" }} className="text-xs">{errorMsg}</p>
+      ) : null}
     </div>
   );
 }

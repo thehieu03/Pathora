@@ -25,6 +25,7 @@ export interface UserInfo {
   defaultPath: string | null;
   phoneNumber?: string | null;
   address?: string | null;
+  preferredLanguage?: string | null;
 }
 
 /** @deprecated Use UserInfo instead */

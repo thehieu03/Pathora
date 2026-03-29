@@ -18,7 +18,7 @@ import {
   DEFAULT_WEEKDAYS,
 } from "./HeroSearchBar";
 
-const HERO_BG = "/tour-placeholder.svg";
+const HERO_BG = "/hero-bg.png";
 
 type TourType = "public" | "private";
 type FieldName = "people" | "date" | "destination" | "classification";

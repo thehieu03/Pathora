@@ -8,8 +8,8 @@ import { homeService } from "@/api/services/homeService";
 import { HomeStats } from "@/types/home";
 
 const PEOPLE_ICON = "/globe.svg";
-const EXPLORE_IMG = "/tour-placeholder.svg";
-const BG_IMG = "/tour-placeholder.svg";
+const EXPLORE_IMG = "/explore-bg.png";
+const BG_IMG = "/stats-bg.png";
 
 const FALLBACK_STATS = {
   totalTravelers: 240,

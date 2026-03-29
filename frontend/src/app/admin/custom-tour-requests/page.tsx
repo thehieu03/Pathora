@@ -1,5 +1,5 @@
-import { AdminCustomTourRequestsPage } from "@/components/partials/custom-tour-request";
+import { redirect } from "next/navigation";
 
 export default function AdminCustomTourRequestsRoute() {
-  return <AdminCustomTourRequestsPage />;
+  redirect("/dashboard/tour-requests");
 }

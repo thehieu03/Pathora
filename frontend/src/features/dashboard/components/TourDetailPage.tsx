@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
@@ -8,13 +8,13 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { Icon } from "@/components/ui";
 import { SkeletonTable } from "@/components/ui/SkeletonTable";
+import ConfirmationDialog from "@/components/ui/ConfirmationDialog";
 import { PricingTierEditor } from "@/features/dashboard/components/PricingTierEditor";
 import { tourService } from "@/api/services/tourService";
 import { handleApiError } from "@/utils/apiResponse";
 import {
   DynamicPricingDto,
   TourDto,
-  TourStatusMap,
   TourClassificationDto,
   TourPlanAccommodationDto,
   TourPlanLocationDto,
@@ -56,34 +56,7 @@ const CONTENT_TABS = [
 /* ══════════════════════════════════════════════════════════════
    Status Badge
    ══════════════════════════════════════════════════════════════ */
-function StatusBadge({ status }: { status: string }) {
-  const lower = status.toLowerCase();
-  let bgColor = "bg-stone-100";
-  let textColor = "text-stone-600";
-  let dotColor = "bg-stone-400";
-
-  if (lower === "active") {
-    bgColor = "bg-emerald-50";
-    textColor = "text-emerald-700";
-    dotColor = "bg-emerald-500";
-  } else if (lower === "inactive") {
-    bgColor = "bg-red-50";
-    textColor = "text-red-700";
-    dotColor = "bg-red-500";
-  } else if (lower === "pending") {
-    bgColor = "bg-amber-50";
-    textColor = "text-amber-700";
-    dotColor = "bg-amber-500";
-  }
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${bgColor} ${textColor}`}>
-      <span className={`w-2 h-2 rounded-full ${dotColor}`} />
-      {status}
-    </span>
-  );
-}
+// StatusBadge was replaced by StatusDropdown below
 
 /* ══════════════════════════════════════════════════════════════
    Info Field
@@ -912,6 +885,108 @@ function ItineraryTab({ classification }: { classification: TourClassificationDt
 }
 
 /* ══════════════════════════════════════════════════════════════
+   Status Dropdown
+   ══════════════════════════════════════════════════════════════ */
+const STATUS_OPTIONS = [
+  { value: 1, label: "Active", bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500" },
+  { value: 2, label: "Inactive", bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
+  { value: 3, label: "Pending", bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
+  { value: 4, label: "Rejected", bg: "bg-stone-100", text: "text-stone-600", dot: "bg-stone-400" },
+] as const;
+
+// Sensitive transitions that require confirmation
+const SENSITIVE_TRANSITIONS = new Set(["1_2", "2_1", "3_4", "4_3"]);
+
+function StatusDropdown({
+  currentStatus,
+  isLoading,
+  onChange,
+}: {
+  currentStatus: number;
+  isLoading: boolean;
+  onChange: (newStatus: number) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const currentOption = STATUS_OPTIONS.find((o) => o.value === currentStatus) ?? STATUS_OPTIONS[0];
+
+  // Close on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClick);
+      return () => document.removeEventListener("mousedown", handleClick);
+    }
+  }, [isOpen]);
+
+  const handleSelect = (value: number) => {
+    if (value === currentStatus) {
+      setIsOpen(false);
+      return;
+    }
+    const transitionKey = `${currentStatus}_${value}`;
+    if (SENSITIVE_TRANSITIONS.has(transitionKey)) {
+      // Store pending change, open confirm — handled by parent
+      onChange(value);
+    } else {
+      onChange(value);
+    }
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => !isLoading && setIsOpen(!isOpen)}
+        disabled={isLoading}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+          currentOption.bg
+        } ${currentOption.text} ${isLoading ? "opacity-60 cursor-not-allowed" : "hover:opacity-80 cursor-pointer"}`}>
+        <span className={`w-2 h-2 rounded-full ${currentOption.dot}`} />
+        <span>{currentOption.label}</span>
+        {isLoading ? (
+          <svg className="w-3 h-3 animate-spin ml-1" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        ) : (
+          <Icon icon={isOpen ? "heroicons:chevron-up" : "heroicons:chevron-down"} className="size-3 ml-1" />
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-1 z-50 bg-white border border-stone-200/80 rounded-xl shadow-lg py-1 min-w-[120px]">
+          {STATUS_OPTIONS.map((option) => {
+            const isCurrent = option.value === currentStatus;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleSelect(option.value)}
+                className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-colors ${
+                  isCurrent
+                    ? `${option.bg} ${option.text} cursor-default`
+                    : "text-stone-600 hover:bg-stone-50"
+                }`}>
+                <span className={`w-2 h-2 rounded-full ${option.dot}`} />
+                {option.label}
+                {isCurrent && <Icon icon="heroicons:check" className="size-3 ml-auto" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    TourDetailPage - Main Export
    ══════════════════════════════════════════════════════════════ */
 export function TourDetailPage() {
@@ -929,6 +1004,9 @@ export function TourDetailPage() {
   const [classificationTiers, setClassificationTiers] = useState<Record<string, DynamicPricingDto[]>>({});
   const [savingTierForClassificationId, setSavingTierForClassificationId] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
+  const [statusUpdating, setStatusUpdating] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<number | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   /* ── Fetch tour detail ────────────────────────────────────── */
   const fetchTour = useCallback(async () => {
@@ -958,10 +1036,6 @@ export function TourDetailPage() {
   }, [fetchTour, reloadToken]);
 
   /* ── Derived data ─────────────────────────────────────────── */
-  const statusLabel =
-    tour?.status !== undefined
-      ? (TourStatusMap[tour.status] ?? "Unknown")
-      : "Unknown";
   const classifications = tour?.classifications ?? [];
   const selectedPackage: TourClassificationDto | undefined = classifications[selectedPackageIdx];
 
@@ -1030,6 +1104,33 @@ export function TourDetailPage() {
       setSavingTierForClassificationId(null);
     }
   }, [classificationTiers, selectedPackage?.id, t]);
+
+  const applyStatusChange = useCallback(async (newStatus: number) => {
+    if (!tourId) return;
+    setStatusUpdating(true);
+    try {
+      await tourService.updateTourStatus(tourId, newStatus);
+      setTour((prev) => prev ? { ...prev, status: newStatus } : prev);
+      toast.success(t("toast.statusUpdated", "Tour status updated successfully."));
+    } catch (error: unknown) {
+      const apiError = handleApiError(error);
+      toast.error(apiError.message || "Failed to update tour status.");
+    } finally {
+      setStatusUpdating(false);
+      setPendingStatus(null);
+    }
+  }, [tourId, t]);
+
+  const handleStatusChange = useCallback((newStatus: number) => {
+    const currentStatus = tour?.status ?? 0;
+    const transitionKey = `${currentStatus}_${newStatus}`;
+    if (SENSITIVE_TRANSITIONS.has(transitionKey)) {
+      setPendingStatus(newStatus);
+      setShowConfirmDialog(true);
+    } else {
+      applyStatusChange(newStatus);
+    }
+  }, [tour?.status, applyStatusChange]);
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -1104,7 +1205,11 @@ export function TourDetailPage() {
                     Back to Tours
                   </Link>
                   <div className="flex items-center gap-3">
-                    <StatusBadge status={statusLabel} />
+                    <StatusDropdown
+                      currentStatus={tour.status}
+                      isLoading={statusUpdating}
+                      onChange={handleStatusChange}
+                    />
                     <button
                       onClick={() => router.push(`/tour-management/${tourId}/edit`)}
                       className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
@@ -1258,6 +1363,18 @@ export function TourDetailPage() {
           </>
         )}
       </div>
+
+      {/* Confirmation Dialog for Sensitive Status Transitions */}
+      <ConfirmationDialog
+        active={showConfirmDialog}
+        onClose={() => { setShowConfirmDialog(false); setPendingStatus(null); }}
+        onConfirm={() => { if (pendingStatus !== null) applyStatusChange(pendingStatus); setShowConfirmDialog(false); }}
+        title={t("tourAdmin.confirmStatusChange.title", "Confirm Status Change")}
+        message={t("tourAdmin.confirmStatusChange.message", "This status change requires confirmation. Are you sure you want to proceed?")}
+        confirmLabel={t("tourAdmin.confirmStatusChange.confirm", "Confirm")}
+        cancelLabel={t("tourAdmin.confirmStatusChange.cancel", "Cancel")}
+        isDestructive={false}
+      />
     </div>
   );
 }

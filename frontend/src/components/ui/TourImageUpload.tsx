@@ -1,12 +1,80 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Icon from "@/components/ui/Icon";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+/* ── ExistingThumbnailPreview ────────────────────────────────── */
+interface ExistingThumbnailPreviewProps {
+  url: string;
+  t: (key: string, fallback: string) => string;
+  onReplace: () => void;
+  onRemove: () => void;
+  thumbnailError?: string;
+}
+
+function ExistingThumbnailPreview({
+  url,
+  t,
+  onReplace,
+  onRemove,
+  thumbnailError,
+}: ExistingThumbnailPreviewProps) {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div className="relative group">
+      <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm">
+        {imgError ? (
+          <div className="absolute inset-0 bg-[var(--muted)] flex items-center justify-center">
+            <Icon icon="heroicons:photo" className="size-12 text-[var(--text-muted)]" />
+          </div>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt="Existing thumbnail"
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
+        )}
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onReplace}
+              className="flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-white shadow-sm transition-all">
+              <Icon icon="heroicons:arrow-path" className="size-3.5" />
+              {t("tourAdmin.basicInfo.replace", "Đổi ảnh")}
+            </button>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="flex items-center gap-1.5 rounded-xl bg-red-500/90 px-3 py-2 text-xs font-semibold text-white hover:bg-red-600 shadow-sm transition-all">
+              <Icon icon="heroicons:trash" className="size-3.5" />
+              {t("common.remove", "Xóa")}
+            </button>
+          </div>
+        </div>
+        {/* Cover badge */}
+        <span className="absolute bottom-1 left-1 rounded-md bg-black/50 text-white text-[10px] font-semibold px-1.5 py-0.5">
+          Cover
+        </span>
+      </div>
+      {thumbnailError && (
+        <p className="mt-1 text-xs text-red-500 dark:text-red-400 text-center">
+          {thumbnailError}
+        </p>
+      )}
+    </div>
+  );
+}
+
+/* ── validateFile ───────────────────────────────────────────── */
 function validateFile(
   file: File,
   t: (key: string, fallback: string) => string,
@@ -40,6 +108,9 @@ interface TourImageUploadProps {
   /** Existing images from the server — shown with remove option, managed by parent state */
   existingImages?: ExistingImage[];
   onRemoveExistingImage?: (image: ExistingImage) => void;
+  /** Existing thumbnail from the server — shown with remove/replace option in edit mode */
+  existingThumbnail?: ExistingImage | null;
+  onRemoveExistingThumbnail?: () => void;
 }
 
 export default function TourImageUpload({
@@ -54,9 +125,14 @@ export default function TourImageUpload({
   onImagesError,
   existingImages = [],
   onRemoveExistingImage,
+  existingThumbnail,
+  onRemoveExistingThumbnail,
 }: TourImageUploadProps) {
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [showExistingThumbnail, setShowExistingThumbnail] = useState(
+    !!existingThumbnail,
+  );
 
   const handleThumbnailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,10 +141,11 @@ export default function TourImageUpload({
       const error = validateFile(file, t);
       onThumbnailError?.(error);
       if (!error) {
+        setShowExistingThumbnail(false);
         setThumbnail(file);
       }
     },
-    [setThumbnail, onThumbnailError, t],
+    [setThumbnail, onThumbnailError, setShowExistingThumbnail, t],
   );
 
   const handleGalleryChange = useCallback(
@@ -177,6 +254,17 @@ export default function TourImageUpload({
               </p>
             )}
           </div>
+        ) : showExistingThumbnail && existingThumbnail?.publicURL ? (
+          <ExistingThumbnailPreview
+            url={existingThumbnail.publicURL}
+            t={t}
+            onReplace={() => thumbnailInputRef.current?.click()}
+            onRemove={() => {
+              onRemoveExistingThumbnail?.();
+              setShowExistingThumbnail(false);
+            }}
+            thumbnailError={thumbnailError}
+          />
         ) : (
           <button
             type="button"

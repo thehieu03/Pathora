@@ -55,6 +55,7 @@ export const BoldHeroSection = () => {
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute w-64 h-64 rounded-full"
+          data-darkreader-ignore
           style={{
             background: "radial-gradient(circle, rgba(251,139,2,0.4) 0%, transparent 70%)",
             filter: "blur(60px)",
@@ -65,6 +66,7 @@ export const BoldHeroSection = () => {
         />
         <div
           className="absolute w-48 h-48 rounded-full"
+          data-darkreader-ignore
           style={{
             background: "radial-gradient(circle, rgba(59,130,246,0.4) 0%, transparent 70%)",
             filter: "blur(60px)",
@@ -75,6 +77,7 @@ export const BoldHeroSection = () => {
         />
         <div
           className="absolute w-40 h-40 rounded-full"
+          data-darkreader-ignore
           style={{
             background: "radial-gradient(circle, rgba(236,72,153,0.3) 0%, transparent 70%)",
             filter: "blur(60px)",

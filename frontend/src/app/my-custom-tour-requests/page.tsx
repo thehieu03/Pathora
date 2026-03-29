@@ -1,11 +1,5 @@
-import { ClientOnly } from "@/components/utils/ClientOnly";
-import { MyCustomTourRequestsPage } from "@/components/partials/custom-tour-request";
-import MyCustomTourRequestsLoading from "./loading";
+import { redirect } from "next/navigation";
 
 export default function MyCustomTourRequestsRoute() {
-  return (
-    <ClientOnly fallback={<MyCustomTourRequestsLoading />}>
-      <MyCustomTourRequestsPage />
-    </ClientOnly>
-  );
+  redirect("/tours/my-requests");
 }
