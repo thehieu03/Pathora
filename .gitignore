@@ -1,0 +1,71 @@
+# === Monorepo sub-dirs (always track) ===
+backend/
+frontend/
+mobile/
+
+# === Sub-repo roots (giữ local, không push) ===
+panthora_be/
+pathora/
+tour-guide-mobile/
+
+# === Build outputs ===
+**/bin/
+**/obj/
+**/node_modules/
+**/.pnp
+**/.pnp.js
+**/*.log
+**/*.tmp
+**/*.temp
+**/Dockerfile.dev
+
+# === Editor & OS ===
+.vs/
+.vscode/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+nul
+~
+cookies.txt
+tesst.txt
+
+# === Dev tooling (don't track) ===
+.agent/
+.agents/
+.autoplan*/
+.claude/
+.codex/
+.gemini/
+.github/
+.gstack/
+.kilocode/
+.kiro/
+.opencode/
+openspec/
+skills/
+skills-lock.json
+
+# === Root-level scripts & docs ===
+docker-compose.minio.yml
+docker-compose.override.yml
+docker-compose.yml
+.env.docker.example
+docs/
+halong_img1.jpg
+halong_img2.jpg
+hardcoded-inventory-backend.json
+list_files.js
+list_tsx.js
+opsx_apply.json
+pathora_build_output.txt
+pathora_lint_output.txt
+plan-outbox-fix.md
+scripts/
+test_node.js
+tourmau.md
+tmp_*.sh
+
+# === Dependency lock ===
+package-lock.json
