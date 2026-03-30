@@ -1,0 +1,14 @@
+[
+  {
+    "Id": "01960000-0000-7000-8000-000000000001",
+    "TaxName": "VAT 10%",
+    "TaxRate": 10.0,
+    "Description": "Standard VAT rate for tourism services",
+    "IsActive": true,
+    "EffectiveDate": "2026-01-01T00:00:00Z",
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-01-01T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-01-01T00:00:00Z"
+  }
+]

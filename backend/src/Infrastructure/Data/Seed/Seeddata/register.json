@@ -1,0 +1,38 @@
+[
+  {
+    "Id": "01952800-0000-7000-8000-000000000001",
+    "Username": "admin",
+    "Email": "admin@pathora.com",
+    "Password": "Admin@123",
+    "FullName": "Quản trị viên",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952800-0000-7000-8000-000000000002",
+    "Username": "nguyenvana",
+    "Email": "nguyenvana@email.com",
+    "Password": "User@123",
+    "FullName": "Nguyễn Văn A",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "01952800-0000-7000-8000-000000000003",
+    "Username": "tranthib",
+    "Email": "tranthib@email.com",
+    "Password": "User@123",
+    "FullName": "Trần Thị B",
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

@@ -1,0 +1,123 @@
+[
+  {
+    "Id": "019527a0-0000-7000-8000-000000000020",
+    "ParentId": null,
+    "Name": "Công ty TNHH Pathora",
+    "Level": 1,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000021",
+    "ParentId": "019527a0-0000-7000-8000-000000000020",
+    "Name": "Phòng Kinh doanh",
+    "Level": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000022",
+    "ParentId": "019527a0-0000-7000-8000-000000000020",
+    "Name": "Phòng Kỹ thuật",
+    "Level": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000023",
+    "ParentId": "019527a0-0000-7000-8000-000000000020",
+    "Name": "Phòng Hành chính - HR",
+    "Level": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000024",
+    "ParentId": "019527a0-0000-7000-8000-000000000020",
+    "Name": "Phòng Kế toán",
+    "Level": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000025",
+    "ParentId": "019527a0-0000-7000-8000-000000000020",
+    "Name": "Phòng Tour & Điều hành",
+    "Level": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000026",
+    "ParentId": "019527a0-0000-7000-8000-000000000020",
+    "Name": "Phòng Marketing",
+    "Level": 2,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000027",
+    "ParentId": "019527a0-0000-7000-8000-000000000021",
+    "Name": "Tổ Kinh doanh trong nước",
+    "Level": 3,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000028",
+    "ParentId": "019527a0-0000-7000-8000-000000000021",
+    "Name": "Tổ Kinh doanh quốc tế",
+    "Level": 3,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-000000000029",
+    "ParentId": "019527a0-0000-7000-8000-000000000025",
+    "Name": "Tổ Điều hành tour",
+    "Level": 3,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019527a0-0000-7000-8000-00000000002a",
+    "ParentId": "019527a0-0000-7000-8000-000000000025",
+    "Name": "Tổ Hướng dẫn viên",
+    "Level": 3,
+    "IsDeleted": false,
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

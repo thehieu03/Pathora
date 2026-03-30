@@ -1,0 +1,282 @@
+[
+  {
+    "Id": "019529a0-0001-7000-8000-000000000001",
+    "TourDayActivityId": "019527d5-0001-7000-8000-000000000001",
+    "AccommodationName": "Halong Pearl Hotel",
+    "CheckInTime": "14:00:00",
+    "CheckOutTime": "12:00:00",
+    "RoomType": "Standard",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 10,
+    "NumberOfNights": 2,
+    "TotalPrice": 10000,
+    "MealsIncluded": "Breakfast",
+    "SpecialRequest": "Non-smoking room preferred",
+    "Address": "Hung Thang Street, Ha Long City",
+    "City": "Ha Long",
+    "ContactPhone": "0903000001",
+    "Website": "https://halongpearlhotel.vn",
+    "ImageUrl": "https://example.com/hotel1.jpg",
+    "Latitude": 20.9101,
+    "Longitude": 107.1839,
+    "Note": "Near Tuan Chau Marina",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khách sạn Hạ Long Pearl"
+      },
+      "en": {
+        "AccommodationName": "Halong Pearl Hotel"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000002",
+    "TourDayActivityId": "019527d5-0002-7000-8000-000000000001",
+    "AccommodationName": "Golden Bay Hotel",
+    "CheckInTime": "15:00:00",
+    "CheckOutTime": "11:00:00",
+    "RoomType": "Deluxe",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 15,
+    "NumberOfNights": 3,
+    "TotalPrice": 10000,
+    "MealsIncluded": "BreakfastAndDinner",
+    "SpecialRequest": "Sea view room",
+    "Address": "Vo Nguyen Giap Street, Son Tra District",
+    "City": "Da Nang",
+    "ContactPhone": "0903000002",
+    "Website": "https://goldenbayhotel.vn",
+    "ImageUrl": "https://example.com/hotel2.jpg",
+    "Latitude": 16.0544,
+    "Longitude": 108.2022,
+    "Note": "Beachfront property",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khách sạn Vàng Vịnh"
+      },
+      "en": {
+        "AccommodationName": "Golden Bay Hotel"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000003",
+    "TourDayActivityId": "019527d5-0003-7000-8000-000000000001",
+    "AccommodationName": "Hoi An Ancient House Resort",
+    "CheckInTime": "14:00:00",
+    "CheckOutTime": "12:00:00",
+    "RoomType": "Suite",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 8,
+    "NumberOfNights": 3,
+    "TotalPrice": 10000,
+    "MealsIncluded": "Breakfast",
+    "SpecialRequest": "Traditional Vietnamese style room",
+    "Address": "Cua Dai Beach, Hoi An",
+    "City": "Hoi An",
+    "ContactPhone": "0903000003",
+    "Website": "https://hoianresort.com",
+    "ImageUrl": "https://example.com/hotel3.jpg",
+    "Latitude": 15.8818,
+    "Longitude": 108.329,
+    "Note": "Close to Hoi An ancient town",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khu nghỉ dưỡng Cổng Đại Hội An"
+      },
+      "en": {
+        "AccommodationName": "Hoi An Ancient House Resort"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000004",
+    "TourDayActivityId": "019527d5-0004-7000-8000-000000000001",
+    "AccommodationName": "Phu Quoc Resort & Spa",
+    "CheckInTime": "14:00:00",
+    "CheckOutTime": "12:00:00",
+    "RoomType": "Villa",
+    "RoomCapacity": 4,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 5,
+    "NumberOfNights": 4,
+    "TotalPrice": 10000,
+    "MealsIncluded": "FullBoard",
+    "SpecialRequest": "Beachfront villa with private pool",
+    "Address": "Bai Dai Beach, Ganh Dau",
+    "City": "Phu Quoc",
+    "ContactPhone": "0903000004",
+    "Website": "https://phuquocresort.com",
+    "ImageUrl": "https://example.com/hotel4.jpg",
+    "Latitude": 10.3333,
+    "Longitude": 103.8333,
+    "Note": "5-star luxury resort",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khu nghỉ dưỡng Phú Quốc & Spa"
+      },
+      "en": {
+        "AccommodationName": "Phu Quoc Resort & Spa"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000005",
+    "TourDayActivityId": "019527d5-0005-7000-8000-000000000001",
+    "AccommodationName": "Sapa Mountain Hotel",
+    "CheckInTime": "14:00:00",
+    "CheckOutTime": "10:00:00",
+    "RoomType": "Standard",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 20,
+    "NumberOfNights": 2,
+    "TotalPrice": 10000,
+    "MealsIncluded": "Breakfast",
+    "SpecialRequest": "Mountain view room",
+    "Address": "Fansipan Street, Sapa Town",
+    "City": "Sapa",
+    "ContactPhone": "0903000005",
+    "Website": "https://samountainhotel.vn",
+    "ImageUrl": "https://example.com/hotel5.jpg",
+    "Latitude": 22.3365,
+    "Longitude": 103.8444,
+    "Note": "Near Sapa Lake",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khách sạn Sapa Mountain"
+      },
+      "en": {
+        "AccommodationName": "Sapa Mountain Hotel"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000006",
+    "TourDayActivityId": "019527d5-0006-7000-8000-000000000001",
+    "AccommodationName": "Bangkok Grand Palace Hotel",
+    "CheckInTime": "15:00:00",
+    "CheckOutTime": "11:00:00",
+    "RoomType": "Deluxe",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 12,
+    "NumberOfNights": 3,
+    "TotalPrice": 10000,
+    "MealsIncluded": "Breakfast",
+    "SpecialRequest": "City view room",
+    "Address": "Rama IV Road, Bangkok",
+    "City": "Bangkok",
+    "ContactPhone": "0903000006",
+    "Website": "https://bangkokhotel.com",
+    "ImageUrl": "https://example.com/hotel6.jpg",
+    "Latitude": 13.7563,
+    "Longitude": 100.5018,
+    "Note": "Near MRT station",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khách sạn Grand Palace Bangkok"
+      },
+      "en": {
+        "AccommodationName": "Bangkok Grand Palace Hotel"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000007",
+    "TourDayActivityId": "019527d5-0007-7000-8000-000000000001",
+    "AccommodationName": "Tokyo Shinjuku Hotel",
+    "CheckInTime": "15:00:00",
+    "CheckOutTime": "10:00:00",
+    "RoomType": "Twin",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 10,
+    "NumberOfNights": 4,
+    "TotalPrice": 10000,
+    "MealsIncluded": "Breakfast",
+    "SpecialRequest": "Near Shinjuku station",
+    "Address": "Shinjuku, Tokyo",
+    "City": "Tokyo",
+    "ContactPhone": "0903000007",
+    "Website": "https://tokyohotel.jp",
+    "ImageUrl": "https://example.com/hotel7.jpg",
+    "Latitude": 35.6896,
+    "Longitude": 139.6917,
+    "Note": "Central Tokyo location",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khách sạn Shinjuku Tokyo"
+      },
+      "en": {
+        "AccommodationName": "Tokyo Shinjuku Hotel"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529a0-0001-7000-8000-000000000008",
+    "TourDayActivityId": "019527d5-0008-7000-8000-000000000001",
+    "AccommodationName": "Seoul Myeongdong Hotel",
+    "CheckInTime": "15:00:00",
+    "CheckOutTime": "11:00:00",
+    "RoomType": "Standard",
+    "RoomCapacity": 2,
+    "RoomPrice": 10000,
+    "NumberOfRooms": 8,
+    "NumberOfNights": 3,
+    "TotalPrice": 10000,
+    "MealsIncluded": "Breakfast",
+    "SpecialRequest": "Shopping district location",
+    "Address": "Myeongdong, Seoul",
+    "City": "Seoul",
+    "ContactPhone": "0903000008",
+    "Website": "https://seoulhotel.kr",
+    "ImageUrl": "https://example.com/hotel8.jpg",
+    "Latitude": 37.5636,
+    "Longitude": 126.9869,
+    "Note": "Walking distance to Namdaemun",
+    "Translations": {
+      "vi": {
+        "AccommodationName": "Khách sạn Myeongdong Seoul"
+      },
+      "en": {
+        "AccommodationName": "Seoul Myeongdong Hotel"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

@@ -1,0 +1,234 @@
+[
+  {
+    "Id": "019529b0-0001-7000-8000-000000000001",
+    "TourDayActivityId": "019527d5-0001-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Bus",
+    "TransportationName": "Blue Ocean Coach",
+    "TransportationNote": "Air-conditioned luxury bus",
+    "FromLocationId": "019527d6-0001-7000-8000-000000000001",
+    "ToLocationId": "019527d6-0002-7000-8000-000000000002",
+    "EstimatedDepartureTime": "08:00:00",
+    "EstimatedArrivalTime": "10:30:00",
+    "DurationMinutes": 150,
+    "DistanceKm": 120,
+    "Price": 10000,
+    "BookingReference": "BO-2026-001",
+    "Note": "Rest stop at highway rest area",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Xe khách Blue Ocean"
+      },
+      "en": {
+        "TransportationName": "Blue Ocean Coach"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000002",
+    "TourDayActivityId": "019527d5-0002-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Flight",
+    "TransportationName": "Vietnam Airlines",
+    "TransportationNote": "Direct flight",
+    "FromLocationId": "019527d6-0001-7000-8000-000000000001",
+    "ToLocationId": "019527d6-0003-7000-8000-000000000003",
+    "EstimatedDepartureTime": "06:00:00",
+    "EstimatedArrivalTime": "07:30:00",
+    "DurationMinutes": 90,
+    "DistanceKm": 800,
+    "Price": 10000,
+    "BookingReference": "VN-2026-001",
+    "Note": "Include checked baggage",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Hãng hàng không Vietnam Airlines"
+      },
+      "en": {
+        "TransportationName": "Vietnam Airlines"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000003",
+    "TourDayActivityId": "019527d5-0003-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Car",
+    "TransportationName": "Private Car Service",
+    "TransportationNote": "Air-conditioned sedan",
+    "FromLocationId": "019527d6-0004-7000-8000-000000000004",
+    "ToLocationId": "019527d6-0005-7000-8000-000000000005",
+    "EstimatedDepartureTime": "09:00:00",
+    "EstimatedArrivalTime": "10:00:00",
+    "DurationMinutes": 60,
+    "DistanceKm": 30,
+    "Price": 10000,
+    "BookingReference": "CAR-2026-001",
+    "Note": "Pick-up from hotel lobby",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Dịch vụ xe riêng"
+      },
+      "en": {
+        "TransportationName": "Private Car Service"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000004",
+    "TourDayActivityId": "019527d5-0004-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Flight",
+    "TransportationName": "VietJet Air",
+    "TransportationNote": "Budget airline",
+    "FromLocationId": "019527d6-0006-7000-8000-000000000006",
+    "ToLocationId": "019527d6-0007-7000-8000-000000000007",
+    "EstimatedDepartureTime": "14:00:00",
+    "EstimatedArrivalTime": "15:30:00",
+    "DurationMinutes": 90,
+    "DistanceKm": 600,
+    "Price": 10000,
+    "BookingReference": "VJ-2026-001",
+    "Note": "Optional meal service",
+    "Translations": {
+      "vi": {
+        "TransportationName": "VietJet Air"
+      },
+      "en": {
+        "TransportationName": "VietJet Air"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000005",
+    "TourDayActivityId": "019527d5-0005-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Train",
+    "TransportationName": "Vietnam Railway",
+    "TransportationNote": "Sleeping cabin",
+    "FromLocationId": "019527d6-0008-7000-8000-000000000008",
+    "ToLocationId": "019527d6-0009-7000-8000-000000000009",
+    "EstimatedDepartureTime": "20:00:00",
+    "EstimatedArrivalTime": "06:00:00",
+    "DurationMinutes": 600,
+    "DistanceKm": 300,
+    "Price": 10000,
+    "BookingReference": "VR-2026-001",
+    "Note": "Overnight train journey",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Đường sắt Việt Nam"
+      },
+      "en": {
+        "TransportationName": "Vietnam Railway"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000006",
+    "TourDayActivityId": "019527d5-0006-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Flight",
+    "TransportationName": "Thai Airways",
+    "TransportationNote": "International flight",
+    "FromLocationId": "019527d6-000a-7000-8000-00000000000a",
+    "ToLocationId": "019527d6-000b-7000-8000-00000000000b",
+    "EstimatedDepartureTime": "10:00:00",
+    "EstimatedArrivalTime": "14:30:00",
+    "DurationMinutes": 270,
+    "DistanceKm": 2000,
+    "Price": 10000,
+    "BookingReference": "TG-2026-001",
+    "Note": "In-flight entertainment included",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Thai Airways"
+      },
+      "en": {
+        "TransportationName": "Thai Airways"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000007",
+    "TourDayActivityId": "019527d5-0007-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Flight",
+    "TransportationName": "Japan Airlines",
+    "TransportationNote": "Premium economy available",
+    "FromLocationId": "019527d6-000c-7000-8000-00000000000c",
+    "ToLocationId": "019527d6-000d-7000-8000-00000000000d",
+    "EstimatedDepartureTime": "08:00:00",
+    "EstimatedArrivalTime": "13:00:00",
+    "DurationMinutes": 300,
+    "DistanceKm": 3500,
+    "Price": 10000,
+    "BookingReference": "JL-2026-001",
+    "Note": "Narita Airport arrival",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Japan Airlines"
+      },
+      "en": {
+        "TransportationName": "Japan Airlines"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  },
+  {
+    "Id": "019529b0-0001-7000-8000-000000000008",
+    "TourDayActivityId": "019527d5-0008-7000-8000-000000000001",
+    "Order": 1,
+    "TransportationType": "Flight",
+    "TransportationName": "Korean Air",
+    "TransportationNote": "Incheon Airport hub",
+    "FromLocationId": "019527d6-000e-7000-8000-00000000000e",
+    "ToLocationId": "019527d6-000f-7000-8000-00000000000f",
+    "EstimatedDepartureTime": "11:00:00",
+    "EstimatedArrivalTime": "16:00:00",
+    "DurationMinutes": 300,
+    "DistanceKm": 3000,
+    "Price": 10000,
+    "BookingReference": "KE-2026-001",
+    "Note": "Transit at Incheon",
+    "Translations": {
+      "vi": {
+        "TransportationName": "Korean Air"
+      },
+      "en": {
+        "TransportationName": "Korean Air"
+      }
+    },
+    "CreatedBy": "system",
+    "CreatedOnUtc": "2026-03-10T00:00:00Z",
+    "LastModifiedBy": "system",
+    "LastModifiedOnUtc": "2026-03-10T00:00:00Z"
+  }
+]

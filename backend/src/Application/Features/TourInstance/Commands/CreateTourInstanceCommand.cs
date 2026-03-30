@@ -1,0 +1,76 @@
+using Application.Common;
+using Application.Common.Constant;
+using Application.Dtos;
+using Contracts.Interfaces;
+using BuildingBlocks.CORS;
+using Domain.Entities;
+using Domain.Enums;
+using ErrorOr;
+using FluentValidation;
+using Application.Services;
+
+namespace Application.Features.TourInstance.Commands;
+
+public sealed record CreateTourInstanceCommand(
+    Guid TourId,
+    Guid ClassificationId,
+    string Title,
+    TourType InstanceType,
+    DateTimeOffset StartDate,
+    DateTimeOffset EndDate,
+    int MaxParticipation,
+    decimal BasePrice,
+    string? Location = null,
+    DateTimeOffset? ConfirmationDeadline = null,
+    List<string>? IncludedServices = null,
+    List<Guid>? GuideUserIds = null,
+    string? ThumbnailUrl = null) : ICommand<ErrorOr<Guid>>, ICacheInvalidator
+{
+    public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.TourInstance];
+}
+
+public sealed class CreateTourInstanceCommandValidator : AbstractValidator<CreateTourInstanceCommand>
+{
+    public CreateTourInstanceCommandValidator()
+    {
+        RuleFor(x => x.TourId)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceTourIdRequired);
+
+        RuleFor(x => x.ClassificationId)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceClassificationIdRequired);
+
+        RuleFor(x => x.Title)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceTitleRequired);
+
+        RuleFor(x => x.StartDate)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceStartDateRequired);
+
+        RuleFor(x => x.EndDate)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceEndDateRequired)
+            .GreaterThan(x => x.StartDate).WithMessage(ValidationMessages.TourInstanceEndDateAfterStart);
+
+        RuleFor(x => x.MaxParticipation)
+            .GreaterThan(0).WithMessage(ValidationMessages.TourInstanceMaxParticipantsGreaterThanZero);
+
+        RuleFor(x => x.BasePrice)
+            .NotEmpty().WithMessage(ValidationMessages.TourInstanceBasePriceRequired)
+            .GreaterThanOrEqualTo(0).WithMessage(ValidationMessages.TourInstanceBasePriceNonNegative);
+
+        RuleFor(x => x)
+            .Must(x => x.ConfirmationDeadline == null || x.ConfirmationDeadline < x.StartDate)
+            .WithMessage(ValidationMessages.TourInstanceConfirmationDeadlineBeforeStart)
+            .When(x => x.ConfirmationDeadline != null);
+
+        RuleFor(x => x.InstanceType)
+            .IsInEnum().WithMessage(ValidationMessages.TourInstanceInstanceTypeInvalid);
+    }
+}
+
+public sealed class CreateTourInstanceCommandHandler(ITourInstanceService tourInstanceService)
+    : ICommandHandler<CreateTourInstanceCommand, ErrorOr<Guid>>
+{
+    public async Task<ErrorOr<Guid>> Handle(CreateTourInstanceCommand request, CancellationToken cancellationToken)
+    {
+        return await tourInstanceService.Create(request);
+    }
+}
