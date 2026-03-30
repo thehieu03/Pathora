@@ -170,6 +170,9 @@ pathora_lint_output.txt
 hardcoded-inventory-backend.json
 nul
 
+# Nested frontend build artifacts
+frontend/frontend/
+
 # Large images
 halong_img1.jpg
 halong_img2.jpg
