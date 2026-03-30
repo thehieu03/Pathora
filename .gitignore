@@ -330,10 +330,10 @@ panthora_be/
 pathora/
 tour-guide-mobile/
 
-# Docker compose (chỉ dùng local)
+# Docker compose
+!docker-compose.yml
 docker-compose.minio.yml
 docker-compose.override.yml
-docker-compose.yml
 
 # Dev/docs/script thừa
 docs/
