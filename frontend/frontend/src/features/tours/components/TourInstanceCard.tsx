@@ -1,0 +1,139 @@
+"use client";
+
+import Link from "next/link";
+import Image from "@/features/shared/components/LandingImage";
+import { Icon } from "@/components/ui";
+import { useTranslation } from "react-i18next";
+import { formatCurrency } from "@/utils/format";
+import { NormalizedTourInstanceVm } from "@/types/tour";
+
+interface TourInstanceCardProps {
+  tour: NormalizedTourInstanceVm;
+}
+
+export const TourInstanceCard = ({ tour }: TourInstanceCardProps) => {
+  const { t, i18n } = useTranslation();
+  const locale =
+    (i18n.resolvedLanguage || i18n.language || "en").toLowerCase() === "vi"
+      ? "vi-VN"
+      : "en-US";
+
+  const imageUrl = tour.thumbnail?.publicURL || "/images/placeholder-tour.jpg";
+
+  // Guard: only show location row if truthy
+  const hasLocation = Boolean(tour.location);
+
+  // Guard: only show classification badge if truthy
+  const hasClassification = Boolean(tour.classificationName);
+
+  // Guard: only show price if basePrice > 0
+  const hasPrice = (tour.basePrice ?? 0) > 0;
+
+  const statusKey = tour.status?.trim().toLowerCase().replace(/[\s_]+/g, "");
+  const statusLabel = statusKey
+    ? t(`tourInstance.statusLabels.${statusKey}`, tour.status)
+    : tour.status;
+
+  return (
+    <Link href={`/tours/instances/${tour.id}`} className="group block">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+        {/* Image */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={tour.tourName}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+
+          {/* Classification badge — guard: only render if truthy */}
+          {hasClassification && (
+            <div className="absolute top-3 left-3">
+              <span className="badge-base bg-white/90 text-gray-700">
+                {tour.classificationName}
+              </span>
+            </div>
+          )}
+
+          {/* Status Badge */}
+          {tour.status && (
+            <div className="absolute top-3 right-3">
+              <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
+                statusKey === "available" ? "bg-green-100 text-green-700" :
+                statusKey === "soldout" ? "bg-red-100 text-red-700" :
+                "bg-gray-100 text-gray-700"
+              }`}>
+                {statusLabel}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="p-4">
+          {/* Location — guard: hide entire row if falsy */}
+          {hasLocation && (
+            <div className="flex items-center gap-1 text-sm text-gray-500 mb-1.5">
+              <Icon icon="heroicons-outline:map-pin" className="w-4 h-4" />
+              <span>{tour.location}</span>
+            </div>
+          )}
+
+          {/* Title */}
+          <h3 className="text-xl font-semibold text-gray-900 leading-tight mb-2.5 line-clamp-2 min-h-[56px] group-hover:text-[#fa8b02] transition-colors">
+            {tour.title || tour.tourName}
+          </h3>
+
+          {/* Dates */}
+          {tour.startDate && tour.endDate && (
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+              <Icon icon="heroicons-outline:calendar" className="w-4 h-4" />
+              <span>
+                {new Date(tour.startDate).toLocaleDateString(locale)} - {new Date(tour.endDate).toLocaleDateString(locale)}
+              </span>
+            </div>
+          )}
+
+          {/* Meta info */}
+          <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+            <div className="flex items-center gap-1">
+              <Icon icon="heroicons-outline:clock" className="w-4 h-4" />
+              <span>
+                {tour.durationDays} {t("tourInstance.days", "days")}
+              </span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Icon icon="heroicons-outline:user-group" className="w-4 h-4" />
+              <span>
+                {tour.maxParticipation} {t("tourInstance.people", "people")}
+              </span>
+            </div>
+          </div>
+
+          {/* Price — guard: only render if basePrice > 0 */}
+          {hasPrice && (
+            <div className="flex flex-col gap-0.5 mt-2">
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold text-[#1a1a2e] md:text-xl">
+                  {formatCurrency(tour.basePrice!)}
+                </span>
+                <span className="text-sm text-gray-400">
+                  {t("tourInstance.perPersonShort", "/person")}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Available spots */}
+          {tour.maxParticipation && (
+            <div className="mt-2 text-sm text-gray-500">
+              {tour.maxParticipation - (tour.registeredParticipants || 0)}{" "}
+              {t("tourInstance.spotsAvailable", "spots available")}
+            </div>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+};

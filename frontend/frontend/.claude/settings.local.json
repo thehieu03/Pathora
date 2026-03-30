@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(grep error TS:*)",
+      "Bash(head:*)",
+      "Bash(grep:*)",
+      "Bash(npx gitnexus:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath // empty' | grep -E '\\.(ts|tsx|js|jsx|py|cs|cshtml)$' && cd D:/DoAn/pathora && npx gitnexus analyze 2>&1 | head -3",
+            "timeout": 120,
+            "statusMessage": "Updating GitNexus index"
+          }
+        ]
+      }
+    ]
+  }
+}

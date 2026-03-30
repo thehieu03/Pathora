@@ -1,0 +1,17 @@
+[
+  {
+    "id": "bb1d1cf7-093c-4f74-a78b-cebd1778478a",
+    "title": "header: HomeAbout UsTour PackagesOur P",
+    "comment": "header nó không đồng màu với cái ở trong trang home",
+    "selector": "div:nth-child(3) > header.fixed.top-0",
+    "boundingRect": {
+      "x": 0,
+      "y": 0,
+      "w": 1680,
+      "h": 90
+    },
+    "screenshotPath": "./screenshots/moat-1774572979613-pyjzr6at2.png",
+    "status": "to do",
+    "timestamp": 1774572979789
+  }
+]

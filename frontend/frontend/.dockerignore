@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+.vscode
+.idea
+docs
+skills
+ui-ux-pro-max
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+coverage
+dist
+.turbo

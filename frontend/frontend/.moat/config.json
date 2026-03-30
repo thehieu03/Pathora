@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0",
+  "projectName": "frontend",
+  "createdAt": "2026-03-27T00:53:13.951Z",
+  "streaming": {
+    "enabled": true,
+    "format": "jsonl",
+    "cursorIntegration": true
+  },
+  "ui": {
+    "autoShowMoat": true,
+    "confirmBeforeSend": false
+  }
+}

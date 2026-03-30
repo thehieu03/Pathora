@@ -1,0 +1,17 @@
+schema: spec-driven
+
+context: |
+  Multi-workspace planning defaults:
+  - Backend workspace: D:\DoAn\panthora_be
+  - Frontend workspace: D:\DoAn\pathora
+  - Review workspace: D:\DoAn\panthora_be
+  Always include workspace paths in tasks for clarity.
+
+rules:
+  tasks:
+    - "Build tasks.md with exactly 3 top-level groups: Backend, Frontend, Code Review."
+    - "Backend group must target backend implementation work in D:\\DoAn\\panthora_be."
+    - "Frontend group must target frontend implementation work in D:\\DoAn\\pathora."
+    - "Code Review group must be review-only and run after Backend and Frontend groups complete."
+    - "Use checkbox format with numbered sub-steps in each group."
+    - "Include review checklist items: API contract compatibility, integration risks, and regression verification."
