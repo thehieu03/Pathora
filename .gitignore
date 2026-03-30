@@ -293,8 +293,10 @@ openspec/
 src/Api/logs/
 
 # API local artifacts
+# Local appsettings with real secrets — never commit
+src/Api/appsettings.json
 src/Api/appsettings.*.json
-!src/Api/appsettings.json
+!src/Api/appsettings.Development.json
 src/Api/*.http
 src/Api/*.rest
 src/Api/openapi*.json
@@ -303,6 +305,8 @@ src/Api/swagger*.json
 # Secrets - never commit these
 appsettings.Development.json
 .env
+.env.backend
+.env.production
 
 src/Application/Common/Repositories/
 docs/plans/
