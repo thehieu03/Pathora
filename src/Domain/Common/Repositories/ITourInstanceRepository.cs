@@ -6,6 +6,7 @@ namespace Domain.Common.Repositories;
 public interface ITourInstanceRepository
 {
     Task<TourInstanceEntity?> FindById(Guid id, bool asNoTracking = false);
+    Task<TourInstanceEntity?> FindByIdWithInstanceDays(Guid id);
     Task<List<TourInstanceEntity>> FindAll(string? searchText, TourInstanceStatus? status, int pageNumber, int pageSize);
     Task<int> CountAll(string? searchText, TourInstanceStatus? status);
     Task Create(TourInstanceEntity tourInstance);

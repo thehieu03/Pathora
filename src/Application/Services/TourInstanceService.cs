@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Application.Common.Constant;
 using Application.Common.Localization;
 using Application.Dtos;
@@ -128,6 +129,29 @@ public class TourInstanceService(
         {
             await _tourInstanceRepository.Create(entity);
 
+            // Clone InstanceDays from Classification.Plans
+            var tourDays = classification.Plans
+                .Where(d => !d.IsDeleted)
+                .OrderBy(d => d.DayNumber);
+
+            foreach (var tourDay in tourDays)
+            {
+                var translations = ConvertTourDayTranslation(tourDay.Translations);
+                var actualDate = DateOnly.FromDateTime(entity.StartDate.DateTime);
+
+                entity.InstanceDays.Add(TourInstanceDayEntity.Create(
+                    tourInstanceId: entity.Id,
+                    tourDayId: tourDay.Id,
+                    instanceDayNumber: tourDay.DayNumber,
+                    actualDate: actualDate.AddDays(tourDay.DayNumber - 1),
+                    title: tourDay.Title,
+                    description: tourDay.Description,
+                    translations: translations,
+                    performedBy: performedBy));
+            }
+
+            await _tourInstanceRepository.Update(entity);
+
             // Link TourRequest to this instance if TourRequestId was provided
             if (tourRequest is not null)
             {
@@ -243,7 +267,19 @@ public class TourInstanceService(
             confirmationDeadline: request.ConfirmationDeadline,
             includedServices: request.IncludedServices);
 
-        await _tourInstanceRepository.Update(entity);
+        entity.RowVersion = request.RowVersion ?? 0;
+
+        try
+        {
+            await _tourInstanceRepository.Update(entity);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Error.Conflict(
+                "TourInstance.ConcurrencyConflict",
+                "This tour instance was modified by another user. Please refresh and try again.");
+        }
+
         return Result.Success;
     }
 
@@ -280,7 +316,7 @@ public class TourInstanceService(
 
     public async Task<ErrorOr<TourInstanceDto>> GetDetail(Guid id)
     {
-        var entity = await _tourInstanceRepository.FindById(id, asNoTracking: true);
+        var entity = await _tourInstanceRepository.FindByIdWithInstanceDays(id);
         if (entity is null)
             return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
 
@@ -316,6 +352,21 @@ public class TourInstanceService(
 
         entity.ApplyResolvedTranslation(PublicLanguageResolver.Resolve(language));
         return _mapper.Map<TourInstanceDto>(entity);
+    }
+
+    private static Dictionary<string, TourInstanceDayTranslationData> ConvertTourDayTranslation(
+        Dictionary<string, TourDayTranslationData> source)
+    {
+        var result = new Dictionary<string, TourInstanceDayTranslationData>();
+        foreach (var (key, value) in source)
+        {
+            result[key] = new TourInstanceDayTranslationData
+            {
+                Title = value.Title,
+                Description = value.Description
+            };
+        }
+        return result;
     }
 
     public async Task<ErrorOr<CheckDuplicateTourInstanceResultDto>> CheckDuplicate(Guid tourId, Guid classificationId, DateTimeOffset startDate)

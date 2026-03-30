@@ -58,8 +58,8 @@ public class PaymentTransactionConfiguration : IEntityTypeConfiguration<PaymentT
         builder.Property(x => x.PaidAt);
         builder.Property(x => x.CompletedAt);
 
-        // QR Code info
-        builder.Property(x => x.QRCodeUrl)
+        // Checkout info
+        builder.Property(x => x.CheckoutUrl)
             .HasMaxLength(500);
 
         builder.Property(x => x.PaymentNote)

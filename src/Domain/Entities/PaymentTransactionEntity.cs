@@ -29,8 +29,8 @@ public class PaymentTransactionEntity : Aggregate<Guid>
     public DateTimeOffset? PaidAt { get; set; } // Thời điểm thanh toán thành công
     public DateTimeOffset? CompletedAt { get; set; } // Thời điểm hoàn tất
 
-    // QR Code info
-    public string? QRCodeUrl { get; set; } // URL QR code thanh toán
+    // Checkout info
+    public string? CheckoutUrl { get; set; } // URL checkout/thanh toán
     public string? PaymentNote { get; set; } // Nội dung thanh toán (note/description)
 
     // Bank info (from webhook callback)

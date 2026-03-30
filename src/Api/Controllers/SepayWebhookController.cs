@@ -3,25 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Endpoint;
 using Application.Services;
 using Domain.ApiThirdPatyResponse;
+using System.Text;
+using System.Text.Json;
 
 namespace Api.Controllers;
 
 [Route(SepayWebhookEndpoint.Base)]
 [ApiController]
-public class SepayWebhookController : ControllerBase
+public sealed class SepayWebhookController : ControllerBase
 {
     private const string NoTransactionsToProcessMessage = "No transactions to process";
     private const string HealthyStatus = "healthy";
     private const string DefaultAmountLiteral = "0";
 
     private readonly IPaymentReconciliationService _paymentReconciliationService;
+    private readonly ISepaySignatureVerifier _signatureVerifier;
     private readonly ILogger<SepayWebhookController> _logger;
 
     public SepayWebhookController(
         IPaymentReconciliationService paymentReconciliationService,
+        ISepaySignatureVerifier signatureVerifier,
         ILogger<SepayWebhookController> logger)
     {
         _paymentReconciliationService = paymentReconciliationService;
+        _signatureVerifier = signatureVerifier;
         _logger = logger;
     }
 
@@ -29,8 +34,35 @@ public class SepayWebhookController : ControllerBase
     /// Webhook endpoint nhận callback từ Sepay khi có giao dịch chuyển khoản
     /// </summary>
     [HttpPost]
-    public async Task<IActionResult> ReceiveCallback([FromBody] SepayApiResponse callbackData)
+    public async Task<IActionResult> ReceiveCallback()
     {
+        if (!Request.Headers.TryGetValue("X-Signature", out var sigHeader))
+        {
+            _logger.LogWarning("Sepay webhook received without X-Signature header");
+            return StatusCode(403, new { error = "Missing signature" });
+        }
+
+        var signature = sigHeader.ToString();
+
+        Request.EnableBuffering();
+        using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+        var rawBody = await reader.ReadToEndAsync();
+        Request.Body.Position = 0;
+
+        if (!_signatureVerifier.Verify(rawBody, signature))
+        {
+            _logger.LogWarning("Sepay webhook signature verification failed");
+            return StatusCode(403, new { error = "Invalid signature" });
+        }
+
+        // Deserialize body after signature verification
+        var callbackData = JsonSerializer.Deserialize<SepayApiResponse>(rawBody);
+        if (callbackData == null)
+        {
+            _logger.LogWarning("Sepay webhook received with invalid body");
+            return Ok(new { success = false, error = "Invalid body" });
+        }
+
         _logger.LogInformation("Received Sepay webhook callback: {Status}", callbackData.Status);
 
         if (callbackData.Transactions == null || !callbackData.Transactions.Any())

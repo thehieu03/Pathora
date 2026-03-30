@@ -1,6 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Domain.Specs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Share\BuildingBlocks\BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\Share\Common\Common.csproj" />
     <ProjectReference Include="..\..\Share\Contracts\Contracts.csproj" />
@@ -15,6 +19,7 @@
     <PackageReference Include="AutoMapper" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
 
 </Project>

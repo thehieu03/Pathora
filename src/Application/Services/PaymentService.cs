@@ -21,7 +21,7 @@ public interface IPaymentService
         string createdBy,
         int expirationMinutes = 30);
     Task<ErrorOr<PaymentTransactionEntity>> GetTransactionByCodeAsync(string transactionCode);
-    Task<ErrorOr<PaymentTransactionEntity>> ProcessPaymentCallbackAsync(SepayTransactionData transactionData);
+    Task<ErrorOr<PaymentTransactionEntity>> ProcessSepayCallbackAsync(SepayTransactionData transactionData);
     Task<ErrorOr<PaymentTransactionEntity>> ProcessPayOSCallbackAsync(
         string orderCode,
         decimal amount,
@@ -43,7 +43,7 @@ public class SepayTransactionData
 
 public class PaymentService : IPaymentService
 {
-    private const string OutboxTypePaymentCheck = "PaymentCheck";
+    private const string OutboxTypePaymentCheck = "SepayPaymentCheck";
     private readonly string _sepayAccountNumber;
     private readonly string _sepayBankCode;
     private readonly string _sepayQrBaseUrl;
@@ -143,16 +143,28 @@ public class PaymentService : IPaymentService
             createdBy: createdBy,
             expiredAt: expiredAt);
 
-        // Get PayOS checkout URL instead of Sepay QR
-        var checkoutResult = await GetCheckoutUrlAsync(transactionCode, paymentNote, (long)amount);
-        if (checkoutResult.IsError)
+        if (paymentMethod == PaymentMethod.Sepay)
         {
-            return checkoutResult.Errors;
+            var qrResult = await GetQR(paymentNote, (long)amount);
+            if (qrResult.IsError)
+            {
+                return qrResult.Errors;
+            }
+            transaction.CheckoutUrl = qrResult.Value;
+            _logger.LogInformation("Created payment transaction {TransactionCode} with Sepay QR URL", transactionCode);
         }
-        // Reuse QRCodeUrl field to store checkout URL for backward compatibility
-        transaction.QRCodeUrl = checkoutResult.Value.CheckoutUrl;
-        // Store PayOS orderCode for webhook callback matching
-        transaction.PayOSOrderCode = checkoutResult.Value.OrderCode;
+        else
+        {
+            // PayOS checkout URL
+            var checkoutResult = await GetCheckoutUrlAsync(transactionCode, paymentNote, (long)amount);
+            if (checkoutResult.IsError)
+            {
+                return checkoutResult.Errors;
+            }
+            transaction.CheckoutUrl = checkoutResult.Value.CheckoutUrl;
+            transaction.PayOSOrderCode = checkoutResult.Value.OrderCode;
+            _logger.LogInformation("Created payment transaction {TransactionCode} with PayOS checkout URL", transactionCode);
+        }
 
         await _transactionRepository.AddAsync(transaction);
 
@@ -168,8 +180,6 @@ public class PaymentService : IPaymentService
         var outboxMessage = OutboxMessage.Create(OutboxTypePaymentCheck, outboxPayload);
         await _outboxRepository.AddAsync(outboxMessage);
 
-        _logger.LogInformation("Created payment transaction {TransactionCode} with PayOS checkout URL", transactionCode);
-
         return transaction;
     }
 
@@ -183,7 +193,7 @@ public class PaymentService : IPaymentService
         return transaction;
     }
 
-    public async Task<ErrorOr<PaymentTransactionEntity>> ProcessPaymentCallbackAsync(SepayTransactionData transactionData)
+    public async Task<ErrorOr<PaymentTransactionEntity>> ProcessSepayCallbackAsync(SepayTransactionData transactionData)
     {
         var transactionCode = transactionData.TransactionContent?.Split(' ').FirstOrDefault();
         if (string.IsNullOrEmpty(transactionCode))
@@ -233,6 +243,18 @@ public class PaymentService : IPaymentService
 
         // Update booking status based on transaction type
         await UpdateBookingStatusAsync(transaction);
+
+        // Persist all changes (transaction + booking) in one transaction
+        try
+        {
+            await _unitOfWork.SaveChangeAsync(CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save payment transaction {TransactionCode} to database",
+                transaction.TransactionCode);
+            throw;
+        }
 
         _logger.LogInformation(
             "Payment processed successfully: TransactionCode={TransactionCode}, Amount={Amount}, BookingId={BookingId}",
@@ -345,6 +367,9 @@ public class PaymentService : IPaymentService
                     _logger.LogDebug("No booking status update for transaction type: {Type}", transaction.Type);
                     break;
             }
+
+            // Persist booking status change to database
+            await _bookingRepository.UpdateAsync(booking);
         }
         catch (Exception ex)
         {

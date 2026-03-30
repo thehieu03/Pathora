@@ -38,7 +38,7 @@ public sealed class ProcessPaymentCommandHandler(
                     ReferenceNumber = transaction.reference_number
                 };
 
-                var result = await _paymentService.ProcessPaymentCallbackAsync(transactionData);
+                var result = await _paymentService.ProcessSepayCallbackAsync(transactionData);
 
                 if (result.IsError)
                 {

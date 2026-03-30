@@ -72,4 +72,10 @@ public class BookingRepository(AppDbContext context) : IBookingRepository
     {
         await _context.Bookings.AddAsync(booking);
     }
+
+    public async Task UpdateAsync(BookingEntity booking)
+    {
+        _context.Bookings.Update(booking);
+        await _context.SaveChangesAsync();
+    }
 }
