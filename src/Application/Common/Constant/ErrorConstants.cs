@@ -61,6 +61,12 @@ public static class ErrorConstants
             new(
                 "Lịch trình tour không tồn tại hoặc không khả dụng",
                 "Tour instance not found or unavailable");
+
+        public const string ConcurrencyConflictCode = "TourInstance.ConcurrencyConflict";
+        public static readonly LocalizedMessage ConcurrencyConflictDescription =
+            new(
+                "Lịch khởi hành này đã được sửa bởi người khác. Vui lòng tải lại và thử lại.",
+                "This tour instance was modified by another user. Please refresh and try again.");
     }
 
     public static class TourRequest
@@ -414,6 +420,11 @@ public static class ErrorConstants
             return isNotFound ? TourInstance.NotFoundDescription.Resolve(lang) : fallbackDescription;
         }
 
+        if (code == TourInstance.ConcurrencyConflictCode)
+        {
+            return TourInstance.ConcurrencyConflictDescription.Resolve(lang);
+        }
+
         if (code == User.NotFoundCode)
         {
             if (fallbackDescription == User.NotFoundForInvalidCredentialsDescription.Vi
@@ -505,6 +516,7 @@ public static class ErrorConstants
             var value when value == SupplierPayable.NotFoundCode => SupplierPayable.NotFoundDescription,
             var value when value == ActivityStatus.NotFoundCode => ActivityStatus.NotFoundDescription,
             var value when value == ActivityStatus.CancelledCode => ActivityStatus.CancelledDescription,
+            var value when value == TourInstance.ConcurrencyConflictCode => TourInstance.ConcurrencyConflictDescription,
             var value when value == PricingPolicy.NotFoundCode => PricingPolicy.NotFoundDescription,
             var value when value == Payment.TransactionNotFoundCode => Payment.TransactionNotFoundDescription,
             var value when value == Payment.TransactionExpiredCode => Payment.TransactionExpiredDescription,

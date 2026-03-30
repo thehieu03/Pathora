@@ -22,6 +22,7 @@ public interface IIdentityService
     Task<ErrorOr<ExternalLoginResponse>> ExternalLogin(ExternalLoginRequest request);
     Task<ErrorOr<RefreshTokenResponse>> Refresh(RefreshTokenRequest request);
     Task<ErrorOr<Success>> Logout(LogoutRequest request);
+    Task<ErrorOr<Success>> LogoutAll();
     Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request);
     Task<ErrorOr<Success>> ForgotPassword(ForgotPasswordRequest request);
     Task<ErrorOr<Success>> ResetPassword(ResetPasswordRequest request);
@@ -287,6 +288,15 @@ public class IdentityService(
             return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
 
         return await _tokenManager.RevokeToken(userId, request.RefreshToken);
+    }
+
+    public async Task<ErrorOr<Success>> LogoutAll()
+    {
+        var userId = _user.Id;
+        if (string.IsNullOrEmpty(userId))
+            return Error.Unauthorized(ErrorConstants.User.UnauthorizedCode, ErrorConstants.User.UnauthorizedDescription);
+
+        return await _tokenManager.RevokeAllTokens(userId);
     }
 
     public async Task<ErrorOr<Success>> ChangePassword(ChangePasswordRequest request)

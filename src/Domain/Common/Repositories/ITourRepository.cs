@@ -9,6 +9,8 @@ public interface ITourRepository
     Task<bool> ExistsByTourCode(string tourCode, Guid? excludeId = null);
     Task<List<TourEntity>> FindAll(string? searchText, int pageNumber, int pageSize);
     Task<int> CountAll(string? searchText);
+    Task<List<TourEntity>> FindAllAdmin(string? searchText, Domain.Enums.TourStatus? status, int pageNumber, int pageSize);
+    Task<int> CountAllAdmin(string? searchText, Domain.Enums.TourStatus? status);
     Task Create(TourEntity tour);
     Task Update(TourEntity tour);
     Task SoftDelete(Guid id);

@@ -23,4 +23,15 @@ public class AdminController : BaseApiController
         var result = await Sender.Send(new GetAdminDashboardQuery());
         return HandleResult(result);
     }
+
+    [HttpGet(AdminEndpoint.TourManagement)]
+    public async Task<IActionResult> GetTourManagement(
+        [FromQuery] string? searchText,
+        [FromQuery] Domain.Enums.TourStatus? status,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10)
+    {
+        var result = await Sender.Send(new GetAdminTourManagementQuery(searchText, status, pageNumber, pageSize));
+        return HandleResult(result);
+    }
 }

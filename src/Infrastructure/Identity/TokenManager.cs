@@ -140,4 +140,19 @@ internal sealed class TokenManager(
 
         return Result.Success;
     }
+
+    public async Task<ErrorOr<Success>> RevokeAllTokens(string userId)
+    {
+        if (!Guid.TryParse(userId, out var uid))
+            return Error.Validation("InvalidUserId", "Invalid user ID");
+
+        var repo = unitOfWork.GenericRepository<RefreshTokenEntity>();
+        var tokens = await repo.GetListAsync(t => t.UserId == uid && t.IsActive);
+        foreach (var token in tokens)
+        {
+            repo.Delete(token);
+        }
+
+        return Result.Success;
+    }
 }

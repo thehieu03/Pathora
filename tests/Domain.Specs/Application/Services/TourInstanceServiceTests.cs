@@ -5,6 +5,8 @@ using Contracts.Interfaces;
 using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Mails;
+using ErrorOr;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
@@ -14,12 +16,14 @@ public sealed class TourInstanceServiceTests
 {
     private readonly ITourInstanceRepository _tourInstanceRepository = Substitute.For<ITourInstanceRepository>();
     private readonly ITourRepository _tourRepository = Substitute.For<ITourRepository>();
+    private readonly ITourRequestRepository _tourRequestRepository = Substitute.For<ITourRequestRepository>();
+    private readonly IMailRepository _mailRepository = Substitute.For<IMailRepository>();
     private readonly IUser _user = Substitute.For<IUser>();
     private readonly IMapper _mapper = Substitute.For<IMapper>();
     private readonly ILogger<TourInstanceService> _logger = Substitute.For<ILogger<TourInstanceService>>();
 
     private TourInstanceService CreateService() =>
-        new(_tourInstanceRepository, _tourRepository, _user, _mapper, _logger);
+        new(_tourInstanceRepository, _tourRepository, _tourRequestRepository, _mailRepository, _user, _mapper, _logger);
 
     private static TourEntity CreateTourWithClassification(Guid classificationId)
     {
@@ -213,6 +217,210 @@ public sealed class TourInstanceServiceTests
 
         Assert.True(result.IsError);
         Assert.Equal("User.Unauthorized", result.FirstError.Code);
+        await _tourInstanceRepository.DidNotReceive().Create(Arg.Any<TourInstanceEntity>());
+    }
+
+    [Fact]
+    public async Task Create_WithValidTourRequestId_LinksRequestAndQueuesEmail()
+    {
+        // TourRequestId provided, approved, not linked — should link and queue email
+        var classificationId = Guid.NewGuid();
+        var creatorUserId = Guid.NewGuid();
+        var tourRequestId = Guid.NewGuid();
+        var tour = CreateTourWithClassification(classificationId);
+        TourInstanceEntity? capturedInstance = null;
+        TourRequestEntity? capturedRequest = null;
+
+        _user.Id.Returns(creatorUserId.ToString());
+        _tourRepository.FindById(Arg.Any<Guid>()).Returns(tour);
+        _tourInstanceRepository.Create(Arg.Do<TourInstanceEntity>(e => capturedInstance = e)).Returns(Task.CompletedTask);
+        _tourInstanceRepository.Update(Arg.Any<TourInstanceEntity>()).Returns(Task.CompletedTask);
+
+        var tourRequest = TourRequestEntity.Create(
+            customerName: "John Doe",
+            customerPhone: "0123456789",
+            destination: "Ha Long",
+            departureDate: DateTimeOffset.UtcNow.AddDays(10),
+            numberAdult: 2,
+            performedBy: "system",
+            customerEmail: "john@example.com");
+        tourRequest.Approve(creatorUserId, "admin"); // Status = Approved, TourInstanceId = null
+
+        _tourRequestRepository.GetByIdAsync(tourRequestId).Returns(tourRequest);
+        _tourRequestRepository.UpdateAsync(Arg.Do<TourRequestEntity>(r => capturedRequest = r)).Returns(Task.CompletedTask);
+        _mailRepository.Add(Arg.Any<Domain.Mails.MailEntity>()).Returns(Result.Success);
+
+        var command = new CreateTourInstanceCommand(
+            TourId: tour.Id,
+            ClassificationId: classificationId,
+            Title: "Ha Long Trip",
+            InstanceType: TourType.Public,
+            StartDate: DateTimeOffset.UtcNow.AddDays(10),
+            EndDate: DateTimeOffset.UtcNow.AddDays(12),
+            MaxParticipation: 20,
+            BasePrice: 500,
+            IncludedServices: ["shuttle", "meal"],
+            GuideUserIds: [],
+            TourRequestId: tourRequestId);
+
+        var service = CreateService();
+        var result = await service.Create(command);
+
+        Assert.False(result.IsError);
+
+        // TourRequest.TourInstanceId should be linked
+        Assert.NotNull(capturedRequest);
+        Assert.Equal(capturedInstance!.Id, capturedRequest!.TourInstanceId);
+
+        // Email should be queued
+        await _mailRepository.Received(1).Add(Arg.Is<Domain.Mails.MailEntity>(m =>
+            m.To == "john@example.com" &&
+            m.Subject == "Your Tour Request Has Been Approved!"));
+    }
+
+    [Fact]
+    public async Task Create_WithoutTourRequestId_DoesNotLinkAndDoesNotQueueEmail()
+    {
+        // No TourRequestId — no linking, no email
+        var classificationId = Guid.NewGuid();
+        var creatorUserId = Guid.NewGuid();
+        var tour = CreateTourWithClassification(classificationId);
+
+        _user.Id.Returns(creatorUserId.ToString());
+        _tourRepository.FindById(Arg.Any<Guid>()).Returns(tour);
+        _tourInstanceRepository.Create(Arg.Any<TourInstanceEntity>()).Returns(Task.CompletedTask);
+
+        var command = new CreateTourInstanceCommand(
+            TourId: tour.Id,
+            ClassificationId: classificationId,
+            Title: "Normal Tour",
+            InstanceType: TourType.Public,
+            StartDate: DateTimeOffset.UtcNow.AddDays(5),
+            EndDate: DateTimeOffset.UtcNow.AddDays(7),
+            MaxParticipation: 15,
+            BasePrice: 300,
+            IncludedServices: [],
+            GuideUserIds: [],
+            TourRequestId: null); // explicitly null
+
+        var service = CreateService();
+        var result = await service.Create(command);
+
+        Assert.False(result.IsError);
+        await _tourRequestRepository.DidNotReceive().GetByIdAsync(Arg.Any<Guid>());
+        await _mailRepository.DidNotReceive().Add(Arg.Any<Domain.Mails.MailEntity>());
+    }
+
+    [Fact]
+    public async Task Create_WithNonExistentTourRequestId_ReturnsNotFound()
+    {
+        var classificationId = Guid.NewGuid();
+        var creatorUserId = Guid.NewGuid();
+        var tourRequestId = Guid.NewGuid();
+        var tour = CreateTourWithClassification(classificationId);
+
+        _user.Id.Returns(creatorUserId.ToString());
+        _tourRepository.FindById(Arg.Any<Guid>()).Returns(tour);
+        _tourRequestRepository.GetByIdAsync(tourRequestId).Returns((TourRequestEntity?)null);
+
+        var command = new CreateTourInstanceCommand(
+            TourId: tour.Id,
+            ClassificationId: classificationId,
+            Title: "Tour",
+            InstanceType: TourType.Public,
+            StartDate: DateTimeOffset.UtcNow.AddDays(1),
+            EndDate: DateTimeOffset.UtcNow.AddDays(3),
+            MaxParticipation: 10,
+            BasePrice: 100,
+            TourRequestId: tourRequestId);
+
+        var service = CreateService();
+        var result = await service.Create(command);
+
+        Assert.True(result.IsError);
+        Assert.Contains("NotFound", result.FirstError.Code);
+        await _tourInstanceRepository.DidNotReceive().Create(Arg.Any<TourInstanceEntity>());
+    }
+
+    [Fact]
+    public async Task Create_WithPendingTourRequestId_ReturnsValidationError()
+    {
+        var classificationId = Guid.NewGuid();
+        var creatorUserId = Guid.NewGuid();
+        var tourRequestId = Guid.NewGuid();
+        var tour = CreateTourWithClassification(classificationId);
+
+        var pendingRequest = TourRequestEntity.Create(
+            customerName: "Jane",
+            customerPhone: "0123456789",
+            destination: "Da Nang",
+            departureDate: DateTimeOffset.UtcNow.AddDays(5),
+            numberAdult: 1,
+            performedBy: "system");
+        // Status remains Pending (default)
+
+        _user.Id.Returns(creatorUserId.ToString());
+        _tourRepository.FindById(Arg.Any<Guid>()).Returns(tour);
+        _tourRequestRepository.GetByIdAsync(tourRequestId).Returns(pendingRequest);
+
+        var command = new CreateTourInstanceCommand(
+            TourId: tour.Id,
+            ClassificationId: classificationId,
+            Title: "Tour",
+            InstanceType: TourType.Public,
+            StartDate: DateTimeOffset.UtcNow.AddDays(1),
+            EndDate: DateTimeOffset.UtcNow.AddDays(3),
+            MaxParticipation: 10,
+            BasePrice: 100,
+            TourRequestId: tourRequestId);
+
+        var service = CreateService();
+        var result = await service.Create(command);
+
+        Assert.True(result.IsError);
+        Assert.Contains("approved", result.FirstError.Description, StringComparison.OrdinalIgnoreCase);
+        await _tourInstanceRepository.DidNotReceive().Create(Arg.Any<TourInstanceEntity>());
+    }
+
+    [Fact]
+    public async Task Create_WithAlreadyLinkedTourRequestId_ReturnsValidationError()
+    {
+        var classificationId = Guid.NewGuid();
+        var creatorUserId = Guid.NewGuid();
+        var tourRequestId = Guid.NewGuid();
+        var existingInstanceId = Guid.NewGuid();
+        var tour = CreateTourWithClassification(classificationId);
+
+        var linkedRequest = TourRequestEntity.Create(
+            customerName: "Bob",
+            customerPhone: "0123456789",
+            destination: "Sapa",
+            departureDate: DateTimeOffset.UtcNow.AddDays(5),
+            numberAdult: 2,
+            performedBy: "system");
+        linkedRequest.Approve(creatorUserId, "admin");
+        linkedRequest.TourInstanceId = existingInstanceId; // already linked
+
+        _user.Id.Returns(creatorUserId.ToString());
+        _tourRepository.FindById(Arg.Any<Guid>()).Returns(tour);
+        _tourRequestRepository.GetByIdAsync(tourRequestId).Returns(linkedRequest);
+
+        var command = new CreateTourInstanceCommand(
+            TourId: tour.Id,
+            ClassificationId: classificationId,
+            Title: "Tour",
+            InstanceType: TourType.Public,
+            StartDate: DateTimeOffset.UtcNow.AddDays(1),
+            EndDate: DateTimeOffset.UtcNow.AddDays(3),
+            MaxParticipation: 10,
+            BasePrice: 100,
+            TourRequestId: tourRequestId);
+
+        var service = CreateService();
+        var result = await service.Create(command);
+
+        Assert.True(result.IsError);
+        Assert.Contains("already linked", result.FirstError.Description, StringComparison.OrdinalIgnoreCase);
         await _tourInstanceRepository.DidNotReceive().Create(Arg.Any<TourInstanceEntity>());
     }
 }

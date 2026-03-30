@@ -13,5 +13,9 @@ public enum PaymentMethod
     [Description("Momo")]
     Momo = 4,
     [Description("VnPay")]
-    VnPay = 5
+    VnPay = 5,
+    [Description("Sepay")]
+    Sepay = 6,
+    [Description("PayOS")]
+    PayOS = 7
 }

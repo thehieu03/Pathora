@@ -136,6 +136,26 @@ public class AuthController(IOptions<JwtOptions> jwtOptions) : BaseApiController
     }
 
     [Authorize]
+    [HttpPost(AuthEndpoint.LogoutAll)]
+    public async Task<IActionResult> LogoutAll()
+    {
+        var result = await Sender.Send(new LogoutAllCommand());
+        if (!result.IsError)
+        {
+            try
+            {
+                AuthCookieWriter.ClearAuthCookies(Response, Request.IsHttps);
+            }
+            catch (InvalidOperationException)
+            {
+                // Response has already started — cookies cannot be cleared.
+            }
+        }
+
+        return HandleResult(result);
+    }
+
+    [Authorize]
     [HttpPut(AuthEndpoint.Me)]
     public async Task<IActionResult> UpdateMyProfile([FromBody] Application.Features.Identity.Commands.UpdateMyProfileCommand command)
     {

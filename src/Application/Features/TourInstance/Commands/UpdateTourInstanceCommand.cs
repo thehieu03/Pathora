@@ -23,7 +23,8 @@ public sealed record UpdateTourInstanceCommand(
     List<Guid>? GuideUserIds = null,
     List<Guid>? ManagerUserIds = null,
     ImageEntity? Thumbnail = null,
-    List<ImageEntity>? Images = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
+    List<ImageEntity>? Images = null,
+    uint? RowVersion = null) : ICommand<ErrorOr<Success>>, ICacheInvalidator
 {
     public IReadOnlyList<string> CacheKeysToInvalidate => [CacheKey.TourInstance];
 }
@@ -65,6 +66,9 @@ public sealed class UpdateTourInstanceCommandValidator : AbstractValidator<Updat
             .Must(x => x.GuideUserIds == null || x.ManagerUserIds == null ||
                        !x.GuideUserIds.Any(g => x.ManagerUserIds.Contains(g)))
             .WithMessage(ValidationMessages.TourInstanceUserCannotBeBothGuideAndManager);
+
+        RuleFor(x => x.RowVersion)
+            .NotNull().WithMessage("Concurrency token is required for updates.");
     }
 }
 
