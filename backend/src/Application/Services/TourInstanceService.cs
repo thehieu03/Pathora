@@ -1,5 +1,6 @@
 using Contracts;
 using Contracts.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Application.Common.Constant;
 using Application.Common.Localization;
 using Application.Dtos;
@@ -10,6 +11,7 @@ using Domain.Common.Repositories;
 using Domain.Entities;
 using Domain.Entities.Translations;
 using Domain.Enums;
+using Domain.Mails;
 using Domain.ValueObjects;
 using ErrorOr;
 using Microsoft.Extensions.Logging;
@@ -33,12 +35,16 @@ public interface ITourInstanceService
 public class TourInstanceService(
     ITourInstanceRepository tourInstanceRepository,
     ITourRepository tourRepository,
+    ITourRequestRepository tourRequestRepository,
+    IMailRepository mailRepository,
     IUser user,
     IMapper mapper,
     ILogger<TourInstanceService> logger) : ITourInstanceService
 {
     private readonly ITourInstanceRepository _tourInstanceRepository = tourInstanceRepository;
     private readonly ITourRepository _tourRepository = tourRepository;
+    private readonly ITourRequestRepository _tourRequestRepository = tourRequestRepository;
+    private readonly IMailRepository _mailRepository = mailRepository;
     private readonly IUser _user = user;
     private readonly IMapper _mapper = mapper;
     private readonly ILogger<TourInstanceService> _logger = logger;
@@ -60,6 +66,25 @@ public class TourInstanceService(
             return Error.Validation(ErrorConstants.User.InvalidIdCode, ErrorConstants.User.InvalidIdFormatDescription);
 
         var performedBy = _user.Id;
+
+        // Validate TourRequestId if provided
+        TourRequestEntity? tourRequest = null;
+        if (request.TourRequestId.HasValue)
+        {
+            tourRequest = await _tourRequestRepository.GetByIdAsync(request.TourRequestId.Value);
+            if (tourRequest is null)
+                return Error.NotFound(ErrorConstants.TourRequest.NotFoundCode, ErrorConstants.TourRequest.NotFoundDescription);
+
+            if (tourRequest.Status != TourRequestStatus.Approved)
+                return Error.Validation(
+                    ErrorConstants.TourRequest.InvalidStatusTransitionCode,
+                    "Tour request must be approved before linking to a tour instance.");
+
+            if (tourRequest.TourInstanceId.HasValue)
+                return Error.Validation(
+                    ErrorConstants.TourRequest.InvalidStatusTransitionCode,
+                    "Tour request is already linked to a tour instance.");
+        }
 
         var thumbnail = string.IsNullOrWhiteSpace(request.ThumbnailUrl)
             ? null
@@ -103,6 +128,38 @@ public class TourInstanceService(
         try
         {
             await _tourInstanceRepository.Create(entity);
+
+            // Clone InstanceDays from Classification.Plans
+            var tourDays = classification.Plans
+                .Where(d => !d.IsDeleted)
+                .OrderBy(d => d.DayNumber);
+
+            foreach (var tourDay in tourDays)
+            {
+                var translations = ConvertTourDayTranslation(tourDay.Translations);
+                var actualDate = DateOnly.FromDateTime(entity.StartDate.DateTime);
+
+                entity.InstanceDays.Add(TourInstanceDayEntity.Create(
+                    tourInstanceId: entity.Id,
+                    tourDayId: tourDay.Id,
+                    instanceDayNumber: tourDay.DayNumber,
+                    actualDate: actualDate.AddDays(tourDay.DayNumber - 1),
+                    title: tourDay.Title,
+                    description: tourDay.Description,
+                    translations: translations,
+                    performedBy: performedBy));
+            }
+
+            await _tourInstanceRepository.Update(entity);
+
+            // Link TourRequest to this instance if TourRequestId was provided
+            if (tourRequest is not null)
+            {
+                tourRequest.TourInstanceId = entity.Id;
+                await _tourRequestRepository.UpdateAsync(tourRequest);
+                await TryQueueTourReadyEmailAsync(tourRequest, entity, creatorUserId);
+            }
+
             _logger.LogInformation("TourInstance {TourInstanceId} created with manager {ManagerId} bound by creator", entity.Id, creatorUserId);
             return entity.Id;
         }
@@ -110,6 +167,63 @@ public class TourInstanceService(
         {
             _logger.LogError(ex, "Failed to create TourInstance for TourId {TourId}, ClassificationId {ClassificationId}", request.TourId, request.ClassificationId);
             return Error.Failure("TourInstance.CreateFailed", "Failed to create tour instance");
+        }
+    }
+
+    private async Task TryQueueTourReadyEmailAsync(
+        TourRequestEntity requestEntity,
+        TourInstanceEntity instance,
+        Guid performedBy)
+    {
+        var recipientEmail = !string.IsNullOrWhiteSpace(requestEntity.CustomerEmail)
+            ? requestEntity.CustomerEmail
+            : null;
+
+        if (string.IsNullOrWhiteSpace(recipientEmail))
+        {
+            _logger.LogWarning(
+                "Skipping tour ready email for request {RequestId} because recipient email is missing.",
+                requestEntity.Id);
+            return;
+        }
+
+        try
+        {
+            var includedServices = instance.IncludedServices?.Count > 0
+                ? string.Join(", ", instance.IncludedServices)
+                : "Not specified";
+
+            var mail = new TourRequestTourReadyApprovedMail(
+                CustomerName: requestEntity.CustomerName,
+                TourTitle: instance.Title,
+                ClassificationName: instance.ClassificationName,
+                StartDate: instance.StartDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+                EndDate: instance.EndDate.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture),
+                BasePrice: instance.BasePrice.ToString("N0"),
+                IncludedServices: includedServices,
+                TourInstanceDetailLink: $"/tours/instances/{instance.Id}",
+                AdminNote: string.IsNullOrWhiteSpace(requestEntity.AdminNote)
+                    ? "No additional note provided."
+                    : requestEntity.AdminNote.Trim());
+
+            var entity = mail.ToMail(recipientEmail);
+            entity.Subject = "Your Tour Request Has Been Approved!";
+
+            var addResult = await _mailRepository.Add(entity);
+            if (addResult.IsError)
+            {
+                _logger.LogWarning(
+                    "Failed to queue tour ready email for request {RequestId}: {ErrorDescription}",
+                    requestEntity.Id,
+                    addResult.FirstError.Description);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Failed to queue tour ready email for request {RequestId}",
+                requestEntity.Id);
         }
     }
 
@@ -153,7 +267,19 @@ public class TourInstanceService(
             confirmationDeadline: request.ConfirmationDeadline,
             includedServices: request.IncludedServices);
 
-        await _tourInstanceRepository.Update(entity);
+        entity.RowVersion = request.RowVersion ?? 0;
+
+        try
+        {
+            await _tourInstanceRepository.Update(entity);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Error.Conflict(
+                "TourInstance.ConcurrencyConflict",
+                "This tour instance was modified by another user. Please refresh and try again.");
+        }
+
         return Result.Success;
     }
 
@@ -190,7 +316,7 @@ public class TourInstanceService(
 
     public async Task<ErrorOr<TourInstanceDto>> GetDetail(Guid id)
     {
-        var entity = await _tourInstanceRepository.FindById(id, asNoTracking: true);
+        var entity = await _tourInstanceRepository.FindByIdWithInstanceDays(id);
         if (entity is null)
             return Error.NotFound(ErrorConstants.TourInstance.NotFoundCode, ErrorConstants.TourInstance.NotFoundDescription);
 
@@ -226,6 +352,21 @@ public class TourInstanceService(
 
         entity.ApplyResolvedTranslation(PublicLanguageResolver.Resolve(language));
         return _mapper.Map<TourInstanceDto>(entity);
+    }
+
+    private static Dictionary<string, TourInstanceDayTranslationData> ConvertTourDayTranslation(
+        Dictionary<string, TourDayTranslationData> source)
+    {
+        var result = new Dictionary<string, TourInstanceDayTranslationData>();
+        foreach (var (key, value) in source)
+        {
+            result[key] = new TourInstanceDayTranslationData
+            {
+                Title = value.Title,
+                Description = value.Description
+            };
+        }
+        return result;
     }
 
     public async Task<ErrorOr<CheckDuplicateTourInstanceResultDto>> CheckDuplicate(Guid tourId, Guid classificationId, DateTimeOffset startDate)

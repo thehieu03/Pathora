@@ -45,7 +45,7 @@ public class OutboxWorkerService(
         PropertyNameCaseInsensitive = true
     };
 
-    private const string PaymentCheckType = "PaymentCheck";
+    private const string PaymentCheckType = "SepayPaymentCheck";
     private const string TourMediaCleanupType = "TourMediaCleanup";
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -206,12 +206,12 @@ public class OutboxWorkerService(
                     BankBrandName = matchedTransaction.bank_brand_name,
                     AccountNumber = matchedTransaction.account_number,
                     TransactionDate = ParseDateTime(matchedTransaction.transaction_date),
-                    Amount = ParseDecimal(matchedTransaction.amount_in),
+                    Amount = ParseDecimal(matchedTransaction.amount_in ?? matchedTransaction.amount_out),
                     TransactionContent = matchedTransaction.transaction_content,
                     ReferenceNumber = matchedTransaction.reference_number
                 };
 
-                var result = await paymentService.ProcessPaymentCallbackAsync(transactionData);
+                var result = await paymentService.ProcessSepayCallbackAsync(transactionData);
 
                 if (result.IsError)
                 {
@@ -280,10 +280,10 @@ public class OutboxWorkerService(
 
             foreach (var transaction in sepayResponse.Transactions)
             {
-                var amount = ParseDecimal(transaction.amount_in);
+                var amount = ParseDecimal(transaction.amount_in ?? transaction.amount_out);
                 var content = transaction.transaction_content ?? "";
 
-                if (content.Contains(transactionCode) && amount >= expectedAmount)
+                if (content.Contains(transactionCode) && amount == expectedAmount)
                 {
                     logger.LogInformation("Found matching SePay transaction: {TransactionId}, Amount: {Amount}",
                         transaction.id, amount);

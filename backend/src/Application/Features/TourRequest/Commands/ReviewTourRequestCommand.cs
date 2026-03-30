@@ -89,21 +89,23 @@ public sealed class ReviewTourRequestCommandHandler(
 
         await tourRequestRepository.UpdateAsync(requestEntity);
         await unitOfWork.SaveChangeAsync(cancellationToken);
-        await TryQueueReviewNotificationAsync(requestEntity, request.Status, request.AdminNote);
+
+        // Only queue email for rejections — approvals trigger email when TourInstance is linked
+        if (request.Status == TourRequestStatus.Rejected)
+        {
+            await TryQueueRejectionEmailAsync(requestEntity, request.AdminNote);
+        }
 
         return Result.Success;
     }
 
-    private async Task TryQueueReviewNotificationAsync(
-        TourRequestEntity requestEntity,
-        TourRequestStatus reviewStatus,
-        string? adminNote)
+    private async Task TryQueueRejectionEmailAsync(TourRequestEntity requestEntity, string? adminNote)
     {
         var recipientEmail = await ResolveRecipientEmailAsync(requestEntity);
         if (string.IsNullOrWhiteSpace(recipientEmail))
         {
             logger.LogWarning(
-                "Skipping tour request review notification for request {RequestId} because recipient email is missing.",
+                "Skipping tour request rejection notification for request {RequestId} because recipient email is missing.",
                 requestEntity.Id);
             return;
         }
@@ -114,37 +116,20 @@ public sealed class ReviewTourRequestCommandHandler(
 
         try
         {
-            MailEntity mail;
-            if (reviewStatus == TourRequestStatus.Approved)
-            {
-                var approvedMail = new TourRequestApprovedMail(
-                    CustomerName: requestEntity.CustomerName,
-                    Destination: requestEntity.Destination,
-                    StartDate: requestEntity.DepartureDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
-                    EndDate: requestEntity.ReturnDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "Flexible",
-                    AdminNote: resolvedAdminNote,
-                    MyRequestsLink: "/tours/my-requests");
+            var rejectedMail = new TourRequestRejectedMail(
+                CustomerName: requestEntity.CustomerName,
+                Destination: requestEntity.Destination,
+                AdminNote: resolvedAdminNote,
+                ResubmitLink: "/tours/custom");
 
-                mail = approvedMail.ToMail(recipientEmail);
-                mail.Subject = "Your Tour Request Has Been Approved!";
-            }
-            else
-            {
-                var rejectedMail = new TourRequestRejectedMail(
-                    CustomerName: requestEntity.CustomerName,
-                    Destination: requestEntity.Destination,
-                    AdminNote: resolvedAdminNote,
-                    ResubmitLink: "/tours/custom");
-
-                mail = rejectedMail.ToMail(recipientEmail);
-                mail.Subject = "Tour Request Update";
-            }
+            var mail = rejectedMail.ToMail(recipientEmail);
+            mail.Subject = "Tour Request Update";
 
             var addResult = await mailRepository.Add(mail);
             if (addResult.IsError)
             {
                 logger.LogWarning(
-                    "Failed to queue tour request review notification for request {RequestId}: {ErrorDescription}",
+                    "Failed to queue tour request rejection notification for request {RequestId}: {ErrorDescription}",
                     requestEntity.Id,
                     addResult.FirstError.Description);
             }
@@ -153,7 +138,7 @@ public sealed class ReviewTourRequestCommandHandler(
         {
             logger.LogWarning(
                 ex,
-                "Failed to queue tour request review notification for request {RequestId}",
+                "Failed to queue tour request rejection notification for request {RequestId}",
                 requestEntity.Id);
         }
     }

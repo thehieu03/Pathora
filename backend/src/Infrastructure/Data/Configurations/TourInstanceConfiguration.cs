@@ -121,5 +121,12 @@ public class TourInstanceConfiguration : IEntityTypeConfiguration<TourInstanceEn
 
         // Managers (TourInstanceManagers) — configured via separate configuration class
         builder.Navigation(t => t.Managers);
+
+        // xmin concurrency token — maps to PostgreSQL's system xmin column
+        builder.Property(t => t.RowVersion)
+            .HasColumnName("xmin")
+            .HasColumnType("xid")
+            .ValueGeneratedOnAddOrUpdate()
+            .IsConcurrencyToken();
     }
 }

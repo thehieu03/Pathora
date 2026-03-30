@@ -6,6 +6,7 @@ public interface IPaymentTransactionRepository
 {
     Task<PaymentTransactionEntity?> GetByIdAsync(Guid id);
     Task<PaymentTransactionEntity?> GetByTransactionCodeAsync(string transactionCode);
+    Task<PaymentTransactionEntity?> GetByPayOSOrderCodeAsync(string orderCode);
     Task<PaymentTransactionEntity?> GetByBookingIdAsync(Guid bookingId);
     Task<List<PaymentTransactionEntity>> GetByBookingIdListAsync(Guid bookingId);
     Task<PaymentTransactionEntity?> GetPendingByBookingIdAsync(Guid bookingId);

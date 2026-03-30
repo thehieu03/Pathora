@@ -58,6 +58,7 @@ public static class BookingContextSeed
 
         hasChanges |= BackfillTourDayTranslations(context);
         hasChanges |= BackfillTourInstanceTranslations(context);
+        hasChanges |= SeedTourInstanceDays(context);
 
         return hasChanges;
     }
@@ -83,6 +84,7 @@ public static class BookingContextSeed
         hasChanges |= SeedTourDayActivityGuides(context);
         hasChanges |= BackfillTourDayTranslations(context);
         hasChanges |= BackfillTourInstanceTranslations(context);
+        hasChanges |= SeedTourInstanceDays(context);
         return hasChanges;
     }
 
@@ -605,6 +607,82 @@ public static class BookingContextSeed
         }
 
         return hasChanges;
+    }
+
+    private static bool SeedTourInstanceDays(AppDbContext context)
+    {
+        if (context.TourInstanceDays.Any()) return false;
+
+        var instances = context.TourInstances
+            .AsNoTracking()
+            .Include(t => t.InstanceDays)
+            .ToList();
+
+        var classifications = context.TourClassifications
+            .AsNoTracking()
+            .Include(c => c.Plans)
+            .ToList();
+
+        var tourDays = context.TourDays
+            .AsNoTracking()
+            .ToList();
+
+        var seeded = false;
+        foreach (var instance in instances)
+        {
+            if (instance.InstanceDays.Count > 0) continue;
+
+            var classification = classifications.FirstOrDefault(c => c.Id == instance.ClassificationId);
+            if (classification is null) continue;
+
+            var plans = classification.Plans.Where(p => !p.IsDeleted).OrderBy(p => p.DayNumber).ToList();
+            if (plans.Count == 0) continue;
+
+            foreach (var plan in plans)
+            {
+                var translations = new Dictionary<string, TourInstanceDayTranslationData>();
+                if (plan.Translations is not null)
+                {
+                    foreach (var (key, value) in plan.Translations)
+                    {
+                        translations[key] = new TourInstanceDayTranslationData
+                        {
+                            Title = value.Title,
+                            Description = value.Description
+                        };
+                    }
+                }
+
+                var actualDate = DateOnly.FromDateTime(instance.StartDate.DateTime).AddDays(plan.DayNumber - 1);
+
+                var instanceDay = new TourInstanceDayEntity
+                {
+                    Id = Guid.CreateVersion7(),
+                    TourInstanceId = instance.Id,
+                    TourDayId = plan.Id,
+                    InstanceDayNumber = plan.DayNumber,
+                    ActualDate = actualDate,
+                    Title = plan.Title,
+                    Description = plan.Description,
+                    Translations = translations,
+                    CreatedBy = "system",
+                    LastModifiedBy = "system",
+                    CreatedOnUtc = DateTimeOffset.UtcNow,
+                    LastModifiedOnUtc = DateTimeOffset.UtcNow
+                };
+
+                context.TourInstanceDays.Add(instanceDay);
+            }
+
+            seeded = true;
+        }
+
+        if (seeded)
+        {
+            context.SaveChanges();
+        }
+
+        return seeded;
     }
 
     private static bool EnsureTourDayTranslation(TourDayEntity target, TourDayEntity seeded, string language)

@@ -45,6 +45,7 @@ internal static class TourRequestMappings
             entity.CreatedBy,
             entity.CreatedOnUtc,
             entity.LastModifiedBy,
-            entity.LastModifiedOnUtc);
+            entity.LastModifiedOnUtc,
+            entity.TourInstanceId);
     }
 }

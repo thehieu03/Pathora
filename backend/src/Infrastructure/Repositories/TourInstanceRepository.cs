@@ -18,6 +18,7 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
 
         return await query
             .Include(t => t.Managers).ThenInclude(m => m.User)
+            .Include(t => t.InstanceDays)
             .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 
@@ -72,6 +73,16 @@ public class TourInstanceRepository(AppDbContext context) : ITourInstanceReposit
         }
 
         return await query.CountAsync();
+    }
+
+    public async Task<TourInstanceEntity?> FindByIdWithInstanceDays(Guid id)
+    {
+        return await _context.TourInstances
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(t => t.Managers).ThenInclude(m => m.User)
+            .Include(t => t.InstanceDays).ThenInclude(d => d.TourDay)
+            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
     }
 
     public async Task Create(TourInstanceEntity tourInstance)

@@ -67,5 +67,114 @@ test_node.js
 tourmau.md
 tmp_*.sh
 
+<<<<<<< HEAD
 # === Dependency lock ===
 package-lock.json
+=======
+# API local artifacts
+src/Api/appsettings.*.json
+!src/Api/appsettings.json
+src/Api/*.http
+src/Api/*.rest
+src/Api/openapi*.json
+src/Api/swagger*.json
+
+# Secrets - never commit these
+appsettings.Development.json
+.env
+
+src/Application/Common/Repositories/
+docs/plans/
+.worktrees/
+
+# Docker volumes (keep structure, ignore contents)
+volume/minio/*
+!volume/minio/.gitkeep
+volume/redis/*
+!volume/redis/.gitkeep
+volume/postgres/*
+!volume/postgres/.gitkeep
+.gitnexus
+
+# Auto Claude data directory
+.auto-claude/
+.gstack/
+
+# ================================
+# === MONOREPO STRUCTURE ========
+# ================================
+
+# Sub-repo gốc (đã gộp, giữ local)
+panthora_be/
+pathora/
+tour-guide-mobile/
+
+# Docker compose
+!docker-compose.yml
+docker-compose.minio.yml
+docker-compose.override.yml
+
+# Dev/docs/script thừa
+docs/
+docs/hardcoded-value-governance.md
+docs/prompts/
+docs/superpowers/
+docs/test/
+docs/use-case-tour-guide-mobile.md
+docs/view-booking-history-list.puml
+
+scripts/*.cs
+scripts/*.csx
+scripts/*.ps1
+scripts/*.sql
+scripts/validate-workspace.ps1
+scripts/scan-hardcoded-backend.ps1
+scripts/RunMigration.ps1
+scripts/check_schema.sql
+scripts/insert_halong_tour.sql
+scripts/insert_halong_tourinstance.sql
+scripts/migrate_create_tourinstancedays.sql
+scripts/verify_seed.sql
+scripts/CheckDb.cs
+scripts/CheckSchema.csx
+
+# Dev tooling
+skills/
+skills-lock.json
+.autoplan/
+.gemini/
+.kilocode/
+.kiro/
+.opencode/
+openspec/
+.agent/
+.agents/
+.codex/
+.github/
+.vscode/
+
+# Root-level config & helper files
+.env.docker.example
+opsx_apply.json
+plan-outbox-fix.md
+tourmau.md
+tmp_halong_seed.sh
+test_node.js
+list_files.js
+list_tsx.js
+check_dir.js
+dir_root.js
+find_tour.js
+pathora_build_output.txt
+pathora_lint_output.txt
+hardcoded-inventory-backend.json
+nul
+
+# Large images
+halong_img1.jpg
+halong_img2.jpg
+
+# Docker data volumes (giữ cấu trúc)
+docker-data/
+volume/
+>>>>>>> hieu

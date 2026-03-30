@@ -9,6 +9,7 @@ public class PaymentTransactionEntity : Aggregate<Guid>
     // Transaction identification
     public string TransactionCode { get; set; } = null!; // Mã giao dịch nội bộ
     public string? ExternalTransactionId { get; set; } // ID giao dịch từ ngân hàng/sepay
+    public string? PayOSOrderCode { get; set; } // PayOS orderCode for webhook callback matching
 
     // Transaction type & status
     public Enums.TransactionType Type { get; set; }
@@ -28,8 +29,8 @@ public class PaymentTransactionEntity : Aggregate<Guid>
     public DateTimeOffset? PaidAt { get; set; } // Thời điểm thanh toán thành công
     public DateTimeOffset? CompletedAt { get; set; } // Thời điểm hoàn tất
 
-    // QR Code info
-    public string? QRCodeUrl { get; set; } // URL QR code thanh toán
+    // Checkout info
+    public string? CheckoutUrl { get; set; } // URL checkout/thanh toán
     public string? PaymentNote { get; set; } // Nội dung thanh toán (note/description)
 
     // Bank info (from webhook callback)

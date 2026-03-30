@@ -35,4 +35,5 @@ public sealed record TourRequestDetailDto(
     string? CreatedBy,
     DateTimeOffset CreatedOnUtc,
     string? LastModifiedBy,
-    DateTimeOffset? LastModifiedOnUtc);
+    DateTimeOffset? LastModifiedOnUtc,
+    Guid? TourInstanceId);

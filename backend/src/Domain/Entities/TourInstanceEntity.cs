@@ -1,5 +1,6 @@
 namespace Domain.Entities;
 
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Entities.Translations;
 
 public class TourInstanceEntity : Aggregate<Guid>
@@ -52,6 +53,10 @@ public class TourInstanceEntity : Aggregate<Guid>
 
     // Soft delete
     public bool IsDeleted { get; set; }
+
+    // Optimistic concurrency token — PostgreSQL xmin system column
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    public uint RowVersion { get; set; }
 
     // Translations (vi/en)
     public Dictionary<string, TourInstanceTranslationData> Translations { get; set; } = [];

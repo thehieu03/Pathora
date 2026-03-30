@@ -7,6 +7,7 @@ public static class AuthEndpoint
     public const string Register = "register";
     public const string Refresh = "refresh";
     public const string Logout = "logout";
+    public const string LogoutAll = "logout-all";
     public const string Me = "me";
     public const string Tabs = "tabs";
     public const string DevResetPassword = "dev-reset-password";

@@ -294,6 +294,43 @@ public sealed class AuthControllerTests
     }
 
     [Fact]
+    public async Task LogoutAll_WhenCommandSucceeds_ShouldReturnOkAndClearCookies()
+    {
+        var (controller, probe) = BuildController<LogoutAllCommand, Success>(
+            Result.Success, "/api/auth/logout-all");
+
+        var actionResult = await controller.LogoutAll();
+
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
+        Assert.IsType<LogoutAllCommand>(probe.CapturedRequest);
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.Contains("auth_status=; expires", setCookie);
+        Assert.Contains("path=/", setCookie, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task LogoutAll_WhenUnauthorized_ShouldReturnUnauthorizedWithoutClearingCookies()
+    {
+        var (controller, _) = BuildController<LogoutAllCommand, Success>(
+            Error.Unauthorized("User.Unauthorized", "Unauthorized"),
+            "/api/auth/logout-all");
+
+        var actionResult = await controller.LogoutAll();
+
+        AssertErrorResponse(
+            actionResult,
+            expectedStatusCode: StatusCodes.Status401Unauthorized,
+            expectedCode: "User.Unauthorized",
+            expectedMessage: "Unauthorized",
+            expectedInstance: "/api/auth/logout-all");
+
+        var setCookie = controller.ControllerContext.HttpContext.Response.Headers.SetCookie.ToString();
+        Assert.DoesNotContain("auth_status=; expires", setCookie);
+    }
+
+    [Fact]
     public void GoogleLogin_WhenGoogleIsNotConfigured_ShouldRedirectToFrontendCallbackError()
     {
         var (controller, _) = BuildController<GetTabsQuery, List<TabVm>>(

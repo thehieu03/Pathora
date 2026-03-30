@@ -27,4 +27,5 @@ public sealed record TourInstanceDto(
     DateTimeOffset? ConfirmationDeadline,
     List<TourInstanceManagerDto> Managers,
     List<string> IncludedServices,
-    List<TourInstanceDayDto>? Days = null);
+    List<TourInstanceDayDto>? Days = null,
+    uint RowVersion = 0);

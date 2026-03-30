@@ -51,7 +51,7 @@ public sealed class PaymentReconciliationService(
     private readonly IPaymentService _paymentService = paymentService;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ILogger<PaymentReconciliationService> _logger = logger;
-    private readonly HttpClient _httpClient = new();
+    private HttpClient _httpClient = new();
 
     private readonly string _authenticationKey = NormalizeConfigValue(configuration["Payment:AuthenticationKey"]);
     private readonly string _accountNumber = NormalizeConfigValue(configuration["Payment:Account"]);
@@ -128,7 +128,7 @@ public sealed class PaymentReconciliationService(
             }
         }
 
-        var result = await _paymentService.ProcessPaymentCallbackAsync(transactionData);
+        var result = await _paymentService.ProcessSepayCallbackAsync(transactionData);
         if (result.IsError)
         {
             if (!string.IsNullOrWhiteSpace(transactionCode))
@@ -151,7 +151,6 @@ public sealed class PaymentReconciliationService(
             return result.Errors;
         }
 
-        await _unitOfWork.SaveChangeAsync();
         var snapshot = BuildSnapshot(result.Value, source, verifiedWithProvider: true, transactionData.TransactionId);
 
         LogTransition(
@@ -239,7 +238,7 @@ public sealed class PaymentReconciliationService(
             ReferenceNumber = matchedProviderTransaction.reference_number
         };
 
-        var processResult = await _paymentService.ProcessPaymentCallbackAsync(callbackData);
+        var processResult = await _paymentService.ProcessSepayCallbackAsync(callbackData);
         if (processResult.IsError)
         {
             _logger.LogWarning(
@@ -251,11 +250,10 @@ public sealed class PaymentReconciliationService(
             return (latest ?? transaction, false);
         }
 
-        await _unitOfWork.SaveChangeAsync();
         return (processResult.Value, true);
     }
 
-    private async Task<Transaction?> FetchMatchingProviderTransactionAsync(PaymentTransactionEntity transaction)
+    internal async Task<Transaction?> FetchMatchingProviderTransactionAsync(PaymentTransactionEntity transaction)
     {
         try
         {
@@ -280,7 +278,7 @@ public sealed class PaymentReconciliationService(
                 var providerAmount = ParseDecimal(providerTransaction.amount_in ?? providerTransaction.amount_out);
 
                 if (providerContent.Contains(transaction.TransactionCode, StringComparison.OrdinalIgnoreCase)
-                    && providerAmount >= expectedAmount)
+                    && providerAmount == expectedAmount)
                 {
                     return providerTransaction;
                 }

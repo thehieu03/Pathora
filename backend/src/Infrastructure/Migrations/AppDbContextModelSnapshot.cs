@@ -1293,6 +1293,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("PaidAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("PayOSOrderCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<int>("PaymentMethod")
                         .HasColumnType("integer");
 
@@ -1337,6 +1341,8 @@ namespace Infrastructure.Migrations
                     b.HasIndex("BookingId");
 
                     b.HasIndex("PaidAt");
+
+                    b.HasIndex("PayOSOrderCode");
 
                     b.HasIndex("Status");
 
@@ -2622,6 +2628,12 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("MaxParticipation")
                         .HasColumnType("integer");
+
+                    b.Property<uint>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
 
                     b.Property<DateTimeOffset>("StartDate")
                         .HasColumnType("timestamp with time zone");
