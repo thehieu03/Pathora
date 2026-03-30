@@ -26,6 +26,54 @@ if (mode == "updatepasswords")
     return 0;
 }
 
+if (mode == "exec")
+{
+    if (args.Length < 2)
+    {
+        Console.WriteLine("Usage: exec <sql>");
+        return 1;
+    }
+    var sql = string.Join(" ", args.Skip(1));
+    var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    optionsBuilder.UseNpgsql(connectionString);
+    await using var context = new AppDbContext(optionsBuilder.Options);
+    await context.Database.OpenConnectionAsync();
+    await using var cmd = context.Database.GetDbConnection().CreateCommand();
+    cmd.CommandText = sql;
+    cmd.CommandTimeout = 30;
+    await cmd.ExecuteNonQueryAsync();
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine("SQL executed successfully!");
+    Console.ResetColor();
+    return 0;
+}
+
+if (mode == "query")
+{
+    if (args.Length < 2)
+    {
+        Console.WriteLine("Usage: query <sql>");
+        return 1;
+    }
+    var sql = string.Join(" ", args.Skip(1));
+    var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+    optionsBuilder.UseNpgsql(connectionString);
+    await using var context = new AppDbContext(optionsBuilder.Options);
+    await context.Database.OpenConnectionAsync();
+    await using var cmd = context.Database.GetDbConnection().CreateCommand();
+    cmd.CommandText = sql;
+    var reader = await cmd.ExecuteReaderAsync();
+    var cols = Enumerable.Range(0, reader.FieldCount).Select(i => reader.GetName(i)).ToList();
+    Console.WriteLine(string.Join(" | ", cols));
+    while (await reader.ReadAsync())
+    {
+        var vals = Enumerable.Range(0, reader.FieldCount).Select(i => reader.IsDBNull(i) ? "NULL" : reader.GetValue(i).ToString()!).ToList();
+        Console.WriteLine(string.Join(" | ", vals));
+    }
+    Console.ResetColor();
+    return 0;
+}
+
 if (mode == "verify")
 {
     await VerifyAsync(connectionString);
@@ -60,10 +108,18 @@ if (mode == "both")
     return 0;
 }
 
-// Default: migrate only (just ensure DB exists)
+// Default: migrate only
 EnsureDatabase.For.PostgresqlDatabase(connectionString);
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Database ensured/created!");
+
+// Apply EF migrations
+var migratorOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+migratorOptionsBuilder.UseNpgsql(connectionString);
+await using var migratorContext = new AppDbContext(migratorOptionsBuilder.Options);
+await migratorContext.Database.MigrateAsync();
+Console.ForegroundColor = ConsoleColor.Green;
+Console.WriteLine("EF migrations applied successfully!");
 Console.ResetColor();
 return 0;
 

@@ -5,6 +5,7 @@ using Application.Common.Constant;
 using Application.Dtos;
 using Application.Features.Tour.Commands;
 using Application.Features.Tour.Queries;
+using Application.Features.Admin.Queries;
 using AutoMapper;
 using Domain.Common.Repositories;
 using Domain.Entities;
@@ -22,6 +23,7 @@ public interface ITourService
     Task<ErrorOr<Success>> Update(UpdateTourCommand request);
     Task<ErrorOr<Success>> Delete(Guid id);
     Task<ErrorOr<PaginatedList<TourVm>>> GetAll(GetAllToursQuery request);
+    Task<ErrorOr<PaginatedList<TourVm>>> GetAdminTourManagement(GetAdminTourManagementQuery request);
     Task<ErrorOr<TourDto>> GetDetail(Guid id);
 }
 
@@ -622,6 +624,28 @@ public class TourService(
     {
         var tours = await _tourRepository.FindAll(request.SearchText, request.PageNumber, request.PageSize);
         var total = await _tourRepository.CountAll(request.SearchText);
+        var currentLanguage = _languageContext.CurrentLanguage;
+
+        var tourVms = tours.Select(t =>
+        {
+            var translated = t.ResolveTranslation(currentLanguage);
+            return new TourVm(
+                t.Id,
+                t.TourCode,
+                translated.TourName,
+                translated.ShortDescription,
+                t.Status.ToString(),
+                ToImageDto(t.Thumbnail),
+                t.CreatedOnUtc);
+        }).ToList();
+
+        return new PaginatedList<TourVm>(total, tourVms);
+    }
+
+    public async Task<ErrorOr<PaginatedList<TourVm>>> GetAdminTourManagement(GetAdminTourManagementQuery request)
+    {
+        var tours = await _tourRepository.FindAllAdmin(request.SearchText, request.Status, request.PageNumber, request.PageSize);
+        var total = await _tourRepository.CountAllAdmin(request.SearchText, request.Status);
         var currentLanguage = _languageContext.CurrentLanguage;
 
         var tourVms = tours.Select(t =>

@@ -9,6 +9,7 @@ public class PaymentTransactionEntity : Aggregate<Guid>
     // Transaction identification
     public string TransactionCode { get; set; } = null!; // Mã giao dịch nội bộ
     public string? ExternalTransactionId { get; set; } // ID giao dịch từ ngân hàng/sepay
+    public string? PayOSOrderCode { get; set; } // PayOS orderCode for webhook callback matching
 
     // Transaction type & status
     public Enums.TransactionType Type { get; set; }

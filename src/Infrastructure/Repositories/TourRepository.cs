@@ -82,12 +82,14 @@ public class TourRepository(AppDbContext context) : ITourRepository
                         .ThenInclude(a => a.ResourceLinks.OrderBy(l => l.Order))
             .Include(t => t.Classifications)
                 .ThenInclude(c => c.Insurances)
+            .Include(t => t.Thumbnail)
+            .Include(t => t.Images)
             .AsSplitQuery();
     }
 
     public async Task<List<TourEntity>> FindAll(string? searchText, int pageNumber, int pageSize)
     {
-        var query = _context.Tours.AsNoTracking().Where(t => !t.IsDeleted);
+        var query = _context.Tours.AsNoTracking().Where(t => !t.IsDeleted && t.Status == TourStatus.Active);
         if (!string.IsNullOrWhiteSpace(searchText))
         {
             var search = searchText.ToLower();
@@ -106,7 +108,47 @@ public class TourRepository(AppDbContext context) : ITourRepository
 
     public async Task<int> CountAll(string? searchText)
     {
+        var query = _context.Tours.Where(t => !t.IsDeleted && t.Status == TourStatus.Active);
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            var search = searchText.ToLower();
+            query = query.Where(t =>
+                t.TourName.ToLower().Contains(search) ||
+                t.TourCode.ToLower().Contains(search));
+        }
+        return await query.CountAsync();
+    }
+
+    public async Task<List<TourEntity>> FindAllAdmin(string? searchText, TourStatus? status, int pageNumber, int pageSize)
+    {
+        var query = _context.Tours.AsNoTracking().Where(t => !t.IsDeleted);
+        if (status.HasValue)
+        {
+            query = query.Where(t => t.Status == status.Value);
+        }
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            var search = searchText.ToLower();
+            query = query.Where(t =>
+                t.TourName.ToLower().Contains(search) ||
+                t.TourCode.ToLower().Contains(search));
+        }
+        return await query
+            .Include(t => t.Thumbnail)
+            .Include(t => t.Classifications)
+            .OrderByDescending(t => t.CreatedOnUtc)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+    }
+
+    public async Task<int> CountAllAdmin(string? searchText, TourStatus? status)
+    {
         var query = _context.Tours.Where(t => !t.IsDeleted);
+        if (status.HasValue)
+        {
+            query = query.Where(t => t.Status == status.Value);
+        }
         if (!string.IsNullOrWhiteSpace(searchText))
         {
             var search = searchText.ToLower();
@@ -266,10 +308,9 @@ public class TourRepository(AppDbContext context) : ITourRepository
         int? minDays,
         int? maxDays)
     {
-        // For public search, show all non-deleted tours (not just Active)
         var query = _context.Tours
             .AsNoTracking()
-            .Where(t => !t.IsDeleted)
+            .Where(t => !t.IsDeleted && t.Status == TourStatus.Active)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(q))

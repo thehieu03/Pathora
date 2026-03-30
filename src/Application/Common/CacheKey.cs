@@ -3,6 +3,7 @@ namespace Application.Common;
 public static class CacheKey
 {
     public const string Admin = nameof(Admin);
+    public const string AdminTourManagement = $"{Admin}:tour-management";
     public const string User = nameof(User);
     public const string AccessToken = nameof(AccessToken);
     public const string SystemKey = nameof(SystemKey);

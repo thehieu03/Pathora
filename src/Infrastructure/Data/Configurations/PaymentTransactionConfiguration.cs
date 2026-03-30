@@ -24,6 +24,11 @@ public class PaymentTransactionConfiguration : IEntityTypeConfiguration<PaymentT
         builder.Property(x => x.ExternalTransactionId)
             .HasMaxLength(255);
 
+        builder.Property(x => x.PayOSOrderCode)
+            .HasMaxLength(50);
+
+        builder.HasIndex(x => x.PayOSOrderCode);
+
         // Transaction type & status
         builder.Property(x => x.Type)
             .IsRequired()
