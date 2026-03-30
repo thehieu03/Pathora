@@ -7,6 +7,9 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Luôn chạy Production để CORS đọc env var
+ENV ASPNETCORE_ENVIRONMENT=Production
+
 # Stage 2: Build (Giai đoạn xây dựng)
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
