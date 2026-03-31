@@ -68,8 +68,18 @@ skills-lock.json
 .github/copilot-instructions.md
 .vscode/mcp.json
 
+# IDE
+.idea/
+.vscode/
+
+# Misc
+icon_strings.txt
+
 # OpenSpec
 openspec/
 
 # Moat task system
 .moat/
+
+# AI coding agents
+AGENTS.md
